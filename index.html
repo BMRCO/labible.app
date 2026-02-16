@@ -3,18 +3,18 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
+
   <title>Bible en ligne – Louis Segond 1910 (LSG) | La Bible complète en français</title>
   <meta name="description" content="Lire la Bible en ligne gratuitement – Louis Segond 1910 (LSG). Accès complet à tous les livres, chapitres et versets avec recherche rapide sur LaBible.app." />
+
+  <link rel="canonical" href="https://labible.app" />
   <link rel="manifest" href="manifest.webmanifest">
   <meta name="theme-color" content="#ffffff">
+  <link rel="stylesheet" href="style.css" />
 </head>
-<script>
-  if ("serviceWorker" in navigator) {
-    navigator.serviceWorker.register("/sw.js");
-  }
-</script>
+
 <body>
-  <h1>La Bible – LSG 1910 | LaBible.app</h1>
+  <h1>Bible FR — Segond 1910</h1>
 
   <div class="controls">
     <label for="book">Livre</label>
@@ -50,5 +50,11 @@
   <div id="content"></div>
 
   <script src="app.js"></script>
+
+  <script>
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker.register("/sw.js");
+    }
+  </script>
 </body>
 </html>

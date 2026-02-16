@@ -188,8 +188,31 @@ function clearSearch(){
 }
 
 /* ---------------- Leitura ---------------- */
+function readUrl() {
+  const path = window.location.pathname.toLowerCase();
+  const parts = path.split("/").filter(Boolean);
 
+  if (parts.length === 2) {
+    const bookSlug = parts[0];
+    const chapter = parseInt(parts[1]);
+
+    const book = books.find(b =>
+      b.name.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+        .replace(/\s+/g, "") === bookSlug
+    );
+
+    if (book && !isNaN(chapter)) {
+      onBookChange(book.book);
+      setTimeout(() => {
+        $("chap").value = chapter;
+        render(book.book, chapter);
+      }, 100);
+    }
+  }
+}
 async function init() {
+  onBookChange(books[0].book);
+  readUrl();
   // carrega DB (teu arquivo)
   DB = await loadJSON("data/segond_1910.json");
 

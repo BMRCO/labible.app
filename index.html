@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Bible FR — Segond 1910</title>
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#ffffff">
+  <link rel="stylesheet" href="style.css" />
+</head>
+<script>
+  if ("serviceWorker" in navigator) {
+    navigator.serviceWorker.register("/sw.js");
+  }
+</script>
+<body>
+  <h1>Bible FR — Segond 1910</h1>
+
+  <div class="controls">
+    <label for="book">Livre</label>
+    <select id="book"></select>
+
+    <label for="chap">Chapitre</label>
+    <select id="chap"></select>
+
+    <button id="btnFav" class="btn">★ Ajouter aux favoris</button>
+    <button id="btnShowFav" class="btn">Voir favoris</button>
+  </div>
+
+  <div id="favBox" class="favbox hidden">
+    <div class="favhead">
+      <h3>Favoris</h3>
+      <button id="btnCloseFav" class="btn">✕</button>
+    </div>
+    <div id="favList"></div>
+  </div>
+
+  <div class="search">
+    <input id="q" type="search" placeholder="Rechercher (ex: amour, lumière, foi...)" />
+    <button id="btnSearch" class="btn">Chercher</button>
+    <button id="btnClear" class="btn">Effacer</button>
+  </div>
+
+  <div id="results" class="results hidden">
+    <h3>Résultats</h3>
+    <div id="hits"></div>
+  </div>
+
+  <h2 id="title">—</h2>
+  <div id="content"></div>
+
+  <script src="app.js"></script>
+</body>
+</html>

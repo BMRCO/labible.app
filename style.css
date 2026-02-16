@@ -1,24 +1,80 @@
-body{font-family:system-ui,Arial;margin:18px;max-width:980px}
-h1{margin:0 0 12px 0}
-.controls{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:10px 0}
-select{padding:8px 10px}
-.btn{padding:8px 10px;cursor:pointer}
-#content p{margin:6px 0;line-height:1.55}
-#content b{display:inline-block;min-width:28px}
+:root {
+  --bg: #ffffff;
+  --text: #111111;
+  --card: #f5f5f5;
+  --primary: #2d6cdf;
+}
 
-.favbox{border:1px solid #ddd;border-radius:8px;padding:10px;margin:10px 0;background:#fafafa}
-.favhead{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
-.hidden{display:none}
+body.dark {
+  --bg: #121212;
+  --text: #f1f1f1;
+  --card: #1e1e1e;
+  --primary: #4d8dff;
+}
 
-.favrow{display:flex;gap:10px;align-items:center;margin:6px 0}
-.favrow .title{flex:1}
-.small{font-size:12px;color:#666}
+body {
+  margin: 0;
+  font-family: system-ui, Arial;
+  background: var(--bg);
+  color: var(--text);
+  transition: 0.3s ease;
+}
 
-.search{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:12px 0}
-.search input{padding:8px 10px;min-width:260px;flex:1}
+header {
+  position: sticky;
+  top: 0;
+  background: var(--bg);
+  padding: 12px 16px;
+  font-size: 20px;
+  font-weight: bold;
+  border-bottom: 1px solid #ddd;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
 
-.results{border:1px solid #ddd;border-radius:8px;padding:10px;margin:10px 0;background:#fff}
-.hit{border-top:1px solid #eee;padding:8px 0}
-.hit:first-child{border-top:none}
-.hit .ref{font-weight:700}
-.hit .txt{margin-top:4px;line-height:1.4}
+.controls {
+  padding: 12px;
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+select, input {
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+}
+
+button {
+  padding: 10px 14px;
+  border-radius: 8px;
+  border: none;
+  background: var(--primary);
+  color: white;
+  cursor: pointer;
+}
+
+button:hover {
+  opacity: 0.9;
+}
+
+#content {
+  padding: 16px;
+}
+
+#content p {
+  margin: 10px 0;
+  line-height: 1.6;
+}
+
+#content b {
+  color: var(--primary);
+}
+
+.card {
+  background: var(--card);
+  padding: 12px;
+  border-radius: 12px;
+  margin-bottom: 12px;
+}

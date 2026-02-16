@@ -306,7 +306,23 @@ function render(bookNum, chapNum, opts = { updateURL: true }) {
 
   if (opts.updateURL) updateUrl(bookNum, chapNum);
 }
+// Dark mode
+const toggleBtn = document.getElementById("toggleTheme");
 
+function applyTheme() {
+  const saved = localStorage.getItem("theme");
+  if (saved === "dark") {
+    document.body.classList.add("dark");
+  }
+}
+
+toggleBtn.addEventListener("click", () => {
+  document.body.classList.toggle("dark");
+  const isDark = document.body.classList.contains("dark");
+  localStorage.setItem("theme", isDark ? "dark" : "light");
+});
+
+applyTheme();
 init().catch(err => {
   console.error(err);
   document.body.innerHTML = `<pre style="color:red">${escapeHTML(err.message)}</pre>`;

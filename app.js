@@ -6,11 +6,10 @@ async function loadJSON(path) {
   return r.json();
 }
 
-// DB completo (1 ficheiro)
 let DB = null;
 
 // índices
-let books = [];                 // [{book:1, name:"Genèse"}]
+let books = [];                 // [{book:1, name:"Genèse", slug:"genese"}]
 let chaptersByBook = new Map(); // book -> Set(chapters)
 
 // posição atual
@@ -21,6 +20,43 @@ function escapeHTML(s){
     .replaceAll("&","&amp;")
     .replaceAll("<","&lt;")
     .replaceAll(">","&gt;");
+}
+
+/* ---------------- Slug + URL ---------------- */
+
+function normalize(s){
+  return String(s).toLowerCase()
+    .normalize("NFD").replace(/[\u0300-\u036f]/g, ""); // remove acentos
+}
+
+function slugifyBookName(name) {
+  // Ex: "1 Samuel" => "1-samuel"
+  // "Cantique des cantiques" => "cantique-des-cantiques"
+  // "Ésaïe" => "esaie"
+  return normalize(name)
+    .replace(/['’]/g, "")         // remove apóstrofos
+    .replace(/[^a-z0-9]+/g, "-")  // tudo não alfanumérico vira "-"
+    .replace(/-+/g, "-")          // colapsa múltiplos "-"
+    .replace(/^-|-$/g, "");       // remove "-" no começo/fim
+}
+
+function parsePath() {
+  const parts = window.location.pathname.split("/").filter(Boolean);
+  // Esperado: /{bookSlug}/{chapter}
+  if (parts.length >= 2) {
+    const bookSlug = normalize(parts[0]).replace(/[^a-z0-9-]/g, "");
+    const chapter = parseInt(parts[1], 10);
+    if (bookSlug && Number.isFinite(chapter)) return { bookSlug, chapter };
+  }
+  return null;
+}
+
+function updateUrl(bookNum, chapNum) {
+  const b = books.find(x => x.book === bookNum);
+  if (!b) return;
+  const url = `/${b.slug}/${chapNum}`;
+  // Não recarrega a página; só muda a URL
+  history.replaceState(null, "", url);
 }
 
 /* ---------------- Favoris ---------------- */
@@ -90,24 +126,21 @@ function renderFavorites() {
     </div>
   `).join("");
 
-  // Ouvrir
   list.querySelectorAll("[data-go]").forEach(btn => {
     btn.onclick = () => {
       const [b, c] = btn.getAttribute("data-go").split(":").map(Number);
-
       $("book").value = String(b);
-      onBookChange(b);
+      onBookChange(b, { updateURL: false });
 
       setTimeout(() => {
         $("chap").value = String(c);
-        render(b, c);
+        render(b, c, { updateURL: true });
       }, 0);
 
       closeFavorites();
     };
   });
 
-  // Supprimer
   list.querySelectorAll("[data-del]").forEach(btn => {
     btn.onclick = () => {
       const [b, c] = btn.getAttribute("data-del").split(":").map(Number);
@@ -120,18 +153,13 @@ function renderFavorites() {
 
 /* ---------------- Recherche ---------------- */
 
-function normalize(s){
-  return String(s).toLowerCase()
-    .normalize("NFD").replace(/[\u0300-\u036f]/g, ""); // remove acentos
-}
-
 function doSearch() {
   const qRaw = $("q").value.trim();
   const q = normalize(qRaw);
   if (!q) return;
 
   const hits = [];
-  const maxHits = 80; // limite para não pesar
+  const maxHits = 80;
 
   for (const v of DB.verses) {
     const t = normalize(v.text);
@@ -172,10 +200,10 @@ function renderSearchResults(hits, qRaw) {
     btn.onclick = () => {
       const [b, c] = btn.getAttribute("data-open").split(":").map(Number);
       $("book").value = String(b);
-      onBookChange(b);
+      onBookChange(b, { updateURL: false });
       setTimeout(() => {
         $("chap").value = String(c);
-        render(b, c);
+        render(b, c, { updateURL: true });
       }, 0);
     };
   });
@@ -188,41 +216,18 @@ function clearSearch(){
 }
 
 /* ---------------- Leitura ---------------- */
-function readUrl() {
-  const path = window.location.pathname.toLowerCase();
-  const parts = path.split("/").filter(Boolean);
 
-  if (parts.length === 2) {
-    const bookSlug = parts[0];
-    const chapter = parseInt(parts[1]);
-
-    const book = books.find(b =>
-      b.name.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "")
-        .replace(/\s+/g, "") === bookSlug
-    );
-
-    if (book && !isNaN(chapter)) {
-      onBookChange(book.book);
-      setTimeout(() => {
-        $("chap").value = chapter;
-        render(book.book, chapter);
-      }, 100);
-    }
-  }
-}
 async function init() {
-  onBookChange(books[0].book);
-  readUrl();
-  // carrega DB (teu arquivo)
   DB = await loadJSON("data/segond_1910.json");
 
-  // 1) lista de livros (ordenada pelo número)
+  // 1) map livro -> nome
   const mapBookName = new Map();
   for (const v of DB.verses) {
     if (!mapBookName.has(v.book)) mapBookName.set(v.book, v.book_name);
   }
+
   books = Array.from(mapBookName.entries())
-    .map(([book, name]) => ({ book, name }))
+    .map(([book, name]) => ({ book, name, slug: slugifyBookName(name) }))
     .sort((a, b) => a.book - b.book);
 
   // 2) capítulos por livro
@@ -235,7 +240,7 @@ async function init() {
   // 3) preencher select de livros
   const bookSel = $("book");
   bookSel.innerHTML = books.map(b => `<option value="${b.book}">${escapeHTML(b.name)}</option>`).join("");
-  bookSel.onchange = () => onBookChange(Number(bookSel.value));
+  bookSel.onchange = () => onBookChange(Number(bookSel.value), { updateURL: true });
 
   // botões favoritos
   $("btnFav").onclick = toggleFavoriteCurrent;
@@ -249,21 +254,42 @@ async function init() {
     if (e.key === "Enter") doSearch();
   });
 
-  // carrega primeiro livro
-  onBookChange(books[0].book);
+  // 4) abrir pelo URL se existir
+  const wanted = parsePath();
+  if (wanted) {
+    const foundBook = books.find(b => b.slug === wanted.bookSlug);
+    if (foundBook) {
+      $("book").value = String(foundBook.book);
+      onBookChange(foundBook.book, { updateURL: false });
+
+      setTimeout(() => {
+        const chaps = Array.from(chaptersByBook.get(foundBook.book)).sort((a, b) => a - b);
+        const chapOk = chaps.includes(wanted.chapter) ? wanted.chapter : chaps[0];
+        $("chap").value = String(chapOk);
+        render(foundBook.book, chapOk, { updateURL: true });
+      }, 0);
+
+      return; // não cai no default
+    }
+  }
+
+  // 5) default: primeiro livro
+  onBookChange(books[0].book, { updateURL: true });
 }
 
-function onBookChange(bookNum) {
+function onBookChange(bookNum, opts = { updateURL: true }) {
   const chapSel = $("chap");
   const chaps = Array.from(chaptersByBook.get(bookNum)).sort((a, b) => a - b);
-  chapSel.innerHTML = chaps.map(c => `<option value="${c}">${c}</option>`).join("");
-  chapSel.onchange = () => render(bookNum, Number(chapSel.value));
 
-  chapSel.value = String(chaps[0]);
-  render(bookNum, chaps[0]);
+  chapSel.innerHTML = chaps.map(c => `<option value="${c}">${c}</option>`).join("");
+  chapSel.onchange = () => render(bookNum, Number(chapSel.value), { updateURL: true });
+
+  const firstChap = chaps[0];
+  chapSel.value = String(firstChap);
+  render(bookNum, firstChap, { updateURL: opts.updateURL });
 }
 
-function render(bookNum, chapNum) {
+function render(bookNum, chapNum, opts = { updateURL: true }) {
   CURRENT.book = bookNum;
   CURRENT.chapter = chapNum;
 
@@ -277,6 +303,8 @@ function render(bookNum, chapNum) {
   $("content").innerHTML = verses
     .map(v => `<p><b>${v.verse}</b> ${escapeHTML(v.text)}</p>`)
     .join("");
+
+  if (opts.updateURL) updateUrl(bookNum, chapNum);
 }
 
 init().catch(err => {

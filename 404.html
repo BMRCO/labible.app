@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+
+  <title>Bible en ligne – Louis Segond 1910 (LSG) | La Bible complète en français</title>
+  <meta name="description" content="Lire la Bible en ligne gratuitement – Louis Segond 1910 (LSG). Recherche rapide, favoris et partage de versets." />
+  <link rel="canonical" href="https://labible.app/" />
+
+  <link rel="stylesheet" href="/style.css" />
+  <link rel="manifest" href="/manifest.webmanifest">
+  <meta name="theme-color" content="#0b0f14">
+</head>
+
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <div class="logo">📖</div>
+      <div class="brandtext">
+        <div class="title">La Bible</div>
+        <div class="subtitle">Louis Segond 1910</div>
+      </div>
+    </div>
+
+    <button id="toggleTheme" class="iconbtn" title="Mode sombre">🌙</button>
+  </header>
+
+  <main class="wrap">
+    <section class="card">
+      <div class="controls">
+        <div class="field">
+          <label for="book">Livre</label>
+          <select id="book"></select>
+        </div>
+
+        <div class="field">
+          <label for="chap">Chapitre</label>
+          <select id="chap"></select>
+        </div>
+
+        <div class="actions">
+          <button id="btnFav" class="btn">★ Favori</button>
+          <button id="btnShowFav" class="btn btn-secondary">Voir favoris</button>
+        </div>
+      </div>
+
+      <div class="search">
+        <input id="q" type="search" placeholder="Rechercher (ex: amour, lumière, foi...)" />
+        <button id="btnSearch" class="btn">Chercher</button>
+        <button id="btnClear" class="btn btn-secondary">Effacer</button>
+      </div>
+
+      <div id="results" class="results hidden">
+        <div class="resultshead">
+          <h3>Résultats</h3>
+          <button id="btnCloseResults" class="iconbtn" title="Fermer">✕</button>
+        </div>
+        <div id="hits"></div>
+      </div>
+    </section>
+
+    <section class="card reader">
+      <div class="readerhead">
+        <h2 id="title">—</h2>
+        <div class="hint">Cliquez sur 🔗 pour partager un verset.</div>
+      </div>
+      <div id="content" class="content"></div>
+    </section>
+
+    <section id="favBox" class="card favbox hidden">
+      <div class="favhead">
+        <h3>Favoris</h3>
+        <button id="btnCloseFav" class="iconbtn" title="Fermer">✕</button>
+      </div>
+      <div id="favList"></div>
+    </section>
+  </main>
+
+  <script src="/app.js"></script>
+
+  <script>
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker.register("/sw.js");
+    }
+  </script>
+</body>
+</html>

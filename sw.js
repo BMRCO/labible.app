@@ -1,4 +1,4 @@
-const CACHE = "bible-fr-cache-v1";
+const CACHE = "bible-fr-cache-v2";
 
 const ASSETS = [
   "/",

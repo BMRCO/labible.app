@@ -1,6 +1,11 @@
-const CACHE = "bible-fr-cache-v99";
+const CACHE = "bible-fr-cache-v101";
 
-self.addEventListener("install", (e) => self.skipWaiting());
-self.addEventListener("activate", (e) => self.clients.claim());
+self.addEventListener("install", (e) => {
+  self.skipWaiting();
+});
 
-// Sem cache customizado para evitar problemas de rotas em SPA.
+self.addEventListener("activate", (e) => {
+  e.waitUntil(self.clients.claim());
+});
+
+// sem cache customizado (evita problemas de SPA/rotas)

@@ -1,14 +1,14 @@
 const $ = (id) => document.getElementById(id);
 
 async function loadJSON(path) {
-  const r = await fetch(path);
-  if (!r.ok) throw new Error("Erreur de chargement: " + path);
+  const r = await fetch(path, { cache: "no-store" });
+  if (!r.ok) throw new Error("Erreur de chargement : " + path);
   return r.json();
 }
 
 let DB = null;
-let books = [];
-let chaptersByBook = new Map();
+let books = [];                 // [{book:1,name:"Genèse",slug:"genese"}]
+let chaptersByBook = new Map(); // book -> Set(chapters)
 let CURRENT = { book: 1, chapter: 1 };
 
 function escapeHTML(s){
@@ -47,7 +47,8 @@ function updateUrl(bookNum, chapNum) {
   history.replaceState(null, "", `/${b.slug}/${chapNum}`);
 }
 
-/* Theme */
+/* ---------------- Theme ---------------- */
+
 function applyThemeFromStorage(){
   const saved = localStorage.getItem("theme");
   if (saved === "dark") document.body.classList.add("dark");
@@ -69,11 +70,13 @@ function setupThemeToggle(){
   });
 }
 
-/* Share verse (texto + link) */
+/* ---------------- Share verse (texto + link) ---------------- */
+
 async function shareVerse(bookName, bookSlug, chapter, verse, verseText) {
   const url = `${location.origin}/${bookSlug}/${chapter}#v${verse}`;
   const full = `${bookName} ${chapter}:${verse}\n\n${verseText}\n\n${url}`;
 
+  // Share nativo (Android)
   try {
     if (navigator.share) {
       await navigator.share({ title: "La Bible", text: full, url });
@@ -81,6 +84,7 @@ async function shareVerse(bookName, bookSlug, chapter, verse, verseText) {
     }
   } catch (_) {}
 
+  // Copiar para clipboard (fallback)
   try {
     await navigator.clipboard.writeText(full);
     alert("Texte + lien copiés ✅");
@@ -90,7 +94,8 @@ async function shareVerse(bookName, bookSlug, chapter, verse, verseText) {
   prompt("Copiez le texte :", full);
 }
 
-/* Favoris */
+/* ---------------- Favoris ---------------- */
+
 function favKey() { return "bible_fr_favs_v1"; }
 
 function getFavs() {
@@ -171,7 +176,8 @@ function renderFavorites() {
   });
 }
 
-/* Search */
+/* ---------------- Search ---------------- */
+
 function doSearch() {
   const qRaw = $("q").value.trim();
   const q = normalize(qRaw);
@@ -208,11 +214,13 @@ function clearSearch(){
   $("hits").innerHTML = "";
 }
 
-/* Reading */
+/* ---------------- Reading ---------------- */
+
 async function init() {
   applyThemeFromStorage();
   setupThemeToggle();
 
+  // ✅ caminho ABSOLUTO (resolve /genese/1)
   DB = await loadJSON("/data/segond_1910.json");
 
   const mapBookName = new Map();
@@ -261,7 +269,7 @@ async function init() {
     shareVerse(bookObj.name, bookObj.slug, chapter, verse, verseText);
   });
 
-  // Open by URL
+  // Open by URL /slug/chapter
   const wanted = parsePath();
   if (wanted) {
     const foundBook = books.find(b => b.slug === wanted.bookSlug);
@@ -310,6 +318,7 @@ function render(bookNum, chapNum, opts = { updateURL: true }) {
 
   $("content").innerHTML = verses.map(v => {
     const vid = `v${v.verse}`;
+    // texto seguro para atributo HTML
     const safeAttr = escapeHTML(v.text).replaceAll('"', "&quot;");
     return `
       <p id="${vid}">

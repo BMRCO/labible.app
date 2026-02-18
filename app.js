@@ -7,8 +7,8 @@ async function loadJSON(path) {
 }
 
 let DB = null;
-let books = [];                 // [{book:1,name:"Genèse",slug:"genese"}]
-let chaptersByBook = new Map(); // book -> Set(chapters)
+let books = [];
+let chaptersByBook = new Map();
 let CURRENT = { book: 1, chapter: 1 };
 
 function escapeHTML(s){
@@ -41,10 +41,15 @@ function parsePath() {
   return null;
 }
 
+/**
+ * ✅ FIX: preserva o #vX quando existir
+ */
 function updateUrl(bookNum, chapNum) {
   const b = books.find(x => x.book === bookNum);
   if (!b) return;
-  history.replaceState(null, "", `/${b.slug}/${chapNum}`);
+
+  const h = (location.hash && location.hash.startsWith("#v")) ? location.hash : "";
+  history.replaceState(null, "", `/${b.slug}/${chapNum}${h}`);
 }
 
 /* ---------------- Theme ---------------- */
@@ -76,7 +81,6 @@ async function shareVerse(bookName, bookSlug, chapter, verse, verseText) {
   const url = `${location.origin}/${bookSlug}/${chapter}#v${verse}`;
   const full = `${bookName} ${chapter}:${verse}\n\n${verseText}\n\n${url}`;
 
-  // Share nativo (Android)
   try {
     if (navigator.share) {
       await navigator.share({ title: "La Bible", text: full, url });
@@ -84,7 +88,6 @@ async function shareVerse(bookName, bookSlug, chapter, verse, verseText) {
     }
   } catch (_) {}
 
-  // Copiar para clipboard (fallback)
   try {
     await navigator.clipboard.writeText(full);
     alert("Texte + lien copiés ✅");
@@ -220,7 +223,7 @@ async function init() {
   applyThemeFromStorage();
   setupThemeToggle();
 
-  // ✅ caminho ABSOLUTO (resolve /genese/1)
+  // ✅ caminho absoluto
   DB = await loadJSON("/data/segond_1910.json");
 
   const mapBookName = new Map();
@@ -300,6 +303,8 @@ function onBookChange(bookNum, opts = { updateURL: true }) {
 
   const firstChap = chaps[0];
   chapSel.value = String(firstChap);
+  // quando muda pelo select, limpa hash (porque é navegação normal)
+  if (location.hash) history.replaceState(null, "", `/${books.find(x=>x.book===bookNum)?.slug || ""}/${firstChap}`);
   render(bookNum, firstChap, { updateURL: opts.updateURL });
 }
 
@@ -318,7 +323,6 @@ function render(bookNum, chapNum, opts = { updateURL: true }) {
 
   $("content").innerHTML = verses.map(v => {
     const vid = `v${v.verse}`;
-    // texto seguro para atributo HTML
     const safeAttr = escapeHTML(v.text).replaceAll('"', "&quot;");
     return `
       <p id="${vid}">
@@ -335,12 +339,14 @@ function render(bookNum, chapNum, opts = { updateURL: true }) {
     `;
   }).join("");
 
-  if (opts.updateURL) updateUrl(bookNum, chapNum);
-
+  // ✅ PRIMEIRO rola pro versículo se tiver hash
   if (location.hash && location.hash.startsWith("#v")) {
     const el = document.querySelector(location.hash);
     if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
   }
+
+  // ✅ DEPOIS atualiza URL preservando #vX
+  if (opts.updateURL) updateUrl(bookNum, chapNum);
 
   $("results").classList.add("hidden");
 }

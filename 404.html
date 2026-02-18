@@ -3,17 +3,17 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>La Bible – Louis Segond 1910</title>
 
-  <title>Bible en ligne – Louis Segond 1910 (LSG) | La Bible complète en français</title>
-  <meta name="description" content="Lire la Bible en ligne gratuitement – Louis Segond 1910 (LSG). Recherche rapide, favoris et partage de versets." />
-  <link rel="canonical" href="https://labible.app/" />
-
+  <!-- ✅ CSS correto -->
   <link rel="stylesheet" href="/style.css" />
+
+  <!-- (opcional) PWA -->
   <link rel="manifest" href="/manifest.webmanifest">
   <meta name="theme-color" content="#0b0f14">
 </head>
-
 <body>
+
   <header class="topbar">
     <div class="brand">
       <div class="logo">📖</div>
@@ -22,8 +22,7 @@
         <div class="subtitle">Louis Segond 1910</div>
       </div>
     </div>
-
-    <button id="toggleTheme" class="iconbtn" title="Mode sombre">🌙</button>
+    <button id="toggleTheme" class="iconbtn">🌙</button>
   </header>
 
   <main class="wrap">
@@ -33,13 +32,12 @@
           <label for="book">Livre</label>
           <select id="book"></select>
         </div>
-
         <div class="field">
           <label for="chap">Chapitre</label>
           <select id="chap"></select>
         </div>
-
         <div class="actions">
+          <button id="btnSelectMode" class="btn btn-secondary">☑ Sélection</button>
           <button id="btnFav" class="btn">★ Favori</button>
           <button id="btnShowFav" class="btn btn-secondary">Voir favoris</button>
         </div>
@@ -54,7 +52,7 @@
       <div id="results" class="results hidden">
         <div class="resultshead">
           <h3>Résultats</h3>
-          <button id="btnCloseResults" class="iconbtn" title="Fermer">✕</button>
+          <button id="btnCloseResults" class="iconbtn">✕</button>
         </div>
         <div id="hits"></div>
       </div>
@@ -63,7 +61,7 @@
     <section class="card reader">
       <div class="readerhead">
         <h2 id="title">—</h2>
-        <div class="hint">Cliquez sur 🔗 pour partager un verset.</div>
+        <div class="hint">🔗 partager 1 verset • ☑ sélectionner plusieurs</div>
       </div>
       <div id="content" class="content"></div>
     </section>
@@ -71,18 +69,28 @@
     <section id="favBox" class="card favbox hidden">
       <div class="favhead">
         <h3>Favoris</h3>
-        <button id="btnCloseFav" class="iconbtn" title="Fermer">✕</button>
+        <button id="btnCloseFav" class="iconbtn">✕</button>
       </div>
       <div id="favList"></div>
     </section>
   </main>
 
-  <script src="/app.js"></script>
+  <div id="multiBar" class="multibar hidden">
+    <div class="multibar-left">
+      <div id="multiCount" class="multibar-count">0 sélectionné</div>
+      <div class="multibar-hint">Touchez les versets pour sélectionner</div>
+    </div>
+    <div class="multibar-actions">
+      <button id="btnMultiShare" class="btn">Partager</button>
+      <button id="btnMultiCopy" class="btn btn-secondary">Copier</button>
+      <button id="btnMultiClear" class="btn btn-secondary">Effacer</button>
+    </div>
+  </div>
 
+  <!-- ✅ JS correto -->
+  <script src="/app.js"></script>
   <script>
-    if ("serviceWorker" in navigator) {
-      navigator.serviceWorker.register("/sw.js");
-    }
+    if ("serviceWorker" in navigator) navigator.serviceWorker.register("/sw.js");
   </script>
 </body>
 </html>

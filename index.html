@@ -1,88 +1,183 @@
-<!doctype html>
-<html lang="fr">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
+:root{
+  --bg:#f7f8fb;
+  --card:#ffffff;
+  --text:#0b1220;
+  --muted:#5a6b85;
+  --border:#e5e9f2;
+  --primary:#2d6cdf;
+  --primary2:#1f56b7;
+  --shadow: 0 10px 30px rgba(10,20,40,.08);
+  --radius:16px;
+  --selbg: rgba(45,108,223,.12);
+}
 
-  <title>Bible en ligne – Louis Segond 1910 (LSG) | La Bible complète en français</title>
-  <meta name="description" content="Lire la Bible en ligne gratuitement – Louis Segond 1910 (LSG). Recherche rapide, favoris et partage de versets." />
-  <link rel="canonical" href="https://labible.app/" />
+body.dark{
+  --bg:#0b0f14;
+  --card:#121926;
+  --text:#e7eefc;
+  --muted:#9fb0cc;
+  --border:#223049;
+  --primary:#62a1ff;
+  --primary2:#3d86ff;
+  --shadow: 0 10px 30px rgba(0,0,0,.35);
+  --selbg: rgba(98,161,255,.14);
+}
 
-  <link rel="stylesheet" href="/style.css" />
-  <link rel="manifest" href="/manifest.webmanifest">
-  <meta name="theme-color" content="#0b0f14">
-</head>
+*{box-sizing:border-box}
+body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial;background:var(--bg);color:var(--text);}
 
-<body>
-  <header class="topbar">
-    <div class="brand">
-      <div class="logo">📖</div>
-      <div class="brandtext">
-        <div class="title">La Bible</div>
-        <div class="subtitle">Louis Segond 1910</div>
-      </div>
-    </div>
+.topbar{
+  position:sticky; top:0; z-index:10;
+  display:flex; align-items:center; justify-content:space-between;
+  padding:12px 14px;
+  background:var(--card);
+  border-bottom:1px solid var(--border);
+}
 
-    <button id="toggleTheme" class="iconbtn" title="Mode sombre">🌙</button>
-  </header>
+.brand{display:flex; gap:10px; align-items:center}
+.logo{font-size:22px}
+.brandtext .title{font-weight:900; line-height:1.1}
+.brandtext .subtitle{font-size:12px; color:var(--muted)}
 
-  <main class="wrap">
-    <section class="card">
-      <div class="controls">
-        <div class="field">
-          <label for="book">Livre</label>
-          <select id="book"></select>
-        </div>
+.iconbtn{
+  border:1px solid var(--border);
+  background:transparent;
+  color:var(--text);
+  padding:8px 10px;
+  border-radius:12px;
+  cursor:pointer;
+}
 
-        <div class="field">
-          <label for="chap">Chapitre</label>
-          <select id="chap"></select>
-        </div>
+.wrap{
+  max-width:980px;
+  margin:14px auto;
+  padding:0 12px 90px; /* ✅ espaço para a barra multi */
+  display:grid;
+  gap:12px;
+}
 
-        <div class="actions">
-          <button id="btnFav" class="btn">★ Favori</button>
-          <button id="btnShowFav" class="btn btn-secondary">Voir favoris</button>
-        </div>
-      </div>
+.card{
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  box-shadow:var(--shadow);
+  padding:12px;
+}
 
-      <div class="search">
-        <input id="q" type="search" placeholder="Rechercher (ex: amour, lumière, foi...)" />
-        <button id="btnSearch" class="btn">Chercher</button>
-        <button id="btnClear" class="btn btn-secondary">Effacer</button>
-      </div>
+.controls{
+  display:grid;
+  grid-template-columns:1fr 1fr auto;
+  gap:10px;
+  align-items:end;
+}
 
-      <div id="results" class="results hidden">
-        <div class="resultshead">
-          <h3>Résultats</h3>
-          <button id="btnCloseResults" class="iconbtn" title="Fermer">✕</button>
-        </div>
-        <div id="hits"></div>
-      </div>
-    </section>
+.field label{display:block;font-size:12px;color:var(--muted);margin:0 0 6px;}
+select,input{
+  width:100%;
+  padding:10px 12px;
+  border-radius:12px;
+  border:1px solid var(--border);
+  background:transparent;
+  color:var(--text);
+  outline:none;
+}
 
-    <section class="card reader">
-      <div class="readerhead">
-        <h2 id="title">—</h2>
-        <div class="hint">Cliquez sur 🔗 pour partager un verset.</div>
-      </div>
-      <div id="content" class="content"></div>
-    </section>
+.actions{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}
 
-    <section id="favBox" class="card favbox hidden">
-      <div class="favhead">
-        <h3>Favoris</h3>
-        <button id="btnCloseFav" class="iconbtn" title="Fermer">✕</button>
-      </div>
-      <div id="favList"></div>
-    </section>
-  </main>
+.btn{
+  padding:10px 12px;
+  border-radius:12px;
+  border:1px solid var(--primary);
+  background:var(--primary);
+  color:white;
+  cursor:pointer;
+  font-weight:700;
+}
+.btn:hover{background:var(--primary2);border-color:var(--primary2)}
+.btn.btn-secondary{background:transparent;color:var(--text);border:1px solid var(--border);}
+.btn.btn-secondary:hover{border-color:var(--primary);color:var(--primary)}
 
-  <script src="/app.js"></script>
+.search{
+  margin-top:12px;
+  display:grid;
+  grid-template-columns:1fr auto auto;
+  gap:8px;
+  align-items:center;
+}
 
-  <script>
-    if ("serviceWorker" in navigator) {
-      navigator.serviceWorker.register("/sw.js");
-    }
-  </script>
-</body>
-</html>
+.results{margin-top:12px}
+.resultshead{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:8px;}
+.results h3{margin:0}
+.hidden{display:none}
+
+.hit{border-top:1px solid var(--border);padding:10px 0;}
+.hit:first-child{border-top:none}
+.hit .ref{font-weight:900}
+.hit .txt{margin-top:6px;line-height:1.45}
+
+.readerhead{display:flex;align-items:baseline;justify-content:space-between;gap:12px;flex-wrap:wrap;}
+.readerhead h2{margin:0}
+.hint{font-size:12px;color:var(--muted)}
+
+.content p{
+  margin:10px 0;
+  line-height:1.7;
+  padding:6px 8px;
+  border-radius:12px;
+}
+.content b{
+  display:inline-block;
+  min-width:28px;
+  color:var(--primary);
+  cursor:pointer;
+}
+
+.verse.selected{
+  background:var(--selbg);
+  border:1px solid var(--border);
+}
+
+.sharebtn{
+  margin-left:10px;
+  padding:6px 10px;
+  border-radius:12px;
+  border:1px solid var(--border);
+  background:transparent;
+  color:var(--text);
+  cursor:pointer;
+}
+.sharebtn:hover{border-color:var(--primary);color:var(--primary);}
+
+.favhead{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;}
+.favhead h3{margin:0}
+.favrow{display:flex;gap:10px;align-items:center;padding:8px 0;border-top:1px solid var(--border);}
+.favrow:first-child{border-top:none}
+.favrow .title{flex:1}
+.small{font-size:12px;color:var(--muted)}
+
+/* ✅ Multi share bar */
+.multibar{
+  position:fixed;
+  left:0; right:0; bottom:0;
+  background:var(--card);
+  border-top:1px solid var(--border);
+  box-shadow:var(--shadow);
+  padding:10px 12px;
+  display:flex;
+  gap:12px;
+  align-items:center;
+  justify-content:space-between;
+  z-index:50;
+}
+
+.multibar-left{display:flex;flex-direction:column;gap:2px;}
+.multibar-count{font-weight:900;}
+.multibar-hint{font-size:12px;color:var(--muted)}
+.multibar-actions{display:flex;gap:8px;flex-wrap:wrap;}
+
+@media (max-width:720px){
+  .controls{grid-template-columns:1fr 1fr}
+  .actions{grid-column:1 / -1;justify-content:flex-start}
+  .search{grid-template-columns:1fr 1fr}
+  #btnClear{grid-column:2}
+}

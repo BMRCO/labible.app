@@ -11,6 +11,10 @@ let books = [];
 let chaptersByBook = new Map();
 let CURRENT = { book: 1, chapter: 1 };
 
+let selectionMode = false;
+// Map verseNumber -> verseText
+let selectedVerses = new Map();
+
 function escapeHTML(s){
   return String(s)
     .replaceAll("&","&amp;")
@@ -41,13 +45,10 @@ function parsePath() {
   return null;
 }
 
-/**
- * ✅ FIX: preserva o #vX quando existir
- */
 function updateUrl(bookNum, chapNum) {
   const b = books.find(x => x.book === bookNum);
   if (!b) return;
-
+  // preserva hash se for #v...
   const h = (location.hash && location.hash.startsWith("#v")) ? location.hash : "";
   history.replaceState(null, "", `/${b.slug}/${chapNum}${h}`);
 }
@@ -75,9 +76,9 @@ function setupThemeToggle(){
   });
 }
 
-/* ---------------- Share verse (texto + link) ---------------- */
+/* ---------------- Share single verse ---------------- */
 
-async function shareVerse(bookName, bookSlug, chapter, verse, verseText) {
+async function shareSingleVerse(bookName, bookSlug, chapter, verse, verseText) {
   const url = `${location.origin}/${bookSlug}/${chapter}#v${verse}`;
   const full = `${bookName} ${chapter}:${verse}\n\n${verseText}\n\n${url}`;
 
@@ -95,6 +96,95 @@ async function shareVerse(bookName, bookSlug, chapter, verse, verseText) {
   } catch (_) {}
 
   prompt("Copiez le texte :", full);
+}
+
+/* ---------------- Multi share ---------------- */
+
+function getCurrentBookObj(){
+  return books.find(b => b.book === CURRENT.book) || null;
+}
+
+function buildMultiText(){
+  const bookObj = getCurrentBookObj();
+  const bookName = bookObj?.name || "";
+  const bookSlug = bookObj?.slug || "";
+  const chapter = CURRENT.chapter;
+
+  const verses = Array.from(selectedVerses.keys()).sort((a,b)=>a-b);
+  const lines = verses.map(vn => `${bookName} ${chapter}:${vn} — ${selectedVerses.get(vn)}`);
+  const url = `${location.origin}/${bookSlug}/${chapter}`; // link do capítulo
+
+  const full = `${bookName} ${chapter}\n\n${lines.join("\n\n")}\n\n${url}`;
+  return { full, url };
+}
+
+async function shareMulti(){
+  if (!selectedVerses.size) return;
+
+  const { full, url } = buildMultiText();
+
+  try {
+    if (navigator.share) {
+      await navigator.share({ title: "La Bible", text: full, url });
+      return;
+    }
+  } catch (_) {}
+
+  try {
+    await navigator.clipboard.writeText(full);
+    alert("Texte copié ✅");
+    return;
+  } catch (_) {}
+
+  prompt("Copiez le texte :", full);
+}
+
+async function copyMulti(){
+  if (!selectedVerses.size) return;
+  const { full } = buildMultiText();
+  try {
+    await navigator.clipboard.writeText(full);
+    alert("Texte copié ✅");
+  } catch (_) {
+    prompt("Copiez le texte :", full);
+  }
+}
+
+function clearMultiSelection(){
+  selectedVerses.clear();
+  refreshSelectionUI();
+}
+
+/* ---------------- Multi bar UI ---------------- */
+
+function setSelectionMode(on){
+  selectionMode = on;
+  selectedVerses.clear();
+  refreshSelectionUI();
+
+  const btn = $("btnSelectMode");
+  btn.textContent = on ? "✅ Sélection (ON)" : "☑ Sélection";
+  btn.classList.toggle("btn-secondary", !on);
+}
+
+function refreshSelectionUI(){
+  // update selected class
+  document.querySelectorAll(".verse").forEach(p => {
+    const v = Number(p.dataset.verse);
+    p.classList.toggle("selected", selectedVerses.has(v));
+  });
+
+  // multi bar
+  const bar = $("multiBar");
+  const count = $("multiCount");
+
+  if (selectionMode && selectedVerses.size > 0) {
+    bar.classList.remove("hidden");
+    count.textContent = `${selectedVerses.size} sélectionné(s)`;
+  } else {
+    bar.classList.add("hidden");
+    count.textContent = `0 sélectionné`;
+  }
 }
 
 /* ---------------- Favoris ---------------- */
@@ -223,7 +313,6 @@ async function init() {
   applyThemeFromStorage();
   setupThemeToggle();
 
-  // ✅ caminho absoluto
   DB = await loadJSON("/data/segond_1910.json");
 
   const mapBookName = new Map();
@@ -256,20 +345,43 @@ async function init() {
   const closeResultsBtn = $("btnCloseResults");
   if (closeResultsBtn) closeResultsBtn.onclick = () => $("results").classList.add("hidden");
 
-  // Delegation share
+  // ✅ selection mode
+  $("btnSelectMode").onclick = () => setSelectionMode(!selectionMode);
+
+  // multi bar buttons
+  $("btnMultiShare").onclick = shareMulti;
+  $("btnMultiCopy").onclick = copyMulti;
+  $("btnMultiClear").onclick = clearMultiSelection;
+
+  // clicks in content (single share OR select verse)
   $("content").addEventListener("click", (e) => {
-    const btn = e.target.closest(".sharebtn");
-    if (!btn) return;
+    const shareBtn = e.target.closest(".sharebtn");
+    if (shareBtn) {
+      // se está em modo seleção, ignorar share individual (para não atrapalhar)
+      if (selectionMode) return;
 
-    const bookNum = Number(btn.dataset.book);
-    const chapter = Number(btn.dataset.chapter);
-    const verse = Number(btn.dataset.verse);
-    const verseText = btn.dataset.text || "";
+      const bookNum = Number(shareBtn.dataset.book);
+      const chapter = Number(shareBtn.dataset.chapter);
+      const verse = Number(shareBtn.dataset.verse);
+      const verseText = shareBtn.dataset.text || "";
 
-    const bookObj = books.find(b => b.book === bookNum);
-    if (!bookObj) return;
+      const bookObj = books.find(b => b.book === bookNum);
+      if (!bookObj) return;
 
-    shareVerse(bookObj.name, bookObj.slug, chapter, verse, verseText);
+      shareSingleVerse(bookObj.name, bookObj.slug, chapter, verse, verseText);
+      return;
+    }
+
+    // seleção ao tocar no versículo
+    if (selectionMode) {
+      const p = e.target.closest(".verse");
+      if (!p) return;
+      const v = Number(p.dataset.verse);
+      const t = p.dataset.text || "";
+      if (selectedVerses.has(v)) selectedVerses.delete(v);
+      else selectedVerses.set(v, t);
+      refreshSelectionUI();
+    }
   });
 
   // Open by URL /slug/chapter
@@ -303,8 +415,10 @@ function onBookChange(bookNum, opts = { updateURL: true }) {
 
   const firstChap = chaps[0];
   chapSel.value = String(firstChap);
-  // quando muda pelo select, limpa hash (porque é navegação normal)
-  if (location.hash) history.replaceState(null, "", `/${books.find(x=>x.book===bookNum)?.slug || ""}/${firstChap}`);
+
+  // muda de capítulo -> sai do modo seleção e limpa seleção
+  setSelectionMode(false);
+
   render(bookNum, firstChap, { updateURL: opts.updateURL });
 }
 
@@ -325,7 +439,7 @@ function render(bookNum, chapNum, opts = { updateURL: true }) {
     const vid = `v${v.verse}`;
     const safeAttr = escapeHTML(v.text).replaceAll('"', "&quot;");
     return `
-      <p id="${vid}">
+      <p id="${vid}" class="verse" data-verse="${v.verse}" data-text="${safeAttr}">
         <b>${v.verse}</b>
         ${escapeHTML(v.text)}
         <button type="button"
@@ -339,16 +453,15 @@ function render(bookNum, chapNum, opts = { updateURL: true }) {
     `;
   }).join("");
 
-  // ✅ PRIMEIRO rola pro versículo se tiver hash
   if (location.hash && location.hash.startsWith("#v")) {
     const el = document.querySelector(location.hash);
     if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
   }
 
-  // ✅ DEPOIS atualiza URL preservando #vX
   if (opts.updateURL) updateUrl(bookNum, chapNum);
 
   $("results").classList.add("hidden");
+  refreshSelectionUI();
 }
 
 init().catch(err => {

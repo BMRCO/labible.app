@@ -11,9 +11,9 @@ let books = [];
 let chaptersByBook = new Map();
 let CURRENT = { book: 1, chapter: 1 };
 
+// Multi-select
 let selectionMode = false;
-// Map verseNumber -> verseText
-let selectedVerses = new Map();
+let selectedVerses = new Map(); // verseNumber -> verseText
 
 function escapeHTML(s){
   return String(s)
@@ -45,10 +45,10 @@ function parsePath() {
   return null;
 }
 
+// ✅ preserva hash #v...
 function updateUrl(bookNum, chapNum) {
   const b = books.find(x => x.book === bookNum);
   if (!b) return;
-  // preserva hash se for #v...
   const h = (location.hash && location.hash.startsWith("#v")) ? location.hash : "";
   history.replaceState(null, "", `/${b.slug}/${chapNum}${h}`);
 }
@@ -76,32 +76,33 @@ function setupThemeToggle(){
   });
 }
 
-/* ---------------- Share single verse ---------------- */
+/* ---------------- Share (single + multi) ---------------- */
 
-async function shareSingleVerse(bookName, bookSlug, chapter, verse, verseText) {
-  const url = `${location.origin}/${bookSlug}/${chapter}#v${verse}`;
-  const full = `${bookName} ${chapter}:${verse}\n\n${verseText}\n\n${url}`;
+function getCurrentBookObj(){
+  return books.find(b => b.book === CURRENT.book) || null;
+}
 
+async function shareText(fullText, url) {
   try {
     if (navigator.share) {
-      await navigator.share({ title: "La Bible", text: full, url });
+      await navigator.share({ title: "La Bible", text: fullText, url });
       return;
     }
   } catch (_) {}
 
   try {
-    await navigator.clipboard.writeText(full);
-    alert("Texte + lien copiés ✅");
+    await navigator.clipboard.writeText(fullText);
+    alert("Texte copié ✅");
     return;
   } catch (_) {}
 
-  prompt("Copiez le texte :", full);
+  prompt("Copiez le texte :", fullText);
 }
 
-/* ---------------- Multi share ---------------- */
-
-function getCurrentBookObj(){
-  return books.find(b => b.book === CURRENT.book) || null;
+async function shareSingleVerse(bookName, bookSlug, chapter, verse, verseText) {
+  const url = `${location.origin}/${bookSlug}/${chapter}#v${verse}`;
+  const full = `${bookName} ${chapter}:${verse}\n\n${verseText}\n\n${url}`;
+  await shareText(full, url);
 }
 
 function buildMultiText(){
@@ -112,7 +113,7 @@ function buildMultiText(){
 
   const verses = Array.from(selectedVerses.keys()).sort((a,b)=>a-b);
   const lines = verses.map(vn => `${bookName} ${chapter}:${vn} — ${selectedVerses.get(vn)}`);
-  const url = `${location.origin}/${bookSlug}/${chapter}`; // link do capítulo
+  const url = `${location.origin}/${bookSlug}/${chapter}`;
 
   const full = `${bookName} ${chapter}\n\n${lines.join("\n\n")}\n\n${url}`;
   return { full, url };
@@ -120,23 +121,8 @@ function buildMultiText(){
 
 async function shareMulti(){
   if (!selectedVerses.size) return;
-
   const { full, url } = buildMultiText();
-
-  try {
-    if (navigator.share) {
-      await navigator.share({ title: "La Bible", text: full, url });
-      return;
-    }
-  } catch (_) {}
-
-  try {
-    await navigator.clipboard.writeText(full);
-    alert("Texte copié ✅");
-    return;
-  } catch (_) {}
-
-  prompt("Copiez le texte :", full);
+  await shareText(full, url);
 }
 
 async function copyMulti(){
@@ -155,7 +141,7 @@ function clearMultiSelection(){
   refreshSelectionUI();
 }
 
-/* ---------------- Multi bar UI ---------------- */
+/* ---------------- Multi UI helpers ---------------- */
 
 function setSelectionMode(on){
   selectionMode = on;
@@ -163,20 +149,18 @@ function setSelectionMode(on){
   refreshSelectionUI();
 
   const btn = $("btnSelectMode");
-  btn.textContent = on ? "✅ Sélection (ON)" : "☑ Sélection";
-  btn.classList.toggle("btn-secondary", !on);
+  if (btn) btn.textContent = on ? "✅ Sélection (ON)" : "☑ Sélection";
 }
 
 function refreshSelectionUI(){
-  // update selected class
   document.querySelectorAll(".verse").forEach(p => {
     const v = Number(p.dataset.verse);
     p.classList.toggle("selected", selectedVerses.has(v));
   });
 
-  // multi bar
   const bar = $("multiBar");
   const count = $("multiCount");
+  if (!bar || !count) return;
 
   if (selectionMode && selectedVerses.size > 0) {
     bar.classList.remove("hidden");
@@ -222,16 +206,18 @@ function toggleFavoriteCurrent() {
 
 function openFavorites() {
   renderFavorites();
-  $("favBox").classList.remove("hidden");
+  $("favBox")?.classList.remove("hidden");
 }
 
 function closeFavorites() {
-  $("favBox").classList.add("hidden");
+  $("favBox")?.classList.add("hidden");
 }
 
 function renderFavorites() {
   const list = $("favList");
   const favs = getFavs();
+
+  if (!list) return;
 
   if (!favs.length) {
     list.innerHTML = `<p>Aucun favori.</p>`;
@@ -272,7 +258,7 @@ function renderFavorites() {
 /* ---------------- Search ---------------- */
 
 function doSearch() {
-  const qRaw = $("q").value.trim();
+  const qRaw = $("q")?.value?.trim() || "";
   const q = normalize(qRaw);
   if (!q) return;
 
@@ -286,7 +272,7 @@ function doSearch() {
     }
   }
 
-  $("results").classList.remove("hidden");
+  $("results")?.classList.remove("hidden");
 
   if (!hits.length) {
     $("hits").innerHTML = `<p>Aucun résultat pour <b>${escapeHTML(qRaw)}</b>.</p>`;
@@ -302,9 +288,9 @@ function doSearch() {
 }
 
 function clearSearch(){
-  $("q").value = "";
-  $("results").classList.add("hidden");
-  $("hits").innerHTML = "";
+  if ($("q")) $("q").value = "";
+  $("results")?.classList.add("hidden");
+  if ($("hits")) $("hits").innerHTML = "";
 }
 
 /* ---------------- Reading ---------------- */
@@ -345,34 +331,30 @@ async function init() {
   const closeResultsBtn = $("btnCloseResults");
   if (closeResultsBtn) closeResultsBtn.onclick = () => $("results").classList.add("hidden");
 
-  // ✅ selection mode
-  $("btnSelectMode").onclick = () => setSelectionMode(!selectionMode);
+  // Selection mode
+  const btnSel = $("btnSelectMode");
+  if (btnSel) btnSel.onclick = () => setSelectionMode(!selectionMode);
 
-  // multi bar buttons
+  // Multi bar actions
   $("btnMultiShare").onclick = shareMulti;
   $("btnMultiCopy").onclick = copyMulti;
   $("btnMultiClear").onclick = clearMultiSelection;
 
-  // clicks in content (single share OR select verse)
+  // Click handling in content
   $("content").addEventListener("click", (e) => {
     const shareBtn = e.target.closest(".sharebtn");
     if (shareBtn) {
-      // se está em modo seleção, ignorar share individual (para não atrapalhar)
-      if (selectionMode) return;
-
+      if (selectionMode) return; // não partilha individual em modo seleção
       const bookNum = Number(shareBtn.dataset.book);
       const chapter = Number(shareBtn.dataset.chapter);
       const verse = Number(shareBtn.dataset.verse);
       const verseText = shareBtn.dataset.text || "";
-
       const bookObj = books.find(b => b.book === bookNum);
       if (!bookObj) return;
-
       shareSingleVerse(bookObj.name, bookObj.slug, chapter, verse, verseText);
       return;
     }
 
-    // seleção ao tocar no versículo
     if (selectionMode) {
       const p = e.target.closest(".verse");
       if (!p) return;
@@ -398,7 +380,6 @@ async function init() {
         $("chap").value = String(chapOk);
         render(foundBook.book, chapOk, { updateURL: true });
       }, 0);
-
       return;
     }
   }
@@ -416,7 +397,7 @@ function onBookChange(bookNum, opts = { updateURL: true }) {
   const firstChap = chaps[0];
   chapSel.value = String(firstChap);
 
-  // muda de capítulo -> sai do modo seleção e limpa seleção
+  // troca capítulo -> sai do modo seleção
   setSelectionMode(false);
 
   render(bookNum, firstChap, { updateURL: opts.updateURL });
@@ -453,6 +434,7 @@ function render(bookNum, chapNum, opts = { updateURL: true }) {
     `;
   }).join("");
 
+  // rolar para hash se existir
   if (location.hash && location.hash.startsWith("#v")) {
     const el = document.querySelector(location.hash);
     if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -460,7 +442,7 @@ function render(bookNum, chapNum, opts = { updateURL: true }) {
 
   if (opts.updateURL) updateUrl(bookNum, chapNum);
 
-  $("results").classList.add("hidden");
+  $("results")?.classList.add("hidden");
   refreshSelectionUI();
 }
 

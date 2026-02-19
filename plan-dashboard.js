@@ -24,4 +24,322 @@ function normalize(s){
 function slugifyBookName(name) {
   return normalize(name)
     .replace(/['’]/g, "")
-    .replace(/[^a-z0-9]+/g
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/-+/g, "-")
+    .replace(/^-|-$/g, "");
+}
+
+function fmtDate(d){
+  const y = d.getFullYear();
+  const m = String(d.getMonth()+1).padStart(2,"0");
+  const da = String(d.getDate()).padStart(2,"0");
+  return `${y}-${m}-${da}`;
+}
+
+function daysBetween(d0, d1){
+  // UTC noon to avoid DST issues
+  const a = Date.UTC(d0.getFullYear(), d0.getMonth(), d0.getDate(), 12,0,0);
+  const b = Date.UTC(d1.getFullYear(), d1.getMonth(), d1.getDate(), 12,0,0);
+  return Math.floor((b - a) / 86400000);
+}
+
+/* ---------------- Storage ---------------- */
+const STORAGE = "labible_plan_dashboard_v2";
+// { startDate:"YYYY-MM-DD", doneDays:{ "0":true, "1":true, ... } }
+
+function getState(){
+  try { return JSON.parse(localStorage.getItem(STORAGE)) || { startDate:null, doneDays:{} }; }
+  catch { return { startDate:null, doneDays:{} }; }
+}
+function saveState(st){ localStorage.setItem(STORAGE, JSON.stringify(st)); }
+function resetState(){ localStorage.removeItem(STORAGE); }
+
+function isDone(dayIndex){
+  const st = getState();
+  return !!st.doneDays[String(dayIndex)];
+}
+function setDone(dayIndex, yes){
+  const st = getState();
+  if (!st.startDate) return;
+  if (yes) st.doneDays[String(dayIndex)] = true;
+  else delete st.doneDays[String(dayIndex)];
+  saveState(st);
+}
+
+function countDone(){
+  const st = getState();
+  return Object.keys(st.doneDays || {}).length;
+}
+
+/* ---------------- Plan builder from DB ---------------- */
+function bookOrderFromDB(DB){
+  const mapName = new Map();
+  const mapChapters = new Map();
+
+  for (const v of DB.verses){
+    if (!mapName.has(v.book)) mapName.set(v.book, v.book_name);
+    if (!mapChapters.has(v.book)) mapChapters.set(v.book, new Set());
+    mapChapters.get(v.book).add(v.chapter);
+  }
+
+  return Array.from(mapName.entries())
+    .map(([book, name]) => {
+      const slug = slugifyBookName(name);
+      const chapters = Array.from(mapChapters.get(book) || []).sort((a,b)=>a-b);
+      return { book, name, slug, chapters };
+    })
+    .sort((a,b)=>a.book - b.book);
+}
+
+function buildChapterRefs(books, bookMin, bookMax){
+  const refs = [];
+  for (const b of books){
+    if (b.book < bookMin || b.book > bookMax) continue;
+    for (const c of b.chapters){
+      refs.push({ book: b.book, bookName: b.name, bookSlug: b.slug, chapter: c });
+    }
+  }
+  return refs;
+}
+
+function buildPsalmsProverbs(books){
+  const ps = books.find(b => normalize(b.name).includes("psaume") || b.book === 19);
+  const pr = books.find(b => normalize(b.name).includes("proverbe") || b.book === 20);
+
+  const psRefs = ps ? ps.chapters.map(c => ({ book: ps.book, bookName: ps.name, bookSlug: ps.slug, chapter: c })) : [];
+  const prRefs = pr ? pr.chapters.map(c => ({ book: pr.book, bookName: pr.name, bookSlug: pr.slug, chapter: c })) : [];
+
+  const merged = [];
+  let i=0, j=0;
+  while (i < psRefs.length || j < prRefs.length){
+    if (i < psRefs.length) merged.push(psRefs[i++]);
+    if (j < prRefs.length) merged.push(prRefs[j++]);
+  }
+  return merged;
+}
+
+function buildPlan365(DB){
+  const books = bookOrderFromDB(DB);
+  const ot = buildChapterRefs(books, 1, 39);
+  const nt = buildChapterRefs(books, 40, 66);
+  const pspr = buildPsalmsProverbs(books);
+
+  const plan = [];
+  let iOT = 0, iNT = 0, iPP = 0;
+
+  for (let day=0; day<365; day++){
+    const items = [];
+
+    if (iOT < ot.length) items.push(ot[iOT++]);
+    if (iOT < ot.length) items.push(ot[iOT++]);
+
+    if (iNT < nt.length) items.push(nt[iNT++]);
+
+    if (day % 2 === 0 && iPP < pspr.length) items.push(pspr[iPP++]);
+
+    while (items.length < 3){
+      if (iOT < ot.length) items.push(ot[iOT++]);
+      else if (iNT < nt.length) items.push(nt[iNT++]);
+      else if (iPP < pspr.length) items.push(pspr[iPP++]);
+      else break;
+    }
+
+    plan.push({ day, items });
+  }
+
+  return plan;
+}
+
+function linkFor(ref){
+  return `/${ref.bookSlug}/${ref.chapter}`;
+}
+function labelFor(ref){
+  return `${ref.bookName} ${ref.chapter}`;
+}
+
+/* ---------------- UI ---------------- */
+let PLAN = null; // array[365]
+let TODAY_INDEX = 0;
+
+function computeTodayIndex(){
+  const st = getState();
+  if (!st.startDate) return 0;
+  const start = new Date(st.startDate + "T00:00:00");
+  const today = new Date();
+  let idx = daysBetween(start, today);
+  if (idx < 0) idx = 0;
+  if (idx > 364) idx = 364;
+  return idx;
+}
+
+function updateHeader(){
+  const st = getState();
+
+  if (!st.startDate){
+    $("currentDay").textContent = "—";
+    $("progressStats").textContent = "0 / 365";
+    $("streakCount").textContent = "0 jours";
+    $("progressBar").style.width = "0%";
+    return;
+  }
+
+  TODAY_INDEX = computeTodayIndex();
+
+  $("currentDay").textContent = `Jour ${TODAY_INDEX + 1}`;
+  const done = countDone();
+  $("progressStats").textContent = `${done} / 365`;
+
+  const pct = Math.round((done / 365) * 100);
+  $("progressBar").style.width = `${pct}%`;
+
+  // streak = consecutivos a partir de hoje para trás
+  let streak = 0;
+  for (let i = TODAY_INDEX; i >= 0; i--){
+    if (isDone(i)) streak++;
+    else break;
+  }
+  $("streakCount").textContent = `${streak} jours`;
+}
+
+function renderToday(){
+  const st = getState();
+  const box = $("todayBox");
+
+  if (!st.startDate){
+    box.innerHTML = `
+      <div style="font-weight:900;font-size:16px;">🚀 Commencer</div>
+      <div style="color:var(--muted);margin-top:6px;">
+        Cliquez sur “Commencer aujourd’hui” pour démarrer le plan. Votre progression reste sur votre appareil.
+      </div>
+    `;
+    return;
+  }
+
+  const day = PLAN[TODAY_INDEX];
+  const done = isDone(TODAY_INDEX);
+
+  const start = new Date(st.startDate + "T00:00:00");
+  const today = new Date();
+
+  const cards = day.items.map(ref => {
+    const href = linkFor(ref);
+    return `
+      <div class="card" style="padding:12px;margin-top:10px;">
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;">
+          <div style="font-weight:900;">${escapeHTML(labelFor(ref))}</div>
+          <a class="btn btn-secondary" href="${href}">Lire</a>
+        </div>
+        <div style="color:var(--muted);font-size:13px;margin-top:6px;">
+          https://labible.app${href}
+        </div>
+      </div>
+    `;
+  }).join("");
+
+  box.innerHTML = `
+    <div style="display:flex;justify-content:space-between;gap:12px;align-items:flex-start;flex-wrap:wrap;">
+      <div>
+        <div style="font-weight:900;font-size:16px;">📅 Lecture du jour</div>
+        <div style="color:var(--muted);font-size:13px;margin-top:2px;">
+          Début : ${fmtDate(start)} • Aujourd’hui : ${fmtDate(today)} • ${done ? "✅ Lu" : "⬜ Non lu"}
+        </div>
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;">
+        <button id="btnMarkToday" class="btn">${done ? "↩ Annuler" : "✅ Marquer comme lu"}</button>
+      </div>
+    </div>
+    ${cards}
+  `;
+
+  $("btnMarkToday").onclick = () => {
+    setDone(TODAY_INDEX, !done);
+    updateHeader();
+    renderToday();
+    renderPlanList(); // refresca checks
+  };
+}
+
+function renderPlanList(){
+  const st = getState();
+  const el = $("planList");
+
+  if (!st.startDate){
+    el.innerHTML = `
+      <div style="color:var(--muted);">
+        Le plan (365 jours) apparaîtra après avoir cliqué sur “Commencer aujourd’hui”.
+      </div>
+    `;
+    return;
+  }
+
+  const html = PLAN.map(d => {
+    const done = isDone(d.day);
+    const items = d.items.map(ref => `<a href="${linkFor(ref)}">${escapeHTML(labelFor(ref))}</a>`).join(" • ");
+
+    return `
+      <div style="padding:10px 0;border-top:1px solid var(--border);display:flex;gap:10px;align-items:flex-start;">
+        <div style="min-width:110px;font-weight:900;color:${done ? "var(--primary)" : "var(--muted)"};">
+          ${done ? "✅" : "⬜"} Jour ${d.day + 1}
+        </div>
+        <div style="flex:1;line-height:1.55;">
+          ${items}
+        </div>
+      </div>
+    `;
+  }).join("");
+
+  el.innerHTML = html;
+}
+
+/* ---------------- Buttons ---------------- */
+function wireButtons(){
+  $("btnStart").onclick = () => {
+    const st = getState();
+    if (!st.startDate){
+      st.startDate = fmtDate(new Date()); // YYYY-MM-DD
+      st.doneDays = {};
+      saveState(st);
+    }
+    TODAY_INDEX = computeTodayIndex();
+    updateHeader();
+    renderToday();
+    renderPlanList();
+  };
+
+  $("btnReset").onclick = () => {
+    const ok = confirm("Réinitialiser le plan (progression supprimée) ?");
+    if (!ok) return;
+    resetState();
+    updateHeader();
+    renderToday();
+    renderPlanList();
+  };
+
+  $("btnToday").onclick = () => {
+    // “Aller au jour actuel” = scroll to todayBox
+    $("todayBox").scrollIntoView({ behavior:"smooth", block:"start" });
+  };
+
+  // btnFilter vai ser no Passo 2 (non lus)
+  $("btnFilter").onclick = () => {
+    alert("Filtre “non lus” — on l’ajoute au prochain pas ✅");
+  };
+}
+
+/* ---------------- Init ---------------- */
+async function main(){
+  const DB = await loadJSON("/data/segond_1910.json");
+  PLAN = buildPlan365(DB);
+
+  TODAY_INDEX = computeTodayIndex();
+
+  wireButtons();
+  updateHeader();
+  renderToday();
+  renderPlanList();
+}
+
+main().catch(err => {
+  console.error(err);
+  document.body.innerHTML = `<pre style="color:red;white-space:pre-wrap">${escapeHTML(err.message)}</pre>`;
+});

@@ -4,186 +4,85 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
 
-  <title>Bible en ligne – Louis Segond 1910 (LSG) | La Bible complète en français</title>
-  <meta name="description" content="Lire la Bible en ligne gratuitement – Louis Segond 1910 (LSG). Recherche rapide, favoris, partage et plan de lecture en 1 an sur LaBible.app." />
-  <link rel="canonical" href="https://labible.app/" />
+  <title>Bible en ligne – Louis Segond 1910 (LSG) | LaBible.app</title>
+  <meta name="description" content="Lire la Bible en ligne gratuitement – Louis Segond 1910 (LSG). Accès complet à tous les livres, chapitres et versets avec recherche rapide sur LaBible.app." />
+  <meta name="theme-color" content="#ffffff">
 
   <link rel="stylesheet" href="/style.css" />
   <link rel="manifest" href="/manifest.webmanifest">
-  <meta name="theme-color" content="#0b0f14">
 
-  <!-- ✅ Google Analytics -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-FDT2GP8C8F"></script>
-  <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-
-    gtag('consent', 'default', { analytics_storage: 'denied' });
-    gtag('js', new Date());
-    gtag('config', 'G-FDT2GP8C8F', { anonymize_ip: true });
-  </script>
-
-  <!-- ✅ Structured Data -->
-  <script type="application/ld+json">
-  {
-    "@context": "https://schema.org",
-    "@type": "WebSite",
-    "name": "LaBible.app",
-    "url": "https://labible.app",
-    "potentialAction": {
-      "@type": "SearchAction",
-      "target": "https://labible.app/?q={search_term_string}",
-      "query-input": "required name=search_term_string"
-    }
-  }
-  </script>
-
-  <script type="application/ld+json">
-  {
-    "@context": "https://schema.org",
-    "@type": "FAQPage",
-    "mainEntity": [{
-      "@type": "Question",
-      "name": "Comment lire la Bible en ligne gratuitement ?",
-      "acceptedAnswer": {
-        "@type": "Answer",
-        "text": "Vous pouvez lire gratuitement la Bible Louis Segond 1910 sur LaBible.app, avec accès complet à tous les livres et chapitres."
-      }
-    },{
-      "@type": "Question",
-      "name": "Quelle version de la Bible est disponible ?",
-      "acceptedAnswer": {
-        "@type": "Answer",
-        "text": "La version disponible est la Bible Louis Segond 1910 (LSG), domaine public."
-      }
-    }]
-  }
-  </script>
+  <!-- SEO -->
+  <link rel="canonical" href="https://labible.app/" />
 </head>
 
 <body>
+
   <header class="topbar">
     <div class="brand">
-      <div class="logo">📖</div>
-      <div class="brandtext">
-        <div class="title">La Bible</div>
-        <div class="subtitle">Louis Segond 1910</div>
-      </div>
+      📖 LaBible.app
     </div>
-    <button id="toggleTheme" class="iconbtn" title="Mode sombre">🌙</button>
+
+    <div class="actions">
+      <button id="toggleTheme" title="Mode sombre">🌙</button>
+    </div>
   </header>
 
-  <main class="wrap">
+  <main class="container">
 
-    <section class="card">
-      <div class="controls">
-        <div class="field">
-          <label for="book">Livre</label>
-          <select id="book"></select>
-        </div>
+    <h1>La Bible – Louis Segond 1910</h1>
 
-        <div class="field">
-          <label for="chap">Chapitre</label>
-          <select id="chap"></select>
-        </div>
+    <div class="controls">
 
-        <div class="actions">
-          <button id="btnSelectMode" class="btn btn-secondary">☑ Sélection</button>
-          <button id="btnFav" class="btn">★ Favori</button>
-          <button id="btnShowFav" class="btn btn-secondary">Voir favoris</button>
-        </div>
-      </div>
+      <select id="book"></select>
 
-      <div class="search">
-        <input id="q" type="search" placeholder="Rechercher (ex: amour, foi, espérance...)" />
-        <button id="btnSearch" class="btn">Chercher</button>
-        <button id="btnClear" class="btn btn-secondary">Effacer</button>
-      </div>
+      <select id="chap"></select>
 
-      <div id="results" class="results hidden">
-        <div class="resultshead">
-          <h3>Résultats</h3>
-          <button id="btnCloseResults" class="iconbtn">✕</button>
-        </div>
-        <div id="hits"></div>
-      </div>
-    </section>
+      <button id="btnFav" class="btn">★ Favori</button>
+      <button id="btnShowFav" class="btn btn-secondary">Voir favoris</button>
 
-    <section class="card reader">
-      <div class="readerhead">
-        <h2 id="title">—</h2>
-        <div class="hint">🔗 partager • ☑ sélectionner plusieurs</div>
-      </div>
-      <div id="content" class="content"></div>
-    </section>
+    </div>
 
-    <section id="favBox" class="card favbox hidden">
-      <div class="favhead">
-        <h3>Favoris</h3>
-        <button id="btnCloseFav" class="iconbtn">✕</button>
-      </div>
+    <div class="search">
+
+      <input type="text" id="q" placeholder="Rechercher (ex: amour, lumière...)" />
+      <button id="btnSearch" class="btn">Chercher</button>
+      <button id="btnClear" class="btn btn-secondary">Effacer</button>
+
+    </div>
+
+    <div id="results" class="hidden">
+      <h2>Résultats</h2>
+      <button id="btnCloseResults" class="btn btn-secondary">Fermer</button>
+      <div id="hits"></div>
+    </div>
+
+    <h2 id="title"></h2>
+
+    <div id="content"></div>
+
+    <!-- Favoris -->
+    <div id="favBox" class="hidden">
+      <h2>Favoris</h2>
+      <button id="btnCloseFav" class="btn btn-secondary">Fermer</button>
       <div id="favList"></div>
-    </section>
-
-    <footer class="footer">
-      <span>Texte biblique : Louis Segond 1910 (LSG) — Domaine public.</span><br>
-      <a href="/plan-lecture-1-an.html">Plan de lecture (1 an)</a> |
-      <a href="/a-propos.html">À propos</a> |
-      <a href="/contact.html">Contact</a> |
-      <a href="/confidentialite.html">Confidentialité</a> |
-      <a href="/mentions-legales.html">Mentions légales</a> |
-      <a href="/conditions.html">Conditions</a>
-    </footer>
+    </div>
 
   </main>
 
-  <!-- Cookie Banner -->
-  <div id="cookieBox" style="position:fixed;left:12px;right:12px;bottom:12px;padding:12px;border-radius:12px;background:#111;color:#fff;z-index:9999;display:none">
-    <div style="font-weight:700;margin-bottom:6px">Cookies</div>
-    <div style="font-size:13px;opacity:.9;margin-bottom:10px">
-      Nous utilisons Google Analytics pour mesurer l’audience.
-    </div>
-    <button id="cookieAccept" style="padding:10px 12px;border-radius:10px;border:0;font-weight:700">Accepter</button>
-    <button id="cookieRefuse" style="padding:10px 12px;border-radius:10px;border:0;margin-left:8px">Refuser</button>
-  </div>
+  <footer style="margin-top:40px;text-align:center;font-size:13px;color:var(--muted);">
+    <p>
+      Texte biblique : Louis Segond 1910 – Domaine public.
+    </p>
+    <p>
+      <a href="/plan-lecture-1-an.html">Plan de lecture 1 an</a> |
+      <a href="/a-propos.html">À propos</a> |
+      <a href="/confidentialite.html">Confidentialité</a> |
+      <a href="/contact.html">Contact</a>
+    </p>
+  </footer>
 
+  <!-- ⚠️ IMPORTANT : seulement app.js ici -->
   <script src="/app.js"></script>
 
-  <script>
-    if ("serviceWorker" in navigator) {
-      navigator.serviceWorker.register("/sw.js");
-    }
-
-    (function(){
-      const key = "labible_cookie_choice_v1";
-      const box = document.getElementById("cookieBox");
-      const saved = localStorage.getItem(key);
-
-      function show(){ box.style.display = "block"; }
-      function hide(){ box.style.display = "none"; }
-
-      function accept(){
-        localStorage.setItem(key, "accepted");
-        if (window.gtag) gtag('consent', 'update', { analytics_storage: 'granted' });
-        hide();
-      }
-
-      function refuse(){
-        localStorage.setItem(key, "refused");
-        hide();
-      }
-
-      if (!saved) show();
-      else if (saved === "accepted") {
-        if (window.gtag) gtag('consent', 'update', { analytics_storage: 'granted' });
-        hide();
-      } else {
-        hide();
-      }
-
-      document.getElementById("cookieAccept").onclick = accept;
-      document.getElementById("cookieRefuse").onclick = refuse;
-    })();
-  </script>
 </body>
 </html>

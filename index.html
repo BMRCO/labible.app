@@ -4,19 +4,41 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
 
+  <!-- SEO PRINCIPAL -->
   <title>Bible en ligne – Louis Segond 1910 (LSG) | LaBible.app</title>
-  <meta name="description" content="Lire la Bible en ligne gratuitement – Louis Segond 1910 (LSG). Accès complet à tous les livres, chapitres et versets avec recherche rapide sur LaBible.app." />
-  <meta name="theme-color" content="#ffffff">
-
-  <link rel="stylesheet" href="/style.css" />
-  <link rel="manifest" href="/manifest.webmanifest">
-
-  <!-- SEO -->
+  <meta name="description" content="Lire la Bible en ligne gratuitement – Louis Segond 1910 (LSG). Accès complet à tous les livres, chapitres et versets avec recherche rapide." />
+  <meta name="robots" content="index, follow" />
+  <meta name="theme-color" content="#ffffff" />
   <link rel="canonical" href="https://labible.app/" />
+
+  <!-- PWA -->
+  <link rel="manifest" href="/manifest.webmanifest" />
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="/style.css" />
+
+  <!-- STRUCTURED DATA (SEO avancé) -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "name": "LaBible.app",
+    "url": "https://labible.app/",
+    "description": "Lire la Bible en ligne gratuitement – Louis Segond 1910 (LSG). Recherche rapide, favoris et plan de lecture.",
+    "inLanguage": "fr",
+    "potentialAction": {
+      "@type": "SearchAction",
+      "target": "https://labible.app/?q={search_term_string}",
+      "query-input": "required name=search_term_string"
+    }
+  }
+  </script>
+
 </head>
 
 <body>
 
+  <!-- HEADER -->
   <header class="topbar">
     <div class="brand">
       📖 LaBible.app
@@ -27,37 +49,38 @@
     </div>
   </header>
 
+  <!-- MAIN -->
   <main class="container">
 
     <h1>La Bible – Louis Segond 1910</h1>
 
+    <!-- Sélecteurs -->
     <div class="controls">
-
       <select id="book"></select>
-
       <select id="chap"></select>
 
       <button id="btnFav" class="btn">★ Favori</button>
       <button id="btnShowFav" class="btn btn-secondary">Voir favoris</button>
-
     </div>
 
+    <!-- Recherche -->
     <div class="search">
-
       <input type="text" id="q" placeholder="Rechercher (ex: amour, lumière...)" />
       <button id="btnSearch" class="btn">Chercher</button>
       <button id="btnClear" class="btn btn-secondary">Effacer</button>
-
     </div>
 
+    <!-- Résultats -->
     <div id="results" class="hidden">
       <h2>Résultats</h2>
       <button id="btnCloseResults" class="btn btn-secondary">Fermer</button>
       <div id="hits"></div>
     </div>
 
+    <!-- Titre chapitre -->
     <h2 id="title"></h2>
 
+    <!-- Contenu -->
     <div id="content"></div>
 
     <!-- Favoris -->
@@ -69,7 +92,8 @@
 
   </main>
 
-  <footer style="margin-top:40px;text-align:center;font-size:13px;color:var(--muted);">
+  <!-- FOOTER -->
+  <footer style="margin-top:40px;text-align:center;font-size:13px;color:var(--muted);padding-bottom:30px;">
     <p>
       Texte biblique : Louis Segond 1910 – Domaine public.
     </p>
@@ -81,7 +105,7 @@
     </p>
   </footer>
 
-  <!-- ⚠️ IMPORTANT : seulement app.js ici -->
+  <!-- IMPORTANT : SEULEMENT app.js -->
   <script src="/app.js"></script>
 
 </body>

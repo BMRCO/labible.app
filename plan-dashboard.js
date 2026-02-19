@@ -1,4 +1,4 @@
-// plan-dashboard.js — Dashboard Premium (Plan 1 an) + chapitres réels
+// plan-dashboard.js — Dashboard Premium (Plan 1 an) + chapitres réels + filtre "non lus"
 // Utilise /data/segond_1910.json et les routes /{bookSlug}/{chapter}
 
 const $ = (id) => document.getElementById(id);
@@ -37,19 +37,18 @@ function fmtDate(d){
 }
 
 function daysBetween(d0, d1){
-  // UTC noon to avoid DST issues
   const a = Date.UTC(d0.getFullYear(), d0.getMonth(), d0.getDate(), 12,0,0);
   const b = Date.UTC(d1.getFullYear(), d1.getMonth(), d1.getDate(), 12,0,0);
   return Math.floor((b - a) / 86400000);
 }
 
 /* ---------------- Storage ---------------- */
-const STORAGE = "labible_plan_dashboard_v2";
-// { startDate:"YYYY-MM-DD", doneDays:{ "0":true, "1":true, ... } }
+const STORAGE = "labible_plan_dashboard_v3";
+// { startDate:"YYYY-MM-DD", doneDays:{}, filterNonLus:boolean }
 
 function getState(){
-  try { return JSON.parse(localStorage.getItem(STORAGE)) || { startDate:null, doneDays:{} }; }
-  catch { return { startDate:null, doneDays:{} }; }
+  try { return JSON.parse(localStorage.getItem(STORAGE)) || { startDate:null, doneDays:{}, filterNonLus:false }; }
+  catch { return { startDate:null, doneDays:{}, filterNonLus:false }; }
 }
 function saveState(st){ localStorage.setItem(STORAGE, JSON.stringify(st)); }
 function resetState(){ localStorage.removeItem(STORAGE); }
@@ -65,7 +64,6 @@ function setDone(dayIndex, yes){
   else delete st.doneDays[String(dayIndex)];
   saveState(st);
 }
-
 function countDone(){
   const st = getState();
   return Object.keys(st.doneDays || {}).length;
@@ -158,7 +156,7 @@ function labelFor(ref){
 }
 
 /* ---------------- UI ---------------- */
-let PLAN = null; // array[365]
+let PLAN = null;
 let TODAY_INDEX = 0;
 
 function computeTodayIndex(){
@@ -175,6 +173,9 @@ function computeTodayIndex(){
 function updateHeader(){
   const st = getState();
 
+  // sync filter button label
+  $("btnFilter").textContent = st.filterNonLus ? "Afficher tout" : "Afficher non lus";
+
   if (!st.startDate){
     $("currentDay").textContent = "—";
     $("progressStats").textContent = "0 / 365";
@@ -184,15 +185,14 @@ function updateHeader(){
   }
 
   TODAY_INDEX = computeTodayIndex();
-
   $("currentDay").textContent = `Jour ${TODAY_INDEX + 1}`;
+
   const done = countDone();
   $("progressStats").textContent = `${done} / 365`;
 
   const pct = Math.round((done / 365) * 100);
   $("progressBar").style.width = `${pct}%`;
 
-  // streak = consecutivos a partir de hoje para trás
   let streak = 0;
   for (let i = TODAY_INDEX; i >= 0; i--){
     if (isDone(i)) streak++;
@@ -209,7 +209,7 @@ function renderToday(){
     box.innerHTML = `
       <div style="font-weight:900;font-size:16px;">🚀 Commencer</div>
       <div style="color:var(--muted);margin-top:6px;">
-        Cliquez sur “Commencer aujourd’hui” pour démarrer le plan. Votre progression reste sur votre appareil.
+        Cliquez sur “Commencer aujourd’hui” pour démarrer le plan.
       </div>
     `;
     return;
@@ -255,7 +255,7 @@ function renderToday(){
     setDone(TODAY_INDEX, !done);
     updateHeader();
     renderToday();
-    renderPlanList(); // refresca checks
+    renderPlanList();
   };
 }
 
@@ -264,15 +264,13 @@ function renderPlanList(){
   const el = $("planList");
 
   if (!st.startDate){
-    el.innerHTML = `
-      <div style="color:var(--muted);">
-        Le plan (365 jours) apparaîtra après avoir cliqué sur “Commencer aujourd’hui”.
-      </div>
-    `;
+    el.innerHTML = `<div style="color:var(--muted);">Le plan apparaîtra après avoir cliqué sur “Commencer aujourd’hui”.</div>`;
     return;
   }
 
-  const html = PLAN.map(d => {
+  const days = st.filterNonLus ? PLAN.filter(d => !isDone(d.day)) : PLAN;
+
+  const html = days.map(d => {
     const done = isDone(d.day);
     const items = d.items.map(ref => `<a href="${linkFor(ref)}">${escapeHTML(labelFor(ref))}</a>`).join(" • ");
 
@@ -288,7 +286,7 @@ function renderPlanList(){
     `;
   }).join("");
 
-  el.innerHTML = html;
+  el.innerHTML = html || `<div style="color:var(--muted);padding:10px 0;">🎉 Tout est déjà marqué comme lu.</div>`;
 }
 
 /* ---------------- Buttons ---------------- */
@@ -296,11 +294,11 @@ function wireButtons(){
   $("btnStart").onclick = () => {
     const st = getState();
     if (!st.startDate){
-      st.startDate = fmtDate(new Date()); // YYYY-MM-DD
+      st.startDate = fmtDate(new Date());
       st.doneDays = {};
+      st.filterNonLus = false;
       saveState(st);
     }
-    TODAY_INDEX = computeTodayIndex();
     updateHeader();
     renderToday();
     renderPlanList();
@@ -316,13 +314,15 @@ function wireButtons(){
   };
 
   $("btnToday").onclick = () => {
-    // “Aller au jour actuel” = scroll to todayBox
     $("todayBox").scrollIntoView({ behavior:"smooth", block:"start" });
   };
 
-  // btnFilter vai ser no Passo 2 (non lus)
   $("btnFilter").onclick = () => {
-    alert("Filtre “non lus” — on l’ajoute au prochain pas ✅");
+    const st = getState();
+    st.filterNonLus = !st.filterNonLus;
+    saveState(st);
+    updateHeader();
+    renderPlanList();
   };
 }
 

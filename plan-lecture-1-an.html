@@ -3,12 +3,13 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Plan de lecture de la Bible en 1 an – LaBible.app</title>
-  <meta name="description" content="Plan de lecture biblique en 1 an (commencer aujourd’hui). Checklist, progression et liens directs vers les chapitres sur LaBible.app." />
+  <title>Plan de lecture – Dashboard | LaBible.app</title>
+  <meta name="description" content="Plan de lecture biblique en 1 an avec progression, streak et suivi automatique." />
   <link rel="stylesheet" href="/style.css" />
 </head>
 
 <body class="legal">
+
   <div class="legal-top">
     <div class="legal-brand"><a href="/">📖 LaBible.app</a></div>
     <nav class="legal-nav">
@@ -16,67 +17,58 @@
       <a href="/plan-lecture-1-an.html" aria-current="page">Plan 1 an</a>
       <a href="/a-propos.html">À propos</a>
       <a href="/contact.html">Contact</a>
-      <a href="/confidentialite.html">Confidentialité</a>
-      <a href="/mentions-legales.html">Mentions</a>
-      <a href="/conditions.html">Conditions</a>
     </nav>
   </div>
 
-  <h1>Plan de lecture – 1 an</h1>
+  <h1>📊 Plan de lecture – Dashboard</h1>
 
-  <p>
-    Commencez aujourd’hui et lisez la Bible en 1 an. Votre progression est enregistrée sur votre appareil (sans compte).
-  </p>
+  <div class="card" style="padding:16px;margin-top:12px;">
 
-  <div class="card" style="padding:14px;">
-    <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;justify-content:space-between;">
+    <div style="display:flex;flex-wrap:wrap;gap:20px;justify-content:space-between;">
+      
       <div>
-        <div style="font-weight:900;font-size:16px;">📅 Lecture du jour</div>
-        <div id="todayLabel" style="color:var(--muted);font-size:13px;margin-top:2px;">—</div>
+        <div style="font-size:13px;color:var(--muted)">Jour actuel</div>
+        <div id="currentDay" style="font-size:22px;font-weight:900">—</div>
       </div>
-      <div style="display:flex;gap:8px;flex-wrap:wrap;">
-        <button id="btnStart" class="btn">Commencer aujourd’hui</button>
-        <button id="btnReset" class="btn btn-secondary">Réinitialiser</button>
+
+      <div>
+        <div style="font-size:13px;color:var(--muted)">Progression</div>
+        <div id="progressStats" style="font-size:22px;font-weight:900">0 / 365</div>
       </div>
+
+      <div>
+        <div style="font-size:13px;color:var(--muted)">🔥 Streak</div>
+        <div id="streakCount" style="font-size:22px;font-weight:900">0 jours</div>
+      </div>
+
     </div>
 
-    <div style="margin-top:12px;">
-      <div style="display:flex;justify-content:space-between;gap:12px;align-items:center;">
-        <div style="font-weight:800;">Progression</div>
-        <div id="progressText" style="color:var(--muted);font-size:13px;">0 / 365</div>
-      </div>
-      <div style="height:10px;border-radius:999px;background:rgba(0,0,0,.08);overflow:hidden;border:1px solid var(--border);margin-top:8px;">
-        <div id="progressBar" style="height:100%;width:0%;background:var(--primary);"></div>
-      </div>
+    <div style="margin-top:15px;height:12px;border-radius:999px;background:rgba(0,0,0,.08);overflow:hidden;border:1px solid var(--border);">
+      <div id="progressBar" style="height:100%;width:0%;background:var(--primary);transition:width .6s ease;"></div>
     </div>
 
-    <div id="todayBox" style="margin-top:14px;"></div>
-
-    <div style="margin-top:14px;display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
-      <button id="btnMarkDone" class="btn">✅ Marquer comme lu</button>
-      <button id="btnUnmarkDone" class="btn btn-secondary">↩ Annuler</button>
-      <span id="doneHint" style="color:var(--muted);font-size:13px;"></span>
+    <div style="margin-top:15px;display:flex;gap:10px;flex-wrap:wrap;">
+      <button id="btnToday" class="btn">Aller au jour actuel</button>
+      <button id="btnStart" class="btn btn-secondary">Commencer aujourd’hui</button>
+      <button id="btnReset" class="btn btn-secondary">Réinitialiser</button>
+      <button id="btnFilter" class="btn btn-secondary">Afficher non lus</button>
     </div>
+
   </div>
 
-  <div class="card" style="padding:14px;">
-    <div style="display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap;">
-      <div style="font-weight:900;">📋 Plan (365 jours)</div>
-      <div style="color:var(--muted);font-size:13px;">
-        Astuce : utilisez “Marquer comme lu” chaque jour.
-      </div>
-    </div>
-    <div id="planList" style="margin-top:10px;"></div>
+  <div class="card" style="padding:16px;margin-top:14px;">
+    <div id="todayBox"></div>
   </div>
 
-  <p style="margin-top:18px;">
+  <div class="card" style="padding:16px;margin-top:14px;">
+    <div id="planList"></div>
+  </div>
+
+  <p style="margin-top:20px;">
     <a href="/">← Retour à l’accueil</a>
   </p>
 
-  <div class="legal-foot">
-    Texte biblique : Louis Segond 1910 (LSG) — Domaine public.
-  </div>
+  <script src="/plan-dashboard.js"></script>
 
-  <script src="/plan-lecture.js"></script>
 </body>
 </html>

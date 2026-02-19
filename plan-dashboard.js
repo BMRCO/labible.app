@@ -1,4 +1,4 @@
-// plan-dashboard.js — Dashboard Premium (Plan 1 an) + chapitres réels + filtre "non lus"
+// plan-dashboard.js — Dashboard Premium (Plan 1 an) + chapitres réels + filtre + partage
 // Utilise /data/segond_1910.json et les routes /{bookSlug}/{chapter}
 
 const $ = (id) => document.getElementById(id);
@@ -43,7 +43,7 @@ function daysBetween(d0, d1){
 }
 
 /* ---------------- Storage ---------------- */
-const STORAGE = "labible_plan_dashboard_v3";
+const STORAGE = "labible_plan_dashboard_v4";
 // { startDate:"YYYY-MM-DD", doneDays:{}, filterNonLus:boolean }
 
 function getState(){
@@ -155,6 +155,41 @@ function labelFor(ref){
   return `${ref.bookName} ${ref.chapter}`;
 }
 
+/* ---------------- Share ---------------- */
+async function shareToday(dayIndex, items){
+  const dayNumber = dayIndex + 1;
+
+  const lines = items.map(ref => {
+    const href = linkFor(ref);
+    return `- ${labelFor(ref)}: ${location.origin}${href}`;
+  }).join("\n");
+
+  const text =
+`📖 Plan de lecture (1 an) – Jour ${dayNumber}
+
+${lines}
+
+LaBible.app`;
+
+  try {
+    if (navigator.share) {
+      await navigator.share({
+        title: `Plan de lecture – Jour ${dayNumber}`,
+        text
+      });
+      return;
+    }
+  } catch (_) {}
+
+  try {
+    await navigator.clipboard.writeText(text);
+    alert("Lecture du jour copiée ✅");
+    return;
+  } catch (_) {}
+
+  prompt("Copiez le texte :", text);
+}
+
 /* ---------------- UI ---------------- */
 let PLAN = null;
 let TODAY_INDEX = 0;
@@ -172,8 +207,6 @@ function computeTodayIndex(){
 
 function updateHeader(){
   const st = getState();
-
-  // sync filter button label
   $("btnFilter").textContent = st.filterNonLus ? "Afficher tout" : "Afficher non lus";
 
   if (!st.startDate){
@@ -230,7 +263,7 @@ function renderToday(){
           <a class="btn btn-secondary" href="${href}">Lire</a>
         </div>
         <div style="color:var(--muted);font-size:13px;margin-top:6px;">
-          https://labible.app${href}
+          ${location.origin}${href}
         </div>
       </div>
     `;
@@ -245,6 +278,7 @@ function renderToday(){
         </div>
       </div>
       <div style="display:flex;gap:8px;flex-wrap:wrap;">
+        <button id="btnShareToday" class="btn btn-secondary">📤 Partager</button>
         <button id="btnMarkToday" class="btn">${done ? "↩ Annuler" : "✅ Marquer comme lu"}</button>
       </div>
     </div>
@@ -257,6 +291,8 @@ function renderToday(){
     renderToday();
     renderPlanList();
   };
+
+  $("btnShareToday").onclick = () => shareToday(TODAY_INDEX, day.items);
 }
 
 function renderPlanList(){

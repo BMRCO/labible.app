@@ -4,109 +4,126 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
 
-  <!-- SEO PRINCIPAL -->
-  <title>Bible en ligne – Louis Segond 1910 (LSG) | LaBible.app</title>
-  <meta name="description" content="Lire la Bible en ligne gratuitement – Louis Segond 1910 (LSG). Accès complet à tous les livres, chapitres et versets avec recherche rapide." />
-  <meta name="robots" content="index, follow" />
-  <meta name="theme-color" content="#ffffff" />
-  <link rel="canonical" href="https://labible.app/" />
+  <title>Bible en ligne – Louis Segond 1910 (LSG) | La Bible complète en français</title>
+  <meta name="description" content="Lire la Bible en ligne gratuitement – Louis Segond 1910 (LSG). Accès complet à tous les livres, chapitres et versets avec recherche rapide sur LaBible.app." />
 
-  <!-- PWA -->
-  <link rel="manifest" href="/manifest.webmanifest" />
+  <link rel="manifest" href="/manifest.webmanifest">
+  <meta name="theme-color" content="#0b1220" />
 
-  <!-- CSS -->
-  <link rel="stylesheet" href="/style.css" />
-
-  <!-- STRUCTURED DATA (SEO avancé) -->
-  <script type="application/ld+json">
-  {
-    "@context": "https://schema.org",
-    "@type": "WebSite",
-    "name": "LaBible.app",
-    "url": "https://labible.app/",
-    "description": "Lire la Bible en ligne gratuitement – Louis Segond 1910 (LSG). Recherche rapide, favoris et plan de lecture.",
-    "inLanguage": "fr",
-    "potentialAction": {
-      "@type": "SearchAction",
-      "target": "https://labible.app/?q={search_term_string}",
-      "query-input": "required name=search_term_string"
-    }
-  }
-  </script>
-
+  <style>
+    :root{--bg:#ffffff;--text:#0b1220;--muted:#5a6b85;--card:#f7f8fb;--border:#e5e9f2;--primary:#2d6cdf}
+    body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:var(--bg);color:var(--text)}
+    body.dark{--bg:#0b1220;--text:#f8fbff;--muted:#9ab0c8;--card:#111b2b;--border:#1f2a3d;--primary:#6ea8ff}
+    header{position:sticky;top:0;z-index:10;background:var(--bg);border-bottom:1px solid var(--border)}
+    .wrap{max-width:980px;margin:0 auto;padding:12px 12px}
+    .topbar{display:flex;align-items:center;justify-content:space-between;gap:12px}
+    .brand{display:flex;align-items:center;gap:10px}
+    .brand b{font-size:18px}
+    .muted{color:var(--muted)}
+    .btn{border:1px solid var(--border);background:var(--card);color:var(--text);padding:8px 10px;border-radius:10px;cursor:pointer}
+    .btn:active{transform:translateY(1px)}
+    .btn-primary{background:var(--primary);border-color:var(--primary);color:white}
+    .controls{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}
+    .row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+    select,input{padding:10px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--text);width:100%}
+    .actions{display:flex;gap:8px;flex-wrap:wrap}
+    main{padding:14px 12px}
+    h1{margin:10px 0 6px;font-size:22px}
+    #content p{line-height:1.55;margin:0;padding:10px;border-bottom:1px solid var(--border)}
+    #content b{margin-right:8px}
+    .sharebtn{margin-left:10px;border:1px solid var(--border);background:var(--card);color:var(--text);border-radius:10px;padding:6px 8px;cursor:pointer}
+    .box{border:1px solid var(--border);background:var(--card);border-radius:14px;padding:12px;margin-top:12px}
+    .hidden{display:none}
+    .hit{padding:10px;border-bottom:1px solid var(--border)}
+    .hit:last-child{border-bottom:none}
+    .ref{font-weight:700}
+    .favrow{display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:center;padding:10px;border-bottom:1px solid var(--border)}
+    .favrow:last-child{border-bottom:none}
+    .small{font-size:12px;color:var(--muted)}
+    footer{padding:20px 12px;color:var(--muted);text-align:center}
+    @media (max-width:720px){.controls{grid-template-columns:1fr}}
+  </style>
 </head>
 
 <body>
+  <header>
+    <div class="wrap">
+      <div class="topbar">
+        <div class="brand">
+          <b>LaBible.app</b>
+          <span class="muted">Louis Segond 1910</span>
+        </div>
 
-  <!-- HEADER -->
-  <header class="topbar">
-    <div class="brand">
-      📖 LaBible.app
-    </div>
+        <div class="actions">
+          <button id="toggleTheme" class="btn" type="button" title="Mode sombre">🌙</button>
+          <a class="btn" href="/" style="text-decoration:none;display:inline-flex;align-items:center;gap:6px">🏠 Accueil</a>
+        </div>
+      </div>
 
-    <div class="actions">
-      <button id="toggleTheme" title="Mode sombre">🌙</button>
+      <div class="controls">
+        <div class="row">
+          <div style="flex:1">
+            <label class="small">Livre</label>
+            <select id="book"></select>
+          </div>
+          <div style="width:160px;max-width:45%">
+            <label class="small">Chapitre</label>
+            <select id="chap"></select>
+          </div>
+        </div>
+
+        <div class="row">
+          <div style="flex:1">
+            <label class="small">Rechercher</label>
+            <input id="q" type="search" placeholder="Rechercher (ex: amour, lumière)" />
+          </div>
+          <div class="actions" style="align-self:end">
+            <button id="btnSearch" class="btn btn-primary" type="button">Chercher</button>
+            <button id="btnClear" class="btn" type="button">Effacer</button>
+          </div>
+        </div>
+
+        <div class="actions">
+          <button id="btnFav" class="btn" type="button">★ Favori</button>
+          <button id="btnShowFav" class="btn" type="button">Voir favoris</button>
+        </div>
+      </div>
+
+      <div id="results" class="box hidden">
+        <div class="row" style="justify-content:space-between">
+          <b>Résultats</b>
+          <button id="btnCloseResults" class="btn" type="button">✕</button>
+        </div>
+        <div id="hits"></div>
+      </div>
+
+      <div id="favBox" class="box hidden">
+        <div class="row" style="justify-content:space-between">
+          <b>Favoris</b>
+          <button id="btnCloseFav" class="btn" type="button">✕</button>
+        </div>
+        <div id="favList"></div>
+      </div>
     </div>
   </header>
 
-  <!-- MAIN -->
-  <main class="container">
-
-    <h1>La Bible – Louis Segond 1910</h1>
-
-    <!-- Sélecteurs -->
-    <div class="controls">
-      <select id="book"></select>
-      <select id="chap"></select>
-
-      <button id="btnFav" class="btn">★ Favori</button>
-      <button id="btnShowFav" class="btn btn-secondary">Voir favoris</button>
-    </div>
-
-    <!-- Recherche -->
-    <div class="search">
-      <input type="text" id="q" placeholder="Rechercher (ex: amour, lumière...)" />
-      <button id="btnSearch" class="btn">Chercher</button>
-      <button id="btnClear" class="btn btn-secondary">Effacer</button>
-    </div>
-
-    <!-- Résultats -->
-    <div id="results" class="hidden">
-      <h2>Résultats</h2>
-      <button id="btnCloseResults" class="btn btn-secondary">Fermer</button>
-      <div id="hits"></div>
-    </div>
-
-    <!-- Titre chapitre -->
-    <h2 id="title"></h2>
-
-    <!-- Contenu -->
+  <main class="wrap">
+    <h1 id="title">Chargement…</h1>
     <div id="content"></div>
-
-    <!-- Favoris -->
-    <div id="favBox" class="hidden">
-      <h2>Favoris</h2>
-      <button id="btnCloseFav" class="btn btn-secondary">Fermer</button>
-      <div id="favList"></div>
-    </div>
-
   </main>
 
-  <!-- FOOTER -->
-  <footer style="margin-top:40px;text-align:center;font-size:13px;color:var(--muted);padding-bottom:30px;">
-    <p>
-      Texte biblique : Louis Segond 1910 – Domaine public.
-    </p>
-    <p>
-      <a href="/plan-lecture-1-an.html">Plan de lecture 1 an</a> |
-      <a href="/a-propos.html">À propos</a> |
-      <a href="/confidentialite.html">Confidentialité</a> |
-      <a href="/contact.html">Contact</a>
-    </p>
+  <footer>
+    Texte biblique : Louis Segond 1910 — Domaine public.
   </footer>
 
-  <!-- IMPORTANT : SEULEMENT app.js -->
-  <script src="/app.js"></script>
+  <!-- ✅ Cache-busting: força telemóvel a apanhar a versão nova -->
+  <script src="/app.js?v=4" defer></script>
 
+  <script>
+    // PWA / Service Worker (se existir)
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker.register("/sw.js").catch(()=>{});
+    }
+  </script>
 </body>
 </html>

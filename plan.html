@@ -1,78 +1,283 @@
-<!doctype html>
-<html lang="fr">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Plan de lecture 1 an — LaBible.app | LSG 1910</title>
-  <meta name="description" content="Plan de lecture biblique en 1 an — Louis Segond 1910." />
-  <link rel="canonical" href="https://labible.app/plan.html" />
-  <meta name="theme-color" content="#0b1220" />
-  <link rel="stylesheet" href="/style.css?v=7">
-</head>
+:root{
+  --bg:#0b1220;
+  --card:rgba(255,255,255,.06);
+  --card2:rgba(255,255,255,.04);
+  --text:#eaf0ff;
+  --muted:rgba(234,240,255,.72);
+  --border:rgba(255,255,255,.10);
+  --shadow: 0 18px 45px rgba(0,0,0,.28);
 
-<body>
+  --primary:#60a5fa;
+  --primary2:#3b82f6;
 
-<header class="topbar">
-  <a class="brand" href="/">
-    <span class="brand-icon">📖</span>
-    <span class="brand-text">
-      <span class="brand-title">LaBible.app</span>
-      <span class="brand-subtitle">LSG 1910</span>
-    </span>
-  </a>
-  <button id="toggleTheme" class="iconbtn">🌙</button>
-</header>
-
-<main class="container">
-
-<section class="card">
-  <h1>📖 Plan de lecture — 365 jours</h1>
-  <p>
-    Ce plan permet de lire toute la Bible en un an.
-  </p>
-</section>
-
-<section class="card">
-  <h2>📅 Exemple semaine 1</h2>
-  <ul>
-    <li>Jour 1 — Genèse 1–3</li>
-    <li>Jour 2 — Genèse 4–7</li>
-    <li>Jour 3 — Genèse 8–11</li>
-    <li>Jour 4 — Genèse 12–15</li>
-    <li>Jour 5 — Genèse 16–18</li>
-    <li>Jour 6 — Genèse 19–21</li>
-    <li>Jour 7 — Genèse 22–24</li>
-  </ul>
-</section>
-
-</main>
-
-<footer class="footer">
-  <div class="footer-inner">
-    <a href="/">Accueil</a> •
-    <a href="/plan.html">Plan 1 an</a> •
-    <a href="/a-propos.html">À propos</a>
-  </div>
-  <div class="footer-note">
-    Texte biblique : Louis Segond 1910 — Domaine public.
-  </div>
-</footer>
-
-<script>
-const btn = document.getElementById("toggleTheme");
-if(localStorage.getItem("theme")==="dark"){
-  document.body.classList.add("dark");
+  --radius:18px;
+  --radius2:14px;
+  --pad:14px;
+  --max:920px;
 }
-if(btn){
-  btn.textContent = document.body.classList.contains("dark") ? "☀️" : "🌙";
-  btn.onclick = ()=>{
-    document.body.classList.toggle("dark");
-    localStorage.setItem("theme",
-      document.body.classList.contains("dark") ? "dark" : "light");
-    btn.textContent = document.body.classList.contains("dark") ? "☀️" : "🌙";
-  };
-}
-</script>
 
-</body>
-</html>
+body{
+  margin:0;
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  background: radial-gradient(1200px 800px at 30% -10%, rgba(59,130,246,.20), transparent 55%),
+              radial-gradient(1000px 700px at 110% 0%, rgba(96,165,250,.16), transparent 55%),
+              var(--bg);
+  color:var(--text);
+}
+
+body:not(.dark){
+  --bg:#f6f7fb;
+  --card:#ffffff;
+  --card2:#f3f4f6;
+  --text:#0b1220;
+  --muted:rgba(11,18,32,.62);
+  --border:rgba(11,18,32,.12);
+  --shadow: 0 18px 45px rgba(0,0,0,.12);
+}
+
+a{ color: var(--primary); text-decoration:none; }
+a:hover{ text-decoration:underline; }
+
+.container{
+  max-width: var(--max);
+  margin: 0 auto;
+  padding: 16px;
+}
+
+.topbar{
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  backdrop-filter: blur(12px);
+  background: rgba(11,18,32,.55);
+  border-bottom: 1px solid var(--border);
+  padding: 12px 16px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap: 12px;
+}
+
+body:not(.dark) .topbar{
+  background: rgba(255,255,255,.75);
+}
+
+.brand{
+  display:flex;
+  gap:10px;
+  align-items:center;
+  text-decoration:none;
+  color: var(--text);
+  min-width: 0;
+}
+.brand-icon{ font-size:22px; }
+.brand-text{ display:flex; flex-direction:column; line-height:1.1; min-width:0; }
+.brand-title{ font-weight:900; letter-spacing:.2px; }
+.brand-subtitle{ font-size:13px; color:var(--muted); }
+
+.top-actions{ display:flex; gap:10px; align-items:center; }
+
+.card{
+  background: var(--card);
+  border:1px solid var(--border);
+  border-radius: var(--radius);
+  padding: var(--pad);
+  box-shadow: var(--shadow);
+}
+
+.controls{ margin-bottom: 16px; }
+.reading{ margin-bottom: 16px; }
+.results{ margin-bottom: 16px; }
+
+.row{
+  display:flex;
+  gap:12px;
+  align-items:flex-end;
+  flex-wrap: wrap;
+}
+
+.field{
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+  min-width: 160px;
+  flex: 1;
+}
+
+.field label{
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+select, input[type="search"], input[type="number"], input[type="text"]{
+  width:100%;
+  padding: 12px 12px;
+  border-radius: 14px;
+  border: 1px solid var(--border);
+  background: var(--card2);
+  color: var(--text);
+  outline: none;
+}
+
+select:focus, input:focus{
+  border-color: rgba(96,165,250,.65);
+  box-shadow: 0 0 0 4px rgba(96,165,250,.18);
+}
+
+.btncol{ display:flex; flex-direction:column; gap:10px; }
+
+.btn{
+  padding: 12px 14px;
+  border-radius: 14px;
+  border: 1px solid var(--border);
+  background: rgba(255,255,255,.04);
+  color: var(--text);
+  font-weight: 800;
+  cursor:pointer;
+}
+
+.btn:hover{ filter: brightness(1.06); }
+.btn:active{ transform: translateY(1px); }
+
+.btn.primary{
+  border-color: rgba(96,165,250,.55);
+  background: linear-gradient(135deg, rgba(96,165,250,.95), rgba(59,130,246,.95));
+  color: #07101f;
+}
+
+.btn.secondary{
+  background: transparent;
+}
+
+.iconbtn{
+  width:44px;
+  height:44px;
+  border-radius: 14px;
+  border:1px solid var(--border);
+  background: rgba(255,255,255,.06);
+  color: var(--text);
+  cursor:pointer;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size: 18px;
+}
+
+.chapter-title{
+  margin: 6px 0 12px;
+  font-size: 34px;
+  letter-spacing:.2px;
+}
+
+.verses p{
+  margin: 0;
+  padding: 14px 12px;
+  border-radius: 14px;
+  border:1px solid rgba(255,255,255,.06);
+  background: rgba(255,255,255,.03);
+  line-height: 1.55;
+  display:flex;
+  gap: 12px;
+  align-items:flex-start;
+}
+
+body:not(.dark) .verses p{
+  background: rgba(11,18,32,.03);
+  border-color: rgba(11,18,32,.06);
+}
+
+.verses p + p{ margin-top: 10px; }
+
+.verses b{
+  min-width: 26px;
+  color: var(--primary);
+}
+
+.hidden{ display:none !important; }
+
+.results-head{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+}
+
+.hit{
+  margin-top: 12px;
+  padding: 12px;
+  border-radius: 14px;
+  border:1px solid var(--border);
+  background: rgba(255,255,255,.03);
+}
+
+.hit .ref{ font-weight:900; }
+.hit .txt{ margin-top:6px; color: var(--muted); }
+
+.modal{
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.55);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding: 16px;
+  z-index: 50;
+}
+
+.modal-card{
+  width: min(720px, 100%);
+  background: var(--card);
+  border:1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: var(--pad);
+}
+
+.modal-head{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+}
+
+.favrow{
+  display:flex;
+  gap:10px;
+  align-items:center;
+  justify-content:space-between;
+  border:1px solid var(--border);
+  border-radius: 14px;
+  padding: 10px 12px;
+  background: rgba(255,255,255,.03);
+  margin-top: 10px;
+}
+
+.favrow .title{
+  flex:1;
+  min-width:0;
+  font-weight: 900;
+}
+.favrow .small{
+  font-weight: 600;
+  font-size: 12px;
+  color: var(--muted);
+  margin-top:2px;
+}
+
+.footer{
+  margin-top: 24px;
+  border-top: 1px solid var(--border);
+  padding: 16px;
+  text-align:center;
+  color: var(--muted);
+}
+
+.footer-inner{ display:flex; gap:10px; justify-content:center; align-items:center; flex-wrap:wrap; }
+.footer .sep{ opacity:.7; }
+.footer-note{ margin-top: 8px; font-size: 13px; }
+
+@media (max-width: 720px){
+  .chapter-title{ font-size: 30px; }
+  .btncol{ width:100%; flex-direction:row; }
+  .btncol .btn{ flex:1; }
+}

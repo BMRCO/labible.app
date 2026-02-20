@@ -4,40 +4,23 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
 
-  <title>LaBible.app | LSG 1910</title>
-  <meta name="description" content="Lire la Bible en ligne gratuitement — Louis Segond 1910 (LSG). Accès complet à tous les livres, chapitres et versets avec recherche rapide sur LaBible.app." />
+  <title>LaBible.app | Louis Segond 1910 (LSG)</title>
+  <meta name="description" content="Lire la Bible en ligne gratuitement – Louis Segond 1910 (LSG). Accès à tous les livres, chapitres et versets avec recherche et favoris." />
 
-  <link rel="canonical" href="https://labible.app/" />
-
-  <!-- PWA -->
   <link rel="manifest" href="/manifest.webmanifest">
-  <meta name="theme-color" content="#0b1220" />
+  <meta name="theme-color" content="#0b1220">
 
-  <!-- Icons -->
-  <link rel="icon" href="/icons/icon-192.png" sizes="192x192">
-  <link rel="apple-touch-icon" href="/icons/icon-192.png">
-
-  <!-- Styles -->
-  <link rel="stylesheet" href="/style.css?v=7">
-
-  <!-- (Optionnel) Google Analytics (GA4) -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-FDT2GP8C8F"></script>
-  <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){ dataLayer.push(arguments); }
-    gtag('js', new Date());
-    gtag('config', 'G-FDT2GP8C8F');
-  </script>
+  <link rel="stylesheet" href="/style.css?v=1" />
 </head>
 
 <body>
-  <!-- Header (sem links em cima) -->
+  <!-- TOPBAR (sem links, só logo + tema) -->
   <header class="topbar">
     <a class="brand" href="/" aria-label="Accueil LaBible.app">
-      <span class="brand-icon" aria-hidden="true">📖</span>
+      <span class="brand-icon">📖</span>
       <span class="brand-text">
         <span class="brand-title">LaBible.app</span>
-        <span class="brand-subtitle">Louis Segond 1910</span>
+        <span class="brand-subtitle">LSG 1910</span>
       </span>
     </a>
 
@@ -47,7 +30,7 @@
   </header>
 
   <main class="container">
-    <!-- Controls -->
+    <!-- CONTROLES -->
     <section class="card controls">
       <div class="row">
         <div class="field">
@@ -62,74 +45,63 @@
       </div>
 
       <div class="row">
-        <div class="field grow">
-          <label for="q">Rechercher</label>
-          <input id="q" type="search" placeholder="Rechercher (ex : amour, lumière)" autocomplete="off" />
-        </div>
-
-        <div class="btncol">
-          <button id="btnSearch" class="btn primary" type="button">Chercher</button>
-          <button id="btnClear" class="btn" type="button">Effacer</button>
-        </div>
-      </div>
-
-      <div class="row">
-        <button id="btnFav" class="btn" type="button">★ Favori</button>
+        <button id="btnFav" class="btn primary" type="button">★ Favori</button>
         <button id="btnShowFav" class="btn" type="button">Voir favoris</button>
       </div>
+
+      <div class="row searchrow">
+        <div class="field grow">
+          <label for="q">Rechercher</label>
+          <input id="q" type="search" placeholder="Rechercher (ex : amour, lumière)" />
+        </div>
+        <button id="btnSearch" class="btn primary" type="button">Chercher</button>
+        <button id="btnClear" class="btn" type="button">Effacer</button>
+      </div>
     </section>
 
-    <!-- Reading -->
+    <!-- TÍTULO + TEXTO -->
     <section class="card reading">
-      <h1 id="title" class="chapter-title">—</h1>
-      <div id="content" class="verses" aria-live="polite"></div>
+      <h1 id="title" class="chapterTitle">Chargement…</h1>
+      <div id="content" class="content"></div>
     </section>
 
-    <!-- Search results -->
+    <!-- RESULTADOS -->
     <section id="results" class="card results hidden" aria-live="polite">
-      <div class="results-head">
+      <div class="resultsHead">
         <h2>Résultats</h2>
         <button id="btnCloseResults" class="iconbtn" type="button" aria-label="Fermer">✕</button>
       </div>
       <div id="hits"></div>
     </section>
 
-    <!-- Favorites modal -->
-    <section id="favBox" class="modal hidden" role="dialog" aria-modal="true" aria-label="Favoris">
-      <div class="modal-card">
-        <div class="modal-head">
-          <h2>Favoris</h2>
-          <button id="btnCloseFav" class="iconbtn" type="button" aria-label="Fermer">✕</button>
-        </div>
-        <div id="favList"></div>
+    <!-- FAVORIS -->
+    <section id="favBox" class="card fav hidden" aria-live="polite">
+      <div class="resultsHead">
+        <h2>Favoris</h2>
+        <button id="btnCloseFav" class="iconbtn" type="button" aria-label="Fermer">✕</button>
       </div>
+      <div id="favList"></div>
     </section>
   </main>
 
-  <!-- Footer (links só aqui) -->
+  <!-- FOOTER (links só aqui) -->
   <footer class="footer">
-    <div class="footer-inner">
-      <a href="/a-propos.html">À propos</a>
-      <span class="sep">•</span>
-      <a href="/plan.html">Plan de lecture (1 an)</a>
-      <span class="sep">•</span>
-      <a href="/" aria-label="Retour à l'accueil">Accueil</a>
-    </div>
-    <div class="footer-note">
-      Texte : Louis Segond 1910 (LSG) — Domaine public
+    <nav class="footlinks">
+      <a href="/" aria-label="Accueil">Accueil</a>
+      <a href="/a-propos/" aria-label="À propos">À propos</a>
+      <a href="/plan/" aria-label="Plan de lecture">Plan (365 jours)</a>
+      <a href="/confidentialite/" aria-label="Confidentialité">Confidentialité</a>
+    </nav>
+    <div class="footnote">
+      © <span id="year"></span> LaBible.app — Louis Segond 1910 (LSG)
     </div>
   </footer>
 
-  <!-- App -->
-  <script src="/app.js?v=7" defer></script>
-
-  <!-- Service Worker (se existir) -->
   <script>
-    if ("serviceWorker" in navigator) {
-      window.addEventListener("load", () => {
-        navigator.serviceWorker.register("/sw.js").catch(()=>{});
-      });
-    }
+    // petit confort (pas de dépendance)
+    document.getElementById("year").textContent = new Date().getFullYear();
   </script>
+
+  <script src="/app.js?v=1"></script>
 </body>
 </html>

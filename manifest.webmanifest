@@ -1,12 +1,139 @@
-{
-  "name": "Bible FR — Segond 1910",
-  "short_name": "Bible FR",
-  "start_url": "/",
-  "display": "standalone",
-  "background_color": "#ffffff",
-  "theme_color": "#ffffff",
-  "icons": [
-    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png" },
-    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png" }
-  ]
-}
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+
+  <title>Bible en ligne – Louis Segond 1910 (LSG) | La Bible complète en français</title>
+  <meta name="description" content="Lire la Bible en ligne gratuitement – Louis Segond 1910 (LSG). Accès complet à tous les livres, chapitres et versets avec recherche rapide sur LaBible.app." />
+
+  <link rel="manifest" href="/manifest.webmanifest">
+  <meta name="theme-color" content="#0b1220" />
+
+  <style>
+    :root{--bg:#ffffff;--text:#0b1220;--muted:#5a6b85;--card:#f7f8fb;--border:#e5e9f2;--primary:#2d6cdf}
+    body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:var(--bg);color:var(--text)}
+    body.dark{--bg:#0b1220;--text:#f8fbff;--muted:#9ab0c8;--card:#111b2b;--border:#1f2a3d;--primary:#6ea8ff}
+    header{position:sticky;top:0;z-index:10;background:var(--bg);border-bottom:1px solid var(--border)}
+    .wrap{max-width:980px;margin:0 auto;padding:12px 12px}
+    .topbar{display:flex;align-items:center;justify-content:space-between;gap:12px}
+    .brand{display:flex;align-items:center;gap:10px}
+    .brand b{font-size:18px}
+    .muted{color:var(--muted)}
+    .btn{border:1px solid var(--border);background:var(--card);color:var(--text);padding:8px 10px;border-radius:10px;cursor:pointer}
+    .btn:active{transform:translateY(1px)}
+    .btn-primary{background:var(--primary);border-color:var(--primary);color:white}
+    .controls{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}
+    .row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+    select,input{padding:10px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--text);width:100%}
+    .actions{display:flex;gap:8px;flex-wrap:wrap}
+    main{padding:14px 12px}
+    h1{margin:10px 0 6px;font-size:22px}
+    #content p{line-height:1.55;margin:0;padding:10px;border-bottom:1px solid var(--border)}
+    #content b{margin-right:8px}
+    .sharebtn{margin-left:10px;border:1px solid var(--border);background:var(--card);color:var(--text);border-radius:10px;padding:6px 8px;cursor:pointer}
+    .box{border:1px solid var(--border);background:var(--card);border-radius:14px;padding:12px;margin-top:12px}
+    .hidden{display:none}
+    .hit{padding:10px;border-bottom:1px solid var(--border)}
+    .hit:last-child{border-bottom:none}
+    .ref{font-weight:700}
+    .favrow{display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:center;padding:10px;border-bottom:1px solid var(--border)}
+    .favrow:last-child{border-bottom:none}
+    .small{font-size:12px;color:var(--muted)}
+    footer{padding:18px 12px;color:var(--muted);text-align:center;border-top:1px solid var(--border);background:var(--bg)}
+    footer a{color:inherit;text-decoration:none;border-bottom:1px dotted transparent}
+    footer a:hover{border-bottom-color:var(--muted)}
+    .footlinks{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;margin-bottom:10px}
+    @media (max-width:720px){.controls{grid-template-columns:1fr}}
+  </style>
+</head>
+
+<body>
+  <header>
+    <div class="wrap">
+      <div class="topbar">
+        <div class="brand">
+          <b>LaBible.app</b>
+          <span class="muted">Louis Segond 1910</span>
+        </div>
+
+        <div class="actions">
+          <button id="toggleTheme" class="btn" type="button" title="Mode sombre">🌙</button>
+          <a class="btn" href="/" style="text-decoration:none;display:inline-flex;align-items:center;gap:6px">🏠 Accueil</a>
+        </div>
+      </div>
+
+      <div class="controls">
+        <div class="row">
+          <div style="flex:1">
+            <label class="small">Livre</label>
+            <select id="book"></select>
+          </div>
+          <div style="width:160px;max-width:45%">
+            <label class="small">Chapitre</label>
+            <select id="chap"></select>
+          </div>
+        </div>
+
+        <div class="row">
+          <div style="flex:1">
+            <label class="small">Rechercher</label>
+            <input id="q" type="search" placeholder="Rechercher (ex: amour, lumière)" />
+          </div>
+          <div class="actions" style="align-self:end">
+            <button id="btnSearch" class="btn btn-primary" type="button">Chercher</button>
+            <button id="btnClear" class="btn" type="button">Effacer</button>
+          </div>
+        </div>
+
+        <div class="actions">
+          <button id="btnFav" class="btn" type="button">★ Favori</button>
+          <button id="btnShowFav" class="btn" type="button">Voir favoris</button>
+        </div>
+      </div>
+
+      <div id="results" class="box hidden">
+        <div class="row" style="justify-content:space-between">
+          <b>Résultats</b>
+          <button id="btnCloseResults" class="btn" type="button">✕</button>
+        </div>
+        <div id="hits"></div>
+      </div>
+
+      <div id="favBox" class="box hidden">
+        <div class="row" style="justify-content:space-between">
+          <b>Favoris</b>
+          <button id="btnCloseFav" class="btn" type="button">✕</button>
+        </div>
+        <div id="favList"></div>
+      </div>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <h1 id="title">Chargement…</h1>
+    <div id="content"></div>
+  </main>
+
+  <footer>
+    <div class="footlinks">
+      <a href="/">Accueil</a>
+      <a href="/plan-lecture-1-an.html">Plan de lecture (1 an)</a>
+      <a href="/a-propos.html">À propos</a>
+      <a href="/confidentialite.html">Confidentialité</a>
+      <a href="/contact.html">Contact</a>
+    </div>
+
+    <div>Texte biblique : Louis Segond 1910 — Domaine public.</div>
+  </footer>
+
+  <!-- ✅ cache-busting -->
+  <script src="/app.js?v=5" defer></script>
+
+  <script>
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker.register("/sw.js").catch(()=>{});
+    }
+  </script>
+</body>
+</html>

@@ -1,4 +1,4 @@
-// app.js — LaBible.app (sem sistema de partilha; copiar/colar manual)
+// app.js — LaBible.app (SEM share de versículos na página principal)
 // Rotas /livre/chapitre + favoritos + pesquisa + modo escuro
 
 const $ = (id) => document.getElementById(id);
@@ -242,7 +242,7 @@ function render(bookNum, chapNum, opts = { updateURL: true }) {
   const content = $("content");
   if (!content) return;
 
-  // ✅ Sem botões de partilha: apenas texto (selecionar e copiar)
+  // ✅ SEM botões de share. Só texto para selecionar/copy-paste.
   content.innerHTML = verses.map(v => {
     const vid = `v${v.verse}`;
     return `

@@ -1,4 +1,5 @@
-// app.js — LaBible.app (robusto: sem erros de null + suporta /livre/chapitre + share + favs + search)
+// app.js — LaBible.app (sem sistema de partilha; copiar/colar manual)
+// Rotas /livre/chapitre + favoritos + pesquisa + modo escuro
 
 const $ = (id) => document.getElementById(id);
 const on = (id, evt, fn) => {
@@ -74,27 +75,6 @@ function setupThemeToggle(){
     localStorage.setItem("theme", document.body.classList.contains("dark") ? "dark" : "light");
     syncIcon();
   });
-}
-
-/* ---------------- Share verse ---------------- */
-async function shareVerse(bookName, bookSlug, chapter, verse, verseText) {
-  const url = `${location.origin}/${bookSlug}/${chapter}#v${verse}`;
-  const full = `${bookName} ${chapter}:${verse}\n\n${verseText}\n\n${url}`;
-
-  try {
-    if (navigator.share) {
-      await navigator.share({ title: "La Bible", text: full, url });
-      return;
-    }
-  } catch (_) {}
-
-  try {
-    await navigator.clipboard.writeText(full);
-    alert("Texte + lien copiés ✅");
-    return;
-  } catch (_) {}
-
-  prompt("Copiez le texte :", full);
 }
 
 /* ---------------- Favoris ---------------- */
@@ -262,20 +242,13 @@ function render(bookNum, chapNum, opts = { updateURL: true }) {
   const content = $("content");
   if (!content) return;
 
+  // ✅ Sem botões de partilha: apenas texto (selecionar e copiar)
   content.innerHTML = verses.map(v => {
     const vid = `v${v.verse}`;
-    const safeAttr = escapeHTML(v.text).replaceAll('"', "&quot;");
     return `
       <p id="${vid}">
         <b>${v.verse}</b>
         ${escapeHTML(v.text)}
-        <button type="button"
-          class="sharebtn"
-          data-book="${bookNum}"
-          data-chapter="${chapNum}"
-          data-verse="${v.verse}"
-          data-text="${safeAttr}"
-          title="Partager">🔗</button>
       </p>
     `;
   }).join("");
@@ -296,7 +269,6 @@ async function initApp() {
   applyThemeFromStorage();
   setupThemeToggle();
 
-  // ✅ caminho ABSOLUTO (resolve /genese/1)
   DB = await loadJSON("/data/segond_1910.json");
 
   const mapBookName = new Map();
@@ -320,7 +292,6 @@ async function initApp() {
   bookSel.innerHTML = books.map(b => `<option value="${b.book}">${escapeHTML(b.name)}</option>`).join("");
   bookSel.onchange = () => onBookChange(Number(bookSel.value), { updateURL: true });
 
-  // Buttons (sem crash se faltar)
   on("btnFav", "click", toggleFavoriteCurrent);
   on("btnShowFav", "click", openFavorites);
   on("btnCloseFav", "click", closeFavorites);
@@ -329,26 +300,6 @@ async function initApp() {
   on("q", "keydown", (e) => { if (e.key === "Enter") doSearch(); });
   on("btnCloseResults", "click", () => $("results")?.classList.add("hidden"));
 
-  // Delegation share
-  const content = $("content");
-  if (content) {
-    content.addEventListener("click", (e) => {
-      const btn = e.target.closest(".sharebtn");
-      if (!btn) return;
-
-      const bookNum = Number(btn.dataset.book);
-      const chapter = Number(btn.dataset.chapter);
-      const verse = Number(btn.dataset.verse);
-      const verseText = btn.dataset.text || "";
-
-      const bookObj = books.find(b => b.book === bookNum);
-      if (!bookObj) return;
-
-      shareVerse(bookObj.name, bookObj.slug, chapter, verse, verseText);
-    });
-  }
-
-  // Open by URL /slug/chapter
   const wanted = parsePath();
   if (wanted) {
     const foundBook = books.find(b => b.slug === wanted.bookSlug);
@@ -370,7 +321,6 @@ async function initApp() {
   onBookChange(books[0].book, { updateURL: true });
 }
 
-// ✅ só começa depois do DOM pronto (evita null onclick)
 window.addEventListener("DOMContentLoaded", () => {
   initApp().catch(err => {
     console.error(err);

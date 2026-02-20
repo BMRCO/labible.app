@@ -3,64 +3,123 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>À propos – LaBible.app</title>
-  <meta name="description" content="À propos de LaBible.app : lire la Bible Louis Segond 1910 (LSG) en ligne gratuitement, avec recherche, favoris et partage de versets." />
-  <link rel="stylesheet" href="/style.css" />
+  <title>À propos — LaBible.app | LSG 1910</title>
+  <meta name="description" content="À propos de LaBible.app : Bible Louis Segond 1910 (LSG) en ligne, rapide, simple et gratuite, avec recherche, favoris et partage de versets." />
+  <meta name="robots" content="index,follow" />
+  <link rel="canonical" href="https://labible.app/a-propos.html" />
+  <meta name="theme-color" content="#0b1220" />
+
+  <style>
+    :root{--bg:#ffffff;--text:#0b1220;--muted:#5a6b85;--card:#f7f8fb;--border:#e5e9f2;--primary:#2d6cdf}
+    body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:var(--bg);color:var(--text)}
+    body.dark{--bg:#0b1220;--text:#f8fbff;--muted:#9ab0c8;--card:#111b2b;--border:#1f2a3d;--primary:#6ea8ff}
+
+    header{position:sticky;top:0;z-index:10;background:var(--bg);border-bottom:1px solid var(--border)}
+    .wrap{max-width:900px;margin:0 auto;padding:14px 12px}
+    .top{display:flex;align-items:center;justify-content:space-between;gap:10px}
+    .brand{font-weight:800;font-size:18px}
+    .muted{color:var(--muted)}
+    .btn{border:1px solid var(--border);background:var(--card);color:var(--text);padding:10px 12px;border-radius:12px;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:8px}
+    .btn-primary{background:var(--primary);border-color:var(--primary);color:#fff}
+
+    main{padding:18px 12px}
+    h1{margin:12px 0 8px;font-size:26px}
+    h2{margin:22px 0 8px;font-size:18px}
+    p,li{line-height:1.6}
+    .card{border:1px solid var(--border);background:var(--card);border-radius:16px;padding:14px;margin:14px 0}
+
+    footer{border-top:1px solid var(--border);padding:18px 12px;text-align:center;color:var(--muted);background:var(--bg)}
+    footer a{color:inherit;text-decoration:none;border-bottom:1px dotted transparent}
+    footer a:hover{border-bottom-color:var(--muted)}
+    .links{display:flex;flex-wrap:wrap;gap:12px;justify-content:center;margin-bottom:10px}
+  </style>
 </head>
 
-<body class="legal">
-  <div class="legal-top">
-    <div class="legal-brand"><a href="/">📖 LaBible.app</a></div>
-    <nav class="legal-nav">
+<body>
+  <header>
+    <div class="wrap">
+      <div class="top">
+        <div>
+          <div class="brand">LaBible.app <span class="muted">| LSG 1910</span></div>
+          <div class="muted" style="font-size:13px">Bible en ligne — rapide, simple et gratuite</div>
+        </div>
+        <button id="toggleTheme" class="btn" type="button" title="Mode sombre">🌙</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <h1>À propos</h1>
+
+    <div class="card">
+      <p>
+        <b>LaBible.app</b> permet de lire la Bible <b>Louis Segond 1910 (LSG)</b> en ligne,
+        gratuitement, avec une navigation rapide par livre et chapitre, une recherche,
+        des favoris et le partage de versets.
+      </p>
+    </div>
+
+    <h2>📖 Plan de lecture en 1 an</h2>
+    <div class="card">
+      <p>
+        Pour t’aider à lire toute la Bible en un an, nous proposons un plan de lecture simple,
+        jour par jour.
+      </p>
+      <p>
+        <a class="btn btn-primary" href="/plan-lecture-1-an.html">Ouvrir le plan de lecture (1 an)</a>
+      </p>
+    </div>
+
+    <h2>📜 Source du texte</h2>
+    <div class="card">
+      <p>
+        Texte biblique : <b>Louis Segond 1910</b> — <b>Domaine public</b>.
+      </p>
+    </div>
+
+    <h2>📩 Contact</h2>
+    <div class="card">
+      <p>
+        Une remarque, un bug, une amélioration ?
+        <br/>
+        👉 <a href="/contact.html">Page Contact</a>
+      </p>
+    </div>
+  </main>
+
+  <footer>
+    <div class="links">
       <a href="/">Accueil</a>
-      <a href="/a-propos.html" aria-current="page">À propos</a>
-      <a href="/contact.html">Contact</a>
+      <a href="/plan-lecture-1-an.html">Plan 1 an</a>
+      <a href="/a-propos.html">À propos</a>
       <a href="/confidentialite.html">Confidentialité</a>
-      <a href="/mentions-legales.html">Mentions</a>
-      <a href="/conditions.html">Conditions</a>
-    </nav>
-  </div>
+      <a href="/contact.html">Contact</a>
+    </div>
+    <div>LaBible.app — LSG 1910</div>
+  </footer>
 
-  <h1>À propos</h1>
+  <script>
+    // Thème (igual ao site principal)
+    const applyTheme = () => {
+      const saved = localStorage.getItem("theme");
+      if (saved === "dark") document.body.classList.add("dark");
+    };
+    applyTheme();
 
-  <p>
-    <strong>LaBible.app</strong> est un site simple et rapide pour lire la Bible en ligne, sur ordinateur et mobile.
-    L’objectif est de proposer une lecture fluide, une recherche pratique, des favoris et le partage de versets.
-  </p>
+    const btn = document.getElementById("toggleTheme");
+    const sync = () => {
+      if (!btn) return;
+      btn.textContent = document.body.classList.contains("dark") ? "☀️" : "🌙";
+    };
+    sync();
 
-  <h2>Version biblique</h2>
-  <p>
-    Le texte proposé est la <strong>Bible Louis Segond 1910 (LSG)</strong>, appartenant au <strong>domaine public</strong>.
-  </p>
-
-  <h2>Fonctionnalités</h2>
-  <ul>
-    <li>Lecture par livre et chapitre</li>
-    <li>Recherche rapide</li>
-    <li>Favoris (stockés localement sur votre appareil)</li>
-    <li>Partage de versets</li>
-    <li>Mode sombre</li>
-    <li>Application installable (PWA)</li>
-  </ul>
-
-  <h2>Vie privée</h2>
-  <p>
-    LaBible.app ne demande aucune inscription. Les favoris et préférences sont stockés localement.
-    Google Analytics n’est activé qu’après consentement.
-    Voir : <a href="/confidentialite.html">Politique de confidentialité</a>.
-  </p>
-
-  <h2>Contact</h2>
-  <p>
-    <strong><a href="mailto:contact@labible.app">contact@labible.app</a></strong>
-  </p>
-
-  <p style="margin-top:30px;">
-    <a href="/">← Retour à l’accueil</a>
-  </p>
-
-  <div class="legal-foot">
-    Texte biblique : Louis Segond 1910 (LSG) — Domaine public.
-  </div>
+    if (btn) {
+      btn.addEventListener("click", () => {
+        document.body.classList.toggle("dark");
+        localStorage.setItem("theme", document.body.classList.contains("dark") ? "dark" : "light");
+        sync();
+      });
+    }
+  </script>
 </body>
 </html>

@@ -4,105 +4,302 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
 
-  <title>LaBible.app | Louis Segond 1910 (LSG)</title>
-  <meta name="description" content="Lire la Bible en ligne gratuitement – Louis Segond 1910 (LSG). Accès à tous les livres, chapitres et versets avec recherche et favoris." />
+  <title>LaBible.app | Maintenance</title>
+  <meta name="description" content="LaBible.app est en maintenance. Nous revenons bientôt." />
+  <meta name="robots" content="noindex, nofollow" />
 
   <link rel="canonical" href="https://labible.app/" />
 
+  <!-- PWA -->
   <link rel="manifest" href="/manifest.webmanifest">
-  <meta name="theme-color" content="#0b1220">
+  <meta name="theme-color" content="#0b1220" />
 
-  <link rel="stylesheet" href="/style.css?v=3" />
+  <!-- (optionnel) icônes si tu les as -->
+  <link rel="icon" href="/icons/icon-192.png" sizes="192x192">
+  <link rel="apple-touch-icon" href="/icons/icon-192.png">
+
+  <style>
+    :root{
+      --bg1:#0b1220;
+      --bg2:#0f1b34;
+      --card: rgba(255,255,255,.06);
+      --line: rgba(255,255,255,.10);
+      --text: rgba(255,255,255,.92);
+      --muted: rgba(255,255,255,.70);
+      --btn: rgba(255,255,255,.10);
+      --btn2: rgba(255,255,255,.14);
+      --shadow: 0 20px 60px rgba(0,0,0,.35);
+      --radius: 22px;
+      --max: 860px;
+      --accent: #6aa7ff;
+    }
+    body.light{
+      --bg1:#f3f6fb;
+      --bg2:#e7eefb;
+      --card: rgba(255,255,255,.85);
+      --line: rgba(10,20,40,.12);
+      --text: rgba(10,20,40,.92);
+      --muted: rgba(10,20,40,.66);
+      --btn: rgba(10,20,40,.06);
+      --btn2: rgba(10,20,40,.10);
+      --shadow: 0 20px 60px rgba(30,60,120,.20);
+      --accent: #2d64ff;
+    }
+
+    *{ box-sizing:border-box; }
+    html,body{ height:100%; }
+    body{
+      margin:0;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      color:var(--text);
+      background:
+        radial-gradient(900px 500px at 20% 10%, rgba(106,167,255,.22), transparent 60%),
+        radial-gradient(700px 520px at 90% 30%, rgba(130,255,210,.12), transparent 60%),
+        linear-gradient(180deg, var(--bg1), var(--bg2));
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:24px;
+    }
+
+    .wrap{ width:100%; max-width:var(--max); }
+    .topbar{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      margin-bottom:14px;
+      padding: 10px 6px;
+    }
+    .brand{
+      display:flex;
+      gap:12px;
+      align-items:center;
+      text-decoration:none;
+      color:inherit;
+    }
+    .logo{
+      width:42px;height:42px;
+      display:grid;place-items:center;
+      background: var(--btn);
+      border:1px solid var(--line);
+      border-radius:14px;
+      box-shadow: var(--shadow);
+      font-size:20px;
+    }
+    .brandText{ line-height:1.1; }
+    .brandTitle{ font-weight:800; font-size:18px; letter-spacing:.2px; }
+    .brandSub{ color:var(--muted); font-size:13px; margin-top:2px; }
+
+    .iconbtn{
+      border:1px solid var(--line);
+      background: var(--btn);
+      color:var(--text);
+      border-radius:14px;
+      padding:10px 12px;
+      font-size:18px;
+      cursor:pointer;
+    }
+    .iconbtn:active{ transform: translateY(1px); }
+
+    .card{
+      background: var(--card);
+      border:1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 22px;
+      overflow:hidden;
+    }
+
+    .pill{
+      display:inline-flex;
+      align-items:center;
+      gap:10px;
+      padding:8px 12px;
+      border-radius: 999px;
+      border:1px solid var(--line);
+      background: var(--btn);
+      color:var(--muted);
+      font-size:13px;
+      margin-bottom:12px;
+    }
+    .dot{
+      width:10px;height:10px;border-radius:50%;
+      background: #ffcc00;
+      box-shadow: 0 0 0 4px rgba(255,204,0,.16);
+    }
+
+    h1{
+      margin: 0 0 8px 0;
+      font-size: 30px;
+      letter-spacing: .2px;
+    }
+    p{
+      margin: 0 0 14px 0;
+      color: var(--muted);
+      font-size: 15px;
+      line-height: 1.55;
+    }
+
+    .grid{
+      display:grid;
+      grid-template-columns: 1fr;
+      gap:12px;
+      margin-top:14px;
+    }
+    .row{
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+      margin-top:10px;
+    }
+
+    .btn{
+      border:1px solid var(--line);
+      background: var(--btn);
+      color: var(--text);
+      border-radius: 14px;
+      padding: 12px 14px;
+      cursor:pointer;
+      text-decoration:none;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap:10px;
+      font-weight:650;
+    }
+    .btn.primary{
+      background: rgba(106,167,255,.18);
+      border-color: rgba(106,167,255,.35);
+      color: var(--text);
+    }
+    .btn:hover{ background: var(--btn2); }
+    .btn.primary:hover{ background: rgba(106,167,255,.22); }
+
+    .small{
+      font-size: 12.5px;
+      color: var(--muted);
+      margin-top: 12px;
+    }
+
+    .status{
+      display:flex; gap:12px; align-items:flex-start;
+      padding:12px;
+      background: var(--btn);
+      border:1px solid var(--line);
+      border-radius: 16px;
+    }
+    .status strong{ display:block; margin-bottom:2px; }
+    .status .ico{ font-size:18px; margin-top:2px; }
+
+    .foot{
+      text-align:center;
+      margin-top: 14px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+    .foot a{
+      color: inherit;
+      text-decoration: underline;
+      text-decoration-color: rgba(255,255,255,.18);
+    }
+    body.light .foot a{
+      text-decoration-color: rgba(10,20,40,.22);
+    }
+
+    @media (min-width: 760px){
+      .grid{ grid-template-columns: 1fr 1fr; }
+      h1{ font-size: 36px; }
+    }
+  </style>
 </head>
 
 <body>
-  <!-- TOPBAR (sem links, só logo + tema) -->
-  <header class="topbar">
-    <a class="brand" href="/" aria-label="Accueil LaBible.app">
-      <span class="brand-icon">📖</span>
-      <span class="brand-text">
-        <span class="brand-title">LaBible.app</span>
-        <span class="brand-subtitle">LSG 1910</span>
-      </span>
-    </a>
+  <div class="wrap">
+    <header class="topbar">
+      <a class="brand" href="/" aria-label="LaBible.app">
+        <div class="logo">📖</div>
+        <div class="brandText">
+          <div class="brandTitle">LaBible.app</div>
+          <div class="brandSub">LSG 1910 • Maintenance</div>
+        </div>
+      </a>
 
-    <div class="top-actions">
-      <button id="toggleTheme" class="iconbtn" type="button" aria-label="Mode sombre">🌙</button>
-    </div>
-  </header>
+      <button id="toggleTheme" class="iconbtn" type="button" aria-label="Changer le thème">🌙</button>
+    </header>
 
-  <main class="container">
-    <!-- CONTROLES -->
-    <section class="card controls">
+    <main class="card">
+      <div class="pill"><span class="dot"></span> Maintenance en cours</div>
+
+      <h1>On revient bientôt 🙏</h1>
+      <p>
+        LaBible.app est temporairement en maintenance pour améliorer la stabilité, le plan de lecture 365 jours
+        et l’expérience mobile.
+      </p>
+
+      <div class="grid">
+        <div class="status">
+          <div class="ico">🛠️</div>
+          <div>
+            <strong>Ce qui se passe</strong>
+            <div class="small" style="margin:0">
+              Mise à jour du site + correction des pages et du chargement des données.
+            </div>
+          </div>
+        </div>
+
+        <div class="status">
+          <div class="ico">⏳</div>
+          <div>
+            <strong>À faire si l’app bug</strong>
+            <div class="small" style="margin:0">
+              Fermez l’onglet, puis rouvrez. Si besoin : vider le cache du navigateur.
+            </div>
+          </div>
+        </div>
+      </div>
+
       <div class="row">
-        <div class="field">
-          <label for="book">Livre</label>
-          <select id="book"></select>
-        </div>
-
-        <div class="field">
-          <label for="chap">Chapitre</label>
-          <select id="chap"></select>
-        </div>
+        <button class="btn primary" type="button" id="btnReload">↻ Réessayer</button>
+        <a class="btn" href="/plan/" aria-label="Aller au plan">📅 Plan (365 jours)</a>
+        <a class="btn" href="/confidentialite/" aria-label="Confidentialité">🔒 Confidentialité</a>
       </div>
 
-      <div class="row">
-        <button id="btnFav" class="btn primary" type="button">★ Favori</button>
-        <button id="btnShowFav" class="btn" type="button">Voir favoris</button>
-      </div>
+      <div class="small" id="metaLine"></div>
+    </main>
 
-      <div class="row searchrow">
-        <div class="field grow">
-          <label for="q">Rechercher</label>
-          <input id="q" type="search" placeholder="Rechercher (ex : amour, lumière)" />
-        </div>
-        <button id="btnSearch" class="btn primary" type="button">Chercher</button>
-        <button id="btnClear" class="btn" type="button">Effacer</button>
-      </div>
-    </section>
-
-    <!-- TÍTULO + TEXTO -->
-    <section class="card reading">
-      <h1 id="title" class="chapterTitle">Chargement…</h1>
-      <div id="content" class="content"></div>
-    </section>
-
-    <!-- RESULTADOS -->
-    <section id="results" class="card results hidden" aria-live="polite">
-      <div class="resultsHead">
-        <h2>Résultats</h2>
-        <button id="btnCloseResults" class="iconbtn" type="button" aria-label="Fermer">✕</button>
-      </div>
-      <div id="hits"></div>
-    </section>
-
-    <!-- FAVORIS -->
-    <section id="favBox" class="card fav hidden" aria-live="polite">
-      <div class="resultsHead">
-        <h2>Favoris</h2>
-        <button id="btnCloseFav" class="iconbtn" type="button" aria-label="Fermer">✕</button>
-      </div>
-      <div id="favList"></div>
-    </section>
-  </main>
-
-  <!-- FOOTER (links só aqui) -->
-  <footer class="footer">
-    <nav class="footlinks">
-      <a href="/" aria-label="Accueil">Accueil</a>
-      <a href="/a-propos/" aria-label="À propos">À propos</a>
-      <a href="/plan/" aria-label="Plan de lecture">Plan (365 jours)</a>
-      <a href="/confidentialite/" aria-label="Confidentialité">Confidentialité</a>
-    </nav>
-    <div class="footnote">
+    <div class="foot">
       © <span id="year"></span> LaBible.app — Louis Segond 1910 (LSG)
+      · <a href="/a-propos/">À propos</a>
     </div>
-  </footer>
+  </div>
 
   <script>
+    // Footer year
     document.getElementById("year").textContent = new Date().getFullYear();
-  </script>
 
-  <script src="/app.js?v=3"></script>
+    // Theme: default dark, allow toggle
+    const apply = (mode) => {
+      if (mode === "light") document.body.classList.add("light");
+      else document.body.classList.remove("light");
+      localStorage.setItem("theme", mode);
+      document.getElementById("toggleTheme").textContent = (mode === "light") ? "🌙" : "☀️";
+      document.querySelector('meta[name="theme-color"]').setAttribute("content", mode === "light" ? "#f3f6fb" : "#0b1220");
+    };
+    const saved = localStorage.getItem("theme") || "dark";
+    apply(saved);
+
+    document.getElementById("toggleTheme").addEventListener("click", () => {
+      const next = document.body.classList.contains("light") ? "dark" : "light";
+      apply(next);
+    });
+
+    // Reload
+    document.getElementById("btnReload").addEventListener("click", () => location.reload());
+
+    // Small meta
+    const now = new Date();
+    document.getElementById("metaLine").textContent =
+      "Dernière vérification : " + now.toLocaleString("fr-FR");
+  </script>
 </body>
 </html>

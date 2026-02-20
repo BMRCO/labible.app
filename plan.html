@@ -1,283 +1,399 @@
-:root{
-  --bg:#0b1220;
-  --card:rgba(255,255,255,.06);
-  --card2:rgba(255,255,255,.04);
-  --text:#eaf0ff;
-  --muted:rgba(234,240,255,.72);
-  --border:rgba(255,255,255,.10);
-  --shadow: 0 18px 45px rgba(0,0,0,.28);
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Plan de lecture 1 an (365 jours) — LaBible.app | LSG 1910</title>
+  <meta name="description" content="Plan de lecture biblique en 365 jours (LSG 1910). Chaque jour ouvre automatiquement les chapitres dans LaBible.app." />
+  <link rel="canonical" href="https://labible.app/plan.html" />
 
-  --primary:#60a5fa;
-  --primary2:#3b82f6;
+  <meta name="theme-color" content="#0b1220" />
+  <link rel="stylesheet" href="/style.css?v=9">
 
-  --radius:18px;
-  --radius2:14px;
-  --pad:14px;
-  --max:920px;
+  <style>
+    /* Bonus premium só para esta página (não quebra o resto) */
+    .plan-top { display:flex; gap:12px; align-items:center; justify-content:space-between; flex-wrap:wrap; }
+    .plan-title { margin:0; }
+    .plan-sub { margin:6px 0 0; color: var(--muted); }
+    .pill { display:inline-flex; gap:8px; align-items:center; padding:8px 12px; border-radius:999px; border:1px solid var(--border); background: var(--card); }
+    .progress-wrap { display:grid; gap:10px; }
+    .progressbar { width:100%; height:12px; border-radius:999px; background: rgba(255,255,255,.06); overflow:hidden; border:1px solid var(--border); }
+    .progressbar > div { height:100%; width:0%; background: linear-gradient(90deg, rgba(96,165,250,1), rgba(59,130,246,1)); }
+    .plan-actions { display:flex; gap:10px; flex-wrap:wrap; align-items:center; }
+    .input { width: 140px; padding:10px 12px; border-radius:12px; border:1px solid var(--border); background: var(--card); color: var(--text); }
+    .days { display:grid; gap:12px; }
+    details.day { border:1px solid var(--border); background: var(--card); border-radius:16px; overflow:hidden; }
+    details.day[open] { box-shadow: 0 18px 45px rgba(0,0,0,.25); }
+    summary.day-sum { list-style:none; cursor:pointer; padding:14px 14px; display:flex; gap:12px; align-items:center; justify-content:space-between; }
+    summary.day-sum::-webkit-details-marker{ display:none; }
+    .day-left { display:flex; gap:12px; align-items:center; min-width: 0; }
+    .badge { font-weight:800; font-size:13px; padding:6px 10px; border-radius:999px; border:1px solid var(--border); background: rgba(255,255,255,.04); }
+    .day-main { min-width:0; }
+    .day-ref { font-weight:800; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .day-meta { color:var(--muted); font-size:13px; margin-top:2px; }
+    .chev { color: var(--muted); }
+    .day-body { padding: 0 14px 14px; border-top: 1px solid var(--border); }
+    .segments { display:grid; gap:10px; padding-top:12px; }
+    .seg { display:flex; gap:10px; align-items:flex-start; justify-content:space-between; border:1px solid var(--border); border-radius:14px; padding:10px 12px; background: rgba(255,255,255,.03); }
+    .seg .t { font-weight:800; }
+    .seg .s { color:var(--muted); font-size:13px; margin-top:2px; }
+    .seg a.btn { white-space:nowrap; }
+    .today { outline: 2px solid rgba(96,165,250,.85); }
+    .smallnote { color: var(--muted); font-size: 13px; margin: 0; }
+  </style>
+</head>
+
+<body>
+
+<header class="topbar">
+  <a class="brand" href="/" aria-label="Accueil LaBible.app">
+    <span class="brand-icon" aria-hidden="true">📖</span>
+    <span class="brand-text">
+      <span class="brand-title">LaBible.app</span>
+      <span class="brand-subtitle">LSG 1910</span>
+    </span>
+  </a>
+  <div class="top-actions">
+    <button id="toggleTheme" class="iconbtn" type="button" aria-label="Mode sombre">🌙</button>
+  </div>
+</header>
+
+<main class="container">
+
+  <section class="card">
+    <div class="plan-top">
+      <div>
+        <h1 class="plan-title">📖 Plan de lecture — 365 jours</h1>
+        <p class="plan-sub">Plan <b>réel</b> (tous les chapitres, une seule fois), généré automatiquement à partir de la Bible LSG 1910.</p>
+      </div>
+
+      <div class="plan-actions">
+        <span class="pill" title="Début du plan">
+          <span>📅 Début :</span>
+          <b id="startLabel">—</b>
+        </span>
+
+        <button id="btnStartToday" class="btn primary" type="button">Commencer aujourd’hui</button>
+        <button id="btnReset" class="btn" type="button">Réinitialiser</button>
+
+        <label class="pill" style="gap:10px;">
+          <span>Aller au jour</span>
+          <input id="dayJump" class="input" type="number" min="1" max="365" placeholder="ex: 120">
+          <button id="btnGo" class="btn" type="button">Aller</button>
+        </label>
+      </div>
+    </div>
+
+    <div class="progress-wrap" style="margin-top:14px;">
+      <div class="progressbar" aria-label="Progression"><div id="bar"></div></div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;justify-content:space-between;">
+        <p class="smallnote" id="progressText">—</p>
+        <span class="pill"><span>✅ Jour actuel :</span> <b id="todayNum">—</b></span>
+      </div>
+    </div>
+  </section>
+
+  <section class="card">
+    <p class="smallnote">
+      Astuce : clique sur un jour pour voir les chapitres, puis clique sur <b>Ouvrir</b> pour aller directement à la lecture.
+      (Pas de boutons “Partager / Sélection” — tu peux sélectionner le texte manuellement et copier-coller.)
+    </p>
+  </section>
+
+  <section id="days" class="days" aria-live="polite"></section>
+
+</main>
+
+<footer class="footer">
+  <div class="footer-inner">
+    <a href="/">Accueil</a>
+    <span class="sep">•</span>
+    <a href="/a-propos.html">À propos</a>
+    <span class="sep">•</span>
+    <a href="/plan.html">Plan 1 an</a>
+  </div>
+  <div class="footer-note">
+    Texte biblique : Louis Segond 1910 (LSG) — Domaine public.
+  </div>
+</footer>
+
+<script>
+/* ---------------- Theme ---------------- */
+(function(){
+  const btn = document.getElementById("toggleTheme");
+  if(localStorage.getItem("theme")==="dark") document.body.classList.add("dark");
+  if(btn){
+    const sync = ()=> btn.textContent = document.body.classList.contains("dark") ? "☀️" : "🌙";
+    sync();
+    btn.addEventListener("click", ()=>{
+      document.body.classList.toggle("dark");
+      localStorage.setItem("theme", document.body.classList.contains("dark") ? "dark" : "light");
+      sync();
+    });
+  }
+})();
+
+/* ---------------- Helpers ---------------- */
+const escapeHTML = (s)=> String(s).replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;");
+const normalize = (s)=> String(s).toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+const slugifyBookName = (name)=> normalize(name).replace(/['’]/g,"").replace(/[^a-z0-9]+/g,"-").replace(/-+/g,"-").replace(/^-|-$/g,"");
+async function loadJSON(path){
+  const r = await fetch(path, { cache: "no-store" });
+  if(!r.ok) throw new Error("Erreur de chargement : " + path);
+  return r.json();
+}
+function fmtDate(d){
+  const y=d.getFullYear(), m=String(d.getMonth()+1).padStart(2,"0"), day=String(d.getDate()).padStart(2,"0");
+  return `${day}/${m}/${y}`;
 }
 
-body{
-  margin:0;
-  font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-  background: radial-gradient(1200px 800px at 30% -10%, rgba(59,130,246,.20), transparent 55%),
-              radial-gradient(1000px 700px at 110% 0%, rgba(96,165,250,.16), transparent 55%),
-              var(--bg);
-  color:var(--text);
+/* ---------------- Plan logic ----------------
+   1) Carrega /data/segond_1910.json
+   2) Descobre livros/chapitres
+   3) Faz lista linear de todos os capítulos (1189)
+   4) Divide em 365 dias (partes equilibradas)
+*/
+const LS = {
+  startKey: "labible_plan_start_v1"
+};
+
+let BOOKS = [];            // [{book, name, slug, chapters:[1..n]}]
+let CHAPTERS_ALL = [];     // [{book, slug, name, chapter}]
+let DAYS = [];             // array de dias: cada dia é lista de capítulos
+
+function getStartDate(){
+  const raw = localStorage.getItem(LS.startKey);
+  if(!raw) return null;
+  const d = new Date(raw);
+  return isNaN(d.getTime()) ? null : d;
+}
+function setStartDate(d){
+  localStorage.setItem(LS.startKey, d.toISOString());
+}
+function clearStartDate(){
+  localStorage.removeItem(LS.startKey);
+}
+function dayIndexToday(){
+  const start = getStartDate();
+  if(!start) return null;
+  const now = new Date();
+  const a = new Date(start.getFullYear(), start.getMonth(), start.getDate());
+  const b = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  const diff = Math.floor((b - a) / (1000*60*60*24));
+  const idx = diff + 1; // dia 1
+  if(idx < 1) return 1;
+  if(idx > 365) return 365;
+  return idx;
 }
 
-body:not(.dark){
-  --bg:#f6f7fb;
-  --card:#ffffff;
-  --card2:#f3f4f6;
-  --text:#0b1220;
-  --muted:rgba(11,18,32,.62);
-  --border:rgba(11,18,32,.12);
-  --shadow: 0 18px 45px rgba(0,0,0,.12);
+function buildBooksFromDB(DB){
+  // map book -> name
+  const mapBookName = new Map();
+  const mapBookChaps = new Map(); // book -> Set(chaps)
+
+  for(const v of DB.verses){
+    if(!mapBookName.has(v.book)) mapBookName.set(v.book, v.book_name);
+    if(!mapBookChaps.has(v.book)) mapBookChaps.set(v.book, new Set());
+    mapBookChaps.get(v.book).add(v.chapter);
+  }
+
+  const books = Array.from(mapBookName.entries())
+    .map(([book, name])=>{
+      const chaps = Array.from(mapBookChaps.get(book) || []).sort((a,b)=>a-b);
+      return { book, name, slug: slugifyBookName(name), chapters: chaps };
+    })
+    .sort((a,b)=>a.book-b.book);
+
+  return books;
 }
 
-a{ color: var(--primary); text-decoration:none; }
-a:hover{ text-decoration:underline; }
-
-.container{
-  max-width: var(--max);
-  margin: 0 auto;
-  padding: 16px;
+function buildAllChapters(){
+  const out = [];
+  for(const b of BOOKS){
+    for(const c of b.chapters){
+      out.push({ book:b.book, slug:b.slug, name:b.name, chapter:c });
+    }
+  }
+  return out;
 }
 
-.topbar{
-  position: sticky;
-  top: 0;
-  z-index: 20;
-  backdrop-filter: blur(12px);
-  background: rgba(11,18,32,.55);
-  border-bottom: 1px solid var(--border);
-  padding: 12px 16px;
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap: 12px;
+/* Divide 1189 capítulos em 365 dias de forma equilibrada.
+   Estratégia:
+   - base = floor(total/365)
+   - remainder = total % 365 (primeiros remainder dias recebem +1 capítulo)
+*/
+function splitIntoDays(all){
+  const total = all.length;
+  const days = 365;
+  const base = Math.floor(total / days);
+  const rem = total % days;
+
+  const chunks = [];
+  let i=0;
+  for(let d=1; d<=days; d++){
+    const size = base + (d <= rem ? 1 : 0);
+    chunks.push(all.slice(i, i+size));
+    i += size;
+  }
+  return chunks;
 }
 
-body:not(.dark) .topbar{
-  background: rgba(255,255,255,.75);
+function summarizeDay(chunks){
+  // resumo para o header: "Genèse 1–3" ou "Malachie 4 • Matthieu 1–2"
+  const segs = [];
+  let cur = null;
+
+  for(const x of chunks){
+    if(!cur){
+      cur = { name:x.name, slug:x.slug, start:x.chapter, end:x.chapter };
+      continue;
+    }
+    if(x.slug === cur.slug && x.chapter === cur.end + 1){
+      cur.end = x.chapter;
+    }else{
+      segs.push(cur);
+      cur = { name:x.name, slug:x.slug, start:x.chapter, end:x.chapter };
+    }
+  }
+  if(cur) segs.push(cur);
+
+  const pretty = segs.map(s=>{
+    const range = s.start === s.end ? `${s.start}` : `${s.start}–${s.end}`;
+    return `${s.name} ${range}`;
+  });
+
+  return { segs, prettyText: pretty.join(" • ") };
 }
 
-.brand{
-  display:flex;
-  gap:10px;
-  align-items:center;
-  text-decoration:none;
-  color: var(--text);
-  min-width: 0;
-}
-.brand-icon{ font-size:22px; }
-.brand-text{ display:flex; flex-direction:column; line-height:1.1; min-width:0; }
-.brand-title{ font-weight:900; letter-spacing:.2px; }
-.brand-subtitle{ font-size:13px; color:var(--muted); }
-
-.top-actions{ display:flex; gap:10px; align-items:center; }
-
-.card{
-  background: var(--card);
-  border:1px solid var(--border);
-  border-radius: var(--radius);
-  padding: var(--pad);
-  box-shadow: var(--shadow);
+function buildSegLink(seg){
+  // abre o começo do segmento; leitura continua pelo seletor
+  return `/${seg.slug}/${seg.start}`;
 }
 
-.controls{ margin-bottom: 16px; }
-.reading{ margin-bottom: 16px; }
-.results{ margin-bottom: 16px; }
+function setProgressUI(){
+  const start = getStartDate();
+  const startLabel = document.getElementById("startLabel");
+  const bar = document.getElementById("bar");
+  const progressText = document.getElementById("progressText");
+  const todayNumEl = document.getElementById("todayNum");
 
-.row{
-  display:flex;
-  gap:12px;
-  align-items:flex-end;
-  flex-wrap: wrap;
+  if(!start){
+    startLabel.textContent = "non défini";
+    todayNumEl.textContent = "—";
+    bar.style.width = "0%";
+    progressText.textContent = "Clique sur « Commencer aujourd’hui » pour activer la progression.";
+    return;
+  }
+
+  startLabel.textContent = fmtDate(start);
+  const idx = dayIndexToday();
+  todayNumEl.textContent = idx;
+  const pct = Math.round((idx / 365) * 100);
+  bar.style.width = pct + "%";
+  progressText.textContent = `Progression : jour ${idx} / 365 (${pct}%)`;
 }
 
-.field{
-  display:flex;
-  flex-direction:column;
-  gap:8px;
-  min-width: 160px;
-  flex: 1;
+function renderDays(){
+  const wrap = document.getElementById("days");
+  const idxToday = dayIndexToday();
+
+  wrap.innerHTML = DAYS.map((dayChaps, i)=>{
+    const dayNo = i + 1;
+    const info = summarizeDay(dayChaps);
+    const segHtml = info.segs.map(seg=>{
+      const range = seg.start === seg.end ? `${seg.start}` : `${seg.start}–${seg.end}`;
+      return `
+        <div class="seg">
+          <div>
+            <div class="t">${escapeHTML(seg.name)} ${escapeHTML(range)}</div>
+            <div class="s">Ouvre directement la lecture</div>
+          </div>
+          <a class="btn primary" href="${buildSegLink(seg)}">Ouvrir</a>
+        </div>
+      `;
+    }).join("");
+
+    const isToday = idxToday === dayNo;
+    return `
+      <details class="day ${isToday ? "today" : ""}" id="day-${dayNo}">
+        <summary class="day-sum">
+          <div class="day-left">
+            <span class="badge">Jour ${dayNo}</span>
+            <div class="day-main">
+              <div class="day-ref">${escapeHTML(info.prettyText)}</div>
+              <div class="day-meta">${dayChaps.length} chapitre(s)</div>
+            </div>
+          </div>
+          <span class="chev">⌄</span>
+        </summary>
+        <div class="day-body">
+          <div class="segments">
+            ${segHtml}
+          </div>
+        </div>
+      </details>
+    `;
+  }).join("");
+
+  // abrir o "hoje" automaticamente
+  if(idxToday){
+    const el = document.getElementById("day-" + idxToday);
+    if(el){
+      el.open = true;
+      el.scrollIntoView({ behavior:"smooth", block:"start" });
+    }
+  }
 }
 
-.field label{
-  color: var(--muted);
-  font-size: 13px;
-  font-weight: 700;
+function goToDay(n){
+  const day = Math.max(1, Math.min(365, Number(n)||1));
+  const el = document.getElementById("day-" + day);
+  if(el){
+    el.open = true;
+    el.scrollIntoView({ behavior:"smooth", block:"start" });
+  }
 }
 
-select, input[type="search"], input[type="number"], input[type="text"]{
-  width:100%;
-  padding: 12px 12px;
-  border-radius: 14px;
-  border: 1px solid var(--border);
-  background: var(--card2);
-  color: var(--text);
-  outline: none;
+/* ---------------- Init ---------------- */
+async function init(){
+  setProgressUI();
+
+  const DB = await loadJSON("/data/segond_1910.json");
+  BOOKS = buildBooksFromDB(DB);
+  CHAPTERS_ALL = buildAllChapters();
+  DAYS = splitIntoDays(CHAPTERS_ALL);
+
+  renderDays();
+  setProgressUI();
+
+  // buttons
+  document.getElementById("btnStartToday").addEventListener("click", ()=>{
+    const now = new Date();
+    const d = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    setStartDate(d);
+    setProgressUI();
+    renderDays();
+  });
+
+  document.getElementById("btnReset").addEventListener("click", ()=>{
+    clearStartDate();
+    setProgressUI();
+    renderDays();
+  });
+
+  document.getElementById("btnGo").addEventListener("click", ()=>{
+    const v = document.getElementById("dayJump").value;
+    goToDay(v);
+  });
 }
 
-select:focus, input:focus{
-  border-color: rgba(96,165,250,.65);
-  box-shadow: 0 0 0 4px rgba(96,165,250,.18);
-}
+window.addEventListener("DOMContentLoaded", ()=>{
+  init().catch(err=>{
+    console.error(err);
+    document.body.innerHTML = `<pre style="color:red; padding:16px;">${escapeHTML(err.message)}</pre>`;
+  });
+});
+</script>
 
-.btncol{ display:flex; flex-direction:column; gap:10px; }
-
-.btn{
-  padding: 12px 14px;
-  border-radius: 14px;
-  border: 1px solid var(--border);
-  background: rgba(255,255,255,.04);
-  color: var(--text);
-  font-weight: 800;
-  cursor:pointer;
-}
-
-.btn:hover{ filter: brightness(1.06); }
-.btn:active{ transform: translateY(1px); }
-
-.btn.primary{
-  border-color: rgba(96,165,250,.55);
-  background: linear-gradient(135deg, rgba(96,165,250,.95), rgba(59,130,246,.95));
-  color: #07101f;
-}
-
-.btn.secondary{
-  background: transparent;
-}
-
-.iconbtn{
-  width:44px;
-  height:44px;
-  border-radius: 14px;
-  border:1px solid var(--border);
-  background: rgba(255,255,255,.06);
-  color: var(--text);
-  cursor:pointer;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  font-size: 18px;
-}
-
-.chapter-title{
-  margin: 6px 0 12px;
-  font-size: 34px;
-  letter-spacing:.2px;
-}
-
-.verses p{
-  margin: 0;
-  padding: 14px 12px;
-  border-radius: 14px;
-  border:1px solid rgba(255,255,255,.06);
-  background: rgba(255,255,255,.03);
-  line-height: 1.55;
-  display:flex;
-  gap: 12px;
-  align-items:flex-start;
-}
-
-body:not(.dark) .verses p{
-  background: rgba(11,18,32,.03);
-  border-color: rgba(11,18,32,.06);
-}
-
-.verses p + p{ margin-top: 10px; }
-
-.verses b{
-  min-width: 26px;
-  color: var(--primary);
-}
-
-.hidden{ display:none !important; }
-
-.results-head{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap:10px;
-}
-
-.hit{
-  margin-top: 12px;
-  padding: 12px;
-  border-radius: 14px;
-  border:1px solid var(--border);
-  background: rgba(255,255,255,.03);
-}
-
-.hit .ref{ font-weight:900; }
-.hit .txt{ margin-top:6px; color: var(--muted); }
-
-.modal{
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,.55);
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  padding: 16px;
-  z-index: 50;
-}
-
-.modal-card{
-  width: min(720px, 100%);
-  background: var(--card);
-  border:1px solid var(--border);
-  border-radius: var(--radius);
-  box-shadow: var(--shadow);
-  padding: var(--pad);
-}
-
-.modal-head{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-}
-
-.favrow{
-  display:flex;
-  gap:10px;
-  align-items:center;
-  justify-content:space-between;
-  border:1px solid var(--border);
-  border-radius: 14px;
-  padding: 10px 12px;
-  background: rgba(255,255,255,.03);
-  margin-top: 10px;
-}
-
-.favrow .title{
-  flex:1;
-  min-width:0;
-  font-weight: 900;
-}
-.favrow .small{
-  font-weight: 600;
-  font-size: 12px;
-  color: var(--muted);
-  margin-top:2px;
-}
-
-.footer{
-  margin-top: 24px;
-  border-top: 1px solid var(--border);
-  padding: 16px;
-  text-align:center;
-  color: var(--muted);
-}
-
-.footer-inner{ display:flex; gap:10px; justify-content:center; align-items:center; flex-wrap:wrap; }
-.footer .sep{ opacity:.7; }
-.footer-note{ margin-top: 8px; font-size: 13px; }
-
-@media (max-width: 720px){
-  .chapter-title{ font-size: 30px; }
-  .btncol{ width:100%; flex-direction:row; }
-  .btncol .btn{ flex:1; }
-}
+</body>
+</html>

@@ -3,73 +3,168 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Plan de lecture – Dashboard | LaBible.app</title>
-  <meta name="description" content="Plan de lecture biblique en 1 an avec progression, streak et suivi automatique." />
-  <link rel="stylesheet" href="/style.css" />
+  <title>Plan de lecture 1 an — LaBible.app | LSG 1910</title>
+  <meta name="description" content="Plan de lecture biblique en 1 an — Louis Segond 1910 (LSG). Suivez votre progression jour après jour." />
+  <meta name="theme-color" content="#0b1220" />
+  <link rel="canonical" href="https://labible.app/plan-lecture-1-an.html" />
+
+  <style>
+    :root{--bg:#ffffff;--text:#0b1220;--muted:#5a6b85;--card:#f7f8fb;--border:#e5e9f2;--primary:#2d6cdf}
+    body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:var(--bg);color:var(--text)}
+    body.dark{--bg:#0b1220;--text:#f8fbff;--muted:#9ab0c8;--card:#111b2b;--border:#1f2a3d;--primary:#6ea8ff}
+
+    header{position:sticky;top:0;background:var(--bg);border-bottom:1px solid var(--border)}
+    .wrap{max-width:900px;margin:0 auto;padding:14px 12px}
+    .brand{font-weight:800}
+    .muted{color:var(--muted)}
+    .btn{border:1px solid var(--border);background:var(--card);color:var(--text);padding:10px 12px;border-radius:12px;cursor:pointer}
+    .btn-primary{background:var(--primary);border-color:var(--primary);color:#fff}
+
+    main{padding:18px 12px}
+    h1{margin:12px 0 8px}
+    .card{border:1px solid var(--border);background:var(--card);border-radius:16px;padding:14px;margin:14px 0}
+
+    .progressbar{
+      height:10px;
+      background:var(--border);
+      border-radius:20px;
+      overflow:hidden;
+      margin-top:8px;
+    }
+
+    .progressfill{
+      height:100%;
+      background:var(--primary);
+      width:0%;
+      transition:width .4s ease;
+    }
+
+    .day{
+      padding:8px 0;
+      border-bottom:1px solid var(--border);
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+    }
+
+    footer{border-top:1px solid var(--border);padding:18px 12px;text-align:center;color:var(--muted)}
+    footer a{text-decoration:none;color:inherit}
+    .links{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;margin-bottom:10px}
+  </style>
 </head>
 
-<body class="legal">
+<body>
 
-  <div class="legal-top">
-    <div class="legal-brand"><a href="/">📖 LaBible.app</a></div>
-    <nav class="legal-nav">
-      <a href="/">Accueil</a>
-      <a href="/plan-lecture-1-an.html">Plan 1 an</a>
-      <a href="/a-propos.html">À propos</a>
-      <a href="/contact.html">Contact</a>
-    </nav>
-  </div>
-
-  <h1>📊 Plan de lecture – Dashboard</h1>
-
-  <div class="card" style="padding:16px;margin-top:12px;">
-
-    <div style="display:flex;flex-wrap:wrap;gap:20px;justify-content:space-between;">
-      
-      <div>
-        <div style="font-size:13px;color:var(--muted)">Jour actuel</div>
-        <div id="currentDay" style="font-size:22px;font-weight:900">—</div>
-      </div>
-
-      <div>
-        <div style="font-size:13px;color:var(--muted)">Progression</div>
-        <div id="progressStats" style="font-size:22px;font-weight:900">0 / 365</div>
-      </div>
-
-      <div>
-        <div style="font-size:13px;color:var(--muted)">🔥 Streak</div>
-        <div id="streakCount" style="font-size:22px;font-weight:900">0 jours</div>
-      </div>
-
+<header>
+  <div class="wrap" style="display:flex;justify-content:space-between;align-items:center;">
+    <div>
+      <div class="brand">LaBible.app <span class="muted">| LSG 1910</span></div>
+      <div class="muted" style="font-size:13px">Plan de lecture en 1 an</div>
     </div>
-
-    <div style="margin-top:15px;height:12px;border-radius:999px;background:rgba(0,0,0,.08);overflow:hidden;border:1px solid var(--border);">
-      <div id="progressBar" style="height:100%;width:0%;background:var(--primary);transition:width .6s ease;"></div>
-    </div>
-
-    <div style="margin-top:15px;display:flex;gap:10px;flex-wrap:wrap;">
-      <button id="btnToday" class="btn">Aller au jour actuel</button>
-      <button id="btnStart" class="btn btn-secondary">Commencer aujourd’hui</button>
-      <button id="btnReset" class="btn btn-secondary">Réinitialiser</button>
-      <button id="btnFilter" class="btn btn-secondary">Afficher non lus</button>
-    </div>
-
+    <button id="toggleTheme" class="btn">🌙</button>
   </div>
+</header>
 
-  <div class="card" style="padding:16px;margin-top:14px;">
-    <div id="todayBox"></div>
+<main class="wrap">
+
+<h1>📖 Plan de lecture — 365 jours</h1>
+
+<div class="card">
+  <div>Progression : <b><span id="progressText">0 / 365</span></b></div>
+  <div class="progressbar">
+    <div class="progressfill" id="progressFill"></div>
   </div>
+</div>
 
-  <div class="card" style="padding:16px;margin-top:14px;">
-    <div id="planList"></div>
+<div class="card">
+  <div id="todayBox"></div>
+  <button id="markToday" class="btn btn-primary">Marquer aujourd’hui comme lu</button>
+</div>
+
+<div class="card" id="planList"></div>
+
+</main>
+
+<footer>
+  <div class="links">
+    <a href="/">Accueil</a>
+    <a href="/plan-lecture-1-an.html">Plan 1 an</a>
+    <a href="/a-propos.html">À propos</a>
+    <a href="/confidentialite.html">Confidentialité</a>
+    <a href="/contact.html">Contact</a>
   </div>
+  <div>LaBible.app — LSG 1910</div>
+</footer>
 
-  <p style="margin-top:20px;">
-    <a href="/">← Retour à l’accueil</a>
-  </p>
+<script>
+const STORAGE="labible_plan_v1";
+const TOTAL=365;
 
-  <!-- IMPORTANTE: script no final do body -->
-  <script src="/plan-dashboard.js"></script>
+function getData(){
+  return JSON.parse(localStorage.getItem(STORAGE))||{start:null,done:[]};
+}
+function saveData(d){
+  localStorage.setItem(STORAGE,JSON.stringify(d));
+}
+
+function todayIndex(start){
+  if(!start) return 0;
+  const s=new Date(start);
+  const t=new Date();
+  return Math.min(364,Math.floor((t-s)/(1000*60*60*24)));
+}
+
+function update(){
+  const d=getData();
+  if(!d.start){d.start=new Date().toISOString();saveData(d);}
+  const idx=todayIndex(d.start);
+  const doneCount=d.done.length;
+
+  document.getElementById("todayBox").innerHTML=
+    "<b>Jour "+(idx+1)+"</b>";
+
+  document.getElementById("progressText").textContent=
+    doneCount+" / "+TOTAL;
+
+  document.getElementById("progressFill").style.width=
+    (doneCount/TOTAL*100)+"%";
+
+  const list=document.getElementById("planList");
+  list.innerHTML="";
+  for(let i=0;i<365;i++){
+    const row=document.createElement("div");
+    row.className="day";
+    row.innerHTML=
+      "<span>"+(d.done.includes(i)?"✅ ":"⬜ ")+"Jour "+(i+1)+"</span>";
+    list.appendChild(row);
+  }
+}
+
+document.getElementById("markToday").onclick=function(){
+  const d=getData();
+  const idx=todayIndex(d.start);
+  if(!d.done.includes(idx)){
+    d.done.push(idx);
+    saveData(d);
+  }
+  update();
+};
+
+update();
+
+/* thème */
+const btn=document.getElementById("toggleTheme");
+function applyTheme(){
+  if(localStorage.getItem("theme")==="dark")
+    document.body.classList.add("dark");
+}
+applyTheme();
+btn.onclick=function(){
+  document.body.classList.toggle("dark");
+  localStorage.setItem("theme",
+    document.body.classList.contains("dark")?"dark":"light");
+};
+</script>
 
 </body>
 </html>

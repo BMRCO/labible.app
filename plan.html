@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Plan de lecture 1 an — LaBible.app | LSG 1910</title>
+  <meta name="description" content="Plan de lecture biblique en 1 an — Louis Segond 1910." />
+  <link rel="canonical" href="https://labible.app/plan.html" />
+  <meta name="theme-color" content="#0b1220" />
+  <link rel="stylesheet" href="/style.css?v=7">
+</head>
+
+<body>
+
+<header class="topbar">
+  <a class="brand" href="/">
+    <span class="brand-icon">📖</span>
+    <span class="brand-text">
+      <span class="brand-title">LaBible.app</span>
+      <span class="brand-subtitle">LSG 1910</span>
+    </span>
+  </a>
+  <button id="toggleTheme" class="iconbtn">🌙</button>
+</header>
+
+<main class="container">
+
+<section class="card">
+  <h1>📖 Plan de lecture — 365 jours</h1>
+  <p>
+    Ce plan permet de lire toute la Bible en un an.
+  </p>
+</section>
+
+<section class="card">
+  <h2>📅 Exemple semaine 1</h2>
+  <ul>
+    <li>Jour 1 — Genèse 1–3</li>
+    <li>Jour 2 — Genèse 4–7</li>
+    <li>Jour 3 — Genèse 8–11</li>
+    <li>Jour 4 — Genèse 12–15</li>
+    <li>Jour 5 — Genèse 16–18</li>
+    <li>Jour 6 — Genèse 19–21</li>
+    <li>Jour 7 — Genèse 22–24</li>
+  </ul>
+</section>
+
+</main>
+
+<footer class="footer">
+  <div class="footer-inner">
+    <a href="/">Accueil</a> •
+    <a href="/plan.html">Plan 1 an</a> •
+    <a href="/a-propos.html">À propos</a>
+  </div>
+  <div class="footer-note">
+    Texte biblique : Louis Segond 1910 — Domaine public.
+  </div>
+</footer>
+
+<script>
+const btn = document.getElementById("toggleTheme");
+if(localStorage.getItem("theme")==="dark"){
+  document.body.classList.add("dark");
+}
+if(btn){
+  btn.textContent = document.body.classList.contains("dark") ? "☀️" : "🌙";
+  btn.onclick = ()=>{
+    document.body.classList.toggle("dark");
+    localStorage.setItem("theme",
+      document.body.classList.contains("dark") ? "dark" : "light");
+    btn.textContent = document.body.classList.contains("dark") ? "☀️" : "🌙";
+  };
+}
+</script>
+
+</body>
+</html>

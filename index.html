@@ -3,147 +3,48 @@
 <head>
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
-
-  <title>Bible en ligne — Louis Segond 1910 (LSG) | LaBible.app</title>
-  <meta name="description" content="Lire la Bible en ligne (Louis Segond 1910). Navigation par livre et chapitre, recherche, favoris, partage de versets.">
-
-  <!-- PWA -->
-  <link rel="manifest" href="/manifest.webmanifest">
+  <title>Conditions d’utilisation — LaBible.app</title>
+  <meta name="description" content="Conditions d’utilisation LaBible.app.">
   <meta name="theme-color" content="#0B0B0C">
-  <link rel="apple-touch-icon" href="/icons/icon-192.png">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Playfair+Display:ital,wght@0,600;1,500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=Playfair+Display:wght@600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/assets/styles.css">
 </head>
-
 <body>
   <div class="container">
     <header class="header">
-      <a class="brand" href="/">
-        <div class="name">LaBible.app</div>
-        <div class="sub">Louis Segond 1910</div>
-      </a>
-
+      <a class="brand" href="/"><div class="name">LaBible.app</div><div class="sub">Louis Segond 1910</div></a>
       <nav class="nav">
+        <a href="/">Bible</a>
         <a href="/a-propos.html">À propos</a>
         <a href="/contact.html">Contact</a>
-        <a href="/confidentialite.html">Confidentialité</a>
       </nav>
     </header>
 
-    <main class="hero">
-      <section class="card">
-        <div class="rule"></div>
-        <h1 class="h1">La Bible,\nclaire et éditoriale.</h1>
-        <p class="lead">
-          Sélection par livre et chapitre, recherche instantanée, favoris,
-          et partage de versets — avec une mise en page “Signature”.
-        </p>
+    <section class="card">
+      <div class="rule"></div>
+      <h1 class="h1">Conditions d’utilisation</h1>
 
-        <div class="controls" id="controls">
-          <div class="field">
-            <div class="label">Livre</div>
-            <select class="select" id="bookSelect" aria-label="Livre"></select>
-          </div>
+      <p class="small">
+        Le service est fourni “tel quel”, sans garantie. Vous utilisez LaBible.app sous votre responsabilité.
+      </p>
 
-          <div class="field">
-            <div class="label">Chapitre</div>
-            <select class="select" id="chapterSelect" aria-label="Chapitre"></select>
-          </div>
+      <p class="small">
+        Les favoris sont stockés localement sur votre appareil. Vous pouvez les supprimer en effaçant les données du site dans votre navigateur.
+      </p>
 
-          <div class="field" style="grid-column:1/-1;">
-            <div class="label">Chercher</div>
-            <input class="input" id="searchInput" placeholder="Ex: berger, foi, paix…" />
-          </div>
-        </div>
-
-        <div class="row">
-          <button class="btn primary" id="loadBtn">Afficher</button>
-          <button class="btn" id="clearBtn">Effacer</button>
-          <span class="badge" id="selectedCount">0 sélectionné</span>
-
-          <button class="btn" id="toggleFavBtn">★ Voir favoris</button>
-          <button class="btn" id="installBtn" title="Installer l’app">⬇ Installer</button>
-        </div>
-
-        <div class="results">
-          <h2 class="sectionTitle" id="resultsTitle">Résultats</h2>
-          <div class="verseList" id="verseList"></div>
-
-          <div class="row" style="margin-top:12px;">
-            <button class="btn" id="shareBtn">Partager</button>
-            <button class="btn" id="copyBtn">Copier</button>
-            <button class="btn" id="favBtn">☑ Favori</button>
-            <button class="btn" id="clearSelBtn">Effacer sélection</button>
-          </div>
-
-          <p class="small" id="hint">
-            Touchez un verset pour sélectionner • Sélection multiple possible
-          </p>
-        </div>
-      </section>
-
-      <aside class="side">
-        <section class="card">
-          <h3 style="margin:0;">Favoris</h3>
-          <p class="small">Enregistrez vos versets et retrouvez-les rapidement.</p>
-          <div class="verseList" id="favList"></div>
-        </section>
-
-        <section class="card">
-          <h3 style="margin:0;">Signature</h3>
-          <p class="small">
-            « » • Référence en bas • Centré • Espaces généreux.
-          </p>
-          <div class="row">
-            <span class="badge">#LaBible</span>
-            <span class="badge">#LSG1910</span>
-            <span class="badge">#versetdujour</span>
-          </div>
-        </section>
-      </aside>
-    </main>
+      <p class="small">
+        Le contenu biblique affiché provient du fichier <strong>segond_1910.json</strong> présent sur le site.
+      </p>
+    </section>
 
     <footer class="footer">
-      <div>© LaBible.app — Louis Segond 1910</div>
+      <div>© LaBible.app</div>
       <div class="links">
-        <a href="/a-propos.html">À propos</a>
-        <a href="/contact.html">Contact</a>
-        <a href="/confidentialite.html">Politique de confidentialité</a>
+        <a href="/confidentialite.html">Confidentialité</a>
         <a href="/mentions-legales.html">Mentions légales</a>
-        <a href="/conditions.html">Conditions d’utilisation</a>
       </div>
     </footer>
   </div>
-
-  <div class="cookie" id="cookieBanner" role="dialog" aria-live="polite">
-    <div class="top">
-      <div>
-        <strong>Cookies</strong>
-        <p>
-          Nous utilisons des mesures d’audience (optionnelles) pour améliorer le site.
-          Vous pouvez accepter ou refuser.
-        </p>
-      </div>
-      <div class="row" style="margin:0;">
-        <button class="btn primary" id="cookieAccept">Accepter</button>
-        <button class="btn" id="cookieDeny">Refuser</button>
-      </div>
-    </div>
-  </div>
-
-  <script src="/assets/app.js"></script>
-
-  <!-- Register Service Worker -->
-  <script>
-    if ("serviceWorker" in navigator) {
-      window.addEventListener("load", () => {
-        navigator.serviceWorker.register("/sw.js");
-      });
-    }
-  </script>
 </body>
 </html>

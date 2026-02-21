@@ -1,311 +1,137 @@
-:root{
-  --bg:#FFFFFF;
-  --ink:#0B0B0C;
-  --muted:#6B6B6E;
-  --line:#D6D6D8;
-  --soft:#F5F5F7;
-  --card:#FFFFFF;
-  --radius:18px;
-  --max: 1080px;
-}
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
 
-*{ box-sizing:border-box; }
-html, body{ height:100%; }
+  <title>LaBible.app — Louis Segond 1910</title>
+  <meta name="description" content="Lire la Bible en ligne (Louis Segond 1910). Navigation par livre et chapitre, recherche, favoris, partage de versets.">
 
-body{
-  margin:0;
-  background:var(--bg);
-  color:var(--ink);
-  font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-  line-height:1.45;
-}
+  <!-- PWA -->
+  <link rel="manifest" href="/manifest.webmanifest">
+  <meta name="theme-color" content="#111827">
+  <link rel="apple-touch-icon" href="/icons/icon-192.png">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
 
-a{ color:inherit; text-decoration:none; }
-button, select, input{ font: inherit; }
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/assets/styles.css">
+</head>
 
-.container{
-  max-width:var(--max);
-  margin:0 auto;
-  padding:24px 16px 64px;
-}
+<body>
+  <div class="container">
+    <header class="header">
+      <a class="brand" href="/">
+        <div class="name">LaBible.app</div>
+        <div class="sub">Louis Segond 1910</div>
+      </a>
 
-.header{
-  display:flex;
-  align-items:flex-start;
-  justify-content:space-between;
-  gap:16px;
-  padding:8px 4px 18px;
-}
+      <nav class="nav">
+        <a href="/a-propos.html">À propos</a>
+        <a href="/contact.html">Contact</a>
+        <a href="/confidentialite.html">Confidentialité</a>
+      </nav>
+    </header>
 
-.brand{
-  display:flex;
-  flex-direction:column;
-  gap:6px;
-}
+    <main class="grid">
+      <section class="card">
+        <h1 class="title">Bible en ligne (LSG 1910)</h1>
+        <p class="desc">
+          Choisissez un livre et un chapitre, ou utilisez la recherche. Enregistrez des favoris et partagez des versets.
+        </p>
 
-.brand .name{
-  font-family:"Playfair Display", Georgia, serif;
-  font-weight:600;
-  letter-spacing:.2px;
-  font-size:30px;
-}
+        <div class="controls">
+          <div class="field">
+            <label class="label" for="bookSelect">Livre</label>
+            <select class="select" id="bookSelect"></select>
+          </div>
 
-.brand .sub{
-  font-size:12px;
-  letter-spacing:1.6px;
-  text-transform:uppercase;
-  color:var(--muted);
-}
+          <div class="field">
+            <label class="label" for="chapterSelect">Chapitre</label>
+            <select class="select" id="chapterSelect"></select>
+          </div>
 
-.nav{
-  display:flex;
-  gap:10px;
-  flex-wrap:wrap;
-  justify-content:flex-end;
-  font-size:14px;
-  color:var(--muted);
-}
+          <div class="field span2">
+            <label class="label" for="searchInput">Recherche</label>
+            <input class="input" id="searchInput" placeholder="Ex: berger, foi, paix…" autocomplete="off" />
+          </div>
+        </div>
 
-.nav a{
-  padding:8px 10px;
-  border-radius:999px;
-}
+        <div class="actions">
+          <button class="btn primary" id="loadBtn">Afficher</button>
+          <button class="btn" id="clearBtn">Effacer</button>
+          <button class="btn" id="toggleFavBtn">Favoris</button>
+          <button class="btn" id="installBtn" style="display:none;">Installer</button>
+          <span class="pill" id="selectedCount">0 sélectionné</span>
+        </div>
 
-.nav a:hover{
-  background:var(--soft);
-  color:var(--ink);
-}
+        <div class="results">
+          <div class="resultsHead">
+            <h2 class="h2" id="resultsTitle">Résultats</h2>
+            <div class="tools">
+              <button class="btn sm" id="copyBtn">Copier</button>
+              <button class="btn sm" id="shareBtn">Partager</button>
+              <button class="btn sm" id="favBtn">Mettre en favori</button>
+              <button class="btn sm" id="clearSelBtn">Effacer sélection</button>
+            </div>
+          </div>
 
-.hero{
-  display:grid;
-  grid-template-columns: 1.2fr .8fr;
-  gap:14px;
-  align-items:start;
-  padding:0 4px;
-}
+          <div class="list" id="verseList"></div>
+          <p class="hint">Touchez un verset pour le sélectionner (multi-sélection possible).</p>
+        </div>
+      </section>
 
-@media (max-width: 920px){
-  .hero{ grid-template-columns: 1fr; }
-}
+      <aside class="card side">
+        <h2 class="h2">Favoris</h2>
+        <p class="desc small">Stockés localement sur votre appareil.</p>
+        <div class="list" id="favList"></div>
 
-.card{
-  background:var(--card);
-  border:1px solid #EFEFF1;
-  border-radius:var(--radius);
-  padding:18px;
-}
+        <div class="divider"></div>
 
-.h1{
-  font-family:"Playfair Display", Georgia, serif;
-  font-size:42px;
-  line-height:1.1;
-  margin:10px 0 0;
-  white-space:pre-line;
-}
+        <h2 class="h2">Infos</h2>
+        <ul class="bullets">
+          <li>Lecture : livre / chapitre</li>
+          <li>Recherche globale</li>
+          <li>Partage & copie</li>
+          <li>PWA installable</li>
+        </ul>
+      </aside>
+    </main>
 
-.lead{
-  margin:12px 0 0;
-  color:var(--muted);
-  max-width:56ch;
-}
+    <footer class="footer">
+      <div>© LaBible.app — Louis Segond 1910</div>
+      <div class="links">
+        <a href="/a-propos.html">À propos</a>
+        <a href="/contact.html">Contact</a>
+        <a href="/confidentialite.html">Confidentialité</a>
+        <a href="/mentions-legales.html">Mentions légales</a>
+        <a href="/conditions.html">Conditions</a>
+      </div>
+    </footer>
+  </div>
 
-.rule{
-  width:120px;
-  height:2px;
-  background:var(--line);
-  margin:10px 0 14px;
-}
+  <div class="cookie" id="cookieBanner" role="dialog" aria-live="polite">
+    <div class="cookieRow">
+      <div class="cookieText">
+        <strong>Cookies</strong>
+        <div class="cookieDesc">Mesure d’audience optionnelle. Vous pouvez accepter ou refuser.</div>
+      </div>
+      <div class="cookieBtns">
+        <button class="btn sm primary" id="cookieAccept">Accepter</button>
+        <button class="btn sm" id="cookieDeny">Refuser</button>
+      </div>
+    </div>
+  </div>
 
-.controls{
-  margin-top:18px;
-  display:grid;
-  grid-template-columns: 1fr 1fr;
-  gap:10px;
-}
+  <script src="/assets/app.js"></script>
 
-@media (max-width: 560px){
-  .controls{ grid-template-columns: 1fr; }
-}
-
-.field{
-  display:flex;
-  flex-direction:column;
-  gap:8px;
-}
-
-.label{
-  font-size:12px;
-  letter-spacing:1.6px;
-  text-transform:uppercase;
-  color:var(--muted);
-}
-
-.select, .input{
-  border:1px solid #E6E6E9;
-  border-radius:12px;
-  padding:12px 12px;
-  background:#fff;
-  outline:none;
-}
-
-.select:focus, .input:focus{
-  border-color:#CFCFD5;
-}
-
-.row{
-  margin-top:12px;
-  display:flex;
-  gap:10px;
-  flex-wrap:wrap;
-  align-items:center;
-}
-
-.btn{
-  display:inline-flex;
-  align-items:center;
-  justify-content:center;
-  gap:8px;
-  padding:11px 14px;
-  border-radius:999px;
-  border:1px solid #E6E6E9;
-  background:#fff;
-  font-weight:600;
-  font-size:14px;
-  cursor:pointer;
-}
-
-.btn:hover{ background:var(--soft); }
-
-.btn.primary{
-  background:var(--ink);
-  border-color:var(--ink);
-  color:#fff;
-}
-.btn.primary:hover{ filter:brightness(.95); }
-
-.badge{
-  font-size:12px;
-  color:var(--muted);
-  border:1px solid #ECECEF;
-  padding:6px 10px;
-  border-radius:999px;
-}
-
-.results{ margin-top:14px; }
-
-.sectionTitle{
-  margin:0;
-  font-size:13px;
-  letter-spacing:1.6px;
-  text-transform:uppercase;
-  color:var(--muted);
-  display:flex;
-  align-items:center;
-  gap:10px;
-}
-
-.sectionTitle:after{
-  content:"";
-  height:1px;
-  flex:1;
-  background:var(--line);
-}
-
-.verseList{
-  margin-top:12px;
-  display:flex;
-  flex-direction:column;
-  gap:10px;
-}
-
-.verse{
-  padding:14px 14px;
-  border-radius:14px;
-  border:1px solid #EFEFF1;
-  background:linear-gradient(180deg, #FFFFFF 0%, #FAFAFB 100%);
-  cursor:pointer;
-}
-
-.verse:hover{ border-color:#E0E0E6; }
-
-.verse.selected{
-  border-color:#C9CAD2;
-  background:#fff;
-}
-
-.verse .text{
-  font-family:"Playfair Display", Georgia, serif;
-  font-style:italic;
-  font-size:22px;
-  line-height:1.35;
-  text-align:center;
-  white-space:pre-line;
-}
-
-.verse .meta{
-  margin-top:10px;
-  color:var(--muted);
-  font-size:13px;
-  text-align:center;
-}
-
-.side{
-  display:flex;
-  flex-direction:column;
-  gap:12px;
-}
-
-.small{
-  color:var(--muted);
-  font-size:14px;
-  margin:6px 0 0;
-}
-
-.footer{
-  margin-top:40px;
-  padding:22px 6px 0;
-  border-top:1px solid #EFEFF1;
-  display:flex;
-  flex-wrap:wrap;
-  gap:12px;
-  justify-content:space-between;
-  color:var(--muted);
-  font-size:13px;
-}
-
-.footer .links{
-  display:flex;
-  gap:12px;
-  flex-wrap:wrap;
-}
-.footer .links a:hover{ color:var(--ink); }
-
-/* Cookie banner */
-.cookie{
-  position:fixed;
-  left:16px;
-  right:16px;
-  bottom:16px;
-  max-width:900px;
-  margin:0 auto;
-  background:#fff;
-  border:1px solid #EFEFF1;
-  border-radius:16px;
-  padding:14px 14px;
-  box-shadow: 0 10px 30px rgba(0,0,0,.08);
-  display:none;
-}
-.cookie.show{ display:block; }
-.cookie .top{
-  display:flex;
-  gap:10px;
-  justify-content:space-between;
-  align-items:flex-start;
-  flex-wrap:wrap;
-}
-.cookie p{
-  margin:6px 0 0;
-  color:var(--muted);
-  font-size:13px;
-  max-width:68ch;
-}
+  <script>
+    if ("serviceWorker" in navigator) {
+      window.addEventListener("load", () => {
+        navigator.serviceWorker.register("/sw.js");
+      });
+    }
+  </script>
+</body>
+</html>

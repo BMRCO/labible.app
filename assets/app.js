@@ -1,20 +1,8 @@
 const el = (id) => document.getElementById(id);
 
-/**
- * EXPECTED DATA SHAPES
- * - /data/books.json : [{ "id": "gen", "name": "Genèse" }, ...]
- * - /data/segond_1910.json :
- *   {
- *     "gen": {
- *       "1": { "1": "Au commencement...", "2": "..." },
- *       "2": { ... }
- *     }
- *   }
- */
-
 const state = {
   books: [],
-  bible: {},
+  bible: [],
   verses: [],
   selected: new Set(),
   favorites: loadFavs(),
@@ -34,12 +22,11 @@ async function init() {
 async function loadData() {
   const booksRes = await fetch("/data/books.json", { cache: "no-cache" });
   state.books = await booksRes.json();
-
   const bibleRes = await fetch("/data/segond_1910.json", { cache: "no-cache" });
-  state.bible = await bibleRes.json();
+  const fullData = await bibleRes.json();
+  state.bible = fullData.verses || fullData;
 }
 
-// -------- UI: Book/Chapter --------
 function fillBooks() {
   const s = el("bookSelect");
   s.innerHTML = "";
@@ -54,55 +41,41 @@ function fillBooks() {
 
 function fillChapters() {
   const bookId = el("bookSelect").value;
-  const chapters = state.bible?.[bookId];
-  const s = el("chapterSelect");
-  s.innerHTML = "";
-  if (!chapters) return;
-
-  Object.keys(chapters)
-    .map(n => Number(n))
-    .filter(n => Number.isFinite(n))
-    .sort((a,b)=>a-b)
-    .forEach(n => {
-      const opt = document.createElement("option");
-      opt.value = String(n);
-      opt.textContent = String(n);
-      s.appendChild(opt);
-    });
-}
-
-// -------- Show chapter --------
-async function showChapter() {
-  const bookId = el("bookSelect").value;
-  const chapter = el("chapterSelect").value;
-
   const bookMeta = state.books.find(b => b.id === bookId);
   const bookName = bookMeta?.name || bookId;
+  const chapters = new Set();
+  state.bible.forEach(v => {
+    if (v.book_name === bookName || v.book === bookId) {
+      chapters.add(v.chapter);
+    }
+  });
+  const s = el("chapterSelect");
+  s.innerHTML = "";
+  Array.from(chapters).sort((a, b) => a - b).forEach(n => {
+    const opt = document.createElement("option");
+    opt.value = String(n);
+    opt.textContent = String(n);
+    s.appendChild(opt);
+  });
+}
 
-  const chapterData = state.bible?.[bookId]?.[chapter];
-  if (!chapterData) {
-    state.verses = [];
-    renderList([]);
-    return;
-  }
-
-  const nums = Object.keys(chapterData)
-    .map(n => Number(n))
-    .filter(n => Number.isFinite(n))
-    .sort((a,b)=>a-b);
-
-  state.verses = nums.map(vn => ({
-    id: `${bookName} ${chapter}:${vn}`,
-    text: String(chapterData[String(vn)] || "").trim()
-  }));
-
+async function showChapter() {
+  const bookId = el("bookSelect").value;
+  const chapter = parseInt(el("chapterSelect").value);
+  const bookMeta = state.books.find(b => b.id === bookId);
+  const bookName = bookMeta?.name || bookId;
+  state.verses = state.bible
+    .filter(v => (v.book_name === bookName || v.book === bookId) && v.chapter === chapter)
+    .map(v => ({
+      id: `${bookName} ${v.chapter}:${v.verse}`,
+      text: String(v.text || "").trim()
+    }));
   state.viewingFavs = false;
   el("resultsTitle").textContent = "Résultats";
   clearSelection();
   renderList(state.verses);
 }
 
-// -------- Search (global) --------
 function searchGlobal(q) {
   const query = q.trim().toLowerCase();
   if (query.length < 2) {
@@ -110,43 +83,28 @@ function searchGlobal(q) {
     renderList(state.viewingFavs ? favsToVerses() : state.verses);
     return;
   }
-
   const results = [];
-  for (const [bookId, chapters] of Object.entries(state.bible)) {
-    const bookMeta = state.books.find(b => b.id === bookId);
-    const bookName = bookMeta?.name || bookId;
-
-    for (const [chapNum, verses] of Object.entries(chapters)) {
-      for (const [verseNum, text] of Object.entries(verses)) {
-        const t = String(text || "");
-        if (t.toLowerCase().includes(query)) {
-          results.push({ id: `${bookName} ${chapNum}:${verseNum}`, text: t.trim() });
-          if (results.length >= 250) {
-            el("resultsTitle").textContent = `Recherche (limite)`;
-            clearSelection();
-            renderList(results);
-            return;
-          }
-        }
-      }
+  for (const v of state.bible) {
+    if (String(v.text || "").toLowerCase().includes(query)) {
+      results.push({
+        id: `${v.book_name} ${v.chapter}:${v.verse}`,
+        text: String(v.text).trim()
+      });
+      if (results.length >= 250) break;
     }
   }
-
   el("resultsTitle").textContent = `Recherche`;
   clearSelection();
   renderList(results);
 }
 
-// -------- Render --------
 function renderList(list) {
   const box = el("verseList");
   box.innerHTML = "";
-
   if (!list || list.length === 0) {
     box.innerHTML = `<div class="hint">Aucun résultat.</div>`;
     return;
   }
-
   list.forEach(v => {
     const div = document.createElement("div");
     div.className = "item" + (state.selected.has(v.id) ? " selected" : "");
@@ -162,7 +120,6 @@ function renderList(list) {
   });
 }
 
-// -------- Selection --------
 function toggleSelected(id) {
   if (state.selected.has(id)) state.selected.delete(id);
   else state.selected.add(id);
@@ -178,26 +135,28 @@ function updateSelectedCount() {
   el("selectedCount").textContent = `${state.selected.size} sélectionné`;
 }
 
-// -------- Favorites --------
 function toggleFavoriteSelected() {
   const ids = Array.from(state.selected);
-  if (ids.length === 0) return alert("Sélectionne au moins un verset.");
-
-  const pool = state.viewingFavs ? favsToVerses() : state.verses;
-  const byId = new Map(pool.map(v => [v.id, v]));
-
+  if (ids.length === 0) return alert("Sélectionne au menos um versículo.");
   let changed = 0;
+  const pool = state.viewingFavs ? favsToVerses() : (state.verses.length > 0 ? state.verses : []);
+  // Se não houver versículos carregados, precisamos buscar no cache de favoritos ou na bíblia toda (mais lento)
+  // Simplificação: apenas favoritos se estiver na vista de favoritos, ou os versículos visuais.
+  // Para busca global, o pool seria os resultados da busca.
+  
   ids.forEach(id => {
     if (state.favorites[id]) {
       delete state.favorites[id];
       changed++;
     } else {
-      const v = byId.get(id);
-      state.favorites[id] = { id, text: v?.text || "", when: Date.now() };
-      changed++;
+      // Tenta encontrar o texto no pool atual ou nos favoritos (se estivermos tirando)
+      const v = pool.find(item => item.id === id);
+      if (v) {
+        state.favorites[id] = { id, text: v.text, when: Date.now() };
+        changed++;
+      }
     }
   });
-
   saveFavs(state.favorites);
   renderFavs();
   alert(`Favoris mis à jour ✅ (${changed})`);
@@ -207,12 +166,10 @@ function renderFavs() {
   const favBox = el("favList");
   favBox.innerHTML = "";
   const favs = Object.values(state.favorites).sort((a,b)=>b.when-a.when);
-
   if (favs.length === 0) {
     favBox.innerHTML = `<div class="hint">Aucun favori pour l’instant.</div>`;
     return;
   }
-
   favs.slice(0, 6).forEach(f => {
     const div = document.createElement("div");
     div.className = "item";
@@ -225,38 +182,34 @@ function renderFavs() {
 }
 
 function favsToVerses() {
-  return Object.values(state.favorites)
-    .sort((a,b)=>b.when-a.when)
-    .map(f => ({ id: f.id, text: f.text }));
+  return Object.values(state.favorites).sort((a,b)=>b.when-a.when).map(f => ({ id: f.id, text: f.text }));
 }
 
 function loadFavs() {
-  try { return JSON.parse(localStorage.getItem("labible_favs") || "{}"); }
-  catch { return {}; }
+  try { return JSON.parse(localStorage.getItem("labible_favs") || "{}"); } catch { return {}; }
 }
+
 function saveFavs(obj) {
   localStorage.setItem("labible_favs", JSON.stringify(obj));
 }
 
-// -------- Share / Copy --------
 function buildShareText() {
   const ids = Array.from(state.selected);
   if (ids.length === 0) return "";
-
-  const pool = state.viewingFavs ? favsToVerses() : state.verses;
-  const byId = new Map(pool.map(v => [v.id, v]));
-
   const lines = [];
-  ids.slice(0, 5).forEach(id => {
-    const v = byId.get(id);
-    if (!v) return;
-    lines.push(`${v.text}`);
-    lines.push(`— ${id} (Louis Segond 1910)`);
-    lines.push("");
+  // Procura o texto nos versículos atuais ou favoritos
+  const pool = [...state.verses, ...favsToVerses()];
+  ids.slice(0, 10).forEach(id => {
+    const v = pool.find(item => item.id === id);
+    if (v) {
+      lines.push(`${v.text}`);
+      lines.push(`— ${id} (Louis Segond 1910)`);
+      lines.push("");
+    }
   });
-
   lines.push("LaBible.app");
-  return lines.join("\n").trim();
+  return lines.join("
+").trim();
 }
 
 async function copySelected() {
@@ -270,66 +223,53 @@ async function shareSelected() {
   const txt = buildShareText();
   if (!txt) return alert("Sélectionne au moins un verset.");
   if (navigator.share) {
-    await navigator.share({ title:"LaBible.app", text: txt });
+    await navigator.share({ title: "LaBible.app", text: txt });
   } else {
-    await navigator.clipboard.writeText(txt);
-    alert("Partage non supporté — texte copié ✅");
+    copySelected();
   }
 }
 
-// -------- PWA Install --------
 function initInstallFlow() {
-  const installBtn = el("installBtn");
-  installBtn.style.display = "none";
-
+  const btn = el("btnInstall");
+  if (!btn) return;
   window.addEventListener("beforeinstallprompt", (e) => {
     e.preventDefault();
     state.installPromptEvent = e;
-    installBtn.style.display = "inline-flex";
+    btn.classList.add("visible");
   });
-
-  installBtn.addEventListener("click", async () => {
-    if (!state.installPromptEvent) {
-      alert("Utilise le menu du navigateur → Ajouter à l’écran d’accueil.");
-      return;
-    }
+  btn.addEventListener("click", async () => {
+    if (!state.installPromptEvent) return;
     state.installPromptEvent.prompt();
     await state.installPromptEvent.userChoice;
     state.installPromptEvent = null;
-    installBtn.style.display = "none";
+    btn.classList.remove("visible");
   });
 }
 
-// -------- Cookies banner (opt-in) --------
 function initCookies() {
   const key = "labible_cookie_choice";
   const banner = el("cookieBanner");
+  if (!banner) return;
   const choice = localStorage.getItem(key);
   if (!choice) banner.classList.add("show");
-
   el("cookieAccept").addEventListener("click", () => {
     localStorage.setItem(key, "accept");
     banner.classList.remove("show");
-    // Load analytics here ONLY after accept (optional)
   });
-
   el("cookieDeny").addEventListener("click", () => {
     localStorage.setItem(key, "deny");
     banner.classList.remove("show");
   });
 }
 
-// -------- Events --------
 function attachEvents() {
   el("bookSelect").addEventListener("change", fillChapters);
   el("loadBtn").addEventListener("click", showChapter);
-
   el("clearBtn").addEventListener("click", () => {
     el("searchInput").value = "";
     clearSelection();
     renderList(state.viewingFavs ? favsToVerses() : state.verses);
   });
-
   el("toggleFavBtn").addEventListener("click", () => {
     state.viewingFavs = !state.viewingFavs;
     clearSelection();
@@ -341,23 +281,18 @@ function attachEvents() {
       renderList(state.verses);
     }
   });
-
   el("clearSelBtn").addEventListener("click", () => {
     clearSelection();
     renderList(state.viewingFavs ? favsToVerses() : state.verses);
   });
-
   el("searchInput").addEventListener("input", (e) => searchGlobal(e.target.value));
-
   el("copyBtn").addEventListener("click", copySelected);
   el("shareBtn").addEventListener("click", shareSelected);
   el("favBtn").addEventListener("click", toggleFavoriteSelected);
 }
 
 function escapeHtml(str) {
-  return String(str).replace(/[&<>"']/g, s => ({
-    "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"
-  }[s]));
+  return String(str).replace(/[&<>"']/g, s => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[s]));
 }
 
 init();

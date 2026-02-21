@@ -1,4 +1,4 @@
-const CACHE_NAME = "labible-pwa-v2";
+const CACHE_NAME = "labible-pwa-v3";
 const OFFLINE_FALLBACK = "/404.html"; // já existe no teu repo
 
 // Precache só do que está no repo com alta certeza

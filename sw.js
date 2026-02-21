@@ -1,20 +1,19 @@
-const CACHE_NAME = "labible-pwa-v1";
-const OFFLINE_URL = "/offline.html";
+const CACHE_NAME = "labible-pwa-v2";
+const OFFLINE_FALLBACK = "/404.html"; // já existe no teu repo
 
+// Precache só do que está no repo com alta certeza
 const PRECACHE_URLS = [
   "/",
   "/index.html",
-  "/offline.html",
-  "/a-propos.html",
-  "/contact.html",
   "/confidentialite.html",
   "/mentions-legales.html",
-  "/conditions.html",
-  "/assets/styles.css",
-  "/assets/app.js",
   "/manifest.webmanifest",
+
+  // dados
   "/data/books.json",
   "/data/segond_1910.json",
+
+  // icons
   "/icons/icon-192.png",
   "/icons/icon-512.png",
   "/icons/maskable-192.png",
@@ -24,7 +23,14 @@ const PRECACHE_URLS = [
 self.addEventListener("install", (event) => {
   event.waitUntil((async () => {
     const cache = await caches.open(CACHE_NAME);
-    await cache.addAll(PRECACHE_URLS);
+
+    // Anti-404: add individual (se um falhar, não mata tudo)
+    await Promise.all(
+      PRECACHE_URLS.map(async (url) => {
+        try { await cache.add(url); } catch (e) { /* ignore */ }
+      })
+    );
+
     self.skipWaiting();
   })());
 });
@@ -32,7 +38,7 @@ self.addEventListener("install", (event) => {
 self.addEventListener("activate", (event) => {
   event.waitUntil((async () => {
     const keys = await caches.keys();
-    await Promise.all(keys.map((k) => (k === CACHE_NAME ? null : caches.delete(k))));
+    await Promise.all(keys.map(k => (k === CACHE_NAME ? null : caches.delete(k))));
     self.clients.claim();
   })());
 });
@@ -40,9 +46,10 @@ self.addEventListener("activate", (event) => {
 self.addEventListener("fetch", (event) => {
   const req = event.request;
   const url = new URL(req.url);
+
   if (url.origin !== location.origin) return;
 
-  // Navigation: network-first
+  // Navegação: network-first com fallback
   if (req.mode === "navigate") {
     event.respondWith((async () => {
       try {
@@ -52,7 +59,7 @@ self.addEventListener("fetch", (event) => {
         return fresh;
       } catch {
         const cache = await caches.open(CACHE_NAME);
-        return (await cache.match(req)) || (await cache.match(OFFLINE_URL));
+        return (await cache.match(req)) || (await cache.match("/index.html")) || (await cache.match(OFFLINE_FALLBACK));
       }
     })());
     return;

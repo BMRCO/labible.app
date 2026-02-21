@@ -1,7 +1,7 @@
 {
-  "name": "LaBible.app",
+  "name": "LaBible | LSG 1910",
   "short_name": "LaBible",
-  "description": "Bible en ligne — Louis Segond 1910. Lecture, recherche, favoris, partage.",
+  "description": "Bible en ligne – Louis Segond 1910. Lecture, recherche, favoris, partage.",
   "start_url": "/?source=pwa",
   "scope": "/",
   "display": "standalone",

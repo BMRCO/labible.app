@@ -1,62 +1,76 @@
-// sw.js — LaBible.app (cache v3) — força update para não ficar preso ao JS antigo
+const CACHE_NAME = "labible-pwa-v1";
+const OFFLINE_URL = "/offline.html";
 
-const CACHE = "labible-cache-v3";
-
-const ASSETS = [
+const PRECACHE_URLS = [
   "/",
   "/index.html",
-  "/style.css",
-  "/app.js",
+  "/offline.html",
+  "/a-propos.html",
+  "/contact.html",
+  "/confidentialite.html",
+  "/mentions-legales.html",
+  "/conditions.html",
+  "/assets/styles.css",
+  "/assets/app.js",
   "/manifest.webmanifest",
+  "/data/books.json",
   "/data/segond_1910.json",
-  "/plan-lecture-1-an.html",
-  "/plan-dashboard.js"
+  "/icons/icon-192.png",
+  "/icons/icon-512.png",
+  "/icons/maskable-192.png",
+  "/icons/maskable-512.png"
 ];
 
 self.addEventListener("install", (event) => {
-  self.skipWaiting();
-  event.waitUntil(
-    caches.open(CACHE).then((cache) => cache.addAll(ASSETS))
-  );
+  event.waitUntil((async () => {
+    const cache = await caches.open(CACHE_NAME);
+    await cache.addAll(PRECACHE_URLS);
+    self.skipWaiting();
+  })());
 });
 
 self.addEventListener("activate", (event) => {
   event.waitUntil((async () => {
     const keys = await caches.keys();
-    await Promise.all(keys.map(k => (k !== CACHE ? caches.delete(k) : null)));
-    await self.clients.claim();
+    await Promise.all(keys.map((k) => (k === CACHE_NAME ? null : caches.delete(k))));
+    self.clients.claim();
   })());
 });
 
-// Network-first para páginas e JS/CSS (para evitar ficar preso)
-// Cache-first para ficheiros grandes (json) quando offline
 self.addEventListener("fetch", (event) => {
   const req = event.request;
   const url = new URL(req.url);
 
-  // só controla o teu domínio
   if (url.origin !== location.origin) return;
 
-  const isNav = req.mode === "navigate";
-  const isCode = url.pathname.endsWith(".js") || url.pathname.endsWith(".css") || url.pathname.endsWith(".html");
-
-  if (isNav || isCode) {
+  // Navigations: network-first
+  if (req.mode === "navigate") {
     event.respondWith((async () => {
       try {
         const fresh = await fetch(req);
-        const cache = await caches.open(CACHE);
+        const cache = await caches.open(CACHE_NAME);
         cache.put(req, fresh.clone());
         return fresh;
       } catch {
-        const cached = await caches.match(req);
-        return cached || caches.match("/index.html");
+        const cache = await caches.open(CACHE_NAME);
+        return (await cache.match(req)) || (await cache.match(OFFLINE_URL));
       }
     })());
     return;
   }
 
-  // outros assets: cache-first
-  event.respondWith(
-    caches.match(req).then((cached) => cached || fetch(req))
-  );
+  // Assets + JSON: cache-first
+  event.respondWith((async () => {
+    const cache = await caches.open(CACHE_NAME);
+    const cached = await cache.match(req);
+    if (cached) return cached;
+
+    try {
+      const fresh = await fetch(req);
+      if (fresh && fresh.status === 200) cache.put(req, fresh.clone());
+      return fresh;
+    } catch {
+      return cached || Response.error();
+    }
+  })());
 });

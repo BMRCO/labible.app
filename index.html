@@ -1,305 +1,149 @@
 <!doctype html>
 <html lang="fr">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
 
-  <title>LaBible.app | Maintenance</title>
-  <meta name="description" content="LaBible.app est en maintenance. Nous revenons bientôt." />
-  <meta name="robots" content="noindex, nofollow" />
-
-  <link rel="canonical" href="https://labible.app/" />
+  <title>Bible en ligne — Louis Segond 1910 (LSG) | LaBible.app</title>
+  <meta name="description" content="Lire la Bible en ligne (Louis Segond 1910). Navigation par livre et chapitre, recherche, favoris, partage de versets.">
 
   <!-- PWA -->
   <link rel="manifest" href="/manifest.webmanifest">
-  <meta name="theme-color" content="#0b1220" />
-
-  <!-- (optionnel) icônes si tu les as -->
-  <link rel="icon" href="/icons/icon-192.png" sizes="192x192">
+  <meta name="theme-color" content="#0B0B0C">
   <link rel="apple-touch-icon" href="/icons/icon-192.png">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 
-  <style>
-    :root{
-      --bg1:#0b1220;
-      --bg2:#0f1b34;
-      --card: rgba(255,255,255,.06);
-      --line: rgba(255,255,255,.10);
-      --text: rgba(255,255,255,.92);
-      --muted: rgba(255,255,255,.70);
-      --btn: rgba(255,255,255,.10);
-      --btn2: rgba(255,255,255,.14);
-      --shadow: 0 20px 60px rgba(0,0,0,.35);
-      --radius: 22px;
-      --max: 860px;
-      --accent: #6aa7ff;
-    }
-    body.light{
-      --bg1:#f3f6fb;
-      --bg2:#e7eefb;
-      --card: rgba(255,255,255,.85);
-      --line: rgba(10,20,40,.12);
-      --text: rgba(10,20,40,.92);
-      --muted: rgba(10,20,40,.66);
-      --btn: rgba(10,20,40,.06);
-      --btn2: rgba(10,20,40,.10);
-      --shadow: 0 20px 60px rgba(30,60,120,.20);
-      --accent: #2d64ff;
-    }
-
-    *{ box-sizing:border-box; }
-    html,body{ height:100%; }
-    body{
-      margin:0;
-      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-      color:var(--text);
-      background:
-        radial-gradient(900px 500px at 20% 10%, rgba(106,167,255,.22), transparent 60%),
-        radial-gradient(700px 520px at 90% 30%, rgba(130,255,210,.12), transparent 60%),
-        linear-gradient(180deg, var(--bg1), var(--bg2));
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      padding:24px;
-    }
-
-    .wrap{ width:100%; max-width:var(--max); }
-    .topbar{
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      margin-bottom:14px;
-      padding: 10px 6px;
-    }
-    .brand{
-      display:flex;
-      gap:12px;
-      align-items:center;
-      text-decoration:none;
-      color:inherit;
-    }
-    .logo{
-      width:42px;height:42px;
-      display:grid;place-items:center;
-      background: var(--btn);
-      border:1px solid var(--line);
-      border-radius:14px;
-      box-shadow: var(--shadow);
-      font-size:20px;
-    }
-    .brandText{ line-height:1.1; }
-    .brandTitle{ font-weight:800; font-size:18px; letter-spacing:.2px; }
-    .brandSub{ color:var(--muted); font-size:13px; margin-top:2px; }
-
-    .iconbtn{
-      border:1px solid var(--line);
-      background: var(--btn);
-      color:var(--text);
-      border-radius:14px;
-      padding:10px 12px;
-      font-size:18px;
-      cursor:pointer;
-    }
-    .iconbtn:active{ transform: translateY(1px); }
-
-    .card{
-      background: var(--card);
-      border:1px solid var(--line);
-      border-radius: var(--radius);
-      box-shadow: var(--shadow);
-      padding: 22px;
-      overflow:hidden;
-    }
-
-    .pill{
-      display:inline-flex;
-      align-items:center;
-      gap:10px;
-      padding:8px 12px;
-      border-radius: 999px;
-      border:1px solid var(--line);
-      background: var(--btn);
-      color:var(--muted);
-      font-size:13px;
-      margin-bottom:12px;
-    }
-    .dot{
-      width:10px;height:10px;border-radius:50%;
-      background: #ffcc00;
-      box-shadow: 0 0 0 4px rgba(255,204,0,.16);
-    }
-
-    h1{
-      margin: 0 0 8px 0;
-      font-size: 30px;
-      letter-spacing: .2px;
-    }
-    p{
-      margin: 0 0 14px 0;
-      color: var(--muted);
-      font-size: 15px;
-      line-height: 1.55;
-    }
-
-    .grid{
-      display:grid;
-      grid-template-columns: 1fr;
-      gap:12px;
-      margin-top:14px;
-    }
-    .row{
-      display:flex;
-      flex-wrap:wrap;
-      gap:10px;
-      margin-top:10px;
-    }
-
-    .btn{
-      border:1px solid var(--line);
-      background: var(--btn);
-      color: var(--text);
-      border-radius: 14px;
-      padding: 12px 14px;
-      cursor:pointer;
-      text-decoration:none;
-      display:inline-flex;
-      align-items:center;
-      justify-content:center;
-      gap:10px;
-      font-weight:650;
-    }
-    .btn.primary{
-      background: rgba(106,167,255,.18);
-      border-color: rgba(106,167,255,.35);
-      color: var(--text);
-    }
-    .btn:hover{ background: var(--btn2); }
-    .btn.primary:hover{ background: rgba(106,167,255,.22); }
-
-    .small{
-      font-size: 12.5px;
-      color: var(--muted);
-      margin-top: 12px;
-    }
-
-    .status{
-      display:flex; gap:12px; align-items:flex-start;
-      padding:12px;
-      background: var(--btn);
-      border:1px solid var(--line);
-      border-radius: 16px;
-    }
-    .status strong{ display:block; margin-bottom:2px; }
-    .status .ico{ font-size:18px; margin-top:2px; }
-
-    .foot{
-      text-align:center;
-      margin-top: 14px;
-      color: var(--muted);
-      font-size: 12px;
-    }
-    .foot a{
-      color: inherit;
-      text-decoration: underline;
-      text-decoration-color: rgba(255,255,255,.18);
-    }
-    body.light .foot a{
-      text-decoration-color: rgba(10,20,40,.22);
-    }
-
-    @media (min-width: 760px){
-      .grid{ grid-template-columns: 1fr 1fr; }
-      h1{ font-size: 36px; }
-    }
-  </style>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Playfair+Display:ital,wght@0,600;1,500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/assets/styles.css">
 </head>
 
 <body>
-  <div class="wrap">
-    <header class="topbar">
-      <a class="brand" href="/" aria-label="LaBible.app">
-        <div class="logo">📖</div>
-        <div class="brandText">
-          <div class="brandTitle">LaBible.app</div>
-          <div class="brandSub">LSG 1910 • Maintenance</div>
-        </div>
+  <div class="container">
+    <header class="header">
+      <a class="brand" href="/">
+        <div class="name">LaBible.app</div>
+        <div class="sub">Louis Segond 1910</div>
       </a>
 
-      <button id="toggleTheme" class="iconbtn" type="button" aria-label="Changer le thème">🌙</button>
+      <nav class="nav">
+        <a href="/a-propos.html">À propos</a>
+        <a href="/contact.html">Contact</a>
+        <a href="/confidentialite.html">Confidentialité</a>
+      </nav>
     </header>
 
-    <main class="card">
-      <div class="pill"><span class="dot"></span> Maintenance en cours</div>
+    <main class="hero">
+      <section class="card">
+        <div class="rule"></div>
+        <h1 class="h1">La Bible,\nclaire et éditoriale.</h1>
+        <p class="lead">
+          Sélection par livre et chapitre, recherche instantanée, favoris,
+          et partage de versets — avec une mise en page “Signature”.
+        </p>
 
-      <h1>On revient bientôt 🙏</h1>
-      <p>
-        LaBible.app est temporairement en maintenance pour améliorer la stabilité, le plan de lecture 365 jours
-        et l’expérience mobile.
-      </p>
+        <div class="controls" id="controls">
+          <div class="field">
+            <div class="label">Livre</div>
+            <select class="select" id="bookSelect" aria-label="Livre"></select>
+          </div>
 
-      <div class="grid">
-        <div class="status">
-          <div class="ico">🛠️</div>
-          <div>
-            <strong>Ce qui se passe</strong>
-            <div class="small" style="margin:0">
-              Mise à jour du site + correction des pages et du chargement des données.
-            </div>
+          <div class="field">
+            <div class="label">Chapitre</div>
+            <select class="select" id="chapterSelect" aria-label="Chapitre"></select>
+          </div>
+
+          <div class="field" style="grid-column:1/-1;">
+            <div class="label">Chercher</div>
+            <input class="input" id="searchInput" placeholder="Ex: berger, foi, paix…" />
           </div>
         </div>
 
-        <div class="status">
-          <div class="ico">⏳</div>
-          <div>
-            <strong>À faire si l’app bug</strong>
-            <div class="small" style="margin:0">
-              Fermez l’onglet, puis rouvrez. Si besoin : vider le cache du navigateur.
-            </div>
-          </div>
+        <div class="row">
+          <button class="btn primary" id="loadBtn">Afficher</button>
+          <button class="btn" id="clearBtn">Effacer</button>
+          <span class="badge" id="selectedCount">0 sélectionné</span>
+
+          <button class="btn" id="toggleFavBtn">★ Voir favoris</button>
+          <button class="btn" id="installBtn" title="Installer l’app">⬇ Installer</button>
         </div>
-      </div>
 
-      <div class="row">
-        <button class="btn primary" type="button" id="btnReload">↻ Réessayer</button>
-        <a class="btn" href="/plan/" aria-label="Aller au plan">📅 Plan (365 jours)</a>
-        <a class="btn" href="/confidentialite/" aria-label="Confidentialité">🔒 Confidentialité</a>
-      </div>
+        <div class="results">
+          <h2 class="sectionTitle" id="resultsTitle">Résultats</h2>
+          <div class="verseList" id="verseList"></div>
 
-      <div class="small" id="metaLine"></div>
+          <div class="row" style="margin-top:12px;">
+            <button class="btn" id="shareBtn">Partager</button>
+            <button class="btn" id="copyBtn">Copier</button>
+            <button class="btn" id="favBtn">☑ Favori</button>
+            <button class="btn" id="clearSelBtn">Effacer sélection</button>
+          </div>
+
+          <p class="small" id="hint">
+            Touchez un verset pour sélectionner • Sélection multiple possible
+          </p>
+        </div>
+      </section>
+
+      <aside class="side">
+        <section class="card">
+          <h3 style="margin:0;">Favoris</h3>
+          <p class="small">Enregistrez vos versets et retrouvez-les rapidement.</p>
+          <div class="verseList" id="favList"></div>
+        </section>
+
+        <section class="card">
+          <h3 style="margin:0;">Signature</h3>
+          <p class="small">
+            « » • Référence en bas • Centré • Espaces généreux.
+          </p>
+          <div class="row">
+            <span class="badge">#LaBible</span>
+            <span class="badge">#LSG1910</span>
+            <span class="badge">#versetdujour</span>
+          </div>
+        </section>
+      </aside>
     </main>
 
-    <div class="foot">
-      © <span id="year"></span> LaBible.app — Louis Segond 1910 (LSG)
-      · <a href="/a-propos/">À propos</a>
+    <footer class="footer">
+      <div>© LaBible.app — Louis Segond 1910</div>
+      <div class="links">
+        <a href="/a-propos.html">À propos</a>
+        <a href="/contact.html">Contact</a>
+        <a href="/confidentialite.html">Politique de confidentialité</a>
+        <a href="/mentions-legales.html">Mentions légales</a>
+        <a href="/conditions.html">Conditions d’utilisation</a>
+      </div>
+    </footer>
+  </div>
+
+  <div class="cookie" id="cookieBanner" role="dialog" aria-live="polite">
+    <div class="top">
+      <div>
+        <strong>Cookies</strong>
+        <p>
+          Nous utilisons des mesures d’audience (optionnelles) pour améliorer le site.
+          Vous pouvez accepter ou refuser.
+        </p>
+      </div>
+      <div class="row" style="margin:0;">
+        <button class="btn primary" id="cookieAccept">Accepter</button>
+        <button class="btn" id="cookieDeny">Refuser</button>
+      </div>
     </div>
   </div>
 
+  <script src="/assets/app.js"></script>
+
+  <!-- Register Service Worker -->
   <script>
-    // Footer year
-    document.getElementById("year").textContent = new Date().getFullYear();
-
-    // Theme: default dark, allow toggle
-    const apply = (mode) => {
-      if (mode === "light") document.body.classList.add("light");
-      else document.body.classList.remove("light");
-      localStorage.setItem("theme", mode);
-      document.getElementById("toggleTheme").textContent = (mode === "light") ? "🌙" : "☀️";
-      document.querySelector('meta[name="theme-color"]').setAttribute("content", mode === "light" ? "#f3f6fb" : "#0b1220");
-    };
-    const saved = localStorage.getItem("theme") || "dark";
-    apply(saved);
-
-    document.getElementById("toggleTheme").addEventListener("click", () => {
-      const next = document.body.classList.contains("light") ? "dark" : "light";
-      apply(next);
-    });
-
-    // Reload
-    document.getElementById("btnReload").addEventListener("click", () => location.reload());
-
-    // Small meta
-    const now = new Date();
-    document.getElementById("metaLine").textContent =
-      "Dernière vérification : " + now.toLocaleString("fr-FR");
+    if ("serviceWorker" in navigator) {
+      window.addEventListener("load", () => {
+        navigator.serviceWorker.register("/sw.js");
+      });
+    }
   </script>
 </body>
 </html>

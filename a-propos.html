@@ -7,12 +7,14 @@
   <meta name="theme-color" content="#111827">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/assets/styles.css">
+    <link rel="stylesheet" href="/assets/style.css">
 </head>
 <body>
   <div class="container">
-    <header class="header">
+        <header class="topbar">
               <a class="brand" href="/"><img class="brandIcon" src="/icons/icon-192.png" alt="LaBible.app"><div class="name">LaBible.app | LSG 1910</div></a>
+      <button class="btnTheme" id="btnTheme" aria-label="Mode sombre" title="Mode sombre">🌙</button>
+      <button class="btnInstall" id="btnInstall" aria-label="Installer l'application" title="Installer l'application">⤓ Installer</button>
     </header>
 
     <section class="card">
@@ -38,5 +40,57 @@
         <span class="footerPd">Texte&nbsp;: Bible Louis Segond 1910 &mdash; domaine public.</span>
       </div>
         </footer>
+
+  <!-- Dark mode -->
+  <script>
+    (function(){
+      var d=localStorage.getItem('theme');
+      if(d==='dark'||(!d&&window.matchMedia('(prefers-color-scheme:dark)').matches)){
+        document.documentElement.classList.add('dark');
+      }
+    })();
+    document.addEventListener('DOMContentLoaded',function(){
+      var btn=document.getElementById('btnTheme');
+      if(!btn) return;
+      function update(){
+        var dark=document.documentElement.classList.contains('dark');
+        btn.textContent=dark?'☀️':'🌙';
+        btn.title=dark?'Mode clair':'Mode sombre';
+      }
+      update();
+      btn.addEventListener('click',function(){
+        document.documentElement.classList.toggle('dark');
+        localStorage.setItem('theme',document.documentElement.classList.contains('dark')?'dark':'light');
+        update();
+      });
+    });
+  </script>
+  <!-- PWA Install -->
+  <script>
+    var _deferredPrompt=null;
+    window.addEventListener('beforeinstallprompt',function(e){
+      e.preventDefault();
+      _deferredPrompt=e;
+      var b=document.getElementById('btnInstall');
+      if(b) b.classList.add('visible');
+    });
+    window.addEventListener('appinstalled',function(){
+      _deferredPrompt=null;
+      var b=document.getElementById('btnInstall');
+      if(b) b.classList.remove('visible');
+    });
+    document.addEventListener('DOMContentLoaded',function(){
+      var b=document.getElementById('btnInstall');
+      if(!b) return;
+      b.addEventListener('click',function(){
+        if(!_deferredPrompt) return;
+        _deferredPrompt.prompt();
+        _deferredPrompt.userChoice.then(function(){
+          _deferredPrompt=null;
+          b.classList.remove('visible');
+        });
+      });
+    });
+  </script>
 </body>
 </html>

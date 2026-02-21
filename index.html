@@ -24,10 +24,11 @@
 
 <body>
   <div class="container">
-    <header class="header">
+        <header class="topbar">
               <a class="brand" href="/"><img class="brandIcon" src="/icons/icon-192.png" alt="LaBible.app">
                         <div class="name">LaBible.app | LSG 1910</div>
                 </a>
+      <button class="btnTheme" id="btnTheme" aria-label="Modo escuro" title="Modo escuro">🌙</button>
 
     </header>
 
@@ -146,6 +147,31 @@
         navigator.serviceWorker.register("/sw.js");
       });
     }
+  </script>
+
+  <!-- Dark mode -->
+  <script>
+    (function(){
+      var d=localStorage.getItem('theme');
+      if(d==='dark'||(!d&&window.matchMedia('(prefers-color-scheme:dark)').matches)){
+        document.documentElement.classList.add('dark');
+      }
+    })();
+    document.addEventListener('DOMContentLoaded',function(){
+      var btn=document.getElementById('btnTheme');
+      if(!btn) return;
+      function update(){
+        var dark=document.documentElement.classList.contains('dark');
+        btn.textContent=dark?'☀️':'🌙';
+        btn.title=dark?'Mode clair':'Mode sombre';
+      }
+      update();
+      btn.addEventListener('click',function(){
+        document.documentElement.classList.toggle('dark');
+        localStorage.setItem('theme',document.documentElement.classList.contains('dark')?'dark':'light');
+        update();
+      });
+    });
   </script>
 </body>
 </html>

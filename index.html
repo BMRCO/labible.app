@@ -29,6 +29,7 @@
                         <div class="name">LaBible.app | LSG 1910</div>
                 </a>
       <button class="btnTheme" id="btnTheme" aria-label="Modo escuro" title="Modo escuro">🌙</button>
+      <button class="btnInstall" id="btnInstall" aria-label="Installer l'application" title="Installer l'application">⤓ Installer</button>
 
     </header>
 
@@ -170,6 +171,34 @@
         document.documentElement.classList.toggle('dark');
         localStorage.setItem('theme',document.documentElement.classList.contains('dark')?'dark':'light');
         update();
+      });
+    });
+  </script>
+
+  <!-- PWA Install -->
+  <script>
+    var _deferredPrompt=null;
+    window.addEventListener('beforeinstallprompt',function(e){
+      e.preventDefault();
+      _deferredPrompt=e;
+      var b=document.getElementById('btnInstall');
+      if(b) b.classList.add('visible');
+    });
+    window.addEventListener('appinstalled',function(){
+      _deferredPrompt=null;
+      var b=document.getElementById('btnInstall');
+      if(b) b.classList.remove('visible');
+    });
+    document.addEventListener('DOMContentLoaded',function(){
+      var b=document.getElementById('btnInstall');
+      if(!b) return;
+      b.addEventListener('click',function(){
+        if(!_deferredPrompt) return;
+        _deferredPrompt.prompt();
+        _deferredPrompt.userChoice.then(function(r){
+          _deferredPrompt=null;
+          b.classList.remove('visible');
+        });
       });
     });
   </script>

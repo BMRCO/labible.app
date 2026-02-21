@@ -1,22 +1,25 @@
 <!doctype html>
 <html lang="fr">
 <head>
-  <meta charset="utf-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <title>LaBible.app — Louis Segond 1910</title>
-  <meta name="description" content="Lire la Bible en ligne (Louis Segond 1910). Navigation par livre et chapitre, recherche, favoris, partage de versets.">
+  <meta name="description" content="Lire la Bible en ligne (Louis Segond 1910). Navigation par livre et chapitre, recherche, favoris, partage de versets." />
 
   <!-- PWA -->
-  <link rel="manifest" href="/manifest.webmanifest">
-  <meta name="theme-color" content="#111827">
-  <link rel="apple-touch-icon" href="/icons/icon-192.png">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <link rel="manifest" href="/manifest.webmanifest" />
+  <meta name="theme-color" content="#111827" />
+  <link rel="apple-touch-icon" href="/icons/icon-192.png" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
 
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/assets/styles.css">
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+
+  <!-- Styles -->
+  <link rel="stylesheet" href="/assets/style.css" />
 </head>
 
 <body>
@@ -44,36 +47,46 @@
         <div class="controls">
           <div class="field">
             <label class="label" for="bookSelect">Livre</label>
-            <select class="select" id="bookSelect"></select>
+            <select class="select" id="bookSelect" aria-label="Livre"></select>
           </div>
 
           <div class="field">
             <label class="label" for="chapterSelect">Chapitre</label>
-            <select class="select" id="chapterSelect"></select>
+            <select class="select" id="chapterSelect" aria-label="Chapitre"></select>
           </div>
 
           <div class="field span2">
             <label class="label" for="searchInput">Recherche</label>
-            <input class="input" id="searchInput" placeholder="Ex: berger, foi, paix…" autocomplete="off" />
+            <input
+              class="input"
+              id="searchInput"
+              placeholder="Ex: berger, foi, paix…"
+              autocomplete="off"
+              inputmode="search"
+            />
           </div>
         </div>
 
         <div class="actions">
-          <button class="btn primary" id="loadBtn">Afficher</button>
-          <button class="btn" id="clearBtn">Effacer</button>
-          <button class="btn" id="toggleFavBtn">Favoris</button>
-          <button class="btn" id="installBtn" style="display:none;">Installer</button>
+          <button class="btn primary" id="loadBtn" type="button">Afficher</button>
+          <button class="btn" id="clearBtn" type="button">Effacer</button>
+          <button class="btn" id="toggleFavBtn" type="button">Favoris</button>
+
+          <!-- o JS mostra este botão só quando o navegador permite instalação -->
+          <button class="btn" id="installBtn" type="button" style="display:none;">Installer</button>
+
           <span class="pill" id="selectedCount">0 sélectionné</span>
         </div>
 
         <div class="results">
           <div class="resultsHead">
             <h2 class="h2" id="resultsTitle">Résultats</h2>
+
             <div class="tools">
-              <button class="btn sm" id="copyBtn">Copier</button>
-              <button class="btn sm" id="shareBtn">Partager</button>
-              <button class="btn sm" id="favBtn">Mettre en favori</button>
-              <button class="btn sm" id="clearSelBtn">Effacer sélection</button>
+              <button class="btn sm" id="copyBtn" type="button">Copier</button>
+              <button class="btn sm" id="shareBtn" type="button">Partager</button>
+              <button class="btn sm" id="favBtn" type="button">Mettre en favori</button>
+              <button class="btn sm" id="clearSelBtn" type="button">Effacer sélection</button>
             </div>
           </div>
 
@@ -111,6 +124,7 @@
     </footer>
   </div>
 
+  <!-- Cookies -->
   <div class="cookie" id="cookieBanner" role="dialog" aria-live="polite">
     <div class="cookieRow">
       <div class="cookieText">
@@ -118,14 +132,16 @@
         <div class="cookieDesc">Mesure d’audience optionnelle. Vous pouvez accepter ou refuser.</div>
       </div>
       <div class="cookieBtns">
-        <button class="btn sm primary" id="cookieAccept">Accepter</button>
-        <button class="btn sm" id="cookieDeny">Refuser</button>
+        <button class="btn sm primary" id="cookieAccept" type="button">Accepter</button>
+        <button class="btn sm" id="cookieDeny" type="button">Refuser</button>
       </div>
     </div>
   </div>
 
+  <!-- App -->
   <script src="/assets/app.js"></script>
 
+  <!-- Service Worker -->
   <script>
     if ("serviceWorker" in navigator) {
       window.addEventListener("load", () => {

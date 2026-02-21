@@ -40,10 +40,9 @@ self.addEventListener("activate", (event) => {
 self.addEventListener("fetch", (event) => {
   const req = event.request;
   const url = new URL(req.url);
-
   if (url.origin !== location.origin) return;
 
-  // Navigations: network-first
+  // Navigation: network-first
   if (req.mode === "navigate") {
     event.respondWith((async () => {
       try {
@@ -59,7 +58,7 @@ self.addEventListener("fetch", (event) => {
     return;
   }
 
-  // Assets + JSON: cache-first
+  // Assets/data: cache-first
   event.respondWith((async () => {
     const cache = await caches.open(CACHE_NAME);
     const cached = await cache.match(req);

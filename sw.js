@@ -1,36 +1,26 @@
-const CACHE_NAME = "labible-pwa-v3";
-const OFFLINE_FALLBACK = "/404.html"; // já existe no teu repo
-
-// Precache só do que está no repo com alta certeza
-const PRECACHE_URLS = [
+/* sw.js — LaBible.app PRO */
+const VERSION = "labible-pro-v1";
+const CORE = [
   "/",
   "/index.html",
-  "/confidentialite.html",
-  "/mentions-legales.html",
+  "/offline.html",
+  "/assets/style.css",
+  "/assets/app.js",
+  "/assets/bible.js",
+  "/assets/ui.js",
+  "/assets/storage.js",
+  "/assets/share-image.js",
   "/manifest.webmanifest",
-
-  // dados
   "/data/books.json",
   "/data/segond_1910.json",
-
-  // icons
-  "/icons/icon-192.png",
-  "/icons/icon-512.png",
-  "/icons/maskable-192.png",
-  "/icons/maskable-512.png"
+  "/data/vdd_365.json",
+  "/plan/plan_365.json",
 ];
 
 self.addEventListener("install", (event) => {
   event.waitUntil((async () => {
-    const cache = await caches.open(CACHE_NAME);
-
-    // Anti-404: add individual (se um falhar, não mata tudo)
-    await Promise.all(
-      PRECACHE_URLS.map(async (url) => {
-        try { await cache.add(url); } catch (e) { /* ignore */ }
-      })
-    );
-
+    const cache = await caches.open(VERSION);
+    await cache.addAll(CORE.map(u => new Request(u, { cache: "reload" })));
     self.skipWaiting();
   })());
 });
@@ -38,8 +28,10 @@ self.addEventListener("install", (event) => {
 self.addEventListener("activate", (event) => {
   event.waitUntil((async () => {
     const keys = await caches.keys();
-    await Promise.all(keys.map(k => (k === CACHE_NAME ? null : caches.delete(k))));
-    self.clients.claim();
+    await Promise.all(keys.filter(k => k !== VERSION).map(k => caches.delete(k)));
+    await self.clients.claim();
+    const clients = await self.clients.matchAll({ type: "window" });
+    for (const c of clients) c.postMessage("SW_UPDATED");
   })());
 });
 
@@ -47,36 +39,68 @@ self.addEventListener("fetch", (event) => {
   const req = event.request;
   const url = new URL(req.url);
 
-  if (url.origin !== location.origin) return;
+  // Only handle same-origin
+  if (url.origin !== self.location.origin) return;
 
-  // Navegação: network-first com fallback
+  // Navigation => network-first with offline fallback
   if (req.mode === "navigate") {
-    event.respondWith((async () => {
-      try {
-        const fresh = await fetch(req);
-        const cache = await caches.open(CACHE_NAME);
-        cache.put(req, fresh.clone());
-        return fresh;
-      } catch {
-        const cache = await caches.open(CACHE_NAME);
-        return (await cache.match(req)) || (await cache.match("/index.html")) || (await cache.match(OFFLINE_FALLBACK));
-      }
-    })());
+    event.respondWith(networkFirst(req));
     return;
   }
 
-  // Assets/data: cache-first
-  event.respondWith((async () => {
-    const cache = await caches.open(CACHE_NAME);
-    const cached = await cache.match(req);
-    if (cached) return cached;
+  // JSON data => stale-while-revalidate for speed
+  if (url.pathname.startsWith("/data/") || url.pathname.startsWith("/plan/")) {
+    event.respondWith(staleWhileRevalidate(req));
+    return;
+  }
 
-    try {
-      const fresh = await fetch(req);
-      if (fresh && fresh.status === 200) cache.put(req, fresh.clone());
-      return fresh;
-    } catch {
-      return cached || Response.error();
-    }
-  })());
+  // Assets => cache-first
+  if (url.pathname.startsWith("/assets/") || url.pathname.endsWith(".webmanifest")) {
+    event.respondWith(cacheFirst(req));
+    return;
+  }
+
+  // Default
+  event.respondWith(cacheFirst(req));
 });
+
+async function cacheFirst(req) {
+  const cache = await caches.open(VERSION);
+  const cached = await cache.match(req);
+  if (cached) return cached;
+
+  try {
+    const fresh = await fetch(req);
+    if (fresh && fresh.ok) cache.put(req, fresh.clone());
+    return fresh;
+  } catch {
+    return new Response("", { status: 504, statusText: "Offline" });
+  }
+}
+
+async function networkFirst(req) {
+  const cache = await caches.open(VERSION);
+  try {
+    const fresh = await fetch(req);
+    if (fresh && fresh.ok) cache.put(req, fresh.clone());
+    return fresh;
+  } catch {
+    // For SPA deep links, serve index
+    const cachedIndex = await cache.match("/index.html");
+    return cachedIndex || (await cache.match("/offline.html")) || new Response("Offline", { status: 503 });
+  }
+}
+
+async function staleWhileRevalidate(req) {
+  const cache = await caches.open(VERSION);
+  const cached = await cache.match(req);
+
+  const fetchPromise = fetch(req)
+    .then((fresh) => {
+      if (fresh && fresh.ok) cache.put(req, fresh.clone());
+      return fresh;
+    })
+    .catch(() => null);
+
+  return cached || (await fetchPromise) || new Response("Offline", { status: 503 });
+}

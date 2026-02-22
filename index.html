@@ -2,205 +2,250 @@
 <html lang="fr">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-
-      <title>LaBible.app | LSG 1910</title>
-  <meta name="description" content="Lire la Bible en ligne (Louis Segond 1910). Navigation par livre et chapitre, recherche, favoris, partage de versets." />
-
-  <!-- PWA -->
-  <link rel="manifest" href="/manifest.webmanifest" />
-  <meta name="theme-color" content="#111827" />
-  <link rel="apple-touch-icon" href="/icons/icon-192.png" />
-  <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
-
-  <!-- Fonts -->
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
-
-  <!-- Styles -->
-  <link rel="stylesheet" href="/assets/style.css" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <meta name="theme-color" content="#111111" />
+  <meta name="description" content="Lire la Bible en ligne gratuitement — Louis Segond 1910 (LSG). Recherche rapide, favoris, plan 365 jours, hors ligne (PWA)." />
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="icon" href="assets/icon-192.png" />
+  <link rel="apple-touch-icon" href="assets/icon-192.png" />
+  <link rel="stylesheet" href="assets/style.css" />
+  <title>LaBible.app — LSG 1910</title>
 </head>
 
 <body>
-  <div class="container">
-        <header class="topbar">
-              <a class="brand" href="/"><img class="brandIcon" src="/icons/icon-192.png" alt="LaBible.app">
-                        <div class="name">LaBible.app | LSG 1910</div>
-                </a>
-      <button class="btnTheme" id="btnTheme" aria-label="Modo escuro" title="Modo escuro">🌙</button>
-      <button class="btnInstall" id="btnInstall" aria-label="Installer l'application" title="Installer l'application">⤓ Installer</button>
+  <header class="topbar">
+    <a class="brand" href="/" data-link>
+      <span class="brand__title">LaBible.app</span>
+      <span class="brand__subtitle">Louis Segond 1910</span>
+    </a>
 
-    </header>
+    <nav class="topbar__actions">
+      <button class="btn btn--ghost" id="btnSearch" title="Rechercher">🔎</button>
+      <button class="btn btn--ghost" id="btnPlan" title="Plan 365">📅</button>
+      <button class="btn btn--ghost" id="btnFav" title="Favoris">⭐</button>
+      <button class="btn btn--ghost" id="btnSettings" title="Réglages">⚙️</button>
+    </nav>
+  </header>
 
-    <main class="grid">
-      <section class="card">
-        <h1 class="title">Bible en ligne (LSG 1910)</h1>
-        <p class="desc">
-          Choisissez un livre et un chapitre, ou utilisez la recherche. Enregistrez des favoris et partagez des versets.
+  <main class="container" id="app">
+    <!-- HERO -->
+    <section class="card hero" id="hero">
+      <div class="hero__left">
+        <h1>Lire la Bible, simplement.</h1>
+        <p class="muted">
+          Rapide, sans distraction, installable (PWA), hors ligne, avec recherche, favoris, plan 365 jours, et partage.
         </p>
 
-        <div class="controls">
-          <div class="field">
-            <label class="label" for="bookSelect">Livre</label>
-            <select class="select" id="bookSelect" aria-label="Livre"></select>
-          </div>
-
-          <div class="field">
-            <label class="label" for="chapterSelect">Chapitre</label>
-            <select class="select" id="chapterSelect" aria-label="Chapitre"></select>
-          </div>
-
-          <div class="field span2">
-            <label class="label" for="searchInput">Recherche</label>
-            <input
-              class="input"
-              id="searchInput"
-              placeholder="Ex: berger, foi, paix…"
-              autocomplete="off"
-              inputmode="search"
-            />
-          </div>
+        <div class="hero__actions">
+          <a class="btn btn--primary" href="/plan/aujourdhui" data-link>📅 Lecture du jour</a>
+          <a class="btn" href="/v/jean/3/16" data-link>📖 Ouvrir Jean 3:16</a>
         </div>
 
-        <div class="actions">
-          <button class="btn primary" id="loadBtn" type="button">Afficher</button>
-          <button class="btn" id="clearBtn" type="button">Effacer</button>
-          <button class="btn" id="toggleFavBtn" type="button">Favoris</button>
-
-          <!-- o JS mostra este botão só quando o navegador permite instalação -->
-          <button class="btn" id="installBtn" type="button" style="display:none;">Installer</button>
-
-          <span class="pill" id="selectedCount">0 sélectionné</span>
+        <div class="chips">
+          <span class="chip" id="chipInstall" hidden>📲 Installer</span>
+          <span class="chip" id="chipOffline" hidden>📴 Hors ligne</span>
+          <span class="chip" id="chipUpdated" hidden>✅ Mise à jour</span>
         </div>
+      </div>
 
-        <div class="results">
-          <div class="resultsHead">
-            <h2 class="h2" id="resultsTitle">Résultats</h2>
-
-            <div class="tools">
-              <button class="btn sm" id="copyBtn" type="button">Copier</button>
-              <button class="btn sm" id="shareBtn" type="button">Partager</button>
-              <button class="btn sm" id="favBtn" type="button">Mettre en favori</button>
-              <button class="btn sm" id="clearSelBtn" type="button">Effacer sélection</button>
+      <div class="hero__right">
+        <div class="vdd" id="vddCard">
+          <div class="vdd__head">
+            <div>
+              <div class="kicker">Verset du jour</div>
+              <div class="title" id="vddRef">—</div>
             </div>
+            <button class="btn btn--ghost" id="btnShareVdd" title="Partager">📤</button>
           </div>
-
-          <div class="list" id="verseList"></div>
-          <p class="hint">Touchez un verset pour le sélectionner (multi-sélection possible).</p>
+          <div class="vdd__text" id="vddText">Chargement…</div>
+          <div class="vdd__foot">
+            <a class="link" href="/vdd" data-link>Voir tous les jours</a>
+          </div>
         </div>
-      </section>
-
-      <aside class="card side">
-        <h2 class="h2">Favoris</h2>
-        <p class="desc small">Stockés localement sur votre appareil.</p>
-        <div class="list" id="favList"></div>
-
-        <div class="divider"></div>
-
-        <h2 class="h2">Infos</h2>
-        <ul class="bullets">
-          <li>Lecture : livre / chapitre</li>
-          <li>Recherche globale</li>
-          <li>Partage & copie</li>
-          <li>PWA installable</li>
-        </ul>
-      </aside>
-    </main>
-
-        <footer class="footer">
-      <div class="footerTop">
-        <nav class="footerNav" aria-label="Liens du pied de page">
-          <a href="/a-propos.html">À propos</a>
-          <a href="/contact.html">Contact</a>
-          <a href="/confidentialite.html">Confidentialité</a>
-          <a href="/mentions-legales.html">Mentions légales</a>
-          <a href="/conditions.html">Conditions</a>
-        </nav>
       </div>
-      <div class="footerBottom">
-                <span>&copy; 2026 LaBible.app &mdash; Application gratuite, sans publicité.</span>
-                <span class="footerPd">Texte&nbsp;: Bible Louis Segond 1910 &mdash; domaine public.</span>
+    </section>
+
+    <!-- QUICK NAV -->
+    <section class="card" id="quickNav">
+      <div class="row row--space">
+        <h2>Ouvrir</h2>
+        <div class="muted small">Astuce: tape “Jn 3:16” dans la recherche.</div>
       </div>
-        </footer>
 
-  <!-- Cookies -->
-  <div class="cookie" id="cookieBanner" role="dialog" aria-live="polite">
-    <div class="cookieRow">
-      <div class="cookieText">
-        <strong>Cookies</strong>
-        <div class="cookieDesc">Mesure d’audience optionnelle. Vous pouvez accepter ou refuser.</div>
+      <div class="grid grid--3">
+        <label class="field">
+          <span>Livre</span>
+          <select id="bookSelect"></select>
+        </label>
+
+        <label class="field">
+          <span>Chapitre</span>
+          <select id="chapterSelect"></select>
+        </label>
+
+        <div class="field">
+          <span>Actions</span>
+          <div class="row">
+            <button class="btn btn--primary" id="openBtn">Ouvrir</button>
+            <button class="btn" id="continueBtn">Continuer</button>
+          </div>
+        </div>
       </div>
-      <div class="cookieBtns">
-        <button class="btn sm primary" id="cookieAccept" type="button">Accepter</button>
-        <button class="btn sm" id="cookieDeny" type="button">Refuser</button>
+    </section>
+
+    <!-- READER -->
+    <section class="card" id="reader" hidden>
+      <div class="row row--space">
+        <div>
+          <div class="kicker" id="readerKicker">Lecture</div>
+          <h2 id="readerTitle">—</h2>
+          <div class="muted small" id="readerMeta">—</div>
+        </div>
+        <div class="row">
+          <button class="btn btn--ghost" id="btnReaderFav" title="Ajouter aux favoris">⭐</button>
+          <button class="btn btn--ghost" id="btnReaderCopy" title="Copier">📋</button>
+          <button class="btn btn--ghost" id="btnReaderShare" title="Partager">📤</button>
+        </div>
       </div>
-    </div>
-  </div>
 
-  <!-- App -->
-  <script src="/assets/app.js"></script>
+      <div class="reader__toolbar">
+        <button class="btn" id="prevChapter">← Précédent</button>
+        <button class="btn" id="nextChapter">Suivant →</button>
+      </div>
 
-  <!-- Service Worker -->
-  <script>
-    if ("serviceWorker" in navigator) {
-      window.addEventListener("load", () => {
-        navigator.serviceWorker.register("/sw.js");
-      });
-    }
-  </script>
+      <article class="verses" id="verses"></article>
 
-  <!-- Dark mode -->
-  <script>
-    (function(){
-      var d=localStorage.getItem('theme');
-      if(d==='dark'||(!d&&window.matchMedia('(prefers-color-scheme:dark)').matches)){
-        document.documentElement.classList.add('dark');
-      }
-    })();
-    document.addEventListener('DOMContentLoaded',function(){
-      var btn=document.getElementById('btnTheme');
-      if(!btn) return;
-      function update(){
-        var dark=document.documentElement.classList.contains('dark');
-        btn.textContent=dark?'☀️':'🌙';
-        btn.title=dark?'Mode clair':'Mode sombre';
-      }
-      update();
-      btn.addEventListener('click',function(){
-        document.documentElement.classList.toggle('dark');
-        localStorage.setItem('theme',document.documentElement.classList.contains('dark')?'dark':'light');
-        update();
-      });
-    });
-  </script>
+      <div class="reader__toolbar">
+        <button class="btn" id="prevChapter2">← Précédent</button>
+        <button class="btn" id="nextChapter2">Suivant →</button>
+      </div>
+    </section>
 
-  <!-- PWA Install -->
-  <script>
-    var _deferredPrompt=null;
-    window.addEventListener('beforeinstallprompt',function(e){
-      e.preventDefault();
-      _deferredPrompt=e;
-      var b=document.getElementById('btnInstall');
-      if(b) b.classList.add('visible');
-    });
-    window.addEventListener('appinstalled',function(){
-      _deferredPrompt=null;
-      var b=document.getElementById('btnInstall');
-      if(b) b.classList.remove('visible');
-    });
-    document.addEventListener('DOMContentLoaded',function(){
-      var b=document.getElementById('btnInstall');
-      if(!b) return;
-      b.addEventListener('click',function(){
-        if(!_deferredPrompt) return;
-        _deferredPrompt.prompt();
-        _deferredPrompt.userChoice.then(function(r){
-          _deferredPrompt=null;
-          b.classList.remove('visible');
-        });
-      });
-    });
-  </script>
+    <!-- SEARCH -->
+    <section class="card" id="search" hidden>
+      <div class="row row--space">
+        <h2>Recherche</h2>
+        <div class="muted small">Recherche globale (offline). Références: “Jn 3:16”.</div>
+      </div>
+
+      <div class="row">
+        <input class="input" id="searchInput" placeholder="Mot-clé ou référence (ex: Jn 3:16) …" autocomplete="off" />
+        <button class="btn btn--primary" id="searchGo">Rechercher</button>
+      </div>
+
+      <div class="muted small" id="searchInfo"></div>
+      <div class="results" id="searchResults"></div>
+    </section>
+
+    <!-- FAVORITES -->
+    <section class="card" id="favorites" hidden>
+      <div class="row row--space">
+        <h2>Favoris</h2>
+        <div class="row">
+          <button class="btn" id="btnExportFav">Exporter</button>
+          <label class="btn">
+            Importer <input type="file" id="btnImportFav" accept="application/json" hidden />
+          </label>
+          <button class="btn btn--danger" id="btnClearFav">Tout effacer</button>
+        </div>
+      </div>
+
+      <div class="row">
+        <input class="input" id="favSearch" placeholder="Rechercher dans les favoris…" />
+        <input class="input" id="favTag" placeholder="Tag (ex: foi, paix) — optionnel" />
+        <button class="btn btn--primary" id="favApplyTag">Appliquer tag</button>
+      </div>
+
+      <div class="results" id="favList"></div>
+    </section>
+
+    <!-- PLAN -->
+    <section class="card" id="plan" hidden>
+      <div class="row row--space">
+        <div>
+          <h2>Plan 365 jours</h2>
+          <div class="muted small">Généré automatiquement à partir des chapitres (hors ligne). Progrès stocké localement.</div>
+        </div>
+        <div class="row">
+          <button class="btn" id="planPrev">←</button>
+          <button class="btn" id="planToday">Aujourd’hui</button>
+          <button class="btn" id="planNext">→</button>
+        </div>
+      </div>
+
+      <div class="plan__day">
+        <div class="kicker" id="planDayKicker">Jour —</div>
+        <h3 id="planDayTitle">—</h3>
+        <div class="row">
+          <button class="btn btn--primary" id="planOpen">Ouvrir la lecture</button>
+          <button class="btn" id="planToggleDone">✅ Marquer comme fait</button>
+          <span class="muted small" id="planProgress"></span>
+        </div>
+      </div>
+
+      <div class="results" id="planRefs"></div>
+    </section>
+
+    <!-- VDD LIST -->
+    <section class="card" id="vdd" hidden>
+      <div class="row row--space">
+        <h2>Verset du jour (365)</h2>
+        <div class="muted small">Liste calculée automatiquement (stable) — vous pouvez partager chaque verset.</div>
+      </div>
+      <div class="results" id="vddList"></div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer class="footer">
+      <div class="muted small">
+        © <span id="year"></span> LaBible.app — LSG 1910 ·
+        <a class="link" href="/mentions" data-link>Mentions</a> ·
+        <a class="link" href="/privacy" data-link>Confidentialité</a> ·
+        <a class="link" href="/contact" data-link>Contact</a>
+      </div>
+    </footer>
+  </main>
+
+  <!-- SETTINGS MODAL -->
+  <dialog class="modal" id="settingsModal">
+    <form method="dialog" class="modal__panel">
+      <div class="row row--space">
+        <h3>Réglages</h3>
+        <button class="btn btn--ghost" value="close">✖</button>
+      </div>
+
+      <div class="grid grid--2">
+        <label class="field">
+          <span>Thème</span>
+          <select id="themeSelect">
+            <option value="system">Système</option>
+            <option value="light">Clair</option>
+            <option value="dark">Sombre</option>
+          </select>
+        </label>
+
+        <label class="field">
+          <span>Taille du texte</span>
+          <select id="fontSizeSelect">
+            <option value="90">Petit</option>
+            <option value="100">Normal</option>
+            <option value="110">Grand</option>
+            <option value="120">Très grand</option>
+          </select>
+        </label>
+      </div>
+
+      <div class="row">
+        <button class="btn btn--primary" id="saveSettings" value="close">Enregistrer</button>
+        <button class="btn" id="resetSettings" value="close">Réinitialiser</button>
+      </div>
+
+      <div class="muted small">
+        Astuce: Installez l’app (PWA) via le menu du navigateur (ou bouton “Installer”).
+      </div>
+    </form>
+  </dialog>
+
+  <script type="module" src="assets/app.js"></script>
 </body>
 </html>

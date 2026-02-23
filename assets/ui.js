@@ -1,12 +1,6 @@
 export function $(sel, root = document) {
   return root.querySelector(sel);
 }
-export function $all(sel, root = document) {
-  return Array.from(root.querySelectorAll(sel));
-}
-
-export function show(el) { el.hidden = false; }
-export function hide(el) { el.hidden = true; }
 
 export function setActiveSection(idsToShow) {
   const sections = ["hero", "quickNav", "reader", "search", "favorites", "plan", "vdd"];
@@ -18,7 +12,6 @@ export function setActiveSection(idsToShow) {
 }
 
 export function toast(text) {
-  // small inline toast
   const t = document.createElement("div");
   t.textContent = text;
   t.style.position = "fixed";
@@ -33,23 +26,23 @@ export function toast(text) {
   t.style.backdropFilter = "blur(8px)";
   t.style.zIndex = "9999";
   document.body.appendChild(t);
-  setTimeout(() => { t.remove(); }, 1900);
+  setTimeout(() => t.remove(), 1900);
 }
 
 export function renderResult({ ref, text, right = "" }) {
   const div = document.createElement("div");
   div.className = "result";
   div.innerHTML = `
-    <div class="result__head">
+    <div class="result__row">
       <div class="result__ref">${escapeHtml(ref)}</div>
-      <div class="badge">${escapeHtml(right)}</div>
+      <div class="result__right">${escapeHtml(right)}</div>
     </div>
     <div class="result__text">${escapeHtml(text)}</div>
   `;
   return div;
 }
 
-function escapeHtml(str) {
+export function escapeHtml(str) {
   return String(str)
     .replace(/&/g, "&amp;")
     .replace(/</g, "&lt;")

@@ -1,97 +1,76 @@
 <!doctype html>
-<html lang="pt">
+<html lang="fr">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>LaBible — LSG 1910</title>
-  <meta name="description" content="Leitura da Bíblia (LSG 1910) com plano de leitura, pesquisa, marcadores e design premium." />
+  <meta name="description" content="Bible LSG 1910 — Lecture, Recherche, Plan 365 jours, marque-pages." />
   <link rel="icon" href="assets/icon.svg" type="image/svg+xml" />
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:wght@400;600;700&family=Inter:wght@400;600&display=swap" rel="stylesheet">
 
   <link rel="stylesheet" href="styles.css" />
 </head>
-
 <body>
   <header class="topbar">
     <div class="brand">
-      <img class="brand__icon" src="assets/icon.svg" alt="LaBible" />
+      <img src="assets/icon.svg" class="brand__icon" alt="LaBible">
       <div class="brand__text">
         <div class="brand__title">LaBible</div>
-        <div class="brand__subtitle">LSG 1910 • Leitura • Plano • Pesquisa</div>
+        <div class="brand__subtitle">LSG 1910 • Lecture • Plan • Recherche</div>
       </div>
     </div>
 
-    <nav class="tabs" aria-label="Navegação">
-      <button class="tab is-active" data-tab="read" aria-current="page">Leitura</button>
-      <button class="tab" data-tab="plan">Plano</button>
-      <button class="tab" data-tab="search">Pesquisa</button>
-      <button class="tab" data-tab="library">Biblioteca</button>
-      <button class="tab" data-tab="settings">Ajustes</button>
+    <nav class="tabs" aria-label="Navigation">
+      <button class="tab is-active" data-tab="read" aria-current="page">Lecture</button>
+      <button class="tab" data-tab="plan">Plan</button>
+      <button class="tab" data-tab="search">Recherche</button>
+      <button class="tab" data-tab="library">Bibliothèque</button>
+      <button class="tab" data-tab="settings">Réglages</button>
     </nav>
 
-    <div class="topbar__actions">
-      <button class="iconbtn" id="btnBookmark" title="Guardar marcador (versículo selecionado/posição)">★</button>
-      <button class="iconbtn" id="btnTheme" title="Alternar tema claro/escuro">☾</button>
+    <div class="actions">
+      <button class="iconbtn" id="btnBookmark" title="Ajouter un marque-page">★</button>
+      <button class="iconbtn" id="btnTheme" title="Thème clair/sombre">☾</button>
     </div>
   </header>
 
   <main class="shell">
-    <section class="hero" id="hero">
-      <div class="hero__card">
-        <img class="hero__cover" src="assets/cover.svg" alt="Capa" />
-        <div class="hero__content">
-          <h1>Leitura com aspeto de Bíblia Sagrada.</h1>
-          <p>
-            Texto LSG 1910 local, páginas consistentes (papel), duas colunas no desktop,
-            pesquisa rápida, marcadores e plano 365 dias com progresso.
-          </p>
-          <div class="hero__cta">
-            <button class="btn" id="btnContinue">Continuar leitura</button>
-            <button class="btn btn--ghost" id="btnOpenToday">Abrir leitura de hoje</button>
-          </div>
-          <div class="hero__small">
-            Dica: se quiseres trocar a fonte, usa <strong>Biblioteca</strong> (upload JSON).
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- TAB: LEITURA -->
-    <section class="panel is-active" id="tab-read" role="region" aria-label="Leitura">
+    <!-- LECTURE -->
+    <section class="panel is-active" id="tab-read" role="region" aria-label="Lecture">
       <div class="layout">
         <aside class="side">
           <div class="card">
-            <div class="card__title">Navegação</div>
+            <div class="card__title">Navigation</div>
 
             <label class="field">
-              <span>Livro</span>
+              <span>Livre</span>
               <select id="bookSelect"></select>
             </label>
 
             <label class="field">
-              <span>Capítulo</span>
+              <span>Chapitre</span>
               <select id="chapterSelect"></select>
             </label>
 
-            <div class="row row--gap">
-              <button class="btn btn--small" id="btnPrev">← Anterior</button>
-              <button class="btn btn--small" id="btnNext">Seguinte →</button>
+            <div class="row gap">
+              <button class="btn small" id="btnPrev">← Précédent</button>
+              <button class="btn small" id="btnNext">Suivant →</button>
             </div>
 
             <div class="divider"></div>
 
             <div class="mini">
-              <div class="mini__label">Últimos</div>
+              <div class="mini__label">Récents</div>
               <div class="chips" id="recentChips"></div>
             </div>
 
             <div class="divider"></div>
 
             <div class="mini">
-              <div class="mini__label">Marcadores</div>
+              <div class="mini__label">Marque-pages</div>
               <div class="list" id="bookmarkList"></div>
             </div>
           </div>
@@ -102,16 +81,16 @@
             <div class="page__top">
               <div class="crumb" id="crumb">—</div>
               <div class="page__tools">
-                <button class="pill" id="btnFontMinus" title="Diminuir fonte">A−</button>
-                <button class="pill" id="btnFontPlus" title="Aumentar fonte">A+</button>
-                <button class="pill" id="btnColumns" title="Alternar 1/2 colunas">Colunas</button>
+                <button class="pill" id="btnFontMinus" title="Réduire la taille">A−</button>
+                <button class="pill" id="btnFontPlus" title="Augmenter la taille">A+</button>
+                <button class="pill" id="btnColumns" title="1 ou 2 colonnes">Colonnes</button>
               </div>
             </div>
 
-            <div class="page__body" id="verses" tabindex="0" aria-label="Texto bíblico"></div>
+            <div class="page__body" id="verses" tabindex="0" aria-label="Texte biblique"></div>
 
             <div class="page__bottom">
-              <div class="muted" id="selectionHint">Clica num versículo para selecionar e marcar ★</div>
+              <div class="muted" id="selectionHint">Clique un verset pour le sélectionner puis ★ pour l’enregistrer.</div>
               <div class="muted" id="statusHint">—</div>
             </div>
           </div>
@@ -119,17 +98,17 @@
       </div>
     </section>
 
-    <!-- TAB: PLANO -->
-    <section class="panel" id="tab-plan" role="region" aria-label="Plano de leitura">
+    <!-- PLAN -->
+    <section class="panel" id="tab-plan" role="region" aria-label="Plan de lecture">
       <div class="grid2">
         <div class="card">
-          <div class="card__title">Plano de Leitura (365 dias)</div>
-          <p class="muted">Marca o dia como concluído, abre as leituras e acompanha o progresso.</p>
+          <div class="card__title">Plan (365 jours)</div>
+          <p class="muted">Ouvre la lecture du jour, coche “fait”, et suis ta progression.</p>
 
-          <div class="row row--gap row--wrap">
-            <button class="btn" id="btnGoToday">Ir para hoje</button>
-            <button class="btn btn--ghost" id="btnMarkToday">Concluir hoje</button>
-            <button class="btn btn--ghost" id="btnResetPlan">Reiniciar progresso</button>
+          <div class="row gap wrap">
+            <button class="btn" id="btnGoToday">Aujourd’hui</button>
+            <button class="btn ghost" id="btnMarkToday">Marquer fait</button>
+            <button class="btn ghost" id="btnResetPlan">Réinitialiser</button>
           </div>
 
           <div class="divider"></div>
@@ -137,7 +116,7 @@
           <div class="progress">
             <div class="progress__bar" id="planBar"></div>
           </div>
-          <div class="row row--between">
+          <div class="row between">
             <div class="muted" id="planStats">—</div>
             <div class="muted" id="planStreak">—</div>
           </div>
@@ -147,12 +126,12 @@
           <div class="plan-day" id="todayCard">
             <div class="plan-day__head">
               <div>
-                <div class="plan-day__title" id="todayTitle">Hoje</div>
+                <div class="plan-day__title" id="todayTitle">Aujourd’hui</div>
                 <div class="muted" id="todayRefs">—</div>
               </div>
-              <div class="row row--gap">
-                <button class="btn btn--small" id="btnOpenRefs">Abrir leituras</button>
-                <button class="btn btn--small btn--ghost" id="btnToggleDone">✓</button>
+              <div class="row gap">
+                <button class="btn small" id="btnOpenRefs">Ouvrir</button>
+                <button class="btn small ghost" id="btnToggleDone">✓</button>
               </div>
             </div>
             <div class="muted" id="todayNote">—</div>
@@ -160,151 +139,144 @@
         </div>
 
         <div class="card">
-          <div class="card__title">Calendário</div>
+          <div class="card__title">Calendrier</div>
           <div class="calendar" id="calendar"></div>
-          <div class="muted" style="margin-top:10px">
-            Clique num dia para ver as leituras e abrir.
-          </div>
+          <div class="muted" style="margin-top:10px">Clique un jour pour afficher ses lectures.</div>
         </div>
       </div>
     </section>
 
-    <!-- TAB: PESQUISA -->
-    <section class="panel" id="tab-search" role="region" aria-label="Pesquisa">
+    <!-- RECHERCHE -->
+    <section class="panel" id="tab-search" role="region" aria-label="Recherche">
       <div class="grid2">
         <div class="card">
-          <div class="card__title">Pesquisar na Bíblia</div>
+          <div class="card__title">Recherche</div>
 
           <label class="field">
-            <span>Termo</span>
+            <span>Mot / expression</span>
             <input id="searchInput" type="search" placeholder="ex.: Dieu, Jésus, grâce..." />
           </label>
 
-          <div class="row row--gap">
+          <div class="row gap">
             <label class="field" style="flex:1">
-              <span>Livro (opcional)</span>
+              <span>Livre (optionnel)</span>
               <select id="searchBook">
-                <option value="">Todos</option>
+                <option value="">Tous</option>
               </select>
             </label>
             <label class="field" style="flex:1">
-              <span>Capítulo (opcional)</span>
+              <span>Chapitre (optionnel)</span>
               <select id="searchChapter" disabled>
-                <option value="">Todos</option>
+                <option value="">Tous</option>
               </select>
             </label>
           </div>
 
-          <div class="row row--gap row--wrap">
-            <button class="btn" id="btnSearch">Pesquisar</button>
-            <button class="btn btn--ghost" id="btnClearSearch">Limpar</button>
+          <div class="row gap wrap">
+            <button class="btn" id="btnSearch">Rechercher</button>
+            <button class="btn ghost" id="btnClearSearch">Effacer</button>
           </div>
 
           <div class="divider"></div>
-          <p class="muted">
-            Pesquisa local. Para ficheiros grandes, pode demorar na primeira vez (depende do formato).
-          </p>
+          <p class="muted">La recherche est locale (dans ton navigateur).</p>
         </div>
 
         <div class="card">
-          <div class="card__title">Resultados</div>
+          <div class="card__title">Résultats</div>
           <div class="results" id="results"></div>
         </div>
       </div>
     </section>
 
-    <!-- TAB: BIBLIOTECA -->
-    <section class="panel" id="tab-library" role="region" aria-label="Biblioteca">
+    <!-- BIBLIOTHÈQUE -->
+    <section class="panel" id="tab-library" role="region" aria-label="Bibliothèque">
       <div class="grid2">
         <div class="card">
-          <div class="card__title">Fonte do Texto</div>
-
+          <div class="card__title">Bible</div>
           <p class="muted">
-            Por defeito, o site carrega <strong>LSG 1910</strong> em <code>data/ls1910.json</code>.
-            Podes carregar outra Bíblia em JSON (fica guardada no teu dispositivo).
+            Par défaut, le site charge <strong>LSG 1910</strong> depuis <code>data/ls1910.json</code>.
+            Tu peux importer un autre JSON (enregistré localement).
           </p>
 
           <div class="divider"></div>
 
           <div class="mini">
-            <div class="mini__label">Bíblia atual</div>
-            <div class="pill pill--solid" id="currentBibleLabel">—</div>
+            <div class="mini__label">Bible actuelle</div>
+            <div class="pill solid" id="currentBibleLabel">—</div>
           </div>
 
           <div class="divider"></div>
 
           <label class="field">
-            <span>Carregar JSON alternativo (localStorage)</span>
+            <span>Importer un JSON</span>
             <input id="bibleFile" type="file" accept="application/json" />
           </label>
 
-          <div class="row row--gap row--wrap">
-            <button class="btn" id="btnUseDefault">Usar LSG 1910 (default)</button>
-            <button class="btn btn--ghost" id="btnForgetBible">Esquecer Bíblia carregada</button>
+          <div class="row gap wrap">
+            <button class="btn" id="btnUseDefault">Utiliser LSG 1910 (défaut)</button>
+            <button class="btn ghost" id="btnForgetBible">Oublier l’import</button>
           </div>
 
           <div class="divider"></div>
 
           <details class="details">
-            <summary>Formatos suportados</summary>
+            <summary>Formats supportés</summary>
             <div class="muted">
-              <p><strong>Formato A:</strong> <code>{ books:[{id,name,chapters:[[...]]}] }</code></p>
-              <p><strong>Formato B:</strong> <code>{ books:[...], verses:[{bookId,chapter,verse,text}] }</code></p>
-              <p><strong>Formato C:</strong> <code>{ verses:[...] }</code> ou <code>[{book_name,chapter,verse,text}, ...]</code></p>
-              <p><strong>Formato D:</strong> nested: <code>{ "Genèse":{ "1":{ "1":"..." } } }</code></p>
+              <p><strong>A :</strong> <code>{ books:[{id,name,chapters:[[...]]}] }</code></p>
+              <p><strong>B :</strong> <code>{ books:[...], verses:[{bookId,chapter,verse,text}] }</code></p>
+              <p><strong>C :</strong> <code>{ verses:[...] }</code> ou <code>[{book_name,chapter,verse,text}, ...]</code></p>
+              <p><strong>D :</strong> imbriqué : <code>{ "Genèse":{ "1":{ "1":"..." } } }</code></p>
             </div>
           </details>
         </div>
 
         <div class="card">
-          <div class="card__title">Diagnóstico</div>
+          <div class="card__title">Diagnostic</div>
           <div class="muted" id="diagnostic">—</div>
           <div class="divider"></div>
-          <div class="muted">
-            Se o teu <code>ls1910.json</code> tiver uma estrutura fora do comum, eu adapto.
-          </div>
+          <div class="muted">Si ton <code>ls1910.json</code> a une structure particulière, je l’adapte.</div>
         </div>
       </div>
     </section>
 
-    <!-- TAB: AJUSTES -->
-    <section class="panel" id="tab-settings" role="region" aria-label="Ajustes">
+    <!-- RÉGLAGES -->
+    <section class="panel" id="tab-settings" role="region" aria-label="Réglages">
       <div class="grid2">
         <div class="card">
-          <div class="card__title">Aparência</div>
+          <div class="card__title">Affichage</div>
 
-          <div class="row row--gap row--wrap">
-            <button class="btn" id="btnLight">Claro</button>
-            <button class="btn btn--ghost" id="btnDark">Escuro</button>
+          <div class="row gap wrap">
+            <button class="btn" id="btnLight">Clair</button>
+            <button class="btn ghost" id="btnDark">Sombre</button>
           </div>
 
           <div class="divider"></div>
 
           <label class="field">
-            <span>Tamanho da fonte (leitura)</span>
+            <span>Taille du texte (lecture)</span>
             <input id="fontRange" type="range" min="16" max="28" value="20" />
           </label>
 
           <label class="field">
-            <span>Largura da página</span>
-            <input id="pageWidth" type="range" min="780" max="1100" value="920" />
+            <span>Largeur de page</span>
+            <input id="pageWidth" type="range" min="760" max="1100" value="920" />
           </label>
 
-          <div class="row row--between">
-            <div class="muted">Duas colunas no desktop (podes alternar em Leitura).</div>
-            <button class="btn btn--small btn--ghost" id="btnResetUi">Repor</button>
+          <div class="row between">
+            <div class="muted">Deux colonnes sur ordinateur (bouton “Colonnes”).</div>
+            <button class="btn small ghost" id="btnResetUi">Réinitialiser</button>
           </div>
         </div>
 
         <div class="card">
-          <div class="card__title">Dados</div>
-          <p class="muted">Guardamos: posição, marcadores, progresso do plano e Bíblia carregada (opcional).</p>
+          <div class="card__title">Données</div>
+          <p class="muted">Position, marque-pages, progression du plan, et Bible importée (optionnel).</p>
 
-          <div class="row row--gap row--wrap">
-            <button class="btn btn--ghost" id="btnExport">Exportar dados</button>
-            <button class="btn btn--ghost" id="btnImport">Importar dados</button>
+          <div class="row gap wrap">
+            <button class="btn ghost" id="btnExport">Exporter</button>
+            <button class="btn ghost" id="btnImport">Importer</button>
             <input id="importFile" type="file" accept="application/json" hidden />
-            <button class="btn" id="btnWipe">Apagar tudo</button>
+            <button class="btn" id="btnWipe">Tout effacer</button>
           </div>
 
           <div class="divider"></div>
@@ -315,7 +287,7 @@
   </main>
 
   <footer class="footer">
-    <span class="muted">LaBible • local-first • sem offline/PWA • design “páginas sagradas”.</span>
+    <span class="muted">LaBible • simple • sans mode hors-ligne.</span>
   </footer>
 
   <div class="toast" id="toast" role="status" aria-live="polite"></div>

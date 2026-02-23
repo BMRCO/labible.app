@@ -2,102 +2,163 @@
 <html lang="fr">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>LaBible.app — Louis Segond 1910</title>
-  
-  <!-- PWA & Mobile Meta -->
+  <meta name="description" content="Lire la Bible en ligne (Louis Segond 1910). Navigation par livre et chapitre, recherche globale, favoris, copie et partage." />
+  <!-- PWA -->
   <link rel="manifest" href="/manifest.webmanifest" />
-  <meta name="theme-color" content="#2563eb" />
-  <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="theme-color" content="#111827" />
   <link rel="apple-touch-icon" href="/icons/icon-192.png" />
-
-  <!-- Fonts & Styles -->
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <!-- Font -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <!-- Styles -->
   <link rel="stylesheet" href="/assets/style.css" />
 </head>
 <body>
 
-  <!-- Banner Offline -->
-  <div id="offline-banner" class="offline-banner">Vous êtes hors ligne. Accès limité aux chapitres mis en cache.</div>
+  <!-- Banner hors-ligne -->
+  <div id="offline-banner" class="offline-banner">Vous êtes hors ligne — lecture disponible depuis le cache.</div>
 
-  <header class="app-header">
-    <div class="brand">
-      <span class="brand-title">LaBible.app</span>
-      <span class="brand-version">LSG 1910</span>
-    </div>
-    <button id="installBtn" class="btn-icon" title="Installer l'app">
-      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
-    </button>
+  <header class="topbar">
+    <a class="brand" href="/">
+      <div class="brand__name">LaBible.app</div>
+      <div class="brand__sub">Louis Segond 1910</div>
+    </a>
+    <nav class="topnav">
+      <a href="/a-propos.html">À propos</a>
+      <a href="/contact.html">Contact</a>
+      <a href="/confidentialite.html">Confidentialité</a>
+    </nav>
   </header>
 
-  <main class="app-content">
-    <!-- Home Dashboard -->
-    <section id="home-view" class="view">
-      <div class="hero-card">
-        <h1>Bonne lecture</h1>
-        <p>Explorez les Saintes Écritures partout, même sans connexion.</p>
-      </div>
+  <main class="wrap main">
 
-      <div class="resume-card" id="resumeCard">
-        <h3>Continuer la lecture</h3>
-        <p id="lastReadLabel">Commencez votre voyage biblique.</p>
-        <button id="btnContinue" class="btn primary full-width">Ouvrir le chapitre</button>
-      </div>
+    <!-- HERO -->
+    <section class="home-hero">
+      <h1 class="home-hero__title">Bible en ligne (LSG 1910)</h1>
+      <p class="home-hero__desc">Lecture par livre/chapitre, recherche globale, favoris, copie et partage.</p>
+    </section>
 
-      <div class="grid-nav">
-        <div class="nav-card" onclick="showView('reader')">
-          <span class="nav-icon">📖</span>
-          <span class="nav-label">Lire</span>
-        </div>
-        <div class="nav-card" onclick="showView('search')">
-          <span class="nav-icon">🔍</span>
-          <span class="nav-label">Chercher</span>
-        </div>
-        <div class="nav-card" onclick="showView('favorites')">
-          <span class="nav-icon">⭐</span>
-          <span class="nav-label">Favoris</span>
-        </div>
-        <div class="nav-card" onclick="showView('settings')">
-          <span class="nav-icon">⚙️</span>
-          <span class="nav-label">Infos</span>
-        </div>
+    <!-- CONTINUER LA LECTURE -->
+    <section class="home-resume card">
+      <h2 class="home-resume__title">Continuer la lecture</h2>
+      <p id="lastReadLabel" class="home-resume__label">Aucune lecture récente.</p>
+      <div class="actions">
+        <button id="btnContinue" class="btn primary" disabled>Ouvrir</button>
       </div>
     </section>
 
-    <!-- Reader View -->
-    <section id="reader-view" class="view" style="display:none">
-      <div class="reader-controls sticky">
-        <select id="bookSelect" class="select-box"></select>
-        <select id="chapterSelect" class="select-box"></select>
-      </div>
-      <div id="verseList" class="verse-list"></div>
-      <div class="nav-buttons">
-        <button id="prevBtn" class="btn">Précédent</button>
-        <button id="nextBtn" class="btn primary">Suivant</button>
-      </div>
-    </section>
+    <!-- GRILLE PRINCIPALE -->
+    <div class="grid">
+
+      <!-- Colonne gauche: Lire + Recherche -->
+      <section class="panel">
+        <div class="panel_head">
+          <h2 class="h2">Lire un chapitre</h2>
+        </div>
+        <div class="controls">
+          <div class="field">
+            <label class="label" for="bookSelect">Livre</label>
+            <select class="control" id="bookSelect" aria-label="Livre"></select>
+          </div>
+          <div class="field">
+            <label class="label" for="chapterSelect">Chapitre</label>
+            <select class="control" id="chapterSelect" aria-label="Chapitre"></select>
+          </div>
+          <div class="field span2">
+            <label class="label" for="searchInput">Recherche</label>
+            <input class="control" id="searchInput" placeholder="Ex: berger, foi, paix…" autocomplete="off" inputmode="search">
+          </div>
+        </div>
+        <p class="hint">Tape au moins 2 lettres. La recherche parcourt toute la Bible.</p>
+        <div class="actions">
+          <button class="btn primary" id="loadBtn">Afficher</button>
+          <button class="btn" id="prevBtn">◄</button>
+          <button class="btn" id="nextBtn">►</button>
+          <button class="btn" id="toggleFavBtn">Favoris</button>
+          <button class="btn" id="installBtn">Installer</button>
+          <span class="pill" id="selectedCount">0 sélectionné</span>
+        </div>
+        <div class="actions" id="selectionActions" style="display:none">
+          <button class="btn sm" id="copyBtn">Copier</button>
+          <button class="btn sm" id="shareBtn">Partager</button>
+          <button class="btn sm" id="favBtn">Ajouter/Retirer favori</button>
+          <button class="btn sm" id="clearSelBtn">Effacer sélection</button>
+        </div>
+        <div class="results">
+          <div class="resultsHead">
+            <h2 class="h2" id="resultsTitle">Résultats</h2>
+          </div>
+          <p class="hint">Clique sur un verset pour le sélectionner (multi-sélection possible).</p>
+          <div class="list" id="verseList"></div>
+        </div>
+      </section>
+
+      <!-- Colonne droite: Favoris + Aide -->
+      <aside class="side">
+        <div class="card">
+          <h2 class="h2">Favoris</h2>
+          <p class="desc small">Stockés localement sur cet appareil.</p>
+          <div class="list" id="favList"></div>
+        </div>
+        <div class="card" style="margin-top:12px">
+          <h2 class="h2">Raccourcis</h2>
+          <div class="side divider"></div>
+          <ul class="bullets">
+            <li><button class="btn sm" id="openLastBtn">Ouvrir dernier lu</button></li>
+            <li><button class="btn sm" id="clearFavsBtn">Effacer favoris</button></li>
+            <li><button class="btn sm" id="resetBtn">Réinitialiser app</button></li>
+          </ul>
+        </div>
+        <div class="card" style="margin-top:12px">
+          <h2 class="h2">PWA</h2>
+          <div class="side divider"></div>
+          <p class="desc small">Android/desktop: bouton “Installer”. iPhone: Safari → “Ajouter à l’écran d’accueil”.</p>
+        </div>
+      </aside>
+
+    </div><!-- /grid -->
+
   </main>
 
-  <!-- Navegação Inferior (App Bar) -->
-  <nav class="bottom-nav">
-    <a href="#" class="nav-item active" onclick="showView('home')">
-      <span class="icon">🏠</span>
-      <span>Accueil</span>
-    </a>
-    <a href="#" class="nav-item" onclick="showView('reader')">
-      <span class="icon">📖</span>
-      <span>Bible</span>
-    </a>
-    <a href="#" class="nav-item" onclick="showView('favorites')">
-      <span class="icon">⭐</span>
-      <span>Favoris</span>
-    </a>
-  </nav>
+  <footer class="footer container">
+    <span>&copy; LaBible.app — Louis Segond 1910</span>
+    <div class="links">
+      <a href="/a-propos.html">À propos</a>
+      <a href="/contact.html">Contact</a>
+      <a href="/confidentialite.html">Confidentialité</a>
+      <a href="/mentions-legales.html">Mentions légales</a>
+      <a href="/conditions.html">Conditions</a>
+    </div>
+  </footer>
+
+  <!-- Cookie banner -->
+  <div class="cookie" id="cookieBanner">
+    <div class="cookieRow">
+      <div>
+        <strong>Cookies</strong>
+        <p class="cookieDesc">Mesure d'audience optionnelle. Vous pouvez accepter ou refuser.</p>
+      </div>
+      <div class="cookieBtns">
+        <button class="btn primary sm" id="cookieAccept">Accepter</button>
+        <button class="btn sm" id="cookieDeny">Refuser</button>
+      </div>
+    </div>
+  </div>
 
   <script src="/assets/app.js"></script>
   <script>
+    // Offline detection
+    function updateOnlineStatus() {
+      document.body.classList.toggle('is-offline', !navigator.onLine);
+    }
+    window.addEventListener('online', updateOnlineStatus);
+    window.addEventListener('offline', updateOnlineStatus);
+    updateOnlineStatus();
+
     if ("serviceWorker" in navigator) {
       window.addEventListener("load", () => {
         navigator.serviceWorker.register("/sw.js");

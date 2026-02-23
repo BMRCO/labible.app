@@ -1,96 +1,12 @@
-<!doctype html>
-<html lang="fr">
-<head>
-  <meta charset="utf-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1"/>
-  <title>Conditions d'utilisation — LaBible.app</title>
-  <meta name="theme-color" content="#111827">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/assets/style.css">
-</head>
-<body>
-  <div class="container">
-    <header class="topbar">
-      <a class="brand" href="/"><img class="brandIcon" src="/icons/icon-192.png" alt="LaBible.app"><div class="name">LaBible.app | LSG 1910</div></a>
-      <button class="btnTheme" id="btnTheme" aria-label="Mode sombre" title="Mode sombre">🌙</button>
-      <button class="btnInstall" id="btnInstall" aria-label="Installer l'application" title="Installer l'application">⤓ Installer</button>
-    </header>
-
-    <section class="card">
-      <h1 class="title">Conditions d'utilisation</h1>
-      <p class="desc">LaBible.app est une application gratuite, sans publicité, fournie telle quelle.</p>
-      <p class="desc">Le texte de la Bible Louis Segond 1910 est dans le domaine public.</p>
-      <p class="desc">L'utilisation de l'application est libre et sans inscription.</p>
-    </section>
-
-    <footer class="footer">
-      <div class="footerTop">
-        <nav class="footerNav">
-          <a href="/a-propos.html">À propos</a>
-          <a href="/contact.html">Contact</a>
-          <a href="/confidentialite.html">Confidentialité</a>
-          <a href="/mentions-legales.html">Mentions légales</a>
-          <a href="/conditions.html">Conditions</a>
-        </nav>
-      </div>
-      <div class="footerBottom">
-        <span>&copy; 2026 LaBible.app &mdash; Application gratuite, sans publicité.</span>
-        <span class="footerPd">Texte&nbsp;: Bible Louis Segond 1910 &mdash; domaine public.</span>
-      </div>
-    </footer>
-  </div>
-
-  <!-- Dark mode -->
-  <script>
-    (function(){
-      var d=localStorage.getItem('theme');
-      if(d==='dark'||(!d&&window.matchMedia('(prefers-color-scheme:dark)').matches)){
-        document.documentElement.classList.add('dark');
-      }
-    })();
-    document.addEventListener('DOMContentLoaded',function(){
-      var btn=document.getElementById('btnTheme');
-      if(!btn) return;
-      function update(){
-        var dark=document.documentElement.classList.contains('dark');
-        btn.textContent=dark?'☀️':'🌙';
-        btn.title=dark?'Mode clair':'Mode sombre';
-      }
-      update();
-      btn.addEventListener('click',function(){
-        document.documentElement.classList.toggle('dark');
-        localStorage.setItem('theme',document.documentElement.classList.contains('dark')?'dark':'light');
-        update();
-      });
-    });
-  </script>
-  <!-- PWA Install -->
-  <script>
-    var _deferredPrompt=null;
-    window.addEventListener('beforeinstallprompt',function(e){
-      e.preventDefault();
-      _deferredPrompt=e;
-      var b=document.getElementById('btnInstall');
-      if(b) b.classList.add('visible');
-    });
-    window.addEventListener('appinstalled',function(){
-      _deferredPrompt=null;
-      var b=document.getElementById('btnInstall');
-      if(b) b.classList.remove('visible');
-    });
-    document.addEventListener('DOMContentLoaded',function(){
-      var b=document.getElementById('btnInstall');
-      if(!b) return;
-      b.addEventListener('click',function(){
-        if(!_deferredPrompt) return;
-        _deferredPrompt.prompt();
-        _deferredPrompt.userChoice.then(function(){
-          _deferredPrompt=null;
-          b.classList.remove('visible');
-        });
-      });
-    });
-  </script>
-</body>
-</html>
+<!DOCTYPE html><html lang="fr" data-theme="dark"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/><title>Conditions d'utilisation | LaBible.app</title><meta name="theme-color" id="themeColorMeta" content="#0d0b09"><link rel="stylesheet" href="assets/style.css"></head><body>
+<header class="topnav"><div class="topnav-inner"><a class="nav-logo" href="index.html"><div class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/><line x1="12" y1="6" x2="12" y2="10"/><line x1="10" y1="8" x2="14" y2="8"/></svg></div><div><div class="nav-title">LaBible.app</div><div class="nav-sub">LSG 1910 <span class="badge-offline" id="offlineBadge">· Hors ligne</span></div></div></a><div class="nav-actions"><button class="nav-btn" id="themeBtn">🌙</button><a class="nav-btn" href="index.html" style="display:grid;place-items:center;text-decoration:none;font-size:18px;color:inherit">←</a></div></div></header>
+<div class="page-wrap">
+  <div class="page-header"><div style="font-size:32px;margin-bottom:10px">📜</div><div class="page-title">Conditions d'utilisation</div><div class="page-sub">LaBible.app · LSG 1910</div></div>
+  <div class="card" style="margin-bottom:14px"><div class="section-label">✦ Utilisation</div><div class="prose"><p>LaBible.app est un service gratuit, sans inscription, permettant de lire la Bible Louis Segond 1910. L'utilisation de ce service implique l'acceptation des présentes conditions.</p></div></div>
+  <div class="card" style="margin-bottom:14px"><div class="section-label">✦ Texte biblique</div><div class="prose"><p>La traduction Louis Segond 1910 (LSG 1910) est dans le <strong>domaine public</strong>. Vous êtes libres de copier, partager et diffuser les versets sans restriction de droits d'auteur.</p></div></div>
+  <div class="card" style="margin-bottom:14px"><div class="section-label">✦ Application</div><div class="prose"><p>L'application LaBible.app est fournie « telle quelle ». Nous ne garantissons pas la disponibilité continue du service ni l'exactitude absolue des données. Des erreurs typographiques peuvent subsister dans le texte.</p></div></div>
+  <div class="card" style="margin-bottom:14px"><div class="section-label">✦ Propriété intellectuelle</div><div class="prose"><p>Le code, le design et les fonctionnalités de LaBible.app (hors texte biblique) sont protégés. Toute reproduction sans autorisation est interdite.</p></div></div>
+  <div class="card"><div class="section-label">✦ Modification</div><div class="prose"><p>Ces conditions peuvent être modifiées à tout moment. La version en ligne fait foi.</p><p>© <span id="year"></span> LaBible.app</p></div></div>
+</div>
+<nav class="bottom-nav"><div class="bottom-nav-inner"><a class="bnav-btn" href="index.html"><div class="bnav-ico">📖</div><div class="bnav-lbl">Bible</div></a><a class="bnav-btn" href="a-propos.html"><div class="bnav-ico">ℹ️</div><div class="bnav-lbl">À propos</div></a><a class="bnav-btn" href="contact.html"><div class="bnav-ico">✉️</div><div class="bnav-lbl">Contact</div></a><a class="bnav-btn" href="confidentialite.html"><div class="bnav-ico">🔒</div><div class="bnav-lbl">Conf.</div></a><a class="bnav-btn" href="conditions.html"><div class="bnav-ico">📜</div><div class="bnav-lbl">Cond.</div></a><a class="bnav-btn" href="mentions-legales.html"><div class="bnav-ico">⚖️</div><div class="bnav-lbl">Mentions</div></a></div></nav>
+<div class="toast" id="toast"><div class="toast-msg" id="toastMsg">…</div><button class="toast-action" id="toastAction" style="display:none">OK</button><button class="toast-close" id="toastClose">✕</button></div><script src="assets/shared.js"></script><script>bootShared();document.getElementById("year").textContent=new Date().getFullYear();</script></body></html>

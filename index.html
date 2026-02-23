@@ -1,990 +1,152 @@
 <!DOCTYPE html>
 <html lang="fr" data-theme="dark">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
-  <title>LaBible.app | LSG 1910</title>
-  <link rel="manifest" href="manifest.webmanifest">
-  <meta name="theme-color" id="themeColorMeta" content="#0d0b09">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <link rel="apple-touch-icon" href="icons/icon-192.png">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,700;1,400;1,500&family=Cinzel:wght@400;500;600&display=swap" rel="stylesheet">
-
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
+<title>LaBible.app | LSG 1910</title>
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" id="themeColorMeta" content="#0d0b09">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<link rel="stylesheet" href="assets/style.css">
 <style>
-/* ══════════════════════════════════════════
-   TOKENS
-══════════════════════════════════════════ */
-:root {
-  /* Dark (default) */
-  --bg:       #0d0b09;
-  --bg2:      #141008;
-  --bg3:      #1c1610;
-  --bg4:      #221d14;
-  --text:     #f0e8d8;
-  --text2:    #b8a080;
-  --text3:    #7a6848;
-  --gold:     #c8922a;
-  --gold2:    #e8b84b;
-  --red:      #9b2020;
-  --border:   rgba(200,146,42,0.18);
-  --border2:  rgba(255,255,255,0.06);
-  --card:     rgba(255,255,255,0.03);
-  --card2:    rgba(255,255,255,0.05);
-  --shadow:   0 8px 32px rgba(0,0,0,0.5);
-  --shadow2:  0 2px 8px rgba(0,0,0,0.3);
-  --radius:   16px;
-  --radius2:  24px;
-  --font-body: 'EB Garamond', Georgia, serif;
-  --font-head: 'Cinzel', 'Trajan Pro', serif;
-  --font-size: 19px;
-  --grain: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
-}
-
-[data-theme="light"] {
-  --bg:       #fdf8f0;
-  --bg2:      #f5ede0;
-  --bg3:      #ede0ce;
-  --bg4:      #e4d4be;
-  --text:     #1a1008;
-  --text2:    #5a3e20;
-  --text3:    #9a7850;
-  --gold:     #8b6010;
-  --gold2:    #b08030;
-  --red:      #8b1a1a;
-  --border:   rgba(139,96,16,0.2);
-  --border2:  rgba(0,0,0,0.08);
-  --card:     rgba(255,255,255,0.7);
-  --card2:    rgba(255,255,255,0.9);
-  --shadow:   0 8px 32px rgba(0,0,0,0.12);
-  --shadow2:  0 2px 8px rgba(0,0,0,0.08);
-}
-
-/* ══════════════════════════════════════════
-   RESET & BASE
-══════════════════════════════════════════ */
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-html {
-  height: 100%;
-  -webkit-text-size-adjust: 100%;
-}
-
-body {
-  font-family: var(--font-body);
-  background: var(--bg);
-  color: var(--text);
-  min-height: 100%;
-  font-size: var(--font-size);
-  line-height: 1.7;
-  transition: background 0.3s, color 0.3s;
-  padding-bottom: 80px;
-  overscroll-behavior: none;
-}
-
-/* Subtle grain overlay */
-body::before {
-  content: '';
-  position: fixed;
-  inset: 0;
-  background-image: var(--grain);
-  pointer-events: none;
-  z-index: 0;
-  opacity: 1;
-}
-
-/* ══════════════════════════════════════════
-   HEADER
-══════════════════════════════════════════ */
-.header {
-  position: sticky;
-  top: 0;
-  z-index: 100;
-  background: linear-gradient(to bottom, var(--bg2) 70%, transparent);
-  border-bottom: 1px solid var(--border);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  padding: env(safe-area-inset-top, 0) 0 0;
-}
-
-.header-top {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 14px 16px 10px;
-}
-
-.logo-mark {
-  width: 40px;
-  height: 40px;
-  border-radius: 12px;
-  background: linear-gradient(135deg, var(--gold) 0%, var(--red) 100%);
-  display: grid;
-  place-items: center;
-  flex-shrink: 0;
-  box-shadow: 0 4px 12px rgba(200,146,42,0.3);
-}
-
-.logo-mark svg { width: 22px; height: 22px; }
-
-.brand {
-  flex: 1;
-  min-width: 0;
-}
-
-.brand-name {
-  font-family: var(--font-head);
-  font-size: 16px;
-  font-weight: 500;
-  color: var(--text);
-  letter-spacing: 0.06em;
-  line-height: 1;
-}
-
-.brand-meta {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-top: 3px;
-  flex-wrap: wrap;
-}
-
-.badge {
-  font-size: 11px;
-  letter-spacing: 0.08em;
-  color: var(--text3);
-  font-family: var(--font-body);
-}
-
-.badge-data {
-  font-size: 11px;
-  color: var(--gold);
-  background: rgba(200,146,42,0.1);
-  border: 1px solid rgba(200,146,42,0.2);
-  padding: 2px 8px;
-  border-radius: 999px;
-}
-
-.badge-offline {
-  display: none;
-  font-size: 11px;
-  color: #e8a030;
-  background: rgba(232,160,48,0.1);
-  border: 1px solid rgba(232,160,48,0.25);
-  padding: 2px 8px;
-  border-radius: 999px;
-}
-.badge-offline.show { display: inline-flex; }
-
-.header-actions {
-  display: flex;
-  gap: 4px;
-  align-items: center;
-}
-
-.icon-btn {
-  width: 36px;
-  height: 36px;
-  border-radius: 10px;
-  border: 1px solid var(--border2);
-  background: var(--card);
-  color: var(--text2);
-  cursor: pointer;
-  display: grid;
-  place-items: center;
-  font-size: 17px;
-  transition: background 0.2s, color 0.2s, border-color 0.2s;
-  -webkit-tap-highlight-color: transparent;
-}
-.icon-btn:hover { background: var(--card2); color: var(--text); }
-.icon-btn:active { transform: scale(0.95); }
-
-.install-btn {
-  display: none;
-  align-items: center;
-  gap: 6px;
-  padding: 8px 14px;
-  border-radius: 10px;
-  border: 1px solid var(--border);
-  background: linear-gradient(135deg, rgba(200,146,42,0.2), rgba(155,32,32,0.15));
-  color: var(--gold2);
-  font-family: var(--font-body);
-  font-size: 13px;
-  cursor: pointer;
-  white-space: nowrap;
-  transition: all 0.2s;
-}
-.install-btn:hover { background: linear-gradient(135deg, rgba(200,146,42,0.3), rgba(155,32,32,0.22)); }
-
-/* Tab bar */
-.tab-bar {
-  display: flex;
-  gap: 2px;
-  padding: 0 12px 10px;
-  overflow-x: auto;
-  scrollbar-width: none;
-}
-.tab-bar::-webkit-scrollbar { display: none; }
-
-.tab {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 8px 14px;
-  border-radius: 10px;
-  border: 1px solid transparent;
-  background: none;
-  color: var(--text3);
-  font-family: var(--font-body);
-  font-size: 14px;
-  cursor: pointer;
-  white-space: nowrap;
-  transition: all 0.2s;
-  -webkit-tap-highlight-color: transparent;
-  flex-shrink: 0;
-}
-.tab:hover { color: var(--text2); background: var(--card); }
-.tab.active {
-  color: var(--gold);
-  background: rgba(200,146,42,0.1);
-  border-color: rgba(200,146,42,0.2);
-}
-.tab-icon { font-size: 15px; line-height: 1; }
-
-/* Font size control popup */
-.font-panel {
-  display: none;
-  position: absolute;
-  top: calc(100% + 4px);
-  right: 16px;
-  background: var(--bg3);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  padding: 14px 16px;
-  box-shadow: var(--shadow);
-  z-index: 200;
-  gap: 12px;
-  align-items: center;
-  min-width: 200px;
-}
-.font-panel.open { display: flex; }
-.font-label { font-size: 13px; color: var(--text2); flex: 1; }
-.font-controls { display: flex; gap: 6px; }
-.font-btn {
-  width: 32px; height: 32px;
-  border-radius: 8px;
-  border: 1px solid var(--border);
-  background: var(--card2);
-  color: var(--text);
-  font-size: 16px;
-  cursor: pointer;
-  display: grid; place-items: center;
-  transition: all 0.15s;
-}
-.font-btn:hover { background: var(--gold); color: var(--bg); border-color: var(--gold); }
-
-/* ══════════════════════════════════════════
-   MAIN CONTENT
-══════════════════════════════════════════ */
-.container {
-  max-width: 720px;
-  margin: 0 auto;
-  padding: 20px 16px;
-  position: relative;
-  z-index: 1;
-}
-
-/* ══════════════════════════════════════════
-   VIEWS — animated transitions
-══════════════════════════════════════════ */
-.view { display: none; animation: fadeUp 0.25s ease both; }
-.view.active { display: block; }
-
-@keyframes fadeUp {
-  from { opacity: 0; transform: translateY(10px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
-
-/* ══════════════════════════════════════════
-   CARD
-══════════════════════════════════════════ */
-.card {
-  background: var(--card);
-  border: 1px solid var(--border2);
-  border-radius: var(--radius2);
-  padding: 20px;
-  box-shadow: var(--shadow2);
-}
-.card + .card { margin-top: 14px; }
-
-.card-gold {
-  border-color: var(--border);
-  background: linear-gradient(135deg, rgba(200,146,42,0.06), rgba(155,32,32,0.04));
-}
-
-/* ══════════════════════════════════════════
-   TODAY VIEW
-══════════════════════════════════════════ */
-.today-label {
-  font-family: var(--font-head);
-  font-size: 11px;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
-  color: var(--gold);
-  margin-bottom: 14px;
-}
-
-.verse-ref {
-  font-family: var(--font-head);
-  font-size: 20px;
-  font-weight: 500;
-  color: var(--gold2);
-  margin-bottom: 12px;
-}
-
-.verse-text {
-  font-size: var(--font-size);
-  line-height: 1.75;
-  color: var(--text);
-  font-style: italic;
-  white-space: pre-wrap;
-}
-.verse-text.poetic {
-  text-align: center;
-  line-height: 1.9;
-}
-
-.ornament {
-  text-align: center;
-  color: var(--gold);
-  opacity: 0.4;
-  font-size: 22px;
-  margin: 16px 0;
-  letter-spacing: 6px;
-}
-
-.action-row {
-  display: flex;
-  gap: 8px;
-  flex-wrap: wrap;
-  margin-top: 16px;
-}
-
-.btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 7px;
-  padding: 10px 16px;
-  border-radius: 12px;
-  border: 1px solid var(--border2);
-  background: var(--card2);
-  color: var(--text2);
-  font-family: var(--font-body);
-  font-size: 14px;
-  cursor: pointer;
-  transition: all 0.2s;
-  white-space: nowrap;
-  -webkit-tap-highlight-color: transparent;
-}
-.btn:hover { color: var(--text); border-color: var(--border); background: var(--bg4); }
-.btn:active { transform: scale(0.97); }
-.btn:disabled { opacity: 0.4; cursor: not-allowed; }
-
-.btn-gold {
-  background: linear-gradient(135deg, rgba(200,146,42,0.18), rgba(200,146,42,0.08));
-  border-color: var(--border);
-  color: var(--gold2);
-}
-.btn-gold:hover { background: linear-gradient(135deg, rgba(200,146,42,0.28), rgba(200,146,42,0.15)); }
-
-.btn-fav-active {
-  background: rgba(200,146,42,0.15);
-  border-color: var(--gold);
-  color: var(--gold2);
-}
-
-.btn-danger {
-  background: rgba(155,32,32,0.12);
-  border-color: rgba(155,32,32,0.3);
-  color: #e06060;
-}
-
-.btn-full { width: 100%; justify-content: center; }
-
-.continue-card {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  cursor: pointer;
-  padding: 16px 20px;
-  transition: all 0.2s;
-}
-.continue-card:hover { border-color: var(--border); }
-.continue-icon { font-size: 28px; flex-shrink: 0; }
-.continue-text { flex: 1; min-width: 0; }
-.continue-title { font-family: var(--font-head); font-size: 13px; letter-spacing: 0.08em; color: var(--text2); }
-.continue-ref { font-size: 17px; color: var(--gold); margin-top: 2px; }
-.continue-arrow { color: var(--text3); font-size: 20px; }
-
-/* ══════════════════════════════════════════
-   SEARCH VIEW
-══════════════════════════════════════════ */
-.search-wrap {
-  display: flex;
-  gap: 8px;
-  margin-bottom: 16px;
-}
-
-.search-input {
-  flex: 1;
-  background: var(--bg3);
-  border: 1px solid var(--border2);
-  border-radius: 14px;
-  padding: 13px 16px;
-  color: var(--text);
-  font-family: var(--font-body);
-  font-size: 16px;
-  outline: none;
-  transition: border-color 0.2s;
-}
-.search-input:focus { border-color: var(--border); }
-.search-input::placeholder { color: var(--text3); }
-
-.examples-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 8px;
-  margin-bottom: 16px;
-}
-.example-chip {
-  padding: 10px 14px;
-  border: 1px solid var(--border2);
-  border-radius: 12px;
-  background: var(--card);
-  cursor: pointer;
-  transition: all 0.2s;
-}
-.example-chip:hover { border-color: var(--border); background: var(--card2); }
-.example-chip-ref { font-family: var(--font-head); font-size: 14px; color: var(--gold); }
-.example-chip-book { font-size: 12px; color: var(--text3); margin-top: 2px; }
-
-.hint {
-  font-size: 13px;
-  color: var(--text3);
-  margin-top: 6px;
-}
-.kbd {
-  font-family: ui-monospace, Menlo, monospace;
-  font-size: 12px;
-  padding: 2px 7px;
-  border: 1px solid var(--border);
-  border-radius: 6px;
-  background: var(--bg3);
-  color: var(--text2);
-}
-
-/* ══════════════════════════════════════════
-   OPEN / NAVIGATE VIEW
-══════════════════════════════════════════ */
-.fields-row {
-  display: grid;
-  grid-template-columns: 2fr 1fr 1fr;
-  gap: 10px;
-  margin-bottom: 14px;
-}
-
-.field-group { display: flex; flex-direction: column; gap: 6px; }
-.field-label {
-  font-size: 11px;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: var(--text3);
-  font-family: var(--font-head);
-}
-
-select, input[type="number"] {
-  background: var(--bg3);
-  border: 1px solid var(--border2);
-  border-radius: 12px;
-  padding: 11px 14px;
-  color: var(--text);
-  font-family: var(--font-body);
-  font-size: 15px;
-  outline: none;
-  width: 100%;
-  transition: border-color 0.2s;
-}
-select:focus, input:focus { border-color: var(--border); }
-
-.nav-row {
-  display: flex;
-  gap: 8px;
-  align-items: center;
-}
-
-/* ══════════════════════════════════════════
-   PLAN VIEW
-══════════════════════════════════════════ */
-.plan-progress-bar {
-  height: 6px;
-  background: var(--bg3);
-  border-radius: 999px;
-  overflow: hidden;
-  margin: 10px 0 4px;
-}
-.plan-progress-fill {
-  height: 100%;
-  background: linear-gradient(90deg, var(--gold), var(--gold2));
-  border-radius: 999px;
-  transition: width 0.5s ease;
-}
-.plan-stats {
-  display: flex;
-  gap: 16px;
-  margin: 14px 0;
-}
-.plan-stat {
-  flex: 1;
-  text-align: center;
-  background: var(--card);
-  border: 1px solid var(--border2);
-  border-radius: 14px;
-  padding: 12px;
-}
-.plan-stat-num {
-  font-family: var(--font-head);
-  font-size: 24px;
-  color: var(--gold);
-  display: block;
-}
-.plan-stat-label {
-  font-size: 12px;
-  color: var(--text3);
-  letter-spacing: 0.05em;
-  display: block;
-  margin-top: 2px;
-}
-.plan-day-item {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  padding: 12px 16px;
-  border: 1px solid var(--border2);
-  border-radius: 14px;
-  margin-bottom: 8px;
-  cursor: pointer;
-  transition: all 0.2s;
-  background: var(--card);
-}
-.plan-day-item:hover { border-color: var(--border); background: var(--card2); }
-.plan-day-item.completed {
-  border-color: rgba(200,146,42,0.2);
-  background: rgba(200,146,42,0.05);
-}
-.plan-day-num {
-  font-family: var(--font-head);
-  font-size: 13px;
-  color: var(--text3);
-  width: 48px;
-  flex-shrink: 0;
-  text-align: center;
-}
-.plan-day-refs {
-  flex: 1;
-  min-width: 0;
-}
-.plan-day-ref {
-  font-size: 14px;
-  color: var(--text);
-  line-height: 1.5;
-}
-.plan-day-check {
-  font-size: 18px;
-  flex-shrink: 0;
-}
-.plan-today-badge {
-  font-size: 11px;
-  background: rgba(200,146,42,0.2);
-  color: var(--gold);
-  padding: 2px 8px;
-  border-radius: 999px;
-  border: 1px solid rgba(200,146,42,0.3);
-}
-
-/* ══════════════════════════════════════════
-   FAVORITES
-══════════════════════════════════════════ */
-.fav-item {
-  display: flex;
-  gap: 12px;
-  align-items: flex-start;
-  padding: 14px;
-  border: 1px solid var(--border2);
-  border-radius: 14px;
-  margin-bottom: 8px;
-  cursor: pointer;
-  transition: all 0.2s;
-  background: var(--card);
-}
-.fav-item:hover { border-color: var(--border); }
-.fav-ref {
-  font-family: var(--font-head);
-  font-size: 14px;
-  color: var(--gold);
-  margin-bottom: 4px;
-}
-.fav-text {
-  font-size: 14px;
-  color: var(--text2);
-  line-height: 1.5;
-  font-style: italic;
-}
-.fav-remove {
-  flex-shrink: 0;
-  background: none;
-  border: none;
-  color: var(--text3);
-  cursor: pointer;
-  font-size: 18px;
-  padding: 2px;
-  transition: color 0.2s;
-}
-.fav-remove:hover { color: var(--red); }
-
-.empty-state {
-  text-align: center;
-  padding: 40px 20px;
-  color: var(--text3);
-}
-.empty-icon { font-size: 40px; margin-bottom: 12px; display: block; opacity: 0.5; }
-.empty-text { font-size: 15px; }
-
-/* ══════════════════════════════════════════
-   SETTINGS
-══════════════════════════════════════════ */
-.settings-group { margin-bottom: 20px; }
-.settings-group-title {
-  font-family: var(--font-head);
-  font-size: 11px;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
-  color: var(--gold);
-  margin-bottom: 10px;
-}
-.settings-item {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  padding: 14px 16px;
-  border: 1px solid var(--border2);
-  border-radius: 14px;
-  background: var(--card);
-  margin-bottom: 8px;
-}
-.settings-icon { font-size: 20px; width: 28px; text-align: center; flex-shrink: 0; }
-.settings-content { flex: 1; }
-.settings-label { font-size: 15px; color: var(--text); }
-.settings-desc { font-size: 12px; color: var(--text3); margin-top: 2px; }
-
-/* Toggle switch */
-.toggle {
-  position: relative;
-  width: 44px;
-  height: 26px;
-  flex-shrink: 0;
-}
-.toggle input { opacity: 0; width: 0; height: 0; position: absolute; }
-.toggle-track {
-  position: absolute;
-  inset: 0;
-  background: var(--bg4);
-  border: 1px solid var(--border2);
-  border-radius: 13px;
-  cursor: pointer;
-  transition: all 0.3s;
-}
-.toggle input:checked + .toggle-track { background: var(--gold); border-color: var(--gold); }
-.toggle-track::after {
-  content: '';
-  position: absolute;
-  width: 20px;
-  height: 20px;
-  border-radius: 50%;
-  background: white;
-  top: 2px;
-  left: 2px;
-  transition: transform 0.3s;
-  box-shadow: 0 1px 4px rgba(0,0,0,0.3);
-}
-.toggle input:checked + .toggle-track::after { transform: translateX(18px); }
-
-/* Font size slider */
-.font-size-row {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 14px 16px;
-  border: 1px solid var(--border2);
-  border-radius: 14px;
-  background: var(--card);
-  margin-bottom: 8px;
-}
-.font-size-preview-small { font-size: 14px; color: var(--text3); font-family: var(--font-body); }
-.font-size-preview-large { font-size: 22px; color: var(--text2); font-family: var(--font-body); }
-input[type="range"] {
-  flex: 1;
-  -webkit-appearance: none;
-  height: 4px;
-  background: var(--bg4);
-  border-radius: 999px;
-  border: none;
-  padding: 0;
-  outline: none;
-}
-input[type="range"]::-webkit-slider-thumb {
-  -webkit-appearance: none;
-  width: 20px; height: 20px;
-  border-radius: 50%;
-  background: var(--gold);
-  cursor: pointer;
-  box-shadow: 0 2px 8px rgba(200,146,42,0.4);
-}
-
-/* ══════════════════════════════════════════
-   TOAST
-══════════════════════════════════════════ */
-.toast {
-  position: fixed;
-  left: 16px;
-  right: 16px;
-  bottom: max(16px, env(safe-area-inset-bottom, 16px));
-  max-width: 600px;
-  margin: 0 auto;
-  background: var(--bg3);
-  border: 1px solid var(--border);
-  border-radius: 18px;
-  padding: 14px 16px;
-  display: none;
-  align-items: center;
-  gap: 12px;
-  box-shadow: var(--shadow);
-  z-index: 999;
-  animation: slideUp 0.25s ease;
-}
-.toast.show { display: flex; }
-@keyframes slideUp {
-  from { transform: translateY(16px); opacity: 0; }
-  to   { transform: translateY(0); opacity: 1; }
-}
-.toast-msg { flex: 1; font-size: 14px; color: var(--text); }
-.toast-action {
-  background: var(--gold);
-  color: var(--bg);
-  border: none;
-  border-radius: 10px;
-  padding: 8px 14px;
-  font-family: var(--font-body);
-  font-size: 13px;
-  cursor: pointer;
-  font-weight: 600;
-}
-.toast-close {
-  background: none;
-  border: none;
-  color: var(--text3);
-  cursor: pointer;
-  font-size: 20px;
-  padding: 2px;
-  line-height: 1;
-}
-
-/* ══════════════════════════════════════════
-   DIVIDER
-══════════════════════════════════════════ */
-.divider {
-  height: 1px;
-  background: var(--border2);
-  margin: 16px 0;
-}
-
-/* ══════════════════════════════════════════
-   FOOTER
-══════════════════════════════════════════ */
-.footer {
-  max-width: 720px;
-  margin: 32px auto 0;
-  padding: 0 16px 24px;
-  position: relative;
-  z-index: 1;
-}
-.footer-inner {
-  border: 1px solid var(--border2);
-  border-radius: var(--radius2);
-  padding: 16px 20px;
-  background: var(--card);
-}
-.footer-copy {
-  font-size: 12px;
-  color: var(--text3);
-  line-height: 1.6;
-  margin-bottom: 12px;
-}
-.footer-links {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-}
-.footer-link {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 6px 12px;
-  border: 1px solid var(--border2);
-  border-radius: 999px;
-  background: var(--card2);
-  color: var(--text2);
-  text-decoration: none;
-  font-size: 12px;
-  transition: all 0.2s;
-}
-.footer-link:hover { border-color: var(--border); color: var(--text); }
-
-/* ══════════════════════════════════════════
-   LOADING / SKELETON
-══════════════════════════════════════════ */
-.skeleton {
-  background: linear-gradient(90deg, var(--bg3) 25%, var(--bg4) 50%, var(--bg3) 75%);
-  background-size: 200% 100%;
-  animation: shimmer 1.4s infinite;
-  border-radius: 8px;
-  height: 1.2em;
-  margin-bottom: 8px;
-}
-@keyframes shimmer {
-  from { background-position: 200% 0; }
-  to   { background-position: -200% 0; }
-}
-
-/* Responsive */
-@media (max-width: 480px) {
-  .fields-row { grid-template-columns: 1fr 1fr; }
-  .fields-row .field-group:first-child { grid-column: 1 / -1; }
-  .examples-grid { grid-template-columns: 1fr; }
-}
-
-/* Scrollbar */
-::-webkit-scrollbar { width: 4px; }
-::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 2px; }
+.search-wrap{display:flex;gap:7px;margin-bottom:11px;}
+.search-input{flex:1;background:var(--bg3);border:1px solid var(--border2);border-radius:10px;padding:9px 12px;color:var(--text);font-family:var(--font-body);font-size:16px;outline:none;transition:border-color .2s;}
+.search-input:focus{border-color:var(--border);}
+.search-input::placeholder{color:var(--text3);}
+.ex-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-bottom:11px;}
+.ex-chip{padding:8px 11px;border:1px solid var(--border2);border-radius:10px;background:var(--card);cursor:pointer;transition:all .2s;}
+.ex-chip:hover{border-color:var(--border);background:var(--card2);}
+.ex-ref{font-family:var(--font-head);font-size:13px;color:var(--gold);}
+.ex-sub{font-size:11px;color:var(--text3);margin-top:1px;}
+.fields-row{display:grid;grid-template-columns:2fr 1fr 1fr;gap:8px;margin-bottom:11px;}
+@media(max-width:460px){.fields-row{grid-template-columns:1fr 1fr;}.fields-row .fg:first-child{grid-column:1/-1;}.ex-grid{grid-template-columns:1fr;}}
+.fg{display:flex;flex-direction:column;gap:4px;}
+.nav-row{display:flex;gap:7px;}
+.plan-stats{display:flex;gap:8px;margin:11px 0;}
+.ps-box{flex:1;text-align:center;background:var(--card);border:1px solid var(--border2);border-radius:13px;padding:9px;}
+.ps-num{font-family:var(--font-head);font-size:21px;color:var(--gold);display:block;}
+.ps-lbl{font-size:11px;color:var(--text3);display:block;margin-top:1px;}
+.plan-bar-wrap{height:5px;background:var(--bg3);border-radius:999px;overflow:hidden;margin-bottom:11px;}
+.plan-bar-fill{height:100%;background:linear-gradient(90deg,var(--gold),var(--gold2));border-radius:999px;transition:width .5s;}
+.plan-item{display:flex;align-items:center;gap:11px;padding:10px 13px;border:1px solid var(--border2);border-radius:12px;margin-bottom:6px;cursor:pointer;background:var(--card);transition:all .2s;}
+.plan-item:hover{border-color:var(--border);}
+.plan-item.done{border-color:rgba(200,146,42,.2);background:rgba(200,146,42,.04);}
+.plan-day{font-family:var(--font-head);font-size:11px;color:var(--text3);width:42px;flex-shrink:0;text-align:center;}
+.today-badge{display:block;font-size:9px;background:rgba(200,146,42,.18);color:var(--gold);padding:1px 5px;border-radius:999px;margin-top:2px;}
+.plan-ref-txt{font-size:14px;color:var(--text);flex:1;}
+.plan-chk{font-size:16px;flex-shrink:0;}
+.fav-item{display:flex;gap:10px;align-items:flex-start;padding:11px 13px;border:1px solid var(--border2);border-radius:12px;margin-bottom:6px;background:var(--card);cursor:pointer;transition:all .2s;}
+.fav-item:hover{border-color:var(--border);}
+.fav-ref{font-family:var(--font-head);font-size:13px;color:var(--gold);margin-bottom:3px;}
+.fav-text{font-size:13px;color:var(--text2);line-height:1.4;font-style:italic;}
+.fav-rm{flex-shrink:0;background:none;border:none;color:var(--text3);cursor:pointer;font-size:16px;padding:2px;line-height:1;transition:color .2s;}
+.fav-rm:hover{color:#e06060;}
+.empty-state{text-align:center;padding:32px 16px;color:var(--text3);}
+.empty-ico{font-size:36px;display:block;margin-bottom:9px;opacity:.4;}
+.ss{margin-bottom:18px;}
+.ss-title{font-family:var(--font-head);font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);margin-bottom:7px;}
+.sr{display:flex;align-items:center;gap:11px;padding:11px 13px;border:1px solid var(--border2);border-radius:12px;background:var(--card);margin-bottom:6px;}
+.sr.clk{cursor:pointer;transition:all .2s;}
+.sr.clk:hover{border-color:var(--border);}
+.si{font-size:18px;width:25px;text-align:center;flex-shrink:0;}
+.sl{flex:1;}.sl-t{font-size:15px;color:var(--text);}.sl-d{font-size:12px;color:var(--text3);margin-top:1px;}
+.sa{color:var(--text3);font-size:17px;}
+.fsr{display:flex;align-items:center;gap:10px;margin-top:9px;}
+.fsm{font-size:13px;color:var(--text3);font-family:var(--font-body);}
+.fsl{font-size:20px;color:var(--text2);font-family:var(--font-body);}
+input[type=range]{flex:1;-webkit-appearance:none;height:4px;background:var(--bg4);border-radius:999px;border:none;padding:0;outline:none;}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:20px;height:20px;border-radius:50%;background:var(--gold);cursor:pointer;box-shadow:0 2px 8px rgba(200,146,42,.4);}
+.cont-card{display:flex;align-items:center;gap:11px;cursor:pointer;transition:all .2s;padding:13px 17px;}
+.cont-card:hover{border-color:var(--border);}
+.ci{font-size:22px;flex-shrink:0;}
+.cb{flex:1;min-width:0;}
+.cb-lbl{font-family:var(--font-head);font-size:10px;letter-spacing:.12em;color:var(--text3);}
+.cb-ref{font-size:16px;color:var(--gold);margin-top:1px;}
+.ca{color:var(--text3);font-size:19px;}
 </style>
 </head>
 <body>
 
-<!-- HEADER -->
-<header class="header" id="appHeader">
-  <div class="header-top">
-    <div class="logo-mark" aria-hidden="true">
-      <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
-        <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
-        <line x1="12" y1="6" x2="12" y2="10"/>
-        <line x1="10" y1="8" x2="14" y2="8"/>
-      </svg>
-    </div>
-    <div class="brand">
-      <div class="brand-name">LaBible.app</div>
-      <div class="brand-meta">
-        <span class="badge">LSG 1910</span>
-        <span class="badge-data" id="dataStatus">…</span>
-        <span class="badge-offline" id="offlineBadge">Hors ligne</span>
+<header class="topnav">
+  <div class="topnav-inner">
+    <a class="nav-logo" href="index.html">
+      <div class="nav-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
+          <line x1="12" y1="6" x2="12" y2="10"/><line x1="10" y1="8" x2="14" y2="8"/>
+        </svg>
       </div>
-    </div>
-    <div class="header-actions">
-      <button class="icon-btn" id="fontBtn" title="Taille du texte">Aᵃ</button>
-      <button class="icon-btn" id="themeBtn" title="Thème" aria-label="Changer le thème">🌙</button>
+      <div>
+        <div class="nav-title">LaBible.app</div>
+        <div class="nav-sub">LSG 1910 <span class="badge-offline" id="offlineBadge">· Hors ligne</span></div>
+      </div>
+    </a>
+    <div class="nav-actions">
+      <div class="nav-btn" id="fontBtn" style="cursor:pointer" title="Taille du texte">Aᵃ
+        <div class="font-panel" id="fontPanel">
+          <span class="fp-label">Police</span>
+          <div class="fp-btns">
+            <button class="fp-btn" id="fontMinus">A−</button>
+            <button class="fp-btn" id="fontReset">A</button>
+            <button class="fp-btn" id="fontPlus">A+</button>
+          </div>
+        </div>
+      </div>
+      <button class="nav-btn" id="themeBtn">🌙</button>
       <button class="install-btn" id="installBtn">📲 Installer</button>
     </div>
-    <!-- Font panel -->
-    <div class="font-panel" id="fontPanel">
-      <span class="font-label">Texte</span>
-      <div class="font-controls">
-        <button class="font-btn" id="fontMinus">A−</button>
-        <button class="font-btn" id="fontReset">A</button>
-        <button class="font-btn" id="fontPlus">A+</button>
-      </div>
-    </div>
   </div>
-
-  <nav class="tab-bar">
-    <button class="tab" id="tabToday"><span class="tab-icon">📅</span> Lecture du jour</button>
-    <button class="tab" id="tabSearch"><span class="tab-icon">🔎</span> Rechercher</button>
-    <button class="tab" id="tabOpen"><span class="tab-icon">📖</span> Ouvrir</button>
-    <button class="tab" id="tabPlan"><span class="tab-icon">🗓</span> Plan annuel</button>
-    <button class="tab" id="tabFav"><span class="tab-icon">⭐</span> Favoris</button>
-    <button class="tab" id="tabSettings"><span class="tab-icon">⚙️</span> Réglages</button>
-  </nav>
+  <div class="tab-bar">
+    <button class="tab-btn" id="tabToday" data-view="today">📅 Lecture</button>
+    <button class="tab-btn" id="tabSearch" data-view="search">🔎 Rechercher</button>
+    <button class="tab-btn" id="tabOpen" data-view="open">📖 Ouvrir</button>
+    <button class="tab-btn" id="tabPlan" data-view="plan">🗓 Plan</button>
+    <button class="tab-btn" id="tabFav" data-view="fav">⭐ Favoris</button>
+    <button class="tab-btn" id="tabSettings" data-view="settings">⚙️ Réglages</button>
+  </div>
 </header>
 
-<!-- MAIN -->
 <main class="container">
 
-  <!-- TODAY -->
   <section class="view" id="viewToday">
     <div class="card card-gold" id="todayCard">
-      <div class="today-label">✦ Verset du jour</div>
-      <div class="skeleton" style="width:40%;height:1.4em;margin-bottom:14px"></div>
-      <div class="skeleton"></div>
-      <div class="skeleton" style="width:85%"></div>
-      <div class="skeleton" style="width:70%"></div>
+      <div class="section-label">✦ Verset du jour</div>
+      <div class="skel" style="width:36%;height:1.2em;margin-bottom:11px"></div>
+      <div class="skel"></div><div class="skel" style="width:80%"></div><div class="skel" style="width:62%"></div>
     </div>
-    <div class="card continue-card" id="continueCard" style="margin-top:14px">
-      <div class="continue-icon">▶️</div>
-      <div class="continue-text">
-        <div class="continue-title">CONTINUER LA LECTURE</div>
-        <div class="continue-ref" id="continueRef">—</div>
-      </div>
-      <div class="continue-arrow">›</div>
+    <div class="card cont-card" id="continueCard">
+      <div class="ci">▶</div>
+      <div class="cb"><div class="cb-lbl">CONTINUER LA LECTURE</div><div class="cb-ref" id="continueRef">—</div></div>
+      <div class="ca">›</div>
     </div>
   </section>
 
-  <!-- SEARCH -->
   <section class="view" id="viewSearch">
     <div class="card">
-      <div class="today-label">✦ Rechercher un verset</div>
+      <div class="section-label">✦ Rechercher un verset</div>
       <div class="search-wrap">
-        <input class="search-input" id="searchInput" type="text" placeholder="Jn 3:16 ou Jean 3:16" autocomplete="off" autocorrect="off" spellcheck="false" />
+        <input class="search-input" id="searchInput" type="text" placeholder="Jn 3:16 ou Jean 3:16" autocomplete="off" autocorrect="off" spellcheck="false"/>
         <button class="btn btn-gold" id="btnSearch">Chercher</button>
       </div>
-      <div class="examples-grid">
-        <div class="example-chip" data-ref="Jn 3:16"><div class="example-chip-ref">Jn 3:16</div><div class="example-chip-book">Jean</div></div>
-        <div class="example-chip" data-ref="Psaumes 23:1"><div class="example-chip-ref">Ps 23:1</div><div class="example-chip-book">Psaumes</div></div>
-        <div class="example-chip" data-ref="Romains 8:28"><div class="example-chip-ref">Rm 8:28</div><div class="example-chip-book">Romains</div></div>
-        <div class="example-chip" data-ref="Proverbes 3:5"><div class="example-chip-ref">Pr 3:5</div><div class="example-chip-book">Proverbes</div></div>
+      <div class="ex-grid">
+        <div class="ex-chip" data-ref="Jn 3:16"><div class="ex-ref">Jn 3:16</div><div class="ex-sub">Jean</div></div>
+        <div class="ex-chip" data-ref="Psaumes 23:1"><div class="ex-ref">Ps 23:1</div><div class="ex-sub">Psaumes</div></div>
+        <div class="ex-chip" data-ref="Romains 8:28"><div class="ex-ref">Rm 8:28</div><div class="ex-sub">Romains</div></div>
+        <div class="ex-chip" data-ref="Proverbes 3:5"><div class="ex-ref">Pr 3:5</div><div class="ex-sub">Proverbes</div></div>
       </div>
-      <p class="hint">Accepte: <span class="kbd">Jn 3:16</span>, <span class="kbd">Jean 3:16</span>, <span class="kbd">Nombres 26:27</span></p>
+      <p class="muted">Accepte : <span class="kbd">Jn 3:16</span>, <span class="kbd">Jean 3:16</span>, <span class="kbd">Nb 6:24</span></p>
     </div>
-    <div id="searchResult" style="margin-top:14px"></div>
+    <div id="searchResult" style="margin-top:11px"></div>
   </section>
 
-  <!-- OPEN -->
   <section class="view" id="viewOpen">
     <div class="card">
-      <div class="today-label">✦ Ouvrir un passage</div>
+      <div class="section-label">✦ Ouvrir un passage</div>
       <div class="fields-row">
-        <div class="field-group">
-          <label class="field-label">Livre</label>
-          <select id="selBook"></select>
-        </div>
-        <div class="field-group">
-          <label class="field-label">Chapitre</label>
-          <input type="number" id="inChap" min="1" value="1" />
-        </div>
-        <div class="field-group">
-          <label class="field-label">Verset</label>
-          <input type="number" id="inVers" min="1" value="1" />
-        </div>
+        <div class="fg"><label class="field-label" for="selBook">Livre</label><select id="selBook"></select></div>
+        <div class="fg"><label class="field-label" for="inChap">Chapitre</label><input type="number" id="inChap" min="1" value="1"/></div>
+        <div class="fg"><label class="field-label" for="inVers">Verset</label><input type="number" id="inVers" min="1" value="1"/></div>
       </div>
       <div class="nav-row">
         <button class="btn" id="btnPrev">◀ Préc.</button>
@@ -992,132 +154,59 @@ input[type="range"]::-webkit-slider-thumb {
         <button class="btn" id="btnNext">Suiv. ▶</button>
       </div>
     </div>
-    <div id="openResult" style="margin-top:14px"></div>
+    <div id="openResult" style="margin-top:11px"></div>
   </section>
 
-  <!-- PLAN ANNUEL -->
   <section class="view" id="viewPlan">
     <div class="card card-gold">
-      <div class="today-label">✦ Plan de lecture annuel</div>
+      <div class="section-label">✦ Plan de lecture annuel</div>
       <div class="plan-stats">
-        <div class="plan-stat">
-          <span class="plan-stat-num" id="planDone">0</span>
-          <span class="plan-stat-label">Complétés</span>
-        </div>
-        <div class="plan-stat">
-          <span class="plan-stat-num" id="planLeft">365</span>
-          <span class="plan-stat-label">Restants</span>
-        </div>
-        <div class="plan-stat">
-          <span class="plan-stat-num" id="planPct">0%</span>
-          <span class="plan-stat-label">Progression</span>
-        </div>
+        <div class="ps-box"><span class="ps-num" id="planDone">0</span><span class="ps-lbl">Complétés</span></div>
+        <div class="ps-box"><span class="ps-num" id="planLeft">365</span><span class="ps-lbl">Restants</span></div>
+        <div class="ps-box"><span class="ps-num" id="planPct">0%</span><span class="ps-lbl">Progression</span></div>
       </div>
-      <div class="plan-progress-bar">
-        <div class="plan-progress-fill" id="planBar" style="width:0%"></div>
-      </div>
-      <div class="action-row" style="margin-top:14px">
-        <button class="btn btn-gold" id="btnPlanToday">📅 Jour d'aujourd'hui</button>
+      <div class="plan-bar-wrap"><div class="plan-bar-fill" id="planBar" style="width:0%"></div></div>
+      <div class="action-row">
+        <button class="btn btn-gold" id="btnPlanToday">📅 Aujourd'hui</button>
         <button class="btn btn-danger" id="btnPlanReset">↺ Réinitialiser</button>
       </div>
     </div>
-    <div style="margin-top:14px" id="planList"></div>
+    <div id="planList" style="margin-top:11px"></div>
   </section>
 
-  <!-- FAVORIS -->
   <section class="view" id="viewFav">
-    <div class="card" style="margin-bottom:14px">
-      <div class="today-label">✦ Mes favoris</div>
-      <div class="action-row">
-        <button class="btn btn-danger" id="btnClearFav">🗑 Tout effacer</button>
-      </div>
+    <div class="card" style="margin-bottom:11px">
+      <div class="section-label">✦ Mes favoris</div>
+      <button class="btn btn-danger" id="btnClearFav" disabled>🗑 Tout effacer</button>
     </div>
     <div id="favList"></div>
   </section>
 
-  <!-- SETTINGS -->
   <section class="view" id="viewSettings">
-    <div class="settings-group">
-      <div class="settings-group-title">✦ Apparence</div>
-      <div class="settings-item">
-        <div class="settings-icon">🌙</div>
-        <div class="settings-content">
-          <div class="settings-label">Mode sombre</div>
-          <div class="settings-desc">Bascule entre thème clair et sombre</div>
-        </div>
-        <label class="toggle">
-          <input type="checkbox" id="darkToggle" />
-          <div class="toggle-track"></div>
-        </label>
+    <div class="ss">
+      <div class="ss-title">✦ Apparence</div>
+      <div class="sr"><div class="si">🌙</div><div class="sl"><div class="sl-t">Mode sombre</div><div class="sl-d">Basculer entre clair et sombre</div></div><label class="toggle"><input type="checkbox" id="darkToggle"/><div class="toggle-track"></div></label></div>
+      <div class="sr" style="flex-direction:column;align-items:stretch;gap:7px">
+        <div style="display:flex;align-items:center;gap:11px"><div class="si">🔤</div><div class="sl"><div class="sl-t">Taille du texte</div><div class="sl-d" id="fontSizeLabel">Taille actuelle : 19px</div></div></div>
+        <div class="fsr"><span class="fsm">A</span><input type="range" id="fontSlider" min="15" max="26" value="19" step="1"/><span class="fsl">A</span></div>
       </div>
-      <div class="settings-item" style="flex-direction:column;align-items:stretch;gap:12px">
-        <div style="display:flex;align-items:center;gap:14px">
-          <div class="settings-icon">🔤</div>
-          <div class="settings-content">
-            <div class="settings-label">Taille du texte</div>
-            <div class="settings-desc" id="fontSizeLabel">Taille actuelle: 19px</div>
-          </div>
-        </div>
-        <div class="font-size-row">
-          <span class="font-size-preview-small">A</span>
-          <input type="range" id="fontSlider" min="15" max="26" value="19" step="1" />
-          <span class="font-size-preview-large">A</span>
-        </div>
-      </div>
-      <div class="settings-item">
-        <div class="settings-icon">✍️</div>
-        <div class="settings-content">
-          <div class="settings-label">Style poésie</div>
-          <div class="settings-desc">Centrage pour les Psaumes et poèmes</div>
-        </div>
-        <label class="toggle">
-          <input type="checkbox" id="poeticToggle" />
-          <div class="toggle-track"></div>
-        </label>
-      </div>
+      <div class="sr"><div class="si">✍️</div><div class="sl"><div class="sl-t">Style poésie</div><div class="sl-d">Centrage pour les Psaumes</div></div><label class="toggle"><input type="checkbox" id="poeticToggle"/><div class="toggle-track"></div></label></div>
     </div>
-
-    <div class="settings-group">
-      <div class="settings-group-title">✦ Application</div>
-      <div class="settings-item" style="cursor:pointer" id="settingsInstallItem">
-        <div class="settings-icon">📲</div>
-        <div class="settings-content">
-          <div class="settings-label">Installer l'application</div>
-          <div class="settings-desc">Ajouter à l'écran d'accueil</div>
-        </div>
-        <span style="color:var(--text3);font-size:18px">›</span>
-      </div>
-      <div class="settings-item" style="cursor:pointer" id="settingsUpdateItem">
-        <div class="settings-icon">🔄</div>
-        <div class="settings-content">
-          <div class="settings-label">Vérifier les mises à jour</div>
-          <div class="settings-desc">Synchroniser le Service Worker</div>
-        </div>
-        <span style="color:var(--text3);font-size:18px">›</span>
-      </div>
-      <div class="settings-item" style="cursor:pointer" id="settingsResetItem">
-        <div class="settings-icon">🧹</div>
-        <div class="settings-content">
-          <div class="settings-label">Réinitialiser le cache</div>
-          <div class="settings-desc">Efface le cache PWA et Service Worker</div>
-        </div>
-        <span style="color:var(--text3);font-size:18px">›</span>
-      </div>
+    <div class="ss">
+      <div class="ss-title">✦ Application</div>
+      <div class="sr clk" id="settingsInstall"><div class="si">📲</div><div class="sl"><div class="sl-t">Installer l'application</div><div class="sl-d">Ajouter à l'écran d'accueil</div></div><span class="sa">›</span></div>
+      <div class="sr clk" id="settingsUpdate"><div class="si">🔄</div><div class="sl"><div class="sl-t">Vérifier les mises à jour</div><div class="sl-d">Synchroniser le cache</div></div><span class="sa">›</span></div>
+      <div class="sr clk" id="settingsCache"><div class="si">🧹</div><div class="sl"><div class="sl-t">Réinitialiser le cache</div><div class="sl-d">Efface le cache et recharge</div></div><span class="sa">›</span></div>
     </div>
-
-    <div class="settings-group">
-      <div class="settings-group-title">✦ À propos</div>
-      <div class="card" style="padding:16px 20px">
-        <p style="font-size:14px;color:var(--text2);line-height:1.7">
-          <strong style="font-family:var(--font-head);color:var(--gold)">LaBible.app</strong><br>
-          Louis Segond 1910 — Domaine public<br>
-          PWA — Hors ligne — Sans publicité
-        </p>
-        <div class="divider"></div>
-        <div style="display:flex;flex-wrap:wrap;gap:6px">
-          <span style="font-size:11px;color:var(--text3);background:var(--bg3);padding:4px 10px;border-radius:999px;border:1px solid var(--border2)">LSG 1910</span>
-          <span style="font-size:11px;color:var(--text3);background:var(--bg3);padding:4px 10px;border-radius:999px;border:1px solid var(--border2)">PWA</span>
-          <span style="font-size:11px;color:var(--text3);background:var(--bg3);padding:4px 10px;border-radius:999px;border:1px solid var(--border2)">Offline</span>
+    <div class="ss">
+      <div class="ss-title">✦ Liens</div>
+      <div class="card" style="padding:14px 16px">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;font-size:14px">
+          <a href="a-propos.html" style="display:flex;align-items:center;gap:7px;padding:9px 12px;border:1px solid var(--border2);border-radius:10px;background:var(--card2);color:var(--text2);text-decoration:none;transition:all .2s" onmouseover="this.style.borderColor='var(--border)'" onmouseout="this.style.borderColor='var(--border2)'">ℹ️ À propos</a>
+          <a href="confidentialite.html" style="display:flex;align-items:center;gap:7px;padding:9px 12px;border:1px solid var(--border2);border-radius:10px;background:var(--card2);color:var(--text2);text-decoration:none;transition:all .2s" onmouseover="this.style.borderColor='var(--border)'" onmouseout="this.style.borderColor='var(--border2)'">🔒 Confidentialité</a>
+          <a href="conditions.html" style="display:flex;align-items:center;gap:7px;padding:9px 12px;border:1px solid var(--border2);border-radius:10px;background:var(--card2);color:var(--text2);text-decoration:none;transition:all .2s" onmouseover="this.style.borderColor='var(--border)'" onmouseout="this.style.borderColor='var(--border2)'">📜 Conditions</a>
+          <a href="mentions-legales.html" style="display:flex;align-items:center;gap:7px;padding:9px 12px;border:1px solid var(--border2);border-radius:10px;background:var(--card2);color:var(--text2);text-decoration:none;transition:all .2s" onmouseover="this.style.borderColor='var(--border)'" onmouseout="this.style.borderColor='var(--border2)'">⚖️ Mentions légales</a>
+          <a href="contact.html" style="display:flex;align-items:center;gap:7px;padding:9px 12px;border:1px solid var(--border2);border-radius:10px;background:var(--card2);color:var(--text2);text-decoration:none;transition:all .2s;grid-column:1/-1" onmouseover="this.style.borderColor='var(--border)'" onmouseout="this.style.borderColor='var(--border2)'">✉️ Contact</a>
         </div>
       </div>
     </div>
@@ -1125,996 +214,177 @@ input[type="range"]::-webkit-slider-thumb {
 
 </main>
 
-<!-- FOOTER -->
-<footer class="footer">
-  <div class="footer-inner">
-    <div class="footer-copy">© <span id="year"></span> LaBible.app — Louis Segond 1910 (LSG 1910). Ressource biblique en ligne (PWA).</div>
-    <div class="footer-links">
-      <a class="footer-link" href="a-propos.html">ℹ️ À propos</a>
-      <a class="footer-link" href="confidentialite.html">🔒 Confidentialité</a>
-      <a class="footer-link" href="conditions.html">📜 Conditions</a>
-      <a class="footer-link" href="mentions-legales.html">⚖️ Mentions légales</a>
-      <a class="footer-link" href="contact.html">✉️ Contact</a>
-    </div>
+<nav class="bottom-nav">
+  <div class="bottom-nav-inner">
+    <button class="bnav-btn" data-view="today"><div class="bnav-ico">📅</div><div class="bnav-lbl">Lecture</div></button>
+    <button class="bnav-btn" data-view="search"><div class="bnav-ico">🔎</div><div class="bnav-lbl">Chercher</div></button>
+    <button class="bnav-btn" data-view="open"><div class="bnav-ico">📖</div><div class="bnav-lbl">Ouvrir</div></button>
+    <button class="bnav-btn" data-view="plan"><div class="bnav-ico">🗓</div><div class="bnav-lbl">Plan</div></button>
+    <button class="bnav-btn" data-view="fav"><div class="bnav-ico">⭐</div><div class="bnav-lbl">Favoris</div></button>
+    <button class="bnav-btn" data-view="settings"><div class="bnav-ico">⚙️</div><div class="bnav-lbl">Réglages</div></button>
   </div>
-</footer>
+</nav>
 
-<!-- TOAST -->
 <div class="toast" id="toast">
   <div class="toast-msg" id="toastMsg">…</div>
   <button class="toast-action" id="toastAction" style="display:none">OK</button>
   <button class="toast-close" id="toastClose">✕</button>
 </div>
 
+<script src="assets/shared.js"></script>
 <script>
-/* ════════════════════════════════════════════════════════════
-   LaBible.app — VERSION 2
-   Nouvelle UI + dark/light mode + font size + plan annuel
-════════════════════════════════════════════════════════════ */
+const BOOKS=[["Genèse","gen"],["Exode","exo"],["Lévitique","lev"],["Nombres","num"],["Deutéronome","deu"],["Josué","jos"],["Juges","jdg"],["Ruth","rut"],["1 Samuel","1sa"],["2 Samuel","2sa"],["1 Rois","1ki"],["2 Rois","2ki"],["1 Chroniques","1ch"],["2 Chroniques","2ch"],["Esdras","ezr"],["Néhémie","neh"],["Esther","est"],["Job","job"],["Psaumes","psa"],["Proverbes","pro"],["Ecclésiaste","ecc"],["Cantique des cantiques","sng"],["Ésaïe","isa"],["Jérémie","jer"],["Lamentations","lam"],["Ézéchiel","ezk"],["Daniel","dan"],["Osée","hos"],["Joël","jol"],["Amos","amo"],["Abdias","oba"],["Jonas","jon"],["Michée","mic"],["Nahum","nam"],["Habacuc","hab"],["Sophonie","zep"],["Aggée","hag"],["Zacharie","zec"],["Malachie","mal"],["Matthieu","mat"],["Marc","mrk"],["Luc","luk"],["Jean","jhn"],["Actes","act"],["Romains","rom"],["1 Corinthiens","1co"],["2 Corinthiens","2co"],["Galates","gal"],["Éphésiens","eph"],["Philippiens","php"],["Colossiens","col"],["1 Thessaloniciens","1th"],["2 Thessaloniciens","2th"],["1 Timothée","1ti"],["2 Timothée","2ti"],["Tite","tit"],["Philémon","phm"],["Hébreux","heb"],["Jacques","jas"],["1 Pierre","1pe"],["2 Pierre","2pe"],["1 Jean","1jn"],["2 Jean","2jn"],["3 Jean","3jn"],["Jude","jud"],["Apocalypse","rev"]];
+const ALIASES=new Map([["gen","Genèse"],["ge","Genèse"],["gn","Genèse"],["exo","Exode"],["ex","Exode"],["lev","Lévitique"],["lv","Lévitique"],["nb","Nombres"],["num","Nombres"],["deu","Deutéronome"],["dt","Deutéronome"],["ps","Psaumes"],["psa","Psaumes"],["pr","Proverbes"],["pro","Proverbes"],["esa","Ésaïe"],["isa","Ésaïe"],["jr","Jérémie"],["jer","Jérémie"],["ez","Ézéchiel"],["ezk","Ézéchiel"],["dn","Daniel"],["dan","Daniel"],["mt","Matthieu"],["mat","Matthieu"],["mc","Marc"],["mrk","Marc"],["lc","Luc"],["lk","Luc"],["luk","Luc"],["jn","Jean"],["jhn","Jean"],["jean","Jean"],["ac","Actes"],["act","Actes"],["rm","Romains"],["rom","Romains"],["1co","1 Corinthiens"],["2co","2 Corinthiens"],["ga","Galates"],["gal","Galates"],["ep","Éphésiens"],["eph","Éphésiens"],["ph","Philippiens"],["php","Philippiens"],["col","Colossiens"],["1th","1 Thessaloniciens"],["2th","2 Thessaloniciens"],["1ti","1 Timothée"],["2ti","2 Timothée"],["tit","Tite"],["heb","Hébreux"],["jc","Jacques"],["jas","Jacques"],["1pe","1 Pierre"],["2pe","2 Pierre"],["1jn","1 Jean"],["2jn","2 Jean"],["3jn","3 Jean"],["jud","Jude"],["ap","Apocalypse"],["rev","Apocalypse"]]);
+const PLAN=["Genèse 1:1","Genèse 2:1","Genèse 3:1","Genèse 4:1","Genèse 6:1","Genèse 7:1","Genèse 8:1","Genèse 9:1","Genèse 11:1","Genèse 12:1","Genèse 15:1","Genèse 17:1","Genèse 18:1","Genèse 19:1","Genèse 21:1","Genèse 22:1","Genèse 24:1","Genèse 25:1","Genèse 27:1","Genèse 28:1","Genèse 32:1","Genèse 37:1","Genèse 39:1","Genèse 41:1","Genèse 45:1","Genèse 50:1","Exode 1:1","Exode 2:1","Exode 3:1","Exode 4:1","Exode 7:1","Exode 12:1","Exode 14:1","Exode 16:1","Exode 19:1","Exode 20:1","Exode 32:1","Exode 33:1","Exode 40:1","Lévitique 1:1","Lévitique 11:1","Lévitique 16:1","Lévitique 19:1","Lévitique 26:1","Nombres 6:1","Nombres 11:1","Nombres 14:1","Nombres 22:1","Deutéronome 4:1","Deutéronome 6:1","Deutéronome 8:1","Deutéronome 30:1","Deutéronome 34:1","Josué 1:1","Josué 2:1","Josué 6:1","Josué 24:1","Juges 2:1","Juges 6:1","Juges 7:1","Juges 16:1","Ruth 1:1","Ruth 2:1","Ruth 4:1","1 Samuel 1:1","1 Samuel 3:1","1 Samuel 8:1","1 Samuel 16:1","1 Samuel 17:1","1 Samuel 24:1","2 Samuel 7:1","2 Samuel 11:1","2 Samuel 12:1","2 Samuel 22:1","1 Rois 3:1","1 Rois 8:1","1 Rois 18:1","1 Rois 19:1","2 Rois 2:1","2 Rois 5:1","2 Rois 22:1","1 Chroniques 17:1","2 Chroniques 7:1","2 Chroniques 36:1","Esdras 1:1","Néhémie 1:1","Néhémie 8:1","Esther 4:1","Esther 8:1","Job 1:1","Job 3:1","Job 38:1","Job 42:1","Psaumes 1:1","Psaumes 8:1","Psaumes 19:1","Psaumes 22:1","Psaumes 23:1","Psaumes 27:1","Psaumes 32:1","Psaumes 34:1","Psaumes 46:1","Psaumes 51:1","Psaumes 90:1","Psaumes 91:1","Psaumes 103:1","Psaumes 104:1","Psaumes 119:1","Psaumes 121:1","Psaumes 139:1","Psaumes 145:1","Proverbes 1:1","Proverbes 3:1","Proverbes 8:1","Proverbes 31:1","Ecclésiaste 1:1","Ecclésiaste 3:1","Ecclésiaste 12:1","Cantique des cantiques 1:1","Ésaïe 6:1","Ésaïe 9:1","Ésaïe 40:1","Ésaïe 41:1","Ésaïe 53:1","Ésaïe 55:1","Ésaïe 61:1","Jérémie 1:1","Jérémie 31:1","Jérémie 33:1","Lamentations 3:1","Ézéchiel 1:1","Ézéchiel 36:1","Ézéchiel 37:1","Daniel 1:1","Daniel 2:1","Daniel 6:1","Osée 11:1","Joël 2:1","Amos 5:1","Jonas 1:1","Jonas 3:1","Michée 6:1","Habacuc 2:1","Sophonie 3:1","Zacharie 9:1","Malachie 3:1","Matthieu 1:1","Matthieu 3:1","Matthieu 5:1","Matthieu 6:1","Matthieu 7:1","Matthieu 11:1","Matthieu 13:1","Matthieu 16:1","Matthieu 18:1","Matthieu 22:1","Matthieu 25:1","Matthieu 26:1","Matthieu 28:1","Marc 1:1","Marc 4:1","Marc 8:1","Marc 10:1","Marc 15:1","Marc 16:1","Luc 1:1","Luc 2:1","Luc 4:1","Luc 10:1","Luc 15:1","Luc 19:1","Luc 22:1","Luc 24:1","Jean 1:1","Jean 3:1","Jean 4:1","Jean 6:1","Jean 8:1","Jean 10:1","Jean 11:1","Jean 14:1","Jean 15:1","Jean 17:1","Jean 20:1","Jean 21:1","Actes 1:1","Actes 2:1","Actes 7:1","Actes 9:1","Actes 10:1","Actes 13:1","Actes 16:1","Actes 17:1","Actes 28:1","Romains 1:1","Romains 3:1","Romains 5:1","Romains 6:1","Romains 8:1","Romains 12:1","1 Corinthiens 1:1","1 Corinthiens 13:1","1 Corinthiens 15:1","2 Corinthiens 4:1","2 Corinthiens 5:1","Galates 2:1","Galates 5:1","Éphésiens 2:1","Éphésiens 6:1","Philippiens 2:1","Philippiens 4:1","Colossiens 1:1","Colossiens 3:1","1 Thessaloniciens 4:1","2 Thessaloniciens 2:1","1 Timothée 3:1","2 Timothée 3:1","Tite 2:1","Philémon 1:1","Hébreux 1:1","Hébreux 4:1","Hébreux 11:1","Hébreux 12:1","Jacques 1:1","Jacques 2:1","1 Pierre 1:1","1 Pierre 2:1","2 Pierre 3:1","1 Jean 1:1","1 Jean 3:1","1 Jean 4:1","Jude 1:1","Apocalypse 1:1","Apocalypse 4:1","Apocalypse 7:1","Apocalypse 12:1","Apocalypse 19:1","Apocalypse 21:1","Apocalypse 22:1","Jean 3:16","Psaumes 23:1","Romains 8:28","Proverbes 3:5","Ésaïe 40:31","Matthieu 11:28","Philippiens 4:6","Hébreux 11:1","Psaumes 91:1","Jean 14:6","Romains 5:8","Éphésiens 2:8","Josué 1:9","Psaumes 119:105","Ésaïe 53:1","1 Corinthiens 13:1","Galates 5:22","Matthieu 5:1","Matthieu 6:9","Jean 1:1","Psaumes 139:1","Colossiens 3:1","Jacques 1:1","Psaumes 27:1","Luc 15:1","Jean 15:1","Actes 2:1","Psaumes 103:1","Ésaïe 41:10","Jean 10:1","Matthieu 28:1","Luc 24:1","Apocalypse 21:1","Jean 17:1","Romains 3:1","Galates 2:1","Hébreux 12:1","Psaumes 46:1","Proverbes 31:1","Daniel 6:1","Jonas 3:1","Ruth 4:1","1 Samuel 17:1","2 Samuel 7:1","1 Rois 19:1","Néhémie 8:1","Esther 8:1","Job 42:1","Lamentations 3:1","Ézéchiel 37:1","Malachie 3:1","Marc 16:1","Luc 2:1","Actes 9:1","1 Corinthiens 15:1","Éphésiens 6:1","Philippiens 2:1","1 Timothée 3:1","Tite 2:1","1 Pierre 2:1","2 Pierre 3:1","1 Jean 1:1","Apocalypse 4:1","Apocalypse 7:1","Jean 4:1","Jean 6:1","Jean 8:1","Actes 16:1","Actes 17:1","Romains 6:1","2 Corinthiens 4:1","2 Corinthiens 5:1","Colossiens 1:1","1 Thessaloniciens 4:1","2 Timothée 3:1","Philémon 1:1","Hébreux 4:1","Jacques 2:1","1 Jean 3:1","Apocalypse 19:1","Apocalypse 12:1","Genèse 22:1","Genèse 50:1","Exode 14:1","Exode 20:1","Josué 1:1","1 Samuel 3:1","Psaumes 1:1","Psaumes 8:1","Psaumes 34:1","Psaumes 51:1","Psaumes 90:1","Psaumes 104:1","Psaumes 121:1","Psaumes 145:1","Proverbes 8:1","Ésaïe 9:1","Ésaïe 55:1","Ésaïe 61:1","Jérémie 31:1","Daniel 1:1","Daniel 2:1","Matthieu 22:1","Matthieu 25:1","Marc 4:1","Marc 10:1","Luc 4:1","Luc 22:1","Jean 11:1","Jean 20:1","Actes 7:1","Actes 13:1","Actes 28:1","Romains 1:1","2 Thessaloniciens 2:1","Hébreux 1:1","Psaumes 22:1","Ésaïe 6:1","Ézéchiel 1:1","Ézéchiel 36:1","Matthieu 1:1","Matthieu 26:1","Marc 1:1","Marc 8:1","Luc 1:1","Luc 10:1","Luc 19:1","Psaumes 19:1","Psaumes 32:1"];
+while(PLAN.length<365)PLAN.push(PLAN[PLAN.length-1]);
+const ANNUAL=PLAN.slice(0,365);
 
-const $ = id => document.getElementById(id);
-$("year").textContent = new Date().getFullYear();
-
-/* ════════════
-   STATE
-════════════ */
-const state = {
-  tab:     localStorage.getItem("tab") || "today",
-  theme:   localStorage.getItem("theme") || "dark",
-  poetic:  localStorage.getItem("poetic") === "1",
-  fontSize:parseInt(localStorage.getItem("fontSize") || "19", 10),
-  lastRef: localStorage.getItem("lastRef") || "Genèse 1:1",
-  favs:    JSON.parse(localStorage.getItem("favs") || "[]"),
-  planDone:JSON.parse(localStorage.getItem("planDone") || "[]"),
+const Bible={
+  cache:new Map(),bases:["./data/ls1910/","./data/LSG1910/","./data/"],
+  v(s){const lo=s.toLowerCase(),lng={gen:"genese",exo:"exode",lev:"levitique",num:"nombres",deu:"deuteronome",jhn:"jean",rev:"apocalypse"};const a=[lo+".json",lo.toUpperCase()+".json"];if(lng[lo])a.unshift(lng[lo]+".json");return[...new Set(a)];},
+  async init(){const ms=this.bases.flatMap(b=>["bible_ls1910.json","bible.json","ls1910.json","bible_lsg1910.json"].map(f=>b+f));for(const u of ms){const d=await this.f(u);if(!d)continue;if(Array.isArray(d)){for(const x of d){const n=this.n(x);if(n?.book)this.cache.set(n.book,n);}if(this.cache.size)return;}}},
+  async bk(name){if(this.cache.has(name))return this.cache.get(name);const e=BOOKS.find(([n])=>n===name);if(!e)return null;for(const b of this.bases)for(const fn of this.v(e[1])){const d=await this.f(b+fn);if(!d)continue;const n=Array.isArray(d)?this.n(d.find(x=>(x.book||x.name||"").toLowerCase().includes(name.toLowerCase())),name):this.n(d,name);if(n){this.cache.set(name,n);return n;}}return null;},
+  async vs(book,ch,v){const b=await this.bk(book);if(!b)return null;return b.chapters[ch-1]?.[v-1]??null;},
+  async f(url){try{const r=await fetch(url,{cache:"no-store"});return r.ok?await r.json():null;}catch{return null;}},
+  n(d,fb){if(!d||typeof d!=="object")return null;const book=fb||d.book||d.Book||d.name||d.title;if(!book)return null;if(Array.isArray(d.chapters)&&Array.isArray(d.chapters[0]))return{book,chapters:d.chapters.map(c=>c.map(String))};if(d.chapters&&typeof d.chapters==="object"&&!Array.isArray(d.chapters)){const ks=Object.keys(d.chapters).sort((a,b)=>+a-+b);const chapters=ks.map(k=>{const c=d.chapters[k];return Array.isArray(c)?c.map(String):Object.keys(c).sort((a,b)=>+a-+b).map(vk=>String(c[vk]));});if(chapters.length)return{book,chapters};}return null;}
 };
 
-function saveState() {
-  localStorage.setItem("tab", state.tab);
-  localStorage.setItem("theme", state.theme);
-  localStorage.setItem("poetic", state.poetic ? "1" : "0");
-  localStorage.setItem("fontSize", state.fontSize);
-  localStorage.setItem("lastRef", state.lastRef);
-  localStorage.setItem("favs", JSON.stringify(state.favs));
-  localStorage.setItem("planDone", JSON.stringify(state.planDone));
+function parseRef(q){if(!q)return null;const m=q.trim().replace(/\s+/g," ").match(/^(.+?)\s+(\d+)\s*[:.]\s*(\d+)$/i);if(!m)return null;const bi=m[1].toLowerCase().trim(),c=+m[2],v=+m[3];const a=ALIASES.get(bi);if(a)return`${a} ${c}:${v}`;const f=BOOKS.find(([n])=>n.toLowerCase()===bi);if(f)return`${f[0]} ${c}:${v}`;const p=BOOKS.find(([n])=>n.toLowerCase().replace(/[éèê]/g,"e").includes(bi.replace(/[éèê]/g,"e")));if(p)return`${p[0]} ${c}:${v}`;return null;}
+function splitRef(r){const m=r.match(/^(.+?)\s+(\d+):(\d+)$/);if(!m)return{book:"Genèse",chapter:1,verse:1};return{book:m[1],chapter:+m[2],verse:+m[3]};}
+
+function card(ref,text){const fav=LB.favs.some(f=>f.ref===ref);return`<div class="card card-gold"><div class="verse-ref">${esc(ref)}</div><div class="verse-text${LB.poetic?" poetic":""}">${esc(text)}</div><div class="ornament">✦ ✦ ✦</div><div class="action-row"><button class="btn${fav?" btn-fav":""}" data-fr="${esc(ref)}" data-ft="${esc(text)}">${fav?"★ Sauvegardé":"☆ Favori"}</button><button class="btn btn-gold" data-sr="${esc(ref)}" data-st="${esc(text)}">📤 Partager</button></div></div>`;}
+function bindCard(el){el.querySelectorAll("[data-fr]").forEach(b=>b.onclick=()=>toggleFav(b.dataset.fr,b.dataset.ft));el.querySelectorAll("[data-sr]").forEach(b=>b.onclick=()=>share(b.dataset.sr,b.dataset.st));}
+
+const VIEWS=["today","search","open","plan","fav","settings"];
+function showView(v){
+  LB.tab=v;
+  VIEWS.forEach(id=>{const vid="view"+id[0].toUpperCase()+id.slice(1);document.getElementById(vid)?.classList.toggle("active",id===v);const tid="tab"+id[0].toUpperCase()+id.slice(1);document.getElementById(tid)?.classList.toggle("active",id===v);});
+  document.querySelectorAll(".bnav-btn").forEach(b=>b.classList.toggle("active",b.dataset.view===v));
+  window.scrollTo({top:0,behavior:"smooth"});
+  if(v==="today")initToday();else if(v==="search")initSearch();else if(v==="open")initOpen();else if(v==="plan")renderPlan();else if(v==="fav")renderFavs();else if(v==="settings")initSettings();
 }
 
-/* ════════════
-   BOOKS
-════════════ */
-const BOOKS = [
-  ["Genèse","gen"],["Exode","exo"],["Lévitique","lev"],["Nombres","num"],["Deutéronome","deu"],
-  ["Josué","jos"],["Juges","jdg"],["Ruth","rut"],["1 Samuel","1sa"],["2 Samuel","2sa"],
-  ["1 Rois","1ki"],["2 Rois","2ki"],["1 Chroniques","1ch"],["2 Chroniques","2ch"],
-  ["Esdras","ezr"],["Néhémie","neh"],["Esther","est"],["Job","job"],["Psaumes","psa"],
-  ["Proverbes","pro"],["Ecclésiaste","ecc"],["Cantique des cantiques","sng"],
-  ["Ésaïe","isa"],["Jérémie","jer"],["Lamentations","lam"],["Ézéchiel","ezk"],["Daniel","dan"],
-  ["Osée","hos"],["Joël","jol"],["Amos","amo"],["Abdias","oba"],["Jonas","jon"],["Michée","mic"],
-  ["Nahum","nam"],["Habacuc","hab"],["Sophonie","zep"],["Aggée","hag"],["Zacharie","zec"],["Malachie","mal"],
-  ["Matthieu","mat"],["Marc","mrk"],["Luc","luk"],["Jean","jhn"],["Actes","act"],
-  ["Romains","rom"],["1 Corinthiens","1co"],["2 Corinthiens","2co"],["Galates","gal"],["Éphésiens","eph"],
-  ["Philippiens","php"],["Colossiens","col"],["1 Thessaloniciens","1th"],["2 Thessaloniciens","2th"],
-  ["1 Timothée","1ti"],["2 Timothée","2ti"],["Tite","tit"],["Philémon","phm"],
-  ["Hébreux","heb"],["Jacques","jas"],["1 Pierre","1pe"],["2 Pierre","2pe"],
-  ["1 Jean","1jn"],["2 Jean","2jn"],["3 Jean","3jn"],["Jude","jud"],["Apocalypse","rev"],
-];
-
-const ALIASES = new Map([
-  ["gen","Genèse"],["ge","Genèse"],["gn","Genèse"],
-  ["exo","Exode"],["ex","Exode"],
-  ["lev","Lévitique"],["lv","Lévitique"],
-  ["nb","Nombres"],["nom","Nombres"],["nm","Nombres"],["num","Nombres"],
-  ["deu","Deutéronome"],["dt","Deutéronome"],
-  ["ps","Psaumes"],["psa","Psaumes"],["psaumes","Psaumes"],
-  ["pr","Proverbes"],["pro","Proverbes"],
-  ["esa","Ésaïe"],["isa","Ésaïe"],
-  ["jr","Jérémie"],["jer","Jérémie"],
-  ["ez","Ézéchiel"],["ezk","Ézéchiel"],
-  ["dn","Daniel"],["dan","Daniel"],
-  ["mt","Matthieu"],["mat","Matthieu"],
-  ["mc","Marc"],["mr","Marc"],["mrk","Marc"],
-  ["lc","Luc"],["lk","Luc"],["luk","Luc"],
-  ["jn","Jean"],["jhn","Jean"],["jean","Jean"],
-  ["ac","Actes"],["act","Actes"],
-  ["rm","Romains"],["rom","Romains"],
-  ["1co","1 Corinthiens"],["2co","2 Corinthiens"],
-  ["ga","Galates"],["gal","Galates"],
-  ["ep","Éphésiens"],["eph","Éphésiens"],
-  ["ph","Philippiens"],["php","Philippiens"],
-  ["col","Colossiens"],
-  ["1th","1 Thessaloniciens"],["2th","2 Thessaloniciens"],
-  ["1ti","1 Timothée"],["2ti","2 Timothée"],
-  ["tit","Tite"],["heb","Hébreux"],
-  ["jc","Jacques"],["jas","Jacques"],
-  ["1pe","1 Pierre"],["2pe","2 Pierre"],
-  ["1jn","1 Jean"],["2jn","2 Jean"],["3jn","3 Jean"],
-  ["jud","Jude"],["ap","Apocalypse"],["rev","Apocalypse"],
-]);
-
-/* ════════════
-   ANNUAL READING PLAN (365 passages)
-   — Structured plan covering Old + New Testament
-════════════ */
-const ANNUAL_PLAN = (() => {
-  const raw = [
-    // Genèse
-    "Genèse 1:1","Genèse 2:1","Genèse 3:1","Genèse 4:1","Genèse 6:1","Genèse 7:1","Genèse 8:1","Genèse 9:1",
-    "Genèse 11:1","Genèse 12:1","Genèse 15:1","Genèse 17:1","Genèse 18:1","Genèse 19:1","Genèse 21:1","Genèse 22:1",
-    "Genèse 24:1","Genèse 25:1","Genèse 27:1","Genèse 28:1","Genèse 29:1","Genèse 30:1","Genèse 32:1","Genèse 33:1",
-    "Genèse 37:1","Genèse 39:1","Genèse 40:1","Genèse 41:1","Genèse 42:1","Genèse 45:1","Genèse 46:1","Genèse 50:1",
-    // Exode
-    "Exode 1:1","Exode 2:1","Exode 3:1","Exode 4:1","Exode 5:1","Exode 7:1","Exode 12:1","Exode 14:1",
-    "Exode 16:1","Exode 17:1","Exode 19:1","Exode 20:1","Exode 25:1","Exode 32:1","Exode 33:1","Exode 40:1",
-    // Lévitique
-    "Lévitique 1:1","Lévitique 11:1","Lévitique 16:1","Lévitique 19:1","Lévitique 26:1",
-    // Nombres
-    "Nombres 6:1","Nombres 11:1","Nombres 14:1","Nombres 22:1","Nombres 27:1",
-    // Deutéronome
-    "Deutéronome 4:1","Deutéronome 6:1","Deutéronome 8:1","Deutéronome 10:1","Deutéronome 28:1","Deutéronome 30:1","Deutéronome 34:1",
-    // Josué
-    "Josué 1:1","Josué 2:1","Josué 3:1","Josué 6:1","Josué 24:1",
-    // Juges
-    "Juges 2:1","Juges 6:1","Juges 7:1","Juges 13:1","Juges 16:1",
-    // Ruth
-    "Ruth 1:1","Ruth 2:1","Ruth 4:1",
-    // Samuel
-    "1 Samuel 1:1","1 Samuel 3:1","1 Samuel 8:1","1 Samuel 16:1","1 Samuel 17:1","1 Samuel 24:1",
-    "2 Samuel 7:1","2 Samuel 11:1","2 Samuel 12:1","2 Samuel 22:1",
-    // Rois
-    "1 Rois 3:1","1 Rois 8:1","1 Rois 18:1","1 Rois 19:1",
-    "2 Rois 2:1","2 Rois 5:1","2 Rois 22:1",
-    // Chroniques + Esdras + Néhémie
-    "1 Chroniques 17:1","2 Chroniques 7:1","2 Chroniques 36:1",
-    "Esdras 1:1","Néhémie 1:1","Néhémie 8:1",
-    // Esther, Job
-    "Esther 4:1","Esther 8:1",
-    "Job 1:1","Job 3:1","Job 38:1","Job 42:1",
-    // Psaumes
-    "Psaumes 1:1","Psaumes 8:1","Psaumes 19:1","Psaumes 22:1","Psaumes 23:1","Psaumes 27:1","Psaumes 32:1",
-    "Psaumes 34:1","Psaumes 46:1","Psaumes 51:1","Psaumes 90:1","Psaumes 91:1","Psaumes 103:1","Psaumes 104:1",
-    "Psaumes 119:1","Psaumes 121:1","Psaumes 139:1","Psaumes 145:1",
-    // Proverbes
-    "Proverbes 1:1","Proverbes 3:1","Proverbes 8:1","Proverbes 10:1","Proverbes 31:1",
-    // Ecclésiaste
-    "Ecclésiaste 1:1","Ecclésiaste 3:1","Ecclésiaste 12:1",
-    // Cantique
-    "Cantique des cantiques 1:1",
-    // Prophètes majeurs
-    "Ésaïe 6:1","Ésaïe 9:1","Ésaïe 40:1","Ésaïe 41:1","Ésaïe 53:1","Ésaïe 55:1","Ésaïe 61:1",
-    "Jérémie 1:1","Jérémie 31:1","Jérémie 33:1",
-    "Lamentations 3:1",
-    "Ézéchiel 1:1","Ézéchiel 36:1","Ézéchiel 37:1",
-    "Daniel 1:1","Daniel 2:1","Daniel 6:1",
-    // Prophètes mineurs
-    "Osée 11:1","Joël 2:1","Amos 5:1","Jonas 1:1","Jonas 2:1","Jonas 3:1","Michée 6:1",
-    "Habacuc 2:1","Sophonie 3:1","Aggée 1:1","Zacharie 9:1","Malachie 3:1",
-    // Matthieu
-    "Matthieu 1:1","Matthieu 3:1","Matthieu 5:1","Matthieu 6:1","Matthieu 7:1","Matthieu 8:1","Matthieu 11:1",
-    "Matthieu 13:1","Matthieu 16:1","Matthieu 18:1","Matthieu 22:1","Matthieu 25:1","Matthieu 26:1","Matthieu 28:1",
-    // Marc
-    "Marc 1:1","Marc 4:1","Marc 8:1","Marc 10:1","Marc 15:1","Marc 16:1",
-    // Luc
-    "Luc 1:1","Luc 2:1","Luc 4:1","Luc 10:1","Luc 15:1","Luc 19:1","Luc 22:1","Luc 24:1",
-    // Jean
-    "Jean 1:1","Jean 3:1","Jean 4:1","Jean 6:1","Jean 8:1","Jean 10:1","Jean 11:1","Jean 14:1","Jean 15:1","Jean 17:1","Jean 20:1","Jean 21:1",
-    // Actes
-    "Actes 1:1","Actes 2:1","Actes 7:1","Actes 9:1","Actes 10:1","Actes 13:1","Actes 16:1","Actes 17:1","Actes 28:1",
-    // Épîtres Paul
-    "Romains 1:1","Romains 3:1","Romains 5:1","Romains 6:1","Romains 8:1","Romains 12:1",
-    "1 Corinthiens 1:1","1 Corinthiens 13:1","1 Corinthiens 15:1",
-    "2 Corinthiens 4:1","2 Corinthiens 5:1",
-    "Galates 2:1","Galates 5:1",
-    "Éphésiens 2:1","Éphésiens 6:1",
-    "Philippiens 2:1","Philippiens 4:1",
-    "Colossiens 1:1","Colossiens 3:1",
-    "1 Thessaloniciens 4:1","2 Thessaloniciens 2:1",
-    "1 Timothée 3:1","2 Timothée 3:1",
-    "Tite 2:1","Philémon 1:1",
-    // Hébreux
-    "Hébreux 1:1","Hébreux 4:1","Hébreux 11:1","Hébreux 12:1",
-    // Épîtres générales
-    "Jacques 1:1","Jacques 2:1",
-    "1 Pierre 1:1","1 Pierre 2:1","2 Pierre 3:1",
-    "1 Jean 1:1","1 Jean 3:1","1 Jean 4:1",
-    "2 Jean 1:1","3 Jean 1:1","Jude 1:1",
-    // Apocalypse
-    "Apocalypse 1:1","Apocalypse 4:1","Apocalypse 7:1","Apocalypse 12:1","Apocalypse 19:1","Apocalypse 21:1","Apocalypse 22:1",
-  ];
-  // Pad to exactly 365
-  while (raw.length < 365) raw.push(raw[raw.length - 1]);
-  return raw.slice(0, 365);
-})();
-
-/* ════════════
-   BIBLE DATA LOADER
-════════════ */
-const Bible = {
-  bookCache: new Map(),
-  basePaths: ["./data/ls1910/","./data/LSG1910/","./data/"],
-
-  filenameVariants(slug) {
-    const s = slug.toLowerCase();
-    const long = {gen:"genese",exo:"exode",lev:"levitique",num:"nombres",deu:"deuteronome",jhn:"jean",rev:"apocalypse"};
-    const v = [s+".json", s.toUpperCase()+".json"];
-    if (long[s]) v.unshift(long[s]+".json");
-    return [...new Set(v)];
-  },
-
-  async init() {
-    const masters = [
-      ...this.basePaths.map(p=>p+"bible_ls1910.json"),
-      ...this.basePaths.map(p=>p+"bible.json"),
-      ...this.basePaths.map(p=>p+"ls1910.json"),
-      ...this.basePaths.map(p=>p+"bible_lsg1910.json"),
-    ];
-    for (const url of masters) {
-      const data = await this._fetchJson(url);
-      if (!data) continue;
-      if (Array.isArray(data)) {
-        for (const item of data) {
-          const norm = this._normalize(item);
-          if (norm?.book && norm?.chapters) this.bookCache.set(norm.book, norm);
-        }
-        if (this.bookCache.size) { this._setStatus(`OK (${this.bookCache.size} livres)`); return true; }
-      }
-    }
-    this._setStatus("OK");
-    return true;
-  },
-
-  _setStatus(s) { $("dataStatus").textContent = s; },
-
-  async getBook(bookName) {
-    if (this.bookCache.has(bookName)) return this.bookCache.get(bookName);
-    const entry = BOOKS.find(([name]) => name === bookName);
-    if (!entry) return null;
-    for (const base of this.basePaths) {
-      for (const fn of this.filenameVariants(entry[1])) {
-        const data = await this._fetchJson(base + fn);
-        if (!data) continue;
-        const norm = Array.isArray(data)
-          ? this._normalize(data.find(x => (x.book||x.name||"").toLowerCase().includes(bookName.toLowerCase())), bookName)
-          : this._normalize(data, bookName);
-        if (norm) { this.bookCache.set(bookName, norm); return norm; }
-      }
-    }
-    return null;
-  },
-
-  async getVerse(book, chapter, verse) {
-    const b = await this.getBook(book);
-    if (!b) return null;
-    const ch = b.chapters[chapter - 1];
-    if (!ch || ch[verse - 1] == null) return null;
-    return ch[verse - 1];
-  },
-
-  async _fetchJson(url) {
-    try {
-      const r = await fetch(url, { cache: "no-store" });
-      if (!r.ok) return null;
-      return await r.json();
-    } catch (_) { return null; }
-  },
-
-  _normalize(data, forcedBook) {
-    if (!data || typeof data !== "object") return null;
-    const bookName = forcedBook || data.book || data.Book || data.name || data.title;
-    if (!bookName) return null;
-    if (Array.isArray(data.chapters) && Array.isArray(data.chapters[0]))
-      return { book: bookName, chapters: data.chapters.map(ch => ch.map(v => String(v))) };
-    if (data.chapters && typeof data.chapters === "object" && !Array.isArray(data.chapters)) {
-      const keys = Object.keys(data.chapters).sort((a,b) => parseInt(a)-parseInt(b));
-      const chapters = keys.map(k => {
-        const ch = data.chapters[k];
-        if (Array.isArray(ch)) return ch.map(v => String(v));
-        if (ch && typeof ch === "object") {
-          return Object.keys(ch).sort((a,b)=>parseInt(a)-parseInt(b)).map(vk=>String(ch[vk]));
-        }
-        return [];
-      });
-      if (chapters.length) return { book: bookName, chapters };
-    }
-    return null;
-  },
-};
-
-/* ════════════
-   REF PARSING
-════════════ */
-function parseRef(q) {
-  if (!q) return null;
-  const raw = q.trim().replace(/\s+/g," ");
-  const m = raw.match(/^(.+?)\s+(\d+)\s*[:.]\s*(\d+)$/i);
-  if (!m) return null;
-  const bookIn = m[1].toLowerCase().trim();
-  const c = parseInt(m[2], 10);
-  const v = parseInt(m[3], 10);
-  const alias = ALIASES.get(bookIn);
-  if (alias) return `${alias} ${c}:${v}`;
-  const found = BOOKS.find(([name]) => name.toLowerCase() === bookIn);
-  if (found) return `${found[0]} ${c}:${v}`;
-  const partial = BOOKS.find(([name]) => name.toLowerCase().replace(/[éèê]/g,"e").includes(bookIn.replace(/[éèê]/g,"e")));
-  if (partial) return `${partial[0]} ${c}:${v}`;
-  return null;
+const VOD=["Psaumes 23:1","Jean 3:16","Romains 8:28","Proverbes 3:5","Ésaïe 41:10","Philippiens 4:6","Matthieu 11:28","Psaumes 91:1","Psaumes 119:105","Hébreux 11:1","Jean 14:6","Romains 5:8","Éphésiens 2:8","Ésaïe 40:31","Josué 1:9"];
+async function initToday(){
+  const tc=document.getElementById("todayCard");
+  document.getElementById("continueRef").textContent=LB.lastRef;
+  document.getElementById("continueCard").onclick=()=>showView("open");
+  const day=Math.floor((Date.now()-new Date(new Date().getFullYear(),0,0))/86400000);
+  for(let i=0;i<VOD.length;i++){const ref=VOD[(day+i)%VOD.length];const p=splitRef(ref);const t=await Bible.vs(p.book,p.chapter,p.verse);if(t){tc.innerHTML=`<div class="section-label">✦ Verset du jour</div>${card(ref,t).replace('<div class="card card-gold">','').slice(0,-6)}`;bindCard(tc);return;}}
+  tc.innerHTML=`<div class="section-label">✦ Verset du jour</div><p class="muted">Impossible de charger. Vérifie tes fichiers dans <span class="kbd">/data</span>.</p><div class="action-row"><button class="btn btn-gold" onclick="showView('open')">📖 Ouvrir</button></div>`;
 }
 
-function splitRef(ref) {
-  const m = ref.match(/^(.+?)\s+(\d+)\s*:\s*(\d+)$/);
-  if (!m) return { book:"Genèse", chapter:1, verse:1 };
-  return { book: m[1], chapter: parseInt(m[2],10), verse: parseInt(m[3],10) };
+function initSearch(){
+  document.querySelectorAll(".ex-chip[data-ref]").forEach(el=>el.onclick=()=>{document.getElementById("searchInput").value=el.dataset.ref;doSearch();});
+  document.getElementById("searchInput").onkeydown=e=>{if(e.key==="Enter")doSearch();};
+  document.getElementById("btnSearch").onclick=doSearch;
+}
+async function doSearch(){
+  const q=document.getElementById("searchInput").value.trim();
+  const ref=parseRef(q),res=document.getElementById("searchResult");
+  if(!ref){res.innerHTML=`<div class="card muted">Référence invalide. Ex : <span class="kbd">Jn 3:16</span></div>`;return;}
+  const p=splitRef(ref);
+  res.innerHTML=`<div class="card"><div class="skel"></div><div class="skel" style="width:76%"></div></div>`;
+  const t=await Bible.vs(p.book,p.chapter,p.verse);
+  if(!t){res.innerHTML=`<div class="card muted">Introuvable. Vérifie <span class="kbd">/data</span>.</div>`;return;}
+  res.innerHTML=card(ref,t);bindCard(res);LB.lastRef=ref;
 }
 
-/* ════════════
-   VERSE OF DAY
-════════════ */
-const VOD_POOL = [
-  "Psaumes 23:1","Jean 3:16","Romains 8:28","Proverbes 3:5","Ésaïe 41:10",
-  "Philippiens 4:6","Matthieu 11:28","Psaumes 91:1","Psaumes 119:105","Hébreux 11:1",
-  "Jean 14:6","Romains 5:8","Éphésiens 2:8","Ésaïe 40:31","Josué 1:9",
-];
-async function getVerseOfDay() {
-  const day = Math.floor((Date.now() - new Date(new Date().getFullYear(),0,0)) / 86400000);
-  for (let i = 0; i < VOD_POOL.length; i++) {
-    const ref = VOD_POOL[(day + i) % VOD_POOL.length];
-    const p = splitRef(ref);
-    const t = await Bible.getVerse(p.book, p.chapter, p.verse);
-    if (t) return { ref, text: t };
-  }
-  return null;
-}
-
-/* ════════════
-   TOAST
-════════════ */
-function toast(msg, actionText, actionFn) {
-  $("toastMsg").textContent = msg;
-  if (actionText && actionFn) {
-    $("toastAction").style.display = "";
-    $("toastAction").textContent = actionText;
-    $("toastAction").onclick = () => { actionFn(); hideToast(); };
-  } else {
-    $("toastAction").style.display = "none";
-    $("toastAction").onclick = null;
-  }
-  $("toast").classList.add("show");
-  clearTimeout(toast._t);
-  toast._t = setTimeout(hideToast, 4000);
-}
-function hideToast() { $("toast").classList.remove("show"); }
-$("toastClose").onclick = hideToast;
-
-/* ════════════
-   ESCAPE
-════════════ */
-function esc(s) { return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c])); }
-
-/* ════════════
-   VERSE CARD HTML
-════════════ */
-function verseCardHTML(ref, text) {
-  const isFav = state.favs.some(f => f.ref === ref);
-  return `
-    <div class="card card-gold">
-      <div class="verse-ref">${esc(ref)}</div>
-      <div class="verse-text ${state.poetic ? 'poetic' : ''}">${esc(text)}</div>
-      <div class="ornament">✦ ✦ ✦</div>
-      <div class="action-row">
-        <button class="btn ${isFav ? 'btn-fav-active' : ''}" data-fav-ref="${esc(ref)}" data-fav-text="${esc(text)}">
-          ${isFav ? '★' : '☆'} ${isFav ? 'Sauvegardé' : 'Favori'}
-        </button>
-        <button class="btn btn-gold" data-share-ref="${esc(ref)}" data-share-text="${esc(text)}">📤 Partager</button>
-      </div>
-    </div>`;
-}
-
-function bindVerseCardEvents(container) {
-  container.querySelectorAll('[data-fav-ref]').forEach(btn => {
-    btn.onclick = () => toggleFav(btn.dataset.favRef, btn.dataset.favText);
-  });
-  container.querySelectorAll('[data-share-ref]').forEach(btn => {
-    btn.onclick = () => shareAsImage(btn.dataset.shareRef, btn.dataset.shareText);
-  });
-}
-
-/* ════════════
-   THEME
-════════════ */
-function applyTheme() {
-  document.documentElement.setAttribute("data-theme", state.theme);
-  $("themeBtn").textContent = state.theme === "dark" ? "☀️" : "🌙";
-  $("themeColorMeta").content = state.theme === "dark" ? "#0d0b09" : "#fdf8f0";
-  const toggle = $("darkToggle");
-  if (toggle) toggle.checked = state.theme === "dark";
-}
-
-function toggleTheme() {
-  state.theme = state.theme === "dark" ? "light" : "dark";
-  applyTheme();
-  saveState();
-}
-
-/* ════════════
-   FONT SIZE
-════════════ */
-const FONT_MIN = 15, FONT_MAX = 26, FONT_DEF = 19;
-function applyFontSize() {
-  document.documentElement.style.setProperty("--font-size", state.fontSize + "px");
-  const slider = $("fontSlider");
-  if (slider) slider.value = state.fontSize;
-  const label = $("fontSizeLabel");
-  if (label) label.textContent = `Taille actuelle: ${state.fontSize}px`;
-}
-
-/* ════════════
-   VIEWS
-════════════ */
-const VIEWS = {
-  today: "viewToday", search: "viewSearch", open: "viewOpen",
-  plan: "viewPlan", fav: "viewFav", settings: "viewSettings"
-};
-const TABS = {
-  today: "tabToday", search: "tabSearch", open: "tabOpen",
-  plan: "tabPlan", fav: "tabFav", settings: "tabSettings"
-};
-
-function showView(tab) {
-  state.tab = tab;
-  saveState();
-  Object.entries(VIEWS).forEach(([key, id]) => {
-    const el = $(id);
-    el.classList.toggle("active", key === tab);
-  });
-  Object.entries(TABS).forEach(([key, id]) => {
-    $(id).classList.toggle("active", key === tab);
-  });
-  // scroll to top
-  window.scrollTo({ top: 0, behavior: "smooth" });
-}
-
-/* ════════════
-   TODAY VIEW
-════════════ */
-async function initTodayView() {
-  $("continueRef").textContent = state.lastRef;
-  $("continueCard").onclick = () => showView("open");
-
-  const vod = await getVerseOfDay();
-  if (vod) {
-    $("todayCard").innerHTML = `
-      <div class="today-label">✦ Verset du jour</div>
-      <div class="verse-ref">${esc(vod.ref)}</div>
-      <div class="verse-text ${state.poetic ? 'poetic' : ''} italic">${esc(vod.text)}</div>
-      <div class="ornament">✦ ✦ ✦</div>
-      <div class="action-row">
-        <button class="btn ${state.favs.some(f=>f.ref===vod.ref)?'btn-fav-active':''}" data-fav-ref="${esc(vod.ref)}" data-fav-text="${esc(vod.text)}">
-          ${state.favs.some(f=>f.ref===vod.ref)?'★ Sauvegardé':'☆ Favori'}
-        </button>
-        <button class="btn btn-gold" data-share-ref="${esc(vod.ref)}" data-share-text="${esc(vod.text)}">📤 Partager</button>
-      </div>`;
-    bindVerseCardEvents($("todayCard"));
-    $("dataStatus").textContent = "Données: OK";
-  } else {
-    $("todayCard").innerHTML = `
-      <div class="today-label">✦ Verset du jour</div>
-      <p style="color:var(--text2);font-size:15px">Impossible de charger les données.</p>
-      <p style="color:var(--text3);font-size:13px;margin-top:8px">Vérifie que tes fichiers JSON sont dans <span class="kbd">/data</span>.</p>
-      <div class="action-row" style="margin-top:14px">
-        <button class="btn btn-gold" onclick="showView('open')">📖 Ouvrir manuellement</button>
-      </div>`;
-    $("dataStatus").textContent = "Données: ERREUR";
-  }
-}
-
-/* ════════════
-   SEARCH VIEW
-════════════ */
-function initSearchView() {
-  // Book select populate (once)
-  const sel = $("selBook");
-  if (sel && sel.childElementCount === 0) {
-    BOOKS.forEach(([name]) => {
-      const o = document.createElement("option");
-      o.value = o.textContent = name;
-      sel.appendChild(o);
-    });
-  }
-
-  // Examples
-  document.querySelectorAll(".example-chip[data-ref]").forEach(el => {
-    el.onclick = () => {
-      $("searchInput").value = el.dataset.ref;
-      doSearch();
-    };
-  });
-
-  $("searchInput").onkeydown = e => { if (e.key === "Enter") doSearch(); };
-  $("btnSearch").onclick = doSearch;
-}
-
-async function doSearch() {
-  const q = $("searchInput").value.trim();
-  const ref = parseRef(q);
-  const res = $("searchResult");
-  if (!ref) { res.innerHTML = `<div class="card" style="color:var(--text3)">Référence invalide. Ex: <span class="kbd">Jn 3:16</span></div>`; return; }
-  const p = splitRef(ref);
-  res.innerHTML = `<div class="card"><div class="skeleton"></div><div class="skeleton" style="width:80%"></div></div>`;
-  const text = await Bible.getVerse(p.book, p.chapter, p.verse);
-  if (!text) { res.innerHTML = `<div class="card" style="color:var(--text3)">Introuvable. Vérifie tes fichiers dans <span class="kbd">/data</span>.</div>`; return; }
-  res.innerHTML = verseCardHTML(ref, text);
-  bindVerseCardEvents(res);
-  state.lastRef = ref;
-  saveState();
-}
-
-/* ════════════
-   OPEN VIEW
-════════════ */
-function initOpenView() {
-  const sel = $("selBook");
-  if (sel && sel.childElementCount === 0) {
-    BOOKS.forEach(([name]) => {
-      const o = document.createElement("option"); o.value = o.textContent = name; sel.appendChild(o);
-    });
-  }
-  const p = splitRef(state.lastRef);
-  if (sel) sel.value = p.book;
-  $("inChap").value = p.chapter;
-  $("inVers").value = p.verse;
-
-  $("btnOpenVerse").onclick = doOpen;
-  $("btnPrev").onclick = () => { $("inVers").value = Math.max(1, parseInt($("inVers").value||"1")-1); doOpen(); };
-  $("btnNext").onclick = () => { $("inVers").value = parseInt($("inVers").value||"1")+1; doOpen(); };
+function initOpen(){
+  const sel=document.getElementById("selBook");
+  if(sel&&!sel.childElementCount)BOOKS.forEach(([n])=>{const o=document.createElement("option");o.value=o.textContent=n;sel.appendChild(o);});
+  const p=splitRef(LB.lastRef);
+  if(sel)sel.value=p.book;
+  document.getElementById("inChap").value=p.chapter;
+  document.getElementById("inVers").value=p.verse;
+  document.getElementById("btnOpenVerse").onclick=doOpen;
+  document.getElementById("btnPrev").onclick=()=>{document.getElementById("inVers").value=Math.max(1,+document.getElementById("inVers").value-1);doOpen();};
+  document.getElementById("btnNext").onclick=()=>{document.getElementById("inVers").value=+document.getElementById("inVers").value+1;doOpen();};
   doOpen();
 }
-
-async function doOpen() {
-  const b = $("selBook").value;
-  const c = Math.max(1, parseInt($("inChap").value||"1"));
-  const v = Math.max(1, parseInt($("inVers").value||"1"));
-  const ref = `${b} ${c}:${v}`;
-  const res = $("openResult");
-  res.innerHTML = `<div class="card"><div class="skeleton"></div><div class="skeleton" style="width:80%"></div></div>`;
-  const text = await Bible.getVerse(b, c, v);
-  if (!text) { res.innerHTML = `<div class="card" style="color:var(--text3)">Introuvable. Vérifie tes fichiers dans <span class="kbd">/data</span>.</div>`; return; }
-  res.innerHTML = verseCardHTML(ref, text);
-  bindVerseCardEvents(res);
-  state.lastRef = ref;
-  $("continueRef").textContent = ref;
-  saveState();
+async function doOpen(){
+  const b=document.getElementById("selBook").value,c=Math.max(1,+document.getElementById("inChap").value||1),v=Math.max(1,+document.getElementById("inVers").value||1);
+  const ref=`${b} ${c}:${v}`,res=document.getElementById("openResult");
+  res.innerHTML=`<div class="card"><div class="skel"></div><div class="skel" style="width:76%"></div></div>`;
+  const t=await Bible.vs(b,c,v);
+  if(!t){res.innerHTML=`<div class="card muted">Introuvable. Vérifie <span class="kbd">/data</span>.</div>`;return;}
+  res.innerHTML=card(ref,t);bindCard(res);
+  LB.lastRef=ref;document.getElementById("continueRef").textContent=ref;
 }
 
-/* ════════════
-   PLAN ANNUEL
-════════════ */
-function renderPlan() {
-  const now = new Date();
-  const start = new Date(now.getFullYear(), 0, 0);
-  const todayDay = Math.floor((now - start) / 86400000); // 1-based day of year
-
-  const done = state.planDone;
-  const pct = Math.round(done.length / 365 * 100);
-
-  $("planDone").textContent = done.length;
-  $("planLeft").textContent = 365 - done.length;
-  $("planPct").textContent = pct + "%";
-  $("planBar").style.width = pct + "%";
-
-  const list = $("planList");
-  // Show days around today (today-3 to today+10)
-  const start_i = Math.max(0, todayDay - 4);
-  const end_i = Math.min(364, todayDay + 12);
-
-  let html = `<div style="font-size:13px;color:var(--text3);margin-bottom:12px;text-align:center">
-    Jours ${start_i+1}–${end_i+1} sur 365
-  </div>`;
-
-  for (let i = start_i; i <= end_i; i++) {
-    const ref = ANNUAL_PLAN[i];
-    const isDone = done.includes(i);
-    const isToday = (i + 1 === todayDay);
-    html += `
-      <div class="plan-day-item ${isDone ? 'completed' : ''}" data-plan-day="${i}">
-        <div class="plan-day-num">J${i+1}${isToday ? `<br><span class="plan-today-badge">auj.</span>` : ''}</div>
-        <div class="plan-day-refs">
-          <div class="plan-day-ref">${esc(ref)}</div>
-        </div>
-        <div class="plan-day-check">${isDone ? '✅' : '○'}</div>
-      </div>`;
-  }
-
-  list.innerHTML = html;
-
-  list.querySelectorAll("[data-plan-day]").forEach(el => {
-    el.onclick = () => {
-      const i = parseInt(el.dataset.planDay);
-      const ref = ANNUAL_PLAN[i];
-      const p = splitRef(ref);
-      // Toggle completed
-      const idx = state.planDone.indexOf(i);
-      if (idx >= 0) state.planDone.splice(idx, 1);
-      else state.planDone.push(i);
-      saveState();
-      renderPlan();
-      // Navigate
-      if ($("selBook")) $("selBook").value = p.book;
-      if ($("inChap")) $("inChap").value = p.chapter;
-      if ($("inVers")) $("inVers").value = p.verse;
-      state.lastRef = ref;
-      saveState();
-      showView("open");
-    };
-  });
-
-  $("btnPlanToday").onclick = () => {
-    const todayRef = ANNUAL_PLAN[Math.max(0, todayDay - 1)];
-    const p = splitRef(todayRef);
-    if ($("selBook")) $("selBook").value = p.book;
-    if ($("inChap")) $("inChap").value = p.chapter;
-    if ($("inVers")) $("inVers").value = p.verse;
-    state.lastRef = todayRef;
-    saveState();
+function renderPlan(){
+  const now=new Date(),doy=Math.floor((now-new Date(now.getFullYear(),0,0))/86400000);
+  const done=LB.planDone,pct=Math.round(done.length/365*100);
+  document.getElementById("planDone").textContent=done.length;
+  document.getElementById("planLeft").textContent=365-done.length;
+  document.getElementById("planPct").textContent=pct+"%";
+  document.getElementById("planBar").style.width=pct+"%";
+  const si=Math.max(0,doy-4),ei=Math.min(364,doy+14);
+  let html=`<p class="muted" style="text-align:center;margin-bottom:9px">Jours ${si+1}–${ei+1} sur 365</p>`;
+  for(let i=si;i<=ei;i++){const ref=ANNUAL[i],isDone=done.includes(i),isToday=i+1===doy;html+=`<div class="plan-item${isDone?" done":""}" data-pi="${i}"><div class="plan-day">J${i+1}${isToday?`<span class="today-badge">auj.</span>`:""}</div><div class="plan-ref-txt">${esc(ref)}</div><div class="plan-chk">${isDone?"✅":"○"}</div></div>`;}
+  document.getElementById("planList").innerHTML=html;
+  document.querySelectorAll("[data-pi]").forEach(el=>el.onclick=()=>{
+    const i=+el.dataset.pi,done2=LB.planDone,idx=done2.indexOf(i);
+    if(idx>=0)done2.splice(idx,1);else done2.push(i);LB.planDone=done2;renderPlan();
+    const p=splitRef(ANNUAL[i]);LB.lastRef=ANNUAL[i];
+    const sel=document.getElementById("selBook");if(sel)sel.value=p.book;
+    document.getElementById("inChap").value=p.chapter;document.getElementById("inVers").value=p.verse;
     showView("open");
-  };
-
-  $("btnPlanReset").onclick = () => {
-    if (confirm("Réinitialiser tout le plan de lecture ?")) {
-      state.planDone = [];
-      saveState();
-      renderPlan();
-      toast("Plan de lecture réinitialisé.", "OK", () => {});
-    }
-  };
-}
-
-/* ════════════
-   FAVORITES
-════════════ */
-function renderFavs() {
-  const list = $("favList");
-  $("btnClearFav").disabled = state.favs.length === 0;
-  $("btnClearFav").onclick = () => {
-    if (confirm("Effacer tous les favoris ?")) {
-      state.favs = []; saveState(); renderFavs();
-    }
-  };
-  if (!state.favs.length) {
-    list.innerHTML = `<div class="empty-state"><span class="empty-icon">⭐</span><div class="empty-text">Aucun favori pour le moment.<br>Appuyez sur ☆ sur un verset pour l'ajouter.</div></div>`;
-    return;
-  }
-  list.innerHTML = state.favs.map((f, i) => `
-    <div class="fav-item" data-fav-i="${i}">
-      <div style="flex:1;min-width:0">
-        <div class="fav-ref">${esc(f.ref)}</div>
-        <div class="fav-text">${esc(f.text.slice(0, 120))}${f.text.length > 120 ? '…' : ''}</div>
-      </div>
-      <button class="fav-remove" data-remove-i="${i}" title="Retirer">✕</button>
-    </div>`).join("");
-
-  list.querySelectorAll(".fav-item").forEach(el => {
-    el.onclick = () => {
-      const f = state.favs[parseInt(el.dataset.favI)];
-      state.lastRef = f.ref;
-      const p = splitRef(f.ref);
-      if ($("selBook")) $("selBook").value = p.book;
-      if ($("inChap")) $("inChap").value = p.chapter;
-      if ($("inVers")) $("inVers").value = p.verse;
-      saveState();
-      showView("open");
-    };
   });
-  list.querySelectorAll("[data-remove-i]").forEach(btn => {
-    btn.onclick = e => {
-      e.stopPropagation();
-      state.favs.splice(parseInt(btn.dataset.removeI), 1);
-      saveState(); renderFavs();
-    };
-  });
+  document.getElementById("btnPlanToday").onclick=()=>{const ref=ANNUAL[Math.max(0,doy-1)];const p=splitRef(ref);LB.lastRef=ref;const sel=document.getElementById("selBook");if(sel)sel.value=p.book;document.getElementById("inChap").value=p.chapter;document.getElementById("inVers").value=p.verse;showView("open");};
+  document.getElementById("btnPlanReset").onclick=()=>{if(confirm("Réinitialiser tout le plan ?")){{LB.planDone=[];renderPlan();}}};
 }
 
-function toggleFav(ref, text) {
-  const i = state.favs.findIndex(f => f.ref === ref);
-  if (i >= 0) {
-    state.favs.splice(i, 1);
-    toast("Retiré des favoris.", "OK", () => {});
-  } else {
-    state.favs.unshift({ ref, text });
-    state.favs = state.favs.slice(0, 200);
-    toast("Ajouté aux favoris ⭐", "Voir", () => { renderFavs(); showView("fav"); });
-  }
-  saveState();
-  // Re-render current view to update buttons
-  const tab = state.tab;
-  if (tab === "today") initTodayView();
-  else if (tab === "search") { /* result stays, re-render would reset */ }
-  else if (tab === "open") doOpen();
+function renderFavs(){
+  const list=document.getElementById("favList"),favs=LB.favs;
+  const cb=document.getElementById("btnClearFav");cb.disabled=!favs.length;
+  cb.onclick=()=>{if(confirm("Tout effacer ?")){LB.favs=[];renderFavs();}};
+  if(!favs.length){list.innerHTML=`<div class="empty-state"><span class="empty-ico">⭐</span><p>Aucun favori pour le moment.<br>Appuyez sur ☆ sur un verset.</p></div>`;return;}
+  list.innerHTML=favs.map((f,i)=>`<div class="fav-item" data-fi="${i}"><div style="flex:1;min-width:0"><div class="fav-ref">${esc(f.ref)}</div><div class="fav-text">${esc(f.text.slice(0,110))}${f.text.length>110?"…":""}</div></div><button class="fav-rm" data-ri="${i}">✕</button></div>`).join("");
+  list.querySelectorAll("[data-fi]").forEach(el=>el.onclick=()=>{const f=favs[+el.dataset.fi];LB.lastRef=f.ref;const p=splitRef(f.ref);const sel=document.getElementById("selBook");if(sel)sel.value=p.book;document.getElementById("inChap").value=p.chapter;document.getElementById("inVers").value=p.verse;showView("open");});
+  list.querySelectorAll("[data-ri]").forEach(b=>b.onclick=e=>{e.stopPropagation();const fs=LB.favs;fs.splice(+b.dataset.ri,1);LB.favs=fs;renderFavs();});
 }
 
-/* ════════════
-   SETTINGS VIEW
-════════════ */
-function initSettingsView() {
-  const darkToggle = $("darkToggle");
-  if (darkToggle) {
-    darkToggle.checked = state.theme === "dark";
-    darkToggle.onchange = toggleTheme;
-  }
+function toggleFav(ref,text){const fs=LB.favs,i=fs.findIndex(f=>f.ref===ref);if(i>=0){fs.splice(i,1);LB.favs=fs;toast("Retiré des favoris.");}else{fs.unshift({ref,text});LB.favs=fs.slice(0,200);toast("Ajouté aux favoris ⭐","Voir",()=>{renderFavs();showView("fav");});}const v=LB.tab;if(v==="today")initToday();else if(v==="open")doOpen();}
 
-  const poeticToggle = $("poeticToggle");
-  if (poeticToggle) {
-    poeticToggle.checked = state.poetic;
-    poeticToggle.onchange = () => { state.poetic = poeticToggle.checked; saveState(); };
-  }
-
-  const slider = $("fontSlider");
-  if (slider) {
-    slider.value = state.fontSize;
-    slider.oninput = () => {
-      state.fontSize = parseInt(slider.value);
-      applyFontSize();
-      saveState();
-    };
-  }
-
-  $("settingsInstallItem").onclick = () => {
-    if (window._deferredPrompt) {
-      window._deferredPrompt.prompt();
-    } else {
-      toast("iPhone: Partager → Ajouter à l'écran d'accueil", "OK", () => {});
-    }
-  };
-
-  $("settingsUpdateItem").onclick = () => {
-    if (navigator.serviceWorker?.controller) {
-      navigator.serviceWorker.controller.postMessage({ type: "CHECK_UPDATE" });
-      toast("Vérification en cours…", "OK", () => {});
-    } else {
-      toast("Service Worker non actif.", "OK", () => {});
-    }
-  };
-
-  $("settingsResetItem").onclick = async () => {
-    if (!confirm("Réinitialiser le cache PWA ?")) return;
-    if ("serviceWorker" in navigator) {
-      const regs = await navigator.serviceWorker.getRegistrations();
-      for (const r of regs) await r.unregister();
-    }
-    const keys = await caches.keys();
-    await Promise.all(keys.map(k => caches.delete(k)));
-    toast("Cache effacé. Rechargement…", "Recharger", () => location.reload());
-  };
+function initSettings(){
+  const dt=document.getElementById("darkToggle");if(dt){dt.checked=LB.theme==="dark";dt.onchange=()=>LB.toggleTheme();}
+  const pt=document.getElementById("poeticToggle");if(pt){pt.checked=LB.poetic;pt.onchange=()=>{LB.poetic=pt.checked;};}
+  const sl=document.getElementById("fontSlider");if(sl){sl.value=LB.fontSize;sl.oninput=()=>{LB.fontSize=+sl.value;LB.applyFontSize();};}
+  document.getElementById("settingsInstall")?.addEventListener("click",()=>{if(window._dp)window._dp.prompt();else toast("iPhone : Partager → Ajouter à l'écran d'accueil","OK",()=>{});});
+  document.getElementById("settingsUpdate")?.addEventListener("click",()=>{if(navigator.serviceWorker?.controller)navigator.serviceWorker.controller.postMessage({type:"CHECK_UPDATE"});toast("Vérification…","OK",()=>{});});
+  document.getElementById("settingsCache")?.addEventListener("click",async()=>{if(!confirm("Réinitialiser le cache ?"))return;const rs=await navigator.serviceWorker?.getRegistrations()??[];for(const r of rs)await r.unregister();const ks=await caches.keys();await Promise.all(ks.map(k=>caches.delete(k)));toast("Cache effacé.","Recharger",()=>location.reload());});
 }
 
-/* ════════════
-   FONT PANEL (header quick access)
-════════════ */
-$("fontBtn").onclick = e => {
-  e.stopPropagation();
-  $("fontPanel").classList.toggle("open");
-};
-document.addEventListener("click", () => $("fontPanel").classList.remove("open"));
-$("fontPanel").onclick = e => e.stopPropagation();
-
-$("fontMinus").onclick = () => { state.fontSize = Math.max(FONT_MIN, state.fontSize - 1); applyFontSize(); saveState(); };
-$("fontReset").onclick = () => { state.fontSize = FONT_DEF; applyFontSize(); saveState(); };
-$("fontPlus").onclick = () => { state.fontSize = Math.min(FONT_MAX, state.fontSize + 1); applyFontSize(); saveState(); };
-
-/* ════════════
-   SHARE AS IMAGE (Canvas)
-════════════ */
-function wrapText(ctx, text, maxW) {
-  const words = String(text).split(/\s+/);
-  const lines = []; let line = "";
-  for (const w of words) {
-    const test = line ? line + " " + w : w;
-    if (ctx.measureText(test).width <= maxW) line = test;
-    else { if (line) lines.push(line); line = w; }
-  }
-  if (line) lines.push(line);
-  return lines;
+function wrapText(ctx,text,maxW){const words=String(text).split(/\s+/),lines=[];let line="";for(const w of words){const t=line?line+" "+w:w;if(ctx.measureText(t).width<=maxW)line=t;else{if(line)lines.push(line);line=w;}}if(line)lines.push(line);return lines;}
+async function share(ref,text){
+  const W=1080,H=1350,P=72,c=document.createElement("canvas");c.width=W;c.height=H;const ctx=c.getContext("2d");
+  const dark=LB.theme==="dark",g=ctx.createLinearGradient(0,0,W,H);
+  g.addColorStop(0,dark?"#0d0b09":"#fdf8f0");g.addColorStop(1,dark?"#1a1208":"#f0e0c8");ctx.fillStyle=g;ctx.fillRect(0,0,W,H);
+  ctx.strokeStyle=dark?"rgba(200,146,42,.22)":"rgba(139,96,16,.18)";ctx.lineWidth=2;ctx.beginPath();ctx.roundRect(P,P,W-P*2,H-P*2,48);ctx.stroke();
+  ctx.fillStyle="#c8922a";ctx.fillRect(P+38,P+78,5,108);
+  ctx.fillStyle=dark?"#f0e8d8":"#1a1008";ctx.font="600 33px Georgia,serif";ctx.fillText("LaBible.app",P+60,P+106);
+  ctx.fillStyle="#c8922a";ctx.font="400 24px Georgia,serif";ctx.fillText("Louis Segond 1910",P+60,P+143);
+  ctx.fillStyle="rgba(200,146,42,.35)";ctx.font="25px Georgia,serif";ctx.textAlign="center";ctx.fillText("✦  ✦  ✦",W/2,P+205);ctx.textAlign="left";
+  ctx.fillStyle="#e8b84b";ctx.font="700 41px Georgia,serif";ctx.fillText(ref,P+54,P+275);
+  ctx.fillStyle=dark?"#f0e8d8":"#1a1008";ctx.font="italic 38px Georgia,serif";
+  const lines=wrapText(ctx,text,W-(P+54)*2);let y=P+350;for(const l of lines.slice(0,16)){ctx.fillText(l,P+54,y);y+=54;}
+  ctx.fillStyle="rgba(200,146,42,.35)";ctx.textAlign="center";ctx.font="21px Georgia,serif";ctx.fillText("✦  ✦  ✦",W/2,H-P-105);
+  ctx.fillStyle="rgba(200,146,42,.6)";ctx.font="24px Georgia,serif";ctx.fillText("labible.app  —  #LSG1910",W/2,H-P-62);ctx.textAlign="left";
+  const blob=await new Promise(r=>c.toBlob(r,"image/png",.95));
+  const file=new File([blob],"labible.png",{type:"image/png"});
+  try{if(navigator.canShare?.({files:[file]})){await navigator.share({title:"LaBible.app",text:`${ref} — LSG 1910`,files:[file]});return;}const url=URL.createObjectURL(blob);const a=document.createElement("a");a.href=url;a.download="labible.png";a.click();URL.revokeObjectURL(url);}catch{toast("Partage non disponible.","OK",()=>{});}
 }
 
-function roundRect(ctx, x, y, w, h, r) {
-  const rr = Math.min(r, w/2, h/2);
-  ctx.beginPath();
-  ctx.moveTo(x+rr, y);
-  ctx.arcTo(x+w,y, x+w,y+h, rr);
-  ctx.arcTo(x+w,y+h, x,y+h, rr);
-  ctx.arcTo(x,y+h, x,y, rr);
-  ctx.arcTo(x,y, x+w,y, rr);
-  ctx.closePath();
-}
+document.querySelectorAll("[data-view]").forEach(el=>el.addEventListener("click",()=>showView(el.dataset.view)));
 
-async function makeShareImage(ref, text) {
-  const W = 1080, H = 1350, PAD = 72;
-  const canvas = document.createElement("canvas");
-  canvas.width = W; canvas.height = H;
-  const ctx = canvas.getContext("2d");
-
-  // Background
-  const grad = ctx.createLinearGradient(0,0,W,H);
-  if (state.theme === "light") {
-    grad.addColorStop(0, "#fdf8f0");
-    grad.addColorStop(1, "#f0e0c8");
-  } else {
-    grad.addColorStop(0, "#0d0b09");
-    grad.addColorStop(1, "#1a1208");
-  }
-  ctx.fillStyle = grad;
-  ctx.fillRect(0, 0, W, H);
-
-  // Card
-  ctx.fillStyle = state.theme === "light" ? "rgba(255,255,255,0.7)" : "rgba(255,255,255,0.04)";
-  ctx.strokeStyle = state.theme === "light" ? "rgba(139,96,16,0.2)" : "rgba(200,146,42,0.25)";
-  ctx.lineWidth = 2;
-  roundRect(ctx, PAD, PAD, W-PAD*2, H-PAD*2, 48);
-  ctx.fill(); ctx.stroke();
-
-  // Gold accent line
-  ctx.fillStyle = "#c8922a";
-  ctx.fillRect(PAD+40, PAD+80, 6, 120);
-
-  // Title
-  ctx.fillStyle = state.theme === "light" ? "#1a1008" : "#f0e8d8";
-  ctx.font = "600 36px Georgia, serif";
-  ctx.fillText("LaBible.app", PAD+70, PAD+110);
-  ctx.fillStyle = "#c8922a";
-  ctx.font = "400 26px Georgia, serif";
-  ctx.fillText("Louis Segond 1910", PAD+70, PAD+150);
-
-  // Ornament
-  ctx.fillStyle = "rgba(200,146,42,0.4)";
-  ctx.font = "28px Georgia, serif";
-  ctx.textAlign = "center";
-  ctx.fillText("✦  ✦  ✦", W/2, PAD+220);
-  ctx.textAlign = "left";
-
-  // Reference
-  ctx.fillStyle = "#e8b84b";
-  ctx.font = `700 44px Georgia, serif`;
-  ctx.fillText(ref, PAD+56, PAD+290);
-
-  // Verse text
-  ctx.fillStyle = state.theme === "light" ? "#1a1008" : "#f0e8d8";
-  ctx.font = `italic 500 40px Georgia, serif`;
-  const maxW = W - (PAD+56)*2;
-  const lines = wrapText(ctx, text, maxW);
-  let y = PAD + 370;
-  for (const line of lines.slice(0, 16)) {
-    ctx.fillText(line, PAD+56, y);
-    y += 58;
-  }
-
-  // Bottom ornament
-  ctx.fillStyle = "rgba(200,146,42,0.4)";
-  ctx.font = "24px Georgia, serif";
-  ctx.textAlign = "center";
-  ctx.fillText("✦  ✦  ✦", W/2, H-PAD-120);
-
-  // Footer
-  ctx.fillStyle = "rgba(200,146,42,0.7)";
-  ctx.font = "400 26px Georgia, serif";
-  ctx.fillText("labible.app — #LSG1910", W/2, H-PAD-70);
-  ctx.textAlign = "left";
-
-  return new Promise(res => canvas.toBlob(res, "image/png", 0.95));
-}
-
-async function shareAsImage(ref, text) {
-  try {
-    const blob = await makeShareImage(ref, text);
-    const file = new File([blob], "labible.png", { type: "image/png" });
-    if (navigator.canShare?.({ files: [file] })) {
-      await navigator.share({ title: "LaBible.app", text: `${ref} — LSG 1910`, files: [file] });
-      return;
-    }
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url; a.download = "labible.png"; a.click();
-    URL.revokeObjectURL(url);
-  } catch (_) {
-    toast("Partage non disponible sur cet appareil.", "OK", () => {});
-  }
-}
-
-/* ════════════
-   ONLINE/OFFLINE
-════════════ */
-function updateOnlineStatus() {
-  $("offlineBadge").classList.toggle("show", !navigator.onLine);
-}
-window.addEventListener("online", updateOnlineStatus);
-window.addEventListener("offline", updateOnlineStatus);
-
-/* ════════════
-   INSTALL BUTTON
-════════════ */
-window.addEventListener("beforeinstallprompt", e => {
-  e.preventDefault();
-  window._deferredPrompt = e;
-  $("installBtn").style.display = "inline-flex";
-});
-
-$("installBtn").onclick = async () => {
-  if (!window._deferredPrompt) {
-    toast("iPhone: Partager → Ajouter à l'écran d'accueil", "OK", () => {});
-    return;
-  }
-  window._deferredPrompt.prompt();
-  const { outcome } = await window._deferredPrompt.userChoice;
-  if (outcome === "accepted") toast("Application installée ✓", "OK", () => {});
-  window._deferredPrompt = null;
-};
-
-/* ════════════
-   THEME BUTTON
-════════════ */
-$("themeBtn").onclick = toggleTheme;
-
-/* ════════════
-   TABS
-════════════ */
-$("tabToday").onclick = () => showView("today");
-$("tabSearch").onclick = () => { showView("search"); initSearchView(); };
-$("tabOpen").onclick = () => { showView("open"); initOpenView(); };
-$("tabPlan").onclick = () => { showView("plan"); renderPlan(); };
-$("tabFav").onclick = () => { showView("fav"); renderFavs(); };
-$("tabSettings").onclick = () => { showView("settings"); initSettingsView(); };
-
-/* ════════════
-   SERVICE WORKER
-════════════ */
-async function registerSW() {
-  if (!("serviceWorker" in navigator)) return;
-  try {
-    const reg = await navigator.serviceWorker.register("sw.js");
-    reg.addEventListener("updatefound", () => {
-      const sw = reg.installing;
-      if (!sw) return;
-      sw.addEventListener("statechange", () => {
-        if (sw.state === "installed" && navigator.serviceWorker.controller) {
-          toast("Mise à jour disponible.", "Recharger", () => location.reload());
-        }
-      });
-    });
-  } catch (_) {}
-}
-
-/* ════════════
-   BOOT
-════════════ */
-(async () => {
-  // Apply saved preferences immediately
-  applyTheme();
-  applyFontSize();
-  updateOnlineStatus();
-
-  // Populate book selects
-  [["selBook","open"]].forEach(([id]) => {
-    const sel = $(id);
-    if (sel) BOOKS.forEach(([name]) => {
-      const o = document.createElement("option"); o.value = o.textContent = name; sel.appendChild(o);
-    });
-  });
-
-  // Load Bible data
-  $("dataStatus").textContent = "chargement…";
+(async()=>{
+  bootShared();
   await Bible.init();
-
-  // Show correct initial view
-  const initialTab = state.tab;
-  showView(initialTab);
-
-  if (initialTab === "today") await initTodayView();
-  else if (initialTab === "search") initSearchView();
-  else if (initialTab === "open") initOpenView();
-  else if (initialTab === "plan") renderPlan();
-  else if (initialTab === "fav") renderFavs();
-  else if (initialTab === "settings") initSettingsView();
-
-  // Always pre-update continue ref
-  $("continueRef").textContent = state.lastRef;
-
-  registerSW();
+  const sel=document.getElementById("selBook");
+  if(sel)BOOKS.forEach(([n])=>{const o=document.createElement("option");o.value=o.textContent=n;sel.appendChild(o);});
+  document.getElementById("continueRef").textContent=LB.lastRef;
+  showView(LB.tab);
 })();
 </script>
 </body>

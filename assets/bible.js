@@ -1,5 +1,3 @@
-// assets/bible.js (AUTO bookIds + index robusto)
-
 let BOOKS = null;
 let BIBLE_RAW = null;
 let INDEX = null; // { [bookId]: { name, chapters: { [chapter]: [{verse,text}] } } }
@@ -17,18 +15,16 @@ export async function loadBible() {
 
   const booksHint = booksRes && booksRes.ok ? await booksRes.json() : [];
 
-  // A) formato array?
   const versesArray = Array.isArray(BIBLE_RAW?.verses)
     ? BIBLE_RAW.verses
     : (Array.isArray(BIBLE_RAW) ? BIBLE_RAW : null);
 
   if (Array.isArray(versesArray)) {
     INDEX = buildIndexFromArray(versesArray, booksHint);
-    BOOKS = buildBooksFromIndex(INDEX, booksHint); // <- aqui está a magia
+    BOOKS = buildBooksFromIndex(INDEX, booksHint);
     return { books: BOOKS, bible: BIBLE_RAW, index: INDEX };
   }
 
-  // B) formato indexado?
   if (BIBLE_RAW && typeof BIBLE_RAW === "object") {
     INDEX = buildIndexFromObject(BIBLE_RAW, booksHint);
     BOOKS = buildBooksFromIndex(INDEX, booksHint);
@@ -38,7 +34,10 @@ export async function loadBible() {
   throw new Error("Format de Bible inconnu.");
 }
 
-export function getChapterCount(_books, bookId, index = INDEX) {
+export function getBooks() { return BOOKS || []; }
+export function getIndex() { return INDEX; }
+
+export function getChapterCount(bookId, index = INDEX) {
   const b = index?.[bookId];
   if (!b) return 0;
   let max = 0;
@@ -46,14 +45,14 @@ export function getChapterCount(_books, bookId, index = INDEX) {
   return max;
 }
 
-export function listVerses(_bible, bookId, chapter, index = INDEX) {
+export function listVerses(bookId, chapter, index = INDEX) {
   const b = index?.[bookId];
   if (!b) return [];
   return b.chapters?.[String(chapter)] || [];
 }
 
-export function getVerseText(_bible, bookId, chapter, verse, index = INDEX) {
-  const list = listVerses(null, bookId, chapter, index);
+export function getVerseText(bookId, chapter, verse, index = INDEX) {
+  const list = listVerses(bookId, chapter, index);
   const found = list.find(x => x.verse === Number(verse));
   return found ? found.text : "";
 }
@@ -74,27 +73,40 @@ export function parseReference(input, books) {
     cleaned.match(/^(.+?)\s+(\d+)\s+(\d+)$/i);
   if (!m) return null;
 
-  const bookToken = normalizeBookToken(m[1]);
+  const token = normalizeToken(m[1]);
   const chapter = Number(m[2]);
   const verse = m[3] ? Number(m[3]) : null;
   if (!Number.isFinite(chapter)) return null;
 
-  // 1) match por id
-  const byId = (books || []).find(b => String(b.id).toLowerCase() === bookToken);
+  // alias comuns FR
+  const alias = new Map([
+    ["gn","genese"],["gen","genese"],
+    ["exo","exode"],["ex","exode"],
+    ["ps","psaumes"],["psa","psaumes"],
+    ["pr","proverbes"],["prov","proverbes"],
+    ["mt","matthieu"],["mat","matthieu"],
+    ["mc","marc"],["mk","marc"],
+    ["lc","luc"],["lk","luc"],
+    ["jn","jean"],["jean","jean"],
+    ["ac","actes"],["act","actes"],
+    ["rm","romains"],["rom","romains"],
+    ["ap","apocalypse"],["apo","apocalypse"],
+  ]);
+  const want = alias.get(token) || token;
+
+  const byId = (books || []).find(b => normalizeToken(b.id) === want);
   if (byId) return { book: byId.id, chapter, verse };
 
-  // 2) match por nome
-  const byName = (books || []).find(b => normalizeBookToken(b.name) === bookToken);
+  const byName = (books || []).find(b => normalizeToken(b.name) === want);
   if (byName) return { book: byName.id, chapter, verse };
 
-  // 3) contains
-  const contains = (books || []).find(b => normalizeBookToken(b.name).includes(bookToken));
+  const contains = (books || []).find(b => normalizeToken(b.name).includes(want));
   if (contains) return { book: contains.id, chapter, verse };
 
   return null;
 }
 
-/* ---------- Helpers ---------- */
+/* ---------- builders ---------- */
 
 function buildIndexFromArray(arr, booksHint) {
   const nameById = new Map((booksHint || []).map(b => [String(b.id), String(b.name || b.id)]));
@@ -104,13 +116,10 @@ function buildIndexFromArray(arr, booksHint) {
     const rawBookId = v.book || v.book_id || v.bookId || v.bookID || null;
     const rawBookName = v.book_name || v.bookName || "";
 
-    // prioridade: campo book/id, senão slug do nome
-    let bookId = normalizeBookId(rawBookId);
-    if (!bookId) bookId = guessBookIdFromName(rawBookName, nameById);
+    let bookId = normalizeId(rawBookId);
+    if (!bookId) bookId = slugify(rawBookName);
 
-    const bookName =
-      String(rawBookName || nameById.get(bookId) || bookId || "").trim() || String(bookId || "");
-
+    const bookName = String(rawBookName || nameById.get(bookId) || bookId).trim() || bookId;
     const chapter = Number(v.chapter);
     const verse = Number(v.verse);
     const text = String(v.text || "").trim();
@@ -118,8 +127,7 @@ function buildIndexFromArray(arr, booksHint) {
     if (!bookId || !Number.isFinite(chapter) || !Number.isFinite(verse)) continue;
 
     idx[bookId] ||= { name: bookName, chapters: {} };
-    if (!idx[bookId].name) idx[bookId].name = bookName;
-
+    idx[bookId].name ||= bookName;
     idx[bookId].chapters[String(chapter)] ||= [];
     idx[bookId].chapters[String(chapter)].push({ verse, text });
   }
@@ -160,32 +168,18 @@ function buildIndexFromObject(obj, booksHint) {
 
 function buildBooksFromIndex(index, booksHint) {
   const hintMap = new Map((booksHint || []).map(b => [String(b.id), String(b.name || b.id)]));
-  return Object.keys(index).map(id => ({
-    id,
-    name: hintMap.get(id) || index[id]?.name || id,
-  }));
+  return Object.keys(index).map(id => ({ id, name: hintMap.get(id) || index[id]?.name || id }));
 }
 
-function normalizeBookId(input) {
-  const s = String(input || "").trim().toLowerCase();
-  return s || null;
+function normalizeId(s) {
+  const x = String(s || "").trim().toLowerCase();
+  return x || null;
 }
-
-function normalizeBookToken(input) {
-  return String(input || "")
+function normalizeToken(s) {
+  return String(s || "")
     .toLowerCase()
     .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
     .replace(/[^a-z0-9]+/g, "")
     .trim();
 }
-
-function guessBookIdFromName(bookName, nameByIdMap) {
-  const slug = normalizeBookToken(bookName);
-  if (!slug) return null;
-
-  // tenta mapear por "prefixo" vs ids conhecidos (gen, exo, etc.)
-  const ids = Array.from(nameByIdMap.keys());
-  const prefix = slug.slice(0, 3);
-  const hit = ids.find(id => id === prefix || id.startsWith(prefix));
-  return hit || slug; // fallback: usar slug como id
-}
+function slugify(s) { return normalizeToken(s) || null; }

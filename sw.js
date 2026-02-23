@@ -1,13 +1,13 @@
-const CACHE_VERSION = "labible-pwa-v2026.03";
+const CACHE_VERSION = "labible-pwa-v2026.04";
 
 const CORE = [
   "./",
   "./index.html",
-  "./manifest.json",
+  "./manifest.webmanifest",
   "./offline.html"
 ];
 
-// Tenta cachear extra, mas sem falhar se algum 404
+// opcionais (não podem quebrar a instalação)
 const OPTIONAL = [
   "./icons/icon-192.png",
   "./icons/icon-512.png",
@@ -19,9 +19,7 @@ async function cacheAllSafe(cache, urls) {
     try {
       const res = await fetch(url, { cache: "no-store" });
       if (res.ok) await cache.put(url, res);
-    } catch (_) {
-      // ignora erros (offline/404)
-    }
+    } catch (_) {}
   }));
 }
 
@@ -29,12 +27,8 @@ self.addEventListener("install", (event) => {
   self.skipWaiting();
   event.waitUntil((async () => {
     const cache = await caches.open(CACHE_VERSION);
-
-    // Core primeiro (se isto falhar, é mesmo sem rede)
-    await cache.addAll(CORE);
-
-    // Optional não pode quebrar a instalação
-    await cacheAllSafe(cache, OPTIONAL);
+    await cache.addAll(CORE);          // core obrigatório
+    await cacheAllSafe(cache, OPTIONAL); // opcional: não falha
   })());
 });
 
@@ -46,17 +40,16 @@ self.addEventListener("activate", (event) => {
   })());
 });
 
-// Network-first para HTML (melhor updates), cache-first para o resto
 self.addEventListener("fetch", (event) => {
   const req = event.request;
   const url = new URL(req.url);
-
   if (url.origin !== self.location.origin) return;
 
   const isHTML =
     req.mode === "navigate" ||
     (req.headers.get("accept") || "").includes("text/html");
 
+  // HTML: network-first
   if (isHTML) {
     event.respondWith((async () => {
       try {
@@ -66,7 +59,6 @@ self.addEventListener("fetch", (event) => {
         cache.put("./index.html", fresh.clone());
         return fresh;
       } catch (_) {
-        // importantíssimo: fallback SEM depender do URL com query
         const cached = await caches.match("./index.html") || await caches.match("./");
         return cached || await caches.match("./offline.html");
       }
@@ -74,11 +66,10 @@ self.addEventListener("fetch", (event) => {
     return;
   }
 
-  // assets
+  // assets: cache-first
   event.respondWith((async () => {
     const cached = await caches.match(req);
     if (cached) return cached;
-
     try {
       const fresh = await fetch(req);
       const cache = await caches.open(CACHE_VERSION);

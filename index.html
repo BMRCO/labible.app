@@ -1,0 +1,160 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <title>LaBible.app — Louis Segond 1910</title>
+  <meta name="description" content="Lire la Bible en ligne (Louis Segond 1910). Navigation par livre et chapitre, recherche, favoris, partage de versets." />
+
+  <!-- PWA -->
+  <link rel="manifest" href="/manifest.webmanifest" />
+  <meta name="theme-color" content="#111827" />
+  <link rel="apple-touch-icon" href="/icons/icon-192.png" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+
+  <!-- Font -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+
+  <!-- Styles -->
+  <link rel="stylesheet" href="/assets/style.css" />
+</head>
+
+<body>
+  <header class="topbar">
+    <a class="brand" href="/">
+      <div class="brand__name">LaBible.app</div>
+      <div class="brand__sub">Louis Segond 1910</div>
+    </a>
+
+    <nav class="topnav">
+      <a href="/a-propos.html">À propos</a>
+      <a href="/contact.html">Contact</a>
+      <a href="/confidentialite.html">Confidentialité</a>
+    </nav>
+  </header>
+
+  <main class="wrap main">
+    <section class="panel">
+      <div class="panel__head">
+        <h1 class="h1">Bible en ligne (LSG 1910)</h1>
+        <p class="p muted">
+          Lecture par livre/chapitre, recherche globale, favoris, copie et partage.
+        </p>
+      </div>
+
+      <div class="grid">
+        <div class="field">
+          <label class="label" for="bookSelect">Livre</label>
+          <select class="control" id="bookSelect" aria-label="Livre"></select>
+        </div>
+
+        <div class="field">
+          <label class="label" for="chapterSelect">Chapitre</label>
+          <select class="control" id="chapterSelect" aria-label="Chapitre"></select>
+        </div>
+
+        <div class="field span2">
+          <label class="label" for="searchInput">Recherche</label>
+          <input
+            class="control"
+            id="searchInput"
+            placeholder="Ex: berger, foi, paix…"
+            autocomplete="off"
+            inputmode="search"
+          />
+          <div class="help" id="searchHelp">Tape au moins 2 lettres. La recherche parcourt toute la Bible.</div>
+        </div>
+      </div>
+
+      <div class="actions">
+        <button class="btn primary" id="loadBtn" type="button">Afficher</button>
+        <button class="btn" id="prevBtn" type="button" title="Chapitre précédent">◀</button>
+        <button class="btn" id="nextBtn" type="button" title="Chapitre suivant">▶</button>
+
+        <button class="btn" id="toggleFavBtn" type="button">Favoris</button>
+        <button class="btn" id="installBtn" type="button" style="display:none;">Installer</button>
+
+        <span class="pill" id="statusPill">Prêt</span>
+        <span class="pill" id="selectedCount">0 sélectionné</span>
+      </div>
+
+      <div class="tools">
+        <button class="btn sm" id="copyBtn" type="button">Copier</button>
+        <button class="btn sm" id="shareBtn" type="button">Partager</button>
+        <button class="btn sm" id="favBtn" type="button">Ajouter/Retirer favori</button>
+        <button class="btn sm" id="clearSelBtn" type="button">Effacer sélection</button>
+      </div>
+
+      <div class="results">
+        <div class="results__top">
+          <h2 class="h2" id="resultsTitle">Résultats</h2>
+          <div class="muted small" id="resultsMeta"></div>
+        </div>
+
+        <div class="list" id="verseList"></div>
+        <p class="muted small" id="hint">Clique sur un verset pour le sélectionner (multi-sélection possible).</p>
+      </div>
+    </section>
+
+    <aside class="panel side">
+      <h2 class="h2">Favoris</h2>
+      <p class="p muted small">Stockés localement sur cet appareil.</p>
+      <div class="list" id="favList"></div>
+
+      <div class="sep"></div>
+
+      <h2 class="h2">Raccourcis</h2>
+      <div class="quick">
+        <button class="btn sm" id="openLastBtn" type="button">Ouvrir dernier lu</button>
+        <button class="btn sm" id="clearFavsBtn" type="button">Effacer favoris</button>
+        <button class="btn sm" id="clearDataBtn" type="button">Réinitialiser app</button>
+      </div>
+
+      <div class="sep"></div>
+
+      <h2 class="h2">PWA</h2>
+      <p class="p muted small">
+        Android/desktop: bouton “Installer”. iPhone: Safari → “Ajouter à l’écran d’accueil”.
+      </p>
+    </aside>
+  </main>
+
+  <footer class="footer">
+    <div>© LaBible.app — Louis Segond 1910</div>
+    <div class="footer__links">
+      <a href="/a-propos.html">À propos</a>
+      <a href="/contact.html">Contact</a>
+      <a href="/confidentialite.html">Confidentialité</a>
+      <a href="/mentions-legales.html">Mentions légales</a>
+      <a href="/conditions.html">Conditions</a>
+    </div>
+  </footer>
+
+  <!-- Cookie banner (opt-in) -->
+  <div class="cookie" id="cookieBanner" role="dialog" aria-live="polite">
+    <div class="cookie__row">
+      <div>
+        <div class="cookie__title">Cookies</div>
+        <div class="muted small">Mesure d’audience optionnelle. Vous pouvez accepter ou refuser.</div>
+      </div>
+      <div class="cookie__btns">
+        <button class="btn sm primary" id="cookieAccept" type="button">Accepter</button>
+        <button class="btn sm" id="cookieDeny" type="button">Refuser</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="/assets/app.js"></script>
+
+  <script>
+    if ("serviceWorker" in navigator) {
+      window.addEventListener("load", () => {
+        navigator.serviceWorker.register("/sw.js");
+      });
+    }
+  </script>
+</body>
+</html>

@@ -1,46 +1,25 @@
 const el = (id) => document.getElementById(id);
 
-const KEYS = {
-  favs: "labible_favs_v1",
-  last: "labible_last_v1",
-  cookie: "labible_cookie_choice_v1"
-};
-
 const state = {
   books: [],
   bible: {},
   verses: [],
   selected: new Set(),
+  favorites: loadFavs(),
   viewingFavs: false,
-  favorites: loadJson(KEYS.favs, {}),
-  last: loadJson(KEYS.last, null),
   installPromptEvent: null
 };
 
-function setStatus(msg) {
-  const p = el("statusPill");
-  if (p) p.textContent = msg;
-}
-
 async function init() {
-  setStatus("Chargement…");
   await loadData();
-  initSelectors();
-  initInstallFlow();
-  initCookies();
-  bindEvents();
+  fillBooks();
+  attachEvents();
   renderFavs();
+  initCookies();
+  initInstallFlow();
 
-  // Restore last read if possible
-  if (state.last?.bookId && state.last?.chapter) {
-    const ok = trySetBookAndChapter(state.last.bookId, state.last.chapter);
-    if (ok) await showChapter();
-    else await showChapter();
-  } else {
-    await showChapter();
-  }
-
-  setStatus("Prêt");
+  // “feel like app”: mostrar algo logo
+  await showChapter();
 }
 
 async function loadData() {
@@ -51,25 +30,23 @@ async function loadData() {
   state.bible = await bibleRes.json();
 }
 
-function initSelectors() {
-  const bookSelect = el("bookSelect");
-  bookSelect.innerHTML = "";
-
+function fillBooks() {
+  const s = el("bookSelect");
+  s.innerHTML = "";
   state.books.forEach(b => {
     const opt = document.createElement("option");
     opt.value = b.id;
     opt.textContent = b.name;
-    bookSelect.appendChild(opt);
+    s.appendChild(opt);
   });
-
   fillChapters();
 }
 
 function fillChapters() {
   const bookId = el("bookSelect").value;
   const chapters = state.bible?.[bookId];
-  const chapterSelect = el("chapterSelect");
-  chapterSelect.innerHTML = "";
+  const s = el("chapterSelect");
+  s.innerHTML = "";
   if (!chapters) return;
 
   Object.keys(chapters)
@@ -80,22 +57,8 @@ function fillChapters() {
       const opt = document.createElement("option");
       opt.value = String(n);
       opt.textContent = String(n);
-      chapterSelect.appendChild(opt);
+      s.appendChild(opt);
     });
-}
-
-function trySetBookAndChapter(bookId, chapter) {
-  const hasBook = state.books.some(b => b.id === bookId);
-  if (!hasBook) return false;
-
-  el("bookSelect").value = bookId;
-  fillChapters();
-
-  const exists = !!state.bible?.[bookId]?.[String(chapter)];
-  if (!exists) return false;
-
-  el("chapterSelect").value = String(chapter);
-  return true;
 }
 
 async function showChapter() {
@@ -110,76 +73,37 @@ async function showChapter() {
     state.verses = [];
     state.viewingFavs = false;
     el("resultsTitle").textContent = "Résultats";
-    el("resultsMeta").textContent = "";
     clearSelection();
     renderList([]);
-    saveLast({ bookId, chapter: Number(chapter) });
     return;
   }
 
-  const verseNums = Object.keys(chapterData)
+  const nums = Object.keys(chapterData)
     .map(n => Number(n))
     .filter(n => Number.isFinite(n))
     .sort((a,b)=>a-b);
 
-  state.verses = verseNums.map(vn => ({
+  state.verses = nums.map(vn => ({
     id: `${bookName} ${chapter}:${vn}`,
-    text: String(chapterData[String(vn)] || "").trim(),
-    bookId,
-    chapter: Number(chapter),
-    verse: vn
+    text: String(chapterData[String(vn)] || "").trim()
   }));
 
   state.viewingFavs = false;
   el("resultsTitle").textContent = "Résultats";
-  el("resultsMeta").textContent = `${bookName} ${chapter} · ${verseNums.length} versets`;
   clearSelection();
   renderList(state.verses);
-  saveLast({ bookId, chapter: Number(chapter) });
-}
-
-function goChapter(delta) {
-  const bookId = el("bookSelect").value;
-  const current = Number(el("chapterSelect").value || "1");
-  const chapters = state.bible?.[bookId];
-  if (!chapters) return;
-
-  const keys = Object.keys(chapters)
-    .map(n => Number(n))
-    .filter(n => Number.isFinite(n))
-    .sort((a,b)=>a-b);
-
-  const idx = keys.indexOf(current);
-  if (idx < 0) return;
-
-  const nextIdx = idx + delta;
-  if (nextIdx < 0 || nextIdx >= keys.length) return;
-
-  el("chapterSelect").value = String(keys[nextIdx]);
-  showChapter();
 }
 
 function searchGlobal(q) {
   const query = String(q || "").trim().toLowerCase();
 
   if (query.length < 2) {
-    if (state.viewingFavs) {
-      el("resultsTitle").textContent = "Favoris";
-      el("resultsMeta").textContent = `${Object.keys(state.favorites).length} éléments`;
-      renderList(favsToVerses());
-    } else {
-      el("resultsTitle").textContent = "Résultats";
-      const bookMeta = state.books.find(b => b.id === el("bookSelect").value);
-      const bookName = bookMeta?.name || el("bookSelect").value;
-      el("resultsMeta").textContent = `${bookName} ${el("chapterSelect").value}`;
-      renderList(state.verses);
-    }
+    el("resultsTitle").textContent = state.viewingFavs ? "Favoris" : "Résultats";
+    renderList(state.viewingFavs ? favsToVerses() : state.verses);
     return;
   }
 
-  setStatus("Recherche…");
   const results = [];
-
   for (const [bookId, chapters] of Object.entries(state.bible)) {
     const bookMeta = state.books.find(b => b.id === bookId);
     const bookName = bookMeta?.name || bookId;
@@ -188,17 +112,12 @@ function searchGlobal(q) {
       for (const [verseNum, text] of Object.entries(verses)) {
         const t = String(text || "");
         if (t.toLowerCase().includes(query)) {
-          results.push({
-            id: `${bookName} ${chapNum}:${verseNum}`,
-            text: t.trim()
-          });
+          results.push({ id: `${bookName} ${chapNum}:${verseNum}`, text: t.trim() });
           if (results.length >= 300) {
             el("resultsTitle").textContent = "Recherche (limite)";
-            el("resultsMeta").textContent = `“${query}” · 300+ résultats`;
-            state.viewingFavs = false;
             clearSelection();
+            state.viewingFavs = false;
             renderList(results);
-            setStatus("Prêt");
             return;
           }
         }
@@ -207,11 +126,9 @@ function searchGlobal(q) {
   }
 
   el("resultsTitle").textContent = "Recherche";
-  el("resultsMeta").textContent = `“${query}” · ${results.length} résultats`;
-  state.viewingFavs = false;
   clearSelection();
+  state.viewingFavs = false;
   renderList(results);
-  setStatus("Prêt");
 }
 
 function renderList(list) {
@@ -219,7 +136,7 @@ function renderList(list) {
   box.innerHTML = "";
 
   if (!list || list.length === 0) {
-    box.innerHTML = `<div class="muted small">Aucun résultat.</div>`;
+    box.innerHTML = `<div class="hint">Aucun résultat.</div>`;
     return;
   }
 
@@ -247,53 +164,20 @@ function toggleSelected(id) {
 function clearSelection() {
   state.selected.clear();
   updateSelectedCount();
-  // refresh UI selection classes
-  document.querySelectorAll(".item.selected").forEach(n => n.classList.remove("selected"));
 }
 
 function updateSelectedCount() {
   el("selectedCount").textContent = `${state.selected.size} sélectionné`;
 }
 
-function favsToVerses() {
-  return Object.values(state.favorites)
-    .sort((a,b)=>b.when-a.when)
-    .map(f => ({ id: f.id, text: f.text }));
-}
-
-function renderFavs() {
-  const favBox = el("favList");
-  favBox.innerHTML = "";
-
-  const favs = Object.values(state.favorites).sort((a,b)=>b.when-a.when);
-
-  if (favs.length === 0) {
-    favBox.innerHTML = `<div class="muted small">Aucun favori.</div>`;
-    return;
-  }
-
-  favs.slice(0, 10).forEach(f => {
-    const div = document.createElement("div");
-    div.className = "item";
-    div.innerHTML = `
-      <div class="vtext">${escapeHtml(f.text)}</div>
-      <div class="vmeta">${escapeHtml(f.id)} · Louis Segond 1910</div>
-    `;
-    // click opens that reference (best effort: match by book name is hard)
-    favBox.appendChild(div);
-  });
-}
-
 function toggleFavoriteSelected() {
   const ids = Array.from(state.selected);
   if (ids.length === 0) return alert("Sélectionne au moins un verset.");
 
-  // build pool to fetch text
   const pool = state.viewingFavs ? favsToVerses() : state.verses;
   const byId = new Map(pool.map(v => [v.id, v]));
 
   let changed = 0;
-
   ids.forEach(id => {
     if (state.favorites[id]) {
       delete state.favorites[id];
@@ -305,16 +189,50 @@ function toggleFavoriteSelected() {
     }
   });
 
-  saveJson(KEYS.favs, state.favorites);
+  saveFavs(state.favorites);
   renderFavs();
   alert(`Favoris mis à jour ✅ (${changed})`);
+}
+
+function renderFavs() {
+  const favBox = el("favList");
+  favBox.innerHTML = "";
+  const favs = Object.values(state.favorites).sort((a,b)=>b.when-a.when);
+
+  if (favs.length === 0) {
+    favBox.innerHTML = `<div class="hint">Aucun favori pour l’instant.</div>`;
+    return;
+  }
+
+  favs.slice(0, 8).forEach(f => {
+    const div = document.createElement("div");
+    div.className = "item";
+    div.innerHTML = `
+      <div class="vtext">${escapeHtml(f.text)}</div>
+      <div class="vmeta">${escapeHtml(f.id)} · Louis Segond 1910</div>
+    `;
+    favBox.appendChild(div);
+  });
+}
+
+function favsToVerses() {
+  return Object.values(state.favorites)
+    .sort((a,b)=>b.when-a.when)
+    .map(f => ({ id: f.id, text: f.text }));
+}
+
+function loadFavs() {
+  try { return JSON.parse(localStorage.getItem("labible_favs") || "{}"); }
+  catch { return {}; }
+}
+function saveFavs(obj) {
+  localStorage.setItem("labible_favs", JSON.stringify(obj));
 }
 
 function buildShareText() {
   const ids = Array.from(state.selected);
   if (ids.length === 0) return "";
 
-  // best effort text lookup
   const pool = state.viewingFavs ? favsToVerses() : state.verses;
   const byId = new Map(pool.map(v => [v.id, v]));
 
@@ -326,6 +244,7 @@ function buildShareText() {
     lines.push(`— ${id} (Louis Segond 1910)`);
     lines.push("");
   });
+
   lines.push("LaBible.app");
   return lines.join("\n").trim();
 }
@@ -342,53 +261,11 @@ async function shareSelected() {
   if (!txt) return alert("Sélectionne au moins un verset.");
 
   if (navigator.share) {
-    await navigator.share({ title: "LaBible.app", text: txt });
+    await navigator.share({ title:"LaBible.app", text: txt });
   } else {
     await navigator.clipboard.writeText(txt);
     alert("Partage non supporté — texte copié ✅");
   }
-}
-
-function openLastRead() {
-  if (!state.last?.bookId || !state.last?.chapter) {
-    alert("Aucune lecture précédente.");
-    return;
-  }
-  const ok = trySetBookAndChapter(state.last.bookId, state.last.chapter);
-  if (!ok) return alert("Dernière lecture indisponible.");
-  el("searchInput").value = "";
-  showChapter();
-}
-
-function clearFavs() {
-  if (!confirm("Effacer tous les favoris ?")) return;
-  state.favorites = {};
-  saveJson(KEYS.favs, state.favorites);
-  renderFavs();
-  if (state.viewingFavs) {
-    el("resultsTitle").textContent = "Favoris";
-    el("resultsMeta").textContent = "0 éléments";
-    renderList([]);
-  }
-}
-
-function clearData() {
-  if (!confirm("Réinitialiser l’app (favoris + dernier lu + cookies) ?")) return;
-  localStorage.removeItem(KEYS.favs);
-  localStorage.removeItem(KEYS.last);
-  localStorage.removeItem(KEYS.cookie);
-  state.favorites = {};
-  state.last = null;
-  state.viewingFavs = false;
-  renderFavs();
-  el("searchInput").value = "";
-  initCookies(true);
-  showChapter();
-}
-
-function saveLast(obj) {
-  state.last = obj;
-  saveJson(KEYS.last, obj);
 }
 
 function initInstallFlow() {
@@ -413,96 +290,72 @@ function initInstallFlow() {
   });
 }
 
-function initCookies(forceShow = false) {
+function initCookies() {
+  const key = "labible_cookie_choice";
   const banner = el("cookieBanner");
-  const choice = localStorage.getItem(KEYS.cookie);
+  const choice = localStorage.getItem(key);
+  if (!choice) banner.classList.add("show");
 
-  if (forceShow) banner.classList.add("show");
-  else if (!choice) banner.classList.add("show");
-  else banner.classList.remove("show");
+  el("cookieAccept").addEventListener("click", () => {
+    localStorage.setItem(key, "accept");
+    banner.classList.remove("show");
+    // Se usares GA4: carregar script só aqui.
+  });
 
-  el("cookieAccept").onclick = () => {
-    localStorage.setItem(KEYS.cookie, "accept");
+  el("cookieDeny").addEventListener("click", () => {
+    localStorage.setItem(key, "deny");
     banner.classList.remove("show");
-    // Se quiseres GA4, carrega o script aqui (e só aqui).
-  };
-  el("cookieDeny").onclick = () => {
-    localStorage.setItem(KEYS.cookie, "deny");
-    banner.classList.remove("show");
-  };
+  });
 }
 
-function bindEvents() {
+function attachEvents() {
   el("bookSelect").addEventListener("change", () => {
     fillChapters();
-    el("searchInput").value = "";
     showChapter();
   });
 
-  el("chapterSelect").addEventListener("change", () => {
+  el("chapterSelect").addEventListener("change", showChapter);
+
+  el("loadBtn").addEventListener("click", showChapter);
+
+  el("clearBtn").addEventListener("click", () => {
     el("searchInput").value = "";
-    showChapter();
+    clearSelection();
+    renderList(state.viewingFavs ? favsToVerses() : state.verses);
   });
-
-  el("loadBtn").addEventListener("click", () => {
-    el("searchInput").value = "";
-    showChapter();
-  });
-
-  el("prevBtn").addEventListener("click", () => goChapter(-1));
-  el("nextBtn").addEventListener("click", () => goChapter(+1));
-
-  el("searchInput").addEventListener("input", (e) => searchGlobal(e.target.value));
 
   el("toggleFavBtn").addEventListener("click", () => {
     state.viewingFavs = !state.viewingFavs;
-    el("searchInput").value = "";
     clearSelection();
-
     if (state.viewingFavs) {
       el("resultsTitle").textContent = "Favoris";
-      el("resultsMeta").textContent = `${Object.keys(state.favorites).length} éléments`;
       renderList(favsToVerses());
     } else {
-      showChapter();
+      el("resultsTitle").textContent = "Résultats";
+      renderList(state.verses);
     }
   });
+
+  el("clearSelBtn").addEventListener("click", () => {
+    clearSelection();
+    renderList(state.viewingFavs ? favsToVerses() : state.verses);
+  });
+
+  el("searchInput").addEventListener("input", (e) => searchGlobal(e.target.value));
 
   el("copyBtn").addEventListener("click", copySelected);
   el("shareBtn").addEventListener("click", shareSelected);
   el("favBtn").addEventListener("click", toggleFavoriteSelected);
-
-  el("clearSelBtn").addEventListener("click", () => {
-    clearSelection();
-    if (state.viewingFavs) renderList(favsToVerses());
-    else renderList(state.verses);
-  });
-
-  el("openLastBtn").addEventListener("click", openLastRead);
-  el("clearFavsBtn").addEventListener("click", clearFavs);
-  el("clearDataBtn").addEventListener("click", clearData);
 }
 
 function escapeHtml(str) {
-  return String(str).replace(/[&<>"']/g, s => ({
-    "&":"&amp;",
-    "<":"&lt;",
-    ">":"&gt;",
-    '"':"&quot;",
-    "'":"&#039;"
+  return String(str).replace(/[&<>"']/g, (s) => ({
+    "&": "&amp;",
+    "<": "&lt;",
+    ">": "&gt;",
+    '"': "&quot;",
+    "'": "&#039;"
   }[s]));
-}
-
-function loadJson(key, fallback) {
-  try {
-    const v = localStorage.getItem(key);
-    return v ? JSON.parse(v) : fallback;
-  } catch {
-    return fallback;
-  }
-}
-function saveJson(key, value) {
-  localStorage.setItem(key, JSON.stringify(value));
 }
 
 init();

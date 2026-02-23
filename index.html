@@ -2,296 +2,438 @@
 <html lang="fr">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>LaBible — LSG 1910</title>
-  <meta name="description" content="Bible LSG 1910 — Lecture, Recherche, Plan 365 jours, marque-pages." />
-  <link rel="icon" href="assets/icon.svg" type="image/svg+xml" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="theme-color" content="#0b0b0c" />
+  <title>LaBible.app — LSG 1910</title>
 
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:wght@400;600;700&family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --bg:#0b0b0c;
+      --paper:#f6f1e6;
+      --paper-2:#efe6d6;
+      --ink:#121212;
+      --muted:#6b6b6b;
+      --line:rgba(255,255,255,.10);
+      --line2:rgba(0,0,0,.10);
+      --brand:#d7c49a;
+      --shadow: 0 10px 30px rgba(0,0,0,.35);
+      --radius:16px;
+      --radius2:22px;
+      --max:1100px;
+    }
 
-  <link rel="stylesheet" href="styles.css" />
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, "Apple Color Emoji","Segoe UI Emoji";
+      background:
+        radial-gradient(1200px 600px at 10% 0%, rgba(215,196,154,.18), transparent 55%),
+        radial-gradient(900px 500px at 90% 10%, rgba(255,255,255,.06), transparent 60%),
+        var(--bg);
+      color: #f7f7f7;
+    }
+
+    a{color:inherit; text-decoration:none}
+    button, input{font:inherit}
+    .container{max-width:var(--max); margin:0 auto; padding:0 16px}
+
+    /* ===== TOP BAR ===== */
+    .topbar{
+      position:sticky; top:0; z-index:50;
+      backdrop-filter: blur(10px);
+      background: rgba(11,11,12,.72);
+      border-bottom: 1px solid var(--line);
+    }
+    .topbar-inner{
+      height:64px;
+      display:flex; align-items:center; gap:12px;
+    }
+    .brand{
+      display:flex; align-items:center; gap:10px;
+      min-width: 190px;
+    }
+    .logo{
+      width:34px; height:34px; border-radius:10px;
+      display:grid; place-items:center;
+      background: linear-gradient(180deg, rgba(215,196,154,.22), rgba(215,196,154,.05));
+      border:1px solid rgba(215,196,154,.25);
+      box-shadow: 0 8px 20px rgba(0,0,0,.25);
+      flex: 0 0 auto;
+    }
+    .logo svg{opacity:.95}
+    .brand-title{
+      display:flex; flex-direction:column; line-height:1.05;
+    }
+    .brand-title strong{font-weight:750; letter-spacing:.2px}
+    .brand-title span{font-size:12px; color: rgba(255,255,255,.62)}
+    .nav{
+      display:flex; align-items:center; gap:6px;
+      padding:6px;
+      border:1px solid var(--line);
+      border-radius: 999px;
+      background: rgba(255,255,255,.04);
+    }
+    .nav a{
+      padding:8px 12px;
+      border-radius: 999px;
+      font-size:13px;
+      color: rgba(255,255,255,.78);
+      transition: .15s ease;
+      white-space:nowrap;
+    }
+    .nav a:hover{background: rgba(255,255,255,.07); color:#fff}
+    .nav a.active{background: rgba(215,196,154,.14); color:#fff; border:1px solid rgba(215,196,154,.22)}
+    .spacer{flex:1}
+
+    .search{
+      position:relative;
+      width:min(420px, 100%);
+      display:flex; align-items:center;
+    }
+    .search input{
+      width:100%;
+      padding:10px 12px 10px 38px;
+      border-radius:999px;
+      border:1px solid var(--line);
+      background: rgba(255,255,255,.04);
+      color:#fff;
+      outline:none;
+      transition:.15s ease;
+    }
+    .search input:focus{
+      border-color: rgba(215,196,154,.35);
+      box-shadow: 0 0 0 4px rgba(215,196,154,.10);
+      background: rgba(255,255,255,.06);
+    }
+    .search svg{
+      position:absolute; left:12px;
+      width:16px; height:16px;
+      opacity:.7;
+    }
+
+    .actions{
+      display:flex; align-items:center; gap:8px;
+    }
+    .btn{
+      height:38px;
+      padding:0 12px;
+      border-radius:999px;
+      border:1px solid var(--line);
+      background: rgba(255,255,255,.04);
+      color:#fff;
+      cursor:pointer;
+      transition:.15s ease;
+      display:inline-flex; align-items:center; gap:8px;
+      font-size:13px;
+      white-space:nowrap;
+    }
+    .btn:hover{background: rgba(255,255,255,.07)}
+    .btn.primary{
+      border-color: rgba(215,196,154,.30);
+      background: linear-gradient(180deg, rgba(215,196,154,.18), rgba(215,196,154,.08));
+    }
+    .btn.primary:hover{
+      border-color: rgba(215,196,154,.42);
+      background: linear-gradient(180deg, rgba(215,196,154,.22), rgba(215,196,154,.10));
+    }
+
+    /* Mobile menu */
+    .hamburger{display:none}
+    @media (max-width: 920px){
+      .brand{min-width:auto}
+      .nav{display:none}
+      .search{display:none}
+      .hamburger{display:inline-flex}
+    }
+
+    .mobile-drawer{
+      display:none;
+      border-top:1px solid var(--line);
+      background: rgba(11,11,12,.92);
+    }
+    .mobile-drawer.open{display:block}
+    .mobile-drawer .row{
+      display:flex; flex-direction:column; gap:10px;
+      padding:12px 16px 16px;
+    }
+    .mobile-drawer .row a{
+      padding:10px 12px;
+      border:1px solid var(--line);
+      border-radius:12px;
+      background: rgba(255,255,255,.04);
+      color: rgba(255,255,255,.88);
+    }
+    .mobile-drawer .row a.active{
+      border-color: rgba(215,196,154,.30);
+      background: rgba(215,196,154,.10);
+      color:#fff;
+    }
+    .mobile-drawer .row .search{display:flex; width:100%}
+    .mobile-drawer .row .search input{border-radius:14px}
+
+    /* ===== CONTENT SHELL (demo) ===== */
+    main{padding: 18px 0 36px}
+    .hero{
+      margin-top: 14px;
+      border-radius: var(--radius2);
+      border: 1px solid var(--line);
+      background:
+        radial-gradient(700px 300px at 20% 0%, rgba(215,196,154,.22), transparent 55%),
+        rgba(255,255,255,.04);
+      box-shadow: var(--shadow);
+      overflow:hidden;
+    }
+    .hero-inner{
+      display:grid;
+      grid-template-columns: 1.1fr .9fr;
+      gap:18px;
+      padding:18px;
+      align-items:stretch;
+    }
+    @media (max-width: 920px){
+      .hero-inner{grid-template-columns:1fr}
+    }
+
+    .card{
+      border-radius: var(--radius);
+      border: 1px solid var(--line);
+      background: rgba(0,0,0,.22);
+      padding:14px;
+    }
+
+    .paper{
+      color: var(--ink);
+      background: linear-gradient(180deg, var(--paper), var(--paper-2));
+      border: 1px solid rgba(0,0,0,.12);
+      border-radius: var(--radius);
+      box-shadow: 0 10px 24px rgba(0,0,0,.25);
+      padding: 16px;
+      position:relative;
+      overflow:hidden;
+    }
+    .paper:before{
+      content:"";
+      position:absolute; inset:-40px -80px auto auto;
+      width:180px; height:180px;
+      background: radial-gradient(circle at 30% 30%, rgba(215,196,154,.55), transparent 60%);
+      transform: rotate(15deg);
+      opacity:.55;
+    }
+    .paper h2{margin:0 0 8px; font-size:16px}
+    .paper p{margin:0; color:#2b2b2b}
+
+    /* ===== FOOTER ===== */
+    footer{
+      margin-top: 26px;
+      border-top: 1px solid var(--line);
+      background: rgba(0,0,0,.24);
+    }
+    .footer-inner{
+      padding: 22px 0;
+      display:grid;
+      grid-template-columns: 1.2fr .8fr 1fr;
+      gap:18px;
+      align-items:start;
+    }
+    @media (max-width: 920px){
+      .footer-inner{grid-template-columns:1fr; gap:12px}
+    }
+    .foot-title{
+      display:flex; align-items:center; gap:10px;
+      margin-bottom:8px;
+    }
+    .foot-title strong{font-weight:750}
+    .foot-muted{color: rgba(255,255,255,.65); font-size:13px; line-height:1.5}
+    .foot-links{
+      display:flex; flex-direction:column; gap:8px;
+      font-size:13px;
+    }
+    .foot-links a{
+      color: rgba(255,255,255,.72);
+      border:1px solid rgba(255,255,255,.10);
+      background: rgba(255,255,255,.03);
+      padding:10px 12px;
+      border-radius:12px;
+      transition:.15s ease;
+    }
+    .foot-links a:hover{
+      background: rgba(255,255,255,.06);
+      color:#fff;
+    }
+    .foot-bottom{
+      border-top:1px solid rgba(255,255,255,.08);
+      padding: 12px 0;
+      display:flex; gap:10px;
+      justify-content:space-between; align-items:center;
+      color: rgba(255,255,255,.58);
+      font-size:12px;
+    }
+    .pill{
+      border:1px solid rgba(255,255,255,.12);
+      background: rgba(255,255,255,.03);
+      padding:6px 10px;
+      border-radius:999px;
+    }
+  </style>
 </head>
+
 <body>
-  <header class="topbar">
-    <div class="brand">
-      <img src="assets/icon.svg" class="brand__icon" alt="LaBible">
-      <div class="brand__text">
-        <div class="brand__title">LaBible</div>
-        <div class="brand__subtitle">LSG 1910 • Lecture • Plan • Recherche</div>
+
+  <!-- ===== HEADER / TOP BAR ===== -->
+  <header class="topbar" role="banner">
+    <div class="container">
+      <div class="topbar-inner">
+        <a class="brand" href="#lecture" aria-label="LaBible.app">
+          <div class="logo" aria-hidden="true">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none">
+              <path d="M6.2 5.8c2.3-.9 5-.9 7.3 0 1.1.4 2.2.4 3.3 0V18c-1.1.4-2.2.4-3.3 0-2.3-.9-5-.9-7.3 0-1.1.4-2.2.4-3.3 0V5.8c1.1.4 2.2.4 3.3 0Z" stroke="rgba(215,196,154,.95)" stroke-width="1.6" />
+              <path d="M12 6.2V18.1" stroke="rgba(0,0,0,.35)" stroke-width="1.1"/>
+              <path d="M8.4 10.2h3.1" stroke="rgba(0,0,0,.35)" stroke-width="1.1" />
+            </svg>
+          </div>
+          <div class="brand-title">
+            <strong>LaBible.app</strong>
+            <span>Louis Segond 1910</span>
+          </div>
+        </a>
+
+        <nav class="nav" aria-label="Navigation">
+          <a class="active" href="#lecture">Lecture</a>
+          <a href="#plan">Plan</a>
+          <a href="#recherche">Recherche</a>
+        </nav>
+
+        <div class="spacer"></div>
+
+        <div class="search" aria-label="Recherche">
+          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="M10.5 18.2a7.7 7.7 0 1 1 0-15.4 7.7 7.7 0 0 1 0 15.4Z" stroke="rgba(255,255,255,.72)" stroke-width="1.6"/>
+            <path d="M16.7 16.7 21 21" stroke="rgba(255,255,255,.72)" stroke-width="1.6" stroke-linecap="round"/>
+          </svg>
+          <input id="globalSearch" placeholder="Rechercher (ex: Jean 3:16, foi, amour…)" />
+        </div>
+
+        <div class="actions">
+          <button class="btn hamburger" id="menuBtn" aria-expanded="false" aria-controls="mobileDrawer">
+            ☰ Menu
+          </button>
+          <a class="btn" href="#plan" title="Plan de lecture">📅 Plan</a>
+          <a class="btn primary" href="#lecture" title="Lecture">📖 Lire</a>
+        </div>
       </div>
     </div>
 
-    <nav class="tabs" aria-label="Navigation">
-      <button class="tab is-active" data-tab="read" aria-current="page">Lecture</button>
-      <button class="tab" data-tab="plan">Plan</button>
-      <button class="tab" data-tab="search">Recherche</button>
-      <button class="tab" data-tab="library">Bibliothèque</button>
-      <button class="tab" data-tab="settings">Réglages</button>
-    </nav>
-
-    <div class="actions">
-      <button class="iconbtn" id="btnBookmark" title="Ajouter un marque-page">★</button>
-      <button class="iconbtn" id="btnTheme" title="Thème clair/sombre">☾</button>
+    <!-- Mobile drawer -->
+    <div id="mobileDrawer" class="mobile-drawer" role="region" aria-label="Menu mobile">
+      <div class="row container">
+        <div class="search">
+          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="M10.5 18.2a7.7 7.7 0 1 1 0-15.4 7.7 7.7 0 0 1 0 15.4Z" stroke="rgba(255,255,255,.72)" stroke-width="1.6"/>
+            <path d="M16.7 16.7 21 21" stroke="rgba(255,255,255,.72)" stroke-width="1.6" stroke-linecap="round"/>
+          </svg>
+          <input id="globalSearchMobile" placeholder="Rechercher…" />
+        </div>
+        <a class="active" href="#lecture">📖 Lecture</a>
+        <a href="#plan">📅 Plan</a>
+        <a href="#recherche">🔎 Recherche</a>
+      </div>
     </div>
   </header>
 
-  <main class="shell">
-    <!-- LECTURE -->
-    <section class="panel is-active" id="tab-read" role="region" aria-label="Lecture">
-      <div class="layout">
-        <aside class="side">
-          <div class="card">
-            <div class="card__title">Navigation</div>
-
-            <label class="field">
-              <span>Livre</span>
-              <select id="bookSelect"></select>
-            </label>
-
-            <label class="field">
-              <span>Chapitre</span>
-              <select id="chapterSelect"></select>
-            </label>
-
-            <div class="row gap">
-              <button class="btn small" id="btnPrev">← Précédent</button>
-              <button class="btn small" id="btnNext">Suivant →</button>
-            </div>
-
-            <div class="divider"></div>
-
-            <div class="mini">
-              <div class="mini__label">Récents</div>
-              <div class="chips" id="recentChips"></div>
-            </div>
-
-            <div class="divider"></div>
-
-            <div class="mini">
-              <div class="mini__label">Marque-pages</div>
-              <div class="list" id="bookmarkList"></div>
-            </div>
-          </div>
-        </aside>
-
-        <article class="reader">
-          <div class="page">
-            <div class="page__top">
-              <div class="crumb" id="crumb">—</div>
-              <div class="page__tools">
-                <button class="pill" id="btnFontMinus" title="Réduire la taille">A−</button>
-                <button class="pill" id="btnFontPlus" title="Augmenter la taille">A+</button>
-                <button class="pill" id="btnColumns" title="1 ou 2 colonnes">Colonnes</button>
-              </div>
-            </div>
-
-            <div class="page__body" id="verses" tabindex="0" aria-label="Texte biblique"></div>
-
-            <div class="page__bottom">
-              <div class="muted" id="selectionHint">Clique un verset pour le sélectionner puis ★ pour l’enregistrer.</div>
-              <div class="muted" id="statusHint">—</div>
-            </div>
-          </div>
-        </article>
-      </div>
-    </section>
-
-    <!-- PLAN -->
-    <section class="panel" id="tab-plan" role="region" aria-label="Plan de lecture">
-      <div class="grid2">
-        <div class="card">
-          <div class="card__title">Plan (365 jours)</div>
-          <p class="muted">Ouvre la lecture du jour, coche “fait”, et suis ta progression.</p>
-
-          <div class="row gap wrap">
-            <button class="btn" id="btnGoToday">Aujourd’hui</button>
-            <button class="btn ghost" id="btnMarkToday">Marquer fait</button>
-            <button class="btn ghost" id="btnResetPlan">Réinitialiser</button>
-          </div>
-
-          <div class="divider"></div>
-
-          <div class="progress">
-            <div class="progress__bar" id="planBar"></div>
-          </div>
-          <div class="row between">
-            <div class="muted" id="planStats">—</div>
-            <div class="muted" id="planStreak">—</div>
-          </div>
-
-          <div class="divider"></div>
-
-          <div class="plan-day" id="todayCard">
-            <div class="plan-day__head">
-              <div>
-                <div class="plan-day__title" id="todayTitle">Aujourd’hui</div>
-                <div class="muted" id="todayRefs">—</div>
-              </div>
-              <div class="row gap">
-                <button class="btn small" id="btnOpenRefs">Ouvrir</button>
-                <button class="btn small ghost" id="btnToggleDone">✓</button>
-              </div>
-            </div>
-            <div class="muted" id="todayNote">—</div>
-          </div>
+  <!-- ===== MAIN (demo content) ===== -->
+  <main class="container">
+    <section class="hero" id="lecture">
+      <div class="hero-inner">
+        <div class="paper">
+          <h2>Lecture</h2>
+          <p>Un affichage simple, clair, style “pages” — prêt à recevoir le texte LSG 1910.</p>
         </div>
-
-        <div class="card">
-          <div class="card__title">Calendrier</div>
-          <div class="calendar" id="calendar"></div>
-          <div class="muted" style="margin-top:10px">Clique un jour pour afficher ses lectures.</div>
-        </div>
-      </div>
-    </section>
-
-    <!-- RECHERCHE -->
-    <section class="panel" id="tab-search" role="region" aria-label="Recherche">
-      <div class="grid2">
-        <div class="card">
-          <div class="card__title">Recherche</div>
-
-          <label class="field">
-            <span>Mot / expression</span>
-            <input id="searchInput" type="search" placeholder="ex.: Dieu, Jésus, grâce..." />
-          </label>
-
-          <div class="row gap">
-            <label class="field" style="flex:1">
-              <span>Livre (optionnel)</span>
-              <select id="searchBook">
-                <option value="">Tous</option>
-              </select>
-            </label>
-            <label class="field" style="flex:1">
-              <span>Chapitre (optionnel)</span>
-              <select id="searchChapter" disabled>
-                <option value="">Tous</option>
-              </select>
-            </label>
-          </div>
-
-          <div class="row gap wrap">
-            <button class="btn" id="btnSearch">Rechercher</button>
-            <button class="btn ghost" id="btnClearSearch">Effacer</button>
-          </div>
-
-          <div class="divider"></div>
-          <p class="muted">La recherche est locale (dans ton navigateur).</p>
-        </div>
-
-        <div class="card">
-          <div class="card__title">Résultats</div>
-          <div class="results" id="results"></div>
-        </div>
-      </div>
-    </section>
-
-    <!-- BIBLIOTHÈQUE -->
-    <section class="panel" id="tab-library" role="region" aria-label="Bibliothèque">
-      <div class="grid2">
-        <div class="card">
-          <div class="card__title">Bible</div>
-          <p class="muted">
-            Par défaut, le site charge <strong>LSG 1910</strong> depuis <code>data/ls1910.json</code>.
-            Tu peux importer un autre JSON (enregistré localement).
+        <div class="card" id="plan">
+          <h3 style="margin:0 0 8px; font-size:16px;">Plan de lecture</h3>
+          <p style="margin:0; color:rgba(255,255,255,.72); font-size:13px; line-height:1.5;">
+            Ajoute ici ton plan (jour 1, jour 2…) et la navigation.
           </p>
-
-          <div class="divider"></div>
-
-          <div class="mini">
-            <div class="mini__label">Bible actuelle</div>
-            <div class="pill solid" id="currentBibleLabel">—</div>
-          </div>
-
-          <div class="divider"></div>
-
-          <label class="field">
-            <span>Importer un JSON</span>
-            <input id="bibleFile" type="file" accept="application/json" />
-          </label>
-
-          <div class="row gap wrap">
-            <button class="btn" id="btnUseDefault">Utiliser LSG 1910 (défaut)</button>
-            <button class="btn ghost" id="btnForgetBible">Oublier l’import</button>
-          </div>
-
-          <div class="divider"></div>
-
-          <details class="details">
-            <summary>Formats supportés</summary>
-            <div class="muted">
-              <p><strong>A :</strong> <code>{ books:[{id,name,chapters:[[...]]}] }</code></p>
-              <p><strong>B :</strong> <code>{ books:[...], verses:[{bookId,chapter,verse,text}] }</code></p>
-              <p><strong>C :</strong> <code>{ verses:[...] }</code> ou <code>[{book_name,chapter,verse,text}, ...]</code></p>
-              <p><strong>D :</strong> imbriqué : <code>{ "Genèse":{ "1":{ "1":"..." } } }</code></p>
-            </div>
-          </details>
-        </div>
-
-        <div class="card">
-          <div class="card__title">Diagnostic</div>
-          <div class="muted" id="diagnostic">—</div>
-          <div class="divider"></div>
-          <div class="muted">Si ton <code>ls1910.json</code> a une structure particulière, je l’adapte.</div>
         </div>
       </div>
     </section>
 
-    <!-- RÉGLAGES -->
-    <section class="panel" id="tab-settings" role="region" aria-label="Réglages">
-      <div class="grid2">
-        <div class="card">
-          <div class="card__title">Affichage</div>
-
-          <div class="row gap wrap">
-            <button class="btn" id="btnLight">Clair</button>
-            <button class="btn ghost" id="btnDark">Sombre</button>
-          </div>
-
-          <div class="divider"></div>
-
-          <label class="field">
-            <span>Taille du texte (lecture)</span>
-            <input id="fontRange" type="range" min="16" max="28" value="20" />
-          </label>
-
-          <label class="field">
-            <span>Largeur de page</span>
-            <input id="pageWidth" type="range" min="760" max="1100" value="920" />
-          </label>
-
-          <div class="row between">
-            <div class="muted">Deux colonnes sur ordinateur (bouton “Colonnes”).</div>
-            <button class="btn small ghost" id="btnResetUi">Réinitialiser</button>
-          </div>
-        </div>
-
-        <div class="card">
-          <div class="card__title">Données</div>
-          <p class="muted">Position, marque-pages, progression du plan, et Bible importée (optionnel).</p>
-
-          <div class="row gap wrap">
-            <button class="btn ghost" id="btnExport">Exporter</button>
-            <button class="btn ghost" id="btnImport">Importer</button>
-            <input id="importFile" type="file" accept="application/json" hidden />
-            <button class="btn" id="btnWipe">Tout effacer</button>
-          </div>
-
-          <div class="divider"></div>
-          <div class="muted" id="dataStatus">—</div>
-        </div>
+    <section id="recherche" style="margin-top:18px">
+      <div class="card">
+        <h3 style="margin:0 0 8px; font-size:16px;">Recherche</h3>
+        <p style="margin:0; color:rgba(255,255,255,.72); font-size:13px; line-height:1.5;">
+          La barre de recherche en haut est déjà prête (desktop + mobile).
+        </p>
       </div>
     </section>
   </main>
 
-  <footer class="footer">
-    <span class="muted">LaBible • simple • sans mode hors-ligne.</span>
+  <!-- ===== FOOTER ===== -->
+  <footer role="contentinfo">
+    <div class="container">
+      <div class="footer-inner">
+        <div>
+          <div class="foot-title">
+            <div class="logo" aria-hidden="true" style="width:32px;height:32px;border-radius:10px;">
+              <svg viewBox="0 0 24 24" width="18" height="18" fill="none">
+                <path d="M6.2 5.8c2.3-.9 5-.9 7.3 0 1.1.4 2.2.4 3.3 0V18c-1.1.4-2.2.4-3.3 0-2.3-.9-5-.9-7.3 0-1.1.4-2.2.4-3.3 0V5.8c1.1.4 2.2.4 3.3 0Z" stroke="rgba(215,196,154,.95)" stroke-width="1.6" />
+                <path d="M12 6.2V18.1" stroke="rgba(0,0,0,.35)" stroke-width="1.1"/>
+              </svg>
+            </div>
+            <strong>LaBible.app</strong>
+          </div>
+          <div class="foot-muted">
+            Bible Louis Segond 1910 — lecture, recherche et plan de lecture.<br/>
+            Interface simple, rapide, pensée pour la lecture.
+          </div>
+        </div>
+
+        <div>
+          <div style="font-weight:700; margin-bottom:8px;">Raccourcis</div>
+          <div class="foot-links">
+            <a href="#lecture">Lecture</a>
+            <a href="#plan">Plan de lecture</a>
+            <a href="#recherche">Recherche</a>
+          </div>
+        </div>
+
+        <div>
+          <div style="font-weight:700; margin-bottom:8px;">Informations</div>
+          <div class="foot-links">
+            <a href="#" onclick="alert('À compléter: mentions légales / confidentialité');return false;">Mentions légales</a>
+            <a href="#" onclick="alert('À compléter: contact');return false;">Contact</a>
+            <a href="#" onclick="alert('À compléter: source / licence du texte');return false;">Source & licence</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="foot-bottom">
+        <div>© <span id="year"></span> LaBible.app</div>
+        <div class="pill">LSG 1910</div>
+      </div>
+    </div>
   </footer>
 
-  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <script>
+    // Footer year
+    document.getElementById("year").textContent = new Date().getFullYear();
 
-  <script src="app.js"></script>
+    // Mobile menu toggle
+    const btn = document.getElementById("menuBtn");
+    const drawer = document.getElementById("mobileDrawer");
+    if (btn && drawer) {
+      btn.addEventListener("click", () => {
+        const isOpen = drawer.classList.toggle("open");
+        btn.setAttribute("aria-expanded", String(isOpen));
+      });
+    }
+
+    // Keep mobile + desktop search in sync
+    const s1 = document.getElementById("globalSearch");
+    const s2 = document.getElementById("globalSearchMobile");
+    const sync = (from, to) => from && to && from.addEventListener("input", () => { to.value = from.value; });
+    sync(s1, s2); sync(s2, s1);
+  </script>
+
 </body>
 </html>

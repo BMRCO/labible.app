@@ -12,12 +12,22 @@ const state = {
   current: { book: null, chapter: null, selected: new Set() },
   lastRenderedList: [],
   deferredInstallPrompt: null,
-  plan: null, // { days: [{day,title,refs:[{book,chapter}]}] }
-  vdd: null,  // { items: [{book,chapter,verse}] }
+  plan: null,
+  vdd: null,
+  debug: {
+    enabled: false,
+    bibleFormat: "unknown",
+    booksCount: 0,
+    chaptersCount: 0,
+    versesCount: 0,
+  }
 };
 
 const els = {
   year: $("#year"),
+
+  // DEBUG
+  debugBar: $("#debugBar"),
 
   // PWA
   btnInstallAlways: $("#btnInstallAlways"),
@@ -98,6 +108,7 @@ async function boot() {
   if (els.year) els.year.textContent = String(new Date().getFullYear());
 
   applySettings(getSettings());
+  initDebugFlags();
   wirePwaInstall();
   wireNetworkBadges();
   wireSW();
@@ -116,22 +127,172 @@ async function boot() {
     history.replaceState({}, "", attempted);
   }
 
-  const { books, index } = await loadBible();
+  const { books, index, bible } = await loadBible();
   state.books = books;
   state.index = index;
   state.ready = true;
 
+  state.debug.bibleFormat = detectBibleFormat(bible);
+
   fillBookSelect();
   restoreLastReadToSelectors();
 
-  // Generate plan + vdd (cached)
+  computeIndexStats();
+
   state.plan = getPlan365Cached();
   state.vdd = getVdd365Cached();
 
   renderVddToday();
 
+  if (state.debug.enabled) renderDebugBar();
+
   routeTo(location.pathname + location.search + location.hash, { silent: true });
   window.addEventListener("popstate", () => routeTo(location.pathname + location.search + location.hash, { silent: true }));
+}
+
+/* ---------------- DEBUG ---------------- */
+
+function initDebugFlags() {
+  const url = new URL(location.href);
+  const byQuery = url.searchParams.get("debug") === "1";
+  const byHash = location.hash === "#/debug" || location.hash.includes("debug=1");
+  state.debug.enabled = byQuery || byHash;
+
+  if (els.debugBar) els.debugBar.hidden = !state.debug.enabled;
+
+  if (state.debug.enabled && els.debugBar) {
+    els.debugBar.style.position = "sticky";
+    els.debugBar.style.top = "64px";
+    els.debugBar.style.zIndex = "9";
+    els.debugBar.style.margin = "12px 0";
+    els.debugBar.style.padding = "10px 12px";
+    els.debugBar.style.borderRadius = "14px";
+    els.debugBar.style.border = "1px solid rgba(255,255,255,.16)";
+    els.debugBar.style.background = "rgba(0,0,0,.55)";
+    els.debugBar.style.backdropFilter = "blur(10px)";
+    els.debugBar.style.color = "rgba(255,255,255,.92)";
+    els.debugBar.style.fontSize = "13px";
+    els.debugBar.style.lineHeight = "1.35";
+  }
+
+  window.__LABIBLE_DEBUG__ = {
+    enable() { url.searchParams.set("debug","1"); location.href = url.toString(); },
+    disable() { url.searchParams.delete("debug"); location.href = url.toString(); },
+  };
+}
+
+function detectBibleFormat(bible) {
+  try {
+    if (Array.isArray(bible)) return "array";
+    if (Array.isArray(bible?.verses)) return "array.verses";
+    if (bible && typeof bible === "object") return "indexed.object";
+    return "unknown";
+  } catch {
+    return "unknown";
+  }
+}
+
+function computeIndexStats() {
+  const idx = state.index || {};
+  let booksCount = 0, chaptersCount = 0, versesCount = 0;
+
+  for (const bookId of Object.keys(idx)) {
+    booksCount++;
+    const chapters = idx[bookId]?.chapters || {};
+    for (const chKey of Object.keys(chapters)) {
+      chaptersCount++;
+      const list = chapters[chKey] || [];
+      versesCount += list.length;
+    }
+  }
+
+  state.debug.booksCount = booksCount;
+  state.debug.chaptersCount = chaptersCount;
+  state.debug.versesCount = versesCount;
+}
+
+function swStateText() {
+  const has = ("serviceWorker" in navigator);
+  return has ? "on" : "off";
+}
+
+function cacheSizeText(key) {
+  try {
+    const raw = localStorage.getItem(key);
+    if (!raw) return "0";
+    return String(raw.length);
+  } catch {
+    return "?";
+  }
+}
+
+function renderDebugBar() {
+  if (!state.debug.enabled || !els.debugBar) return;
+
+  const installed = isInstalled();
+  const installable = !!state.deferredInstallPrompt;
+  const online = navigator.onLine;
+
+  const planLen = state.plan?.days?.length || 0;
+  const vddLen = state.vdd?.items?.length || 0;
+
+  const last = loadJSON(STORAGE_KEYS.lastRead, null);
+  const lastStr = last?.book ? `${last.book} ${last.chapter}` : "—";
+
+  els.debugBar.innerHTML = `
+    <div style="display:flex; justify-content:space-between; gap:10px; flex-wrap:wrap;">
+      <div>
+        <strong>DEBUG</strong> · <span style="opacity:.85">2026 LaBible.app | LSG 1910</span><br/>
+        <span style="opacity:.85">Bible:</span> ${escapeHtml(state.debug.bibleFormat)} ·
+        <span style="opacity:.85">Books:</span> ${state.debug.booksCount} ·
+        <span style="opacity:.85">Ch:</span> ${state.debug.chaptersCount} ·
+        <span style="opacity:.85">V:</span> ${state.debug.versesCount}<br/>
+        <span style="opacity:.85">Plan:</span> ${planLen}/365 ·
+        <span style="opacity:.85">VDD:</span> ${vddLen}/365 ·
+        <span style="opacity:.85">Last:</span> ${escapeHtml(lastStr)}
+      </div>
+
+      <div style="text-align:right;">
+        <span style="opacity:.85">PWA:</span> ${installed ? "installed" : (installable ? "installable" : "not-ready")} ·
+        <span style="opacity:.85">Online:</span> ${online ? "yes" : "no"} ·
+        <span style="opacity:.85">SW:</span> ${swStateText()}<br/>
+        <span style="opacity:.85">cachePlan bytes:</span> ${cacheSizeText(STORAGE_KEYS.cachePlan)} ·
+        <span style="opacity:.85">cacheVdd bytes:</span> ${cacheSizeText(STORAGE_KEYS.cacheVdd)}
+      </div>
+    </div>
+
+    <div style="margin-top:8px; display:flex; gap:8px; flex-wrap:wrap;">
+      <button id="dbgReload" style="padding:6px 10px; border-radius:999px; border:1px solid rgba(255,255,255,.16); background:rgba(255,255,255,.06); color:inherit; cursor:pointer;">Reload</button>
+      <button id="dbgRecalc" style="padding:6px 10px; border-radius:999px; border:1px solid rgba(255,255,255,.16); background:rgba(255,255,255,.06); color:inherit; cursor:pointer;">Recalc stats</button>
+      <button id="dbgClearCaches" style="padding:6px 10px; border-radius:999px; border:1px solid rgba(255,255,255,.16); background:rgba(255,255,255,.06); color:inherit; cursor:pointer;">Clear plan/vdd cache</button>
+      <button id="dbgClose" style="padding:6px 10px; border-radius:999px; border:1px solid rgba(255,255,255,.16); background:rgba(255,255,255,.06); color:inherit; cursor:pointer;">Hide debug</button>
+    </div>
+  `;
+
+  $("#dbgReload")?.addEventListener("click", () => location.reload());
+  $("#dbgRecalc")?.addEventListener("click", () => {
+    computeIndexStats();
+    state.plan = getPlan365Cached(true);
+    state.vdd = getVdd365Cached(true);
+    renderDebugBar();
+    toast("Stats recalculées.");
+  });
+  $("#dbgClearCaches")?.addEventListener("click", () => {
+    localStorage.removeItem(STORAGE_KEYS.cachePlan);
+    localStorage.removeItem(STORAGE_KEYS.cacheVdd);
+    state.plan = getPlan365Cached(true);
+    state.vdd = getVdd365Cached(true);
+    renderDebugBar();
+    toast("Caches effacés.");
+  });
+  $("#dbgClose")?.addEventListener("click", () => {
+    const url = new URL(location.href);
+    url.searchParams.delete("debug");
+    history.replaceState({}, "", url.toString());
+    state.debug.enabled = false;
+    if (els.debugBar) els.debugBar.hidden = true;
+    toast("Debug caché.");
+  });
 }
 
 /* ---------------- Routing ---------------- */
@@ -155,6 +316,7 @@ function wireNav() {
 function navigate(path) {
   history.pushState({}, "", path);
   routeTo(path);
+  if (state.debug.enabled) renderDebugBar();
 }
 
 function routeTo(fullPath, { silent = false } = {}) {
@@ -170,6 +332,14 @@ function routeTo(fullPath, { silent = false } = {}) {
   if (parts.length === 0) { setActiveSection(["hero", "quickNav"]); return; }
 
   const [p0, p1, p2, p3] = parts;
+
+  if (p0 === "debug") {
+    state.debug.enabled = true;
+    if (els.debugBar) els.debugBar.hidden = false;
+    renderDebugBar();
+    setActiveSection(["hero", "quickNav"]);
+    return;
+  }
 
   if (p0 === "recherche") { setActiveSection(["search"]); els.searchInput?.focus(); return; }
   if (p0 === "favoris") { setActiveSection(["favorites"]); renderFavorites(); return; }
@@ -212,6 +382,7 @@ function wireQuickNav() {
 }
 
 function fillBookSelect() {
+  if (!els.bookSelect) return;
   els.bookSelect.innerHTML = "";
   for (const b of state.books) {
     const opt = document.createElement("option");
@@ -223,6 +394,7 @@ function fillBookSelect() {
 }
 
 function fillChapterSelect() {
+  if (!els.bookSelect || !els.chapterSelect) return;
   const book = els.bookSelect.value;
   const count = getChapterCount(book, state.index) || 1;
   els.chapterSelect.innerHTML = "";
@@ -235,6 +407,7 @@ function fillChapterSelect() {
 }
 
 function restoreLastReadToSelectors() {
+  if (!els.bookSelect || !els.chapterSelect) return;
   const last = loadJSON(STORAGE_KEYS.lastRead, null);
   if (!last?.book) return;
   if (!state.books.some(b => b.id === last.book)) return;
@@ -256,12 +429,13 @@ function openReader({ book, chapter, verse = null }) {
   saveJSON(STORAGE_KEYS.lastRead, { book, chapter, ts: Date.now() });
 
   setActiveSection(["reader"]);
-  els.readerTitle.textContent = formatRef(state.books, book, chapter);
-  els.readerMeta.textContent = `Chapitre ${chapter} · LSG 1910`;
+  if (els.readerTitle) els.readerTitle.textContent = formatRef(state.books, book, chapter);
+  if (els.readerMeta) els.readerMeta.textContent = `Chapitre ${chapter} · LSG 1910`;
 
   const verses = listVerses(book, chapter, state.index);
   state.lastRenderedList = verses;
 
+  if (!els.verses) return;
   els.verses.innerHTML = "";
   if (!verses.length) {
     els.verses.innerHTML = `<div class="muted">Aucun verset trouvé.</div>`;
@@ -276,14 +450,14 @@ function openReader({ book, chapter, verse = null }) {
     }
   }
 
-  els.prevChapter.onclick = () => navigate(`/v/${book}/${Math.max(1, chapter - 1)}`);
-  els.nextChapter.onclick = () => navigate(`/v/${book}/${Math.min(count, chapter + 1)}`);
-  els.prevChapter2.onclick = els.prevChapter.onclick;
-  els.nextChapter2.onclick = els.nextChapter.onclick;
+  if (els.prevChapter) els.prevChapter.onclick = () => navigate(`/v/${book}/${Math.max(1, chapter - 1)}`);
+  if (els.nextChapter) els.nextChapter.onclick = () => navigate(`/v/${book}/${Math.min(count, chapter + 1)}`);
+  if (els.prevChapter2 && els.prevChapter) els.prevChapter2.onclick = els.prevChapter.onclick;
+  if (els.nextChapter2 && els.nextChapter) els.nextChapter2.onclick = els.nextChapter.onclick;
 
-  els.btnReaderCopy.onclick = () => copySelectedOrAll();
-  els.btnReaderShare.onclick = () => shareSelectedOrAllAsImage();
-  els.btnReaderFav.onclick = () => favoriteSelectedOrAll();
+  if (els.btnReaderCopy) els.btnReaderCopy.onclick = () => copySelectedOrAll();
+  if (els.btnReaderShare) els.btnReaderShare.onclick = () => shareSelectedOrAllAsImage();
+  if (els.btnReaderFav) els.btnReaderFav.onclick = () => favoriteSelectedOrAll();
 
   if (verse) {
     const target = els.verses.querySelector(`.verse[data-verse="${verse}"]`);
@@ -292,6 +466,8 @@ function openReader({ book, chapter, verse = null }) {
       target.scrollIntoView({ behavior: "smooth", block: "center" });
     }
   }
+
+  if (state.debug.enabled) renderDebugBar();
 }
 
 function toggleSelect(verseNum, el, silent = false) {
@@ -310,7 +486,7 @@ function selectedBundle() {
   const { book, chapter } = state.current;
   if (!book || !chapter) return null;
 
-  const sel = Array.from(state.current.selected).sort((a,b)=>a-b);
+  const sel = Array.from(state.current.selected).sort((a, b) => a - b);
   const verses = state.lastRenderedList;
 
   const getText = (v) => verses.find(x => x.verse === v)?.text || getVerseText(book, chapter, v, state.index) || "";
@@ -376,6 +552,7 @@ function favoriteSelectedOrAll() {
 
   saveJSON(STORAGE_KEYS.favorites, favs);
   toast("Ajouté aux favoris.");
+  if (state.debug.enabled) renderDebugBar();
 }
 
 function upsertFav(favs, item) {
@@ -393,17 +570,15 @@ function wireSearch() {
 
 function doSearch() {
   if (!state.ready) return;
-  const q = String(els.searchInput.value || "").trim();
+  const q = String(els.searchInput?.value || "").trim();
   if (!q) return;
 
-  // Reference first
   const ref = parseReference(q, state.books);
   if (ref?.book && ref?.chapter) {
     navigate(`/v/${ref.book}/${ref.chapter}${ref.verse ? `/${ref.verse}` : ""}`);
     return;
   }
 
-  // Keyword search (simple + offline)
   const needle = q.toLowerCase();
   const max = 120;
   const out = [];
@@ -426,8 +601,9 @@ function doSearch() {
   }
 
   const ms = Math.round(performance.now() - t0);
-  els.searchInfo.textContent = `${out.length} résultat(s) (max ${max}) · ${ms} ms`;
+  if (els.searchInfo) els.searchInfo.textContent = `${out.length} résultat(s) (max ${max}) · ${ms} ms`;
 
+  if (!els.searchResults) return;
   els.searchResults.innerHTML = "";
   if (!out.length) { els.searchResults.innerHTML = `<div class="muted">Aucun résultat.</div>`; return; }
 
@@ -437,6 +613,8 @@ function doSearch() {
     div.addEventListener("click", () => navigate(`/v/${r.book}/${r.chapter}/${r.verse}`));
     els.searchResults.appendChild(div);
   }
+
+  if (state.debug.enabled) renderDebugBar();
 }
 
 /* ---------------- Favorites ---------------- */
@@ -448,6 +626,7 @@ function wireFavorites() {
     if (!confirm("Effacer tous les favoris ?")) return;
     saveJSON(STORAGE_KEYS.favorites, []);
     renderFavorites();
+    if (state.debug.enabled) renderDebugBar();
   });
 
   els.btnExportFav?.addEventListener("click", () => {
@@ -476,10 +655,11 @@ function wireFavorites() {
     } finally {
       e.target.value = "";
     }
+    if (state.debug.enabled) renderDebugBar();
   });
 
   els.favApplyTag?.addEventListener("click", () => {
-    const tag = String(els.favTag.value || "").trim().toLowerCase();
+    const tag = String(els.favTag?.value || "").trim().toLowerCase();
     if (!tag) return toast("Tag vide.");
 
     const favs = loadJSON(STORAGE_KEYS.favorites, []);
@@ -495,11 +675,12 @@ function wireFavorites() {
     saveJSON(STORAGE_KEYS.favorites, favs);
     toast("Tag appliqué.");
     renderFavorites();
+    if (state.debug.enabled) renderDebugBar();
   });
 }
 
 function filterFavs(favs) {
-  const q = String(els.favSearch.value || "").trim().toLowerCase();
+  const q = String(els.favSearch?.value || "").trim().toLowerCase();
   if (!q) return favs;
   return favs.filter(f =>
     String(f.ref || "").toLowerCase().includes(q) ||
@@ -509,6 +690,8 @@ function filterFavs(favs) {
 }
 
 function renderFavorites() {
+  if (!els.favList) return;
+
   const favs = loadJSON(STORAGE_KEYS.favorites, []);
   const filtered = filterFavs(favs);
 
@@ -531,19 +714,20 @@ function renderFavorites() {
       <div class="muted small">${Array.isArray(f.tags) && f.tags.length ? ("Tags: " + f.tags.join(", ")) : ""}</div>
     `;
 
-    item.querySelector('[data-act="open"]').addEventListener("click", () => {
+    item.querySelector('[data-act="open"]')?.addEventListener("click", () => {
       const url = f.verse ? `/v/${f.book}/${f.chapter}/${f.verse}` : `/v/${f.book}/${f.chapter}`;
       navigate(url);
     });
 
-    item.querySelector('[data-act="share"]').addEventListener("click", async () => {
+    item.querySelector('[data-act="share"]')?.addEventListener("click", async () => {
       await shareVerseAsImage({ title: f.ref, text: f.text, footer: "2026 LaBible.app | LSG 1910" });
     });
 
-    item.querySelector('[data-act="del"]').addEventListener("click", () => {
+    item.querySelector('[data-act="del"]')?.addEventListener("click", () => {
       const all = loadJSON(STORAGE_KEYS.favorites, []);
       saveJSON(STORAGE_KEYS.favorites, all.filter(x => x.id !== f.id));
       renderFavorites();
+      if (state.debug.enabled) renderDebugBar();
     });
 
     els.favList.appendChild(item);
@@ -559,7 +743,7 @@ function wirePlan() {
 
   els.planOpen?.addEventListener("click", () => {
     const day = currentPlanDay();
-    const refs = state.plan.days[day - 1]?.refs || [];
+    const refs = state.plan?.days?.[day - 1]?.refs || [];
     if (!refs.length) return toast("Lecture vide.");
     navigate(`/v/${refs[0].book}/${refs[0].chapter}`);
   });
@@ -570,6 +754,7 @@ function wirePlan() {
     done[String(day)] = !done[String(day)];
     saveJSON(STORAGE_KEYS.planDone, done);
     renderPlanDay(day);
+    if (state.debug.enabled) renderDebugBar();
   });
 }
 
@@ -585,19 +770,22 @@ function stepPlan(delta) {
 }
 
 function renderPlanDay(day) {
+  if (!state.plan) return;
+
   const d = clampInt(day, 1, 365);
   const item = state.plan.days[d - 1];
 
-  els.planDayKicker.textContent = `Jour ${d} / 365`;
-  els.planDayTitle.textContent = item?.title || `Jour ${d}`;
+  if (els.planDayKicker) els.planDayKicker.textContent = `Jour ${d} / 365`;
+  if (els.planDayTitle) els.planDayTitle.textContent = item?.title || `Jour ${d}`;
 
   const done = loadJSON(STORAGE_KEYS.planDone, {});
   const isDone = !!done[String(d)];
-  els.planToggleDone.textContent = isDone ? "↩️ Marquer comme non fait" : "✅ Marquer comme fait";
+  if (els.planToggleDone) els.planToggleDone.textContent = isDone ? "↩️ Marquer comme non fait" : "✅ Marquer comme fait";
 
   const progress = Object.values(done).filter(Boolean).length;
-  els.planProgress.textContent = `Progrès: ${progress}/365`;
+  if (els.planProgress) els.planProgress.textContent = `Progrès: ${progress}/365`;
 
+  if (!els.planRefs) return;
   els.planRefs.innerHTML = "";
   const refs = item?.refs || [];
   for (const r of refs) {
@@ -609,9 +797,11 @@ function renderPlanDay(day) {
   }
 }
 
-function getPlan365Cached() {
-  const cached = loadJSON(STORAGE_KEYS.cachePlan, null);
-  if (cached?.days?.length === 365) return cached;
+function getPlan365Cached(force = false) {
+  if (!force) {
+    const cached = loadJSON(STORAGE_KEYS.cachePlan, null);
+    if (cached?.days?.length === 365) return cached;
+  }
 
   const chapters = [];
   for (const b of state.books) {
@@ -646,7 +836,7 @@ function getPlan365Cached() {
 function wireVdd() {
   els.btnShareVdd?.addEventListener("click", async () => {
     const today = dayOfYear(new Date());
-    const it = state.vdd.items[today - 1];
+    const it = state.vdd?.items?.[today - 1];
     if (!it) return;
     const ref = formatRef(state.books, it.book, it.chapter, it.verse);
     const text = getVerseText(it.book, it.chapter, it.verse, state.index);
@@ -656,20 +846,28 @@ function wireVdd() {
 
 function renderVddToday() {
   const today = dayOfYear(new Date());
-  const it = state.vdd.items[today - 1];
-  if (!it) { els.vddRef.textContent = "—"; els.vddText.textContent = "—"; return; }
+  const it = state.vdd?.items?.[today - 1];
+  if (!it) {
+    if (els.vddRef) els.vddRef.textContent = "—";
+    if (els.vddText) els.vddText.textContent = "—";
+    return;
+  }
 
   const ref = formatRef(state.books, it.book, it.chapter, it.verse);
   const text = getVerseText(it.book, it.chapter, it.verse, state.index);
 
-  els.vddRef.textContent = ref;
-  els.vddText.textContent = text || "—";
+  if (els.vddRef) els.vddRef.textContent = ref;
+  if (els.vddText) els.vddText.textContent = text || "—";
 }
 
 function renderVddList() {
+  if (!els.vddList || !state.vdd?.items) return;
+
   els.vddList.innerHTML = "";
   for (let i = 0; i < 365; i++) {
     const it = state.vdd.items[i];
+    if (!it) continue;
+
     const day = i + 1;
     const ref = formatRef(state.books, it.book, it.chapter, it.verse);
     const text = getVerseText(it.book, it.chapter, it.verse, state.index);
@@ -687,8 +885,8 @@ function renderVddList() {
       <div class="result__text">${escapeHtml(text)}</div>
     `;
 
-    div.querySelector('[data-act="open"]').addEventListener("click", () => navigate(`/v/${it.book}/${it.chapter}/${it.verse}`));
-    div.querySelector('[data-act="share"]').addEventListener("click", async () => {
+    div.querySelector('[data-act="open"]')?.addEventListener("click", () => navigate(`/v/${it.book}/${it.chapter}/${it.verse}`));
+    div.querySelector('[data-act="share"]')?.addEventListener("click", async () => {
       await shareVerseAsImage({ title: ref, text, footer: "2026 LaBible.app | LSG 1910" });
     });
 
@@ -696,9 +894,11 @@ function renderVddList() {
   }
 }
 
-function getVdd365Cached() {
-  const cached = loadJSON(STORAGE_KEYS.cacheVdd, null);
-  if (cached?.items?.length === 365) return cached;
+function getVdd365Cached(force = false) {
+  if (!force) {
+    const cached = loadJSON(STORAGE_KEYS.cacheVdd, null);
+    if (cached?.items?.length === 365) return cached;
+  }
 
   const all = [];
   for (const b of state.books) {
@@ -710,6 +910,12 @@ function getVdd365Cached() {
   }
 
   const total = all.length;
+  if (!total) {
+    const empty = { version: 1, name: "VDD 365 (auto)", items: Array.from({ length: 365 }, () => null) };
+    saveJSON(STORAGE_KEYS.cacheVdd, empty);
+    return empty;
+  }
+
   const step = total / 365;
   const items = [];
   for (let i = 0; i < 365; i++) {
@@ -736,6 +942,7 @@ function wireSettings() {
     });
     applySettings(next);
     toast("Réglages enregistrés.");
+    if (state.debug.enabled) renderDebugBar();
   });
 
   els.resetSettings?.addEventListener("click", () => {
@@ -744,6 +951,7 @@ function wireSettings() {
     if (els.fontSizeSelect) els.fontSizeSelect.value = String(next.fontScale);
     applySettings(next);
     toast("Réglages réinitialisés.");
+    if (state.debug.enabled) renderDebugBar();
   });
 }
 
@@ -751,7 +959,7 @@ function applySettings(s) {
   document.documentElement.style.setProperty("--fontScale", String(s.fontScale || 100));
 }
 
-/* ---------------- PWA Install + badges ---------------- */
+/* ---------------- PWA Install + network + SW ---------------- */
 
 function isInstalled() {
   if (window.matchMedia && window.matchMedia("(display-mode: standalone)").matches) return true;
@@ -759,13 +967,38 @@ function isInstalled() {
   return false;
 }
 
+/**
+ * ✅ CORRIGIDO:
+ * - esconde o badge quando a app já está instalada (evita duplicação "Installée / Installé")
+ * - mantém só o botão visível
+ * - botão fica visualmente mais discreto quando instalada
+ */
 function setInstallUI({ installed, installable }) {
-  if (!els.installBadge) return;
-  els.installBadge.textContent = installed ? "✅ Installé" : (installable ? "📲 Installable" : "ℹ️");
+  if (els.installBadge) {
+    if (installed) {
+      els.installBadge.hidden = true;
+    } else {
+      els.installBadge.hidden = false;
+      els.installBadge.textContent = installable ? "📲 Installable" : "ℹ️";
+    }
+  }
+
   if (els.btnInstallAlways) {
     els.btnInstallAlways.disabled = installed;
     els.btnInstallAlways.textContent = installed ? "✅ Installée" : "⬇️ Installer";
+
+    if (installed) {
+      els.btnInstallAlways.classList.remove("btn--primary");
+      els.btnInstallAlways.classList.add("btn--ghost");
+      els.btnInstallAlways.title = "Application déjà installée";
+    } else {
+      els.btnInstallAlways.classList.add("btn--primary");
+      els.btnInstallAlways.classList.remove("btn--ghost");
+      els.btnInstallAlways.title = "Installer";
+    }
   }
+
+  if (state.debug.enabled) renderDebugBar();
 }
 
 function wirePwaInstall() {
@@ -802,22 +1035,25 @@ function wirePwaInstall() {
 function wireNetworkBadges() {
   const update = () => {
     if (els.chipOffline) els.chipOffline.hidden = navigator.onLine;
+    if (state.debug.enabled) renderDebugBar();
   };
   window.addEventListener("online", update);
   window.addEventListener("offline", update);
   update();
 }
 
-/* ---------------- Service Worker ---------------- */
-
 function wireSW() {
   if (!("serviceWorker" in navigator)) return;
+
   navigator.serviceWorker.register("/sw.js").catch(console.warn);
 
   navigator.serviceWorker.addEventListener("message", (e) => {
     if (e.data === "SW_UPDATED" && els.chipUpdated) {
       els.chipUpdated.hidden = false;
-      setTimeout(() => (els.chipUpdated.hidden = true), 2500);
+      setTimeout(() => {
+        if (els.chipUpdated) els.chipUpdated.hidden = true;
+      }, 2500);
+      if (state.debug.enabled) renderDebugBar();
     }
   });
 }

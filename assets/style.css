@@ -1,137 +1,167 @@
-<!doctype html>
-<html lang="fr">
-<head>
-  <meta charset="utf-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+:root{
+  --bg: #0b0b0b;
+  --panel: rgba(255,255,255,.04);
+  --panel2: rgba(255,255,255,.06);
+  --border: rgba(255,255,255,.10);
+  --text: rgba(255,255,255,.92);
+  --muted: rgba(255,255,255,.68);
+  --accent: #9fd1ff;
+  --danger: #ff9f9f;
 
-  <title>LaBible.app — Louis Segond 1910</title>
-  <meta name="description" content="Lire la Bible en ligne (Louis Segond 1910). Navigation par livre et chapitre, recherche, favoris, partage de versets.">
+  --radius: 18px;
+  --shadow: 0 12px 30px rgba(0,0,0,.32);
+  --fontScale: 100%;
+}
 
-  <!-- PWA -->
-  <link rel="manifest" href="/manifest.webmanifest">
-  <meta name="theme-color" content="#111827">
-  <link rel="apple-touch-icon" href="/icons/icon-192.png">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+@media (prefers-color-scheme: light){
+  :root{
+    --bg:#f7f7f8;
+    --panel: rgba(0,0,0,.04);
+    --panel2: rgba(0,0,0,.06);
+    --border: rgba(0,0,0,.10);
+    --text: rgba(0,0,0,.90);
+    --muted: rgba(0,0,0,.62);
+    --accent: #0b63ff;
+    --danger: #b70000;
+    --shadow: 0 10px 24px rgba(0,0,0,.12);
+  }
+}
 
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/assets/styles.css">
-</head>
+html,body{height:100%}
+body{
+  margin:0;
+  background:var(--bg);
+  color:var(--text);
+  font-family: system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+  font-size: calc(16px * (var(--fontScale) / 100));
+  line-height:1.55;
+}
 
-<body>
-  <div class="container">
-    <header class="header">
-      <a class="brand" href="/">
-        <div class="name">LaBible.app</div>
-        <div class="sub">Louis Segond 1910</div>
-      </a>
+a{color:inherit}
+.link{color:var(--accent); text-decoration:none}
+.link:hover{text-decoration:underline}
 
-      <nav class="nav">
-        <a href="/a-propos.html">À propos</a>
-        <a href="/contact.html">Contact</a>
-        <a href="/confidentialite.html">Confidentialité</a>
-      </nav>
-    </header>
+.container{max-width: 980px; margin: 0 auto; padding: 16px; padding-bottom: 56px;}
+.topbar{
+  position: sticky; top: 0; z-index: 10;
+  backdrop-filter: blur(10px);
+  background: color-mix(in srgb, var(--bg) 78%, transparent);
+  border-bottom: 1px solid var(--border);
+  padding: 12px 16px;
+  display:flex; align-items:center; justify-content:space-between;
+}
+.brand{display:flex; flex-direction:column; gap:2px; text-decoration:none}
+.brand__title{font-weight:800; letter-spacing:.2px}
+.brand__subtitle{font-size:.85rem; color:var(--muted)}
+.topbar__actions{display:flex; gap:8px; align-items:center; flex-wrap:wrap;}
 
-    <main class="grid">
-      <section class="card">
-        <h1 class="title">Bible en ligne (LSG 1910)</h1>
-        <p class="desc">
-          Choisissez un livre et un chapitre, ou utilisez la recherche. Enregistrez des favoris et partagez des versets.
-        </p>
+.card{
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 16px;
+  margin: 12px 0;
+}
 
-        <div class="controls">
-          <div class="field">
-            <label class="label" for="bookSelect">Livre</label>
-            <select class="select" id="bookSelect"></select>
-          </div>
+.hero{display:grid; grid-template-columns: 1.3fr .9fr; gap:14px;}
+@media (max-width: 860px){ .hero{grid-template-columns:1fr;} }
 
-          <div class="field">
-            <label class="label" for="chapterSelect">Chapitre</label>
-            <select class="select" id="chapterSelect"></select>
-          </div>
+h1{margin:0 0 8px; font-size:2rem; line-height:1.15}
+h2{margin:0; font-size:1.25rem}
+h3{margin:0; font-size:1.1rem}
+.kicker{font-size:.85rem; color:var(--muted)}
+.small{font-size:.9rem}
+.muted{color:var(--muted)}
 
-          <div class="field span2">
-            <label class="label" for="searchInput">Recherche</label>
-            <input class="input" id="searchInput" placeholder="Ex: berger, foi, paix…" autocomplete="off" />
-          </div>
-        </div>
+.row{display:flex; gap:10px; align-items:center; flex-wrap:wrap;}
+.row--space{justify-content:space-between}
 
-        <div class="actions">
-          <button class="btn primary" id="loadBtn">Afficher</button>
-          <button class="btn" id="clearBtn">Effacer</button>
-          <button class="btn" id="toggleFavBtn">Favoris</button>
-          <button class="btn" id="installBtn" style="display:none;">Installer</button>
-          <span class="pill" id="selectedCount">0 sélectionné</span>
-        </div>
+.grid{display:grid; gap:12px;}
+.grid--3{grid-template-columns: 1fr 1fr 1fr;}
+.grid--2{grid-template-columns: 1fr 1fr;}
+@media (max-width: 760px){ .grid--3,.grid--2{grid-template-columns:1fr;} }
 
-        <div class="results">
-          <div class="resultsHead">
-            <h2 class="h2" id="resultsTitle">Résultats</h2>
-            <div class="tools">
-              <button class="btn sm" id="copyBtn">Copier</button>
-              <button class="btn sm" id="shareBtn">Partager</button>
-              <button class="btn sm" id="favBtn">Mettre en favori</button>
-              <button class="btn sm" id="clearSelBtn">Effacer sélection</button>
-            </div>
-          </div>
+.field{display:flex; flex-direction:column; gap:6px;}
+.field span{color:var(--muted); font-size:.9rem}
+select,input{
+  font: inherit;
+  padding: 12px 12px;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background: color-mix(in srgb, var(--panel2) 86%, transparent);
+  color: var(--text);
+  outline: none;
+}
+.input{flex:1}
 
-          <div class="list" id="verseList"></div>
-          <p class="hint">Touchez un verset pour le sélectionner (multi-sélection possible).</p>
-        </div>
-      </section>
+.btn{
+  font: inherit;
+  padding: 10px 12px;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background: color-mix(in srgb, var(--panel2) 90%, transparent);
+  color: var(--text);
+  cursor: pointer;
+}
+.btn:hover{filter: brightness(1.05)}
+.btn:active{transform: translateY(1px)}
+.btn--ghost{background:transparent}
+.btn--primary{
+  background: color-mix(in srgb, var(--accent) 18%, var(--panel2));
+  border-color: color-mix(in srgb, var(--accent) 35%, var(--border));
+}
+.btn--danger{
+  background: color-mix(in srgb, var(--danger) 16%, var(--panel2));
+  border-color: color-mix(in srgb, var(--danger) 35%, var(--border));
+}
 
-      <aside class="card side">
-        <h2 class="h2">Favoris</h2>
-        <p class="desc small">Stockés localement sur votre appareil.</p>
-        <div class="list" id="favList"></div>
+.chips{display:flex; gap:8px; flex-wrap:wrap; margin-top:10px;}
+.chip{
+  padding: 6px 10px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: color-mix(in srgb, var(--panel2) 92%, transparent);
+  font-size: .9rem;
+  color: var(--muted);
+}
 
-        <div class="divider"></div>
+.vdd{padding:14px; border-radius:16px; background: color-mix(in srgb, var(--panel2) 82%, transparent); border:1px solid var(--border)}
+.vdd__head{display:flex; justify-content:space-between; align-items:flex-start; gap:10px;}
+.vdd__text{margin-top:10px; font-size:1.05rem; line-height:1.6}
+.vdd__foot{margin-top:10px}
 
-        <h2 class="h2">Infos</h2>
-        <ul class="bullets">
-          <li>Lecture : livre / chapitre</li>
-          <li>Recherche globale</li>
-          <li>Partage & copie</li>
-          <li>PWA installable</li>
-        </ul>
-      </aside>
-    </main>
+.reader__toolbar{display:flex; justify-content:space-between; margin: 10px 0;}
+.verses{margin-top:8px}
+.verse{
+  padding: 10px 10px;
+  border-radius: 14px;
+  border: 1px solid transparent;
+}
+.verse:hover{border-color: var(--border); background: color-mix(in srgb, var(--panel2) 65%, transparent)}
+.verse__num{opacity:.65; font-variant-numeric: tabular-nums; margin-right: 8px}
+.verse--selected{border-color: color-mix(in srgb, var(--accent) 55%, var(--border)); background: color-mix(in srgb, var(--accent) 10%, var(--panel2));}
 
-    <footer class="footer">
-      <div>© LaBible.app — Louis Segond 1910</div>
-      <div class="links">
-        <a href="/a-propos.html">À propos</a>
-        <a href="/contact.html">Contact</a>
-        <a href="/confidentialite.html">Confidentialité</a>
-        <a href="/mentions-legales.html">Mentions légales</a>
-        <a href="/conditions.html">Conditions</a>
-      </div>
-    </footer>
-  </div>
+.results{display:flex; flex-direction:column; gap:10px; margin-top:12px}
+.result{
+  padding: 12px;
+  border-radius: 14px;
+  border: 1px solid var(--border);
+  background: color-mix(in srgb, var(--panel2) 80%, transparent);
+}
+.result__row{display:flex; justify-content:space-between; gap:10px; align-items:flex-start;}
+.result__ref{font-weight:700}
+.result__right{font-size:.85rem; color:var(--muted)}
+.result__text{margin-top:8px}
 
-  <div class="cookie" id="cookieBanner" role="dialog" aria-live="polite">
-    <div class="cookieRow">
-      <div class="cookieText">
-        <strong>Cookies</strong>
-        <div class="cookieDesc">Mesure d’audience optionnelle. Vous pouvez accepter ou refuser.</div>
-      </div>
-      <div class="cookieBtns">
-        <button class="btn sm primary" id="cookieAccept">Accepter</button>
-        <button class="btn sm" id="cookieDeny">Refuser</button>
-      </div>
-    </div>
-  </div>
+.footer{margin-top: 18px; padding: 8px 2px;}
 
-  <script src="/assets/app.js"></script>
-
-  <script>
-    if ("serviceWorker" in navigator) {
-      window.addEventListener("load", () => {
-        navigator.serviceWorker.register("/sw.js");
-      });
-    }
-  </script>
-</body>
-</html>
+.modal::backdrop{background: rgba(0,0,0,.55)}
+.modal__panel{
+  width:min(680px, 92vw);
+  border-radius: 18px;
+  border: 1px solid var(--border);
+  background: var(--bg);
+  color: var(--text);
+  padding: 16px;
+}

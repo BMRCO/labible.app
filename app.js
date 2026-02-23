@@ -1,6 +1,6 @@
-/* LaBible — Leitura + Pesquisa + Marcadores + Plano 365 (local-first)
-   - SEM offline: sem SW/manifest
-   - Default: data/ls1910.json (LSG 1910)
+/* LaBible — Lecture + Recherche + Marque-pages + Plan 365 (local-first)
+   - Sans offline: aucun SW / aucun manifest
+   - Défaut: data/ls1910.json (LSG 1910)
 */
 
 const $ = (s) => document.querySelector(s);
@@ -25,18 +25,15 @@ const state = {
   bookIndex: 0,
   chapterIndex: 0,
   selectedVerse: null,
-
   recents: [],
   bookmarks: [],
-
-  plan: [], // 365 days
+  plan: [],
   doneDays: new Set(),
   planStart: null,
-
   ui: { font: 20, pageWidth: 920, columns: 2 }
 };
 
-/* ---------- UTIL ---------- */
+/* ---------- utils ---------- */
 function toast(msg) {
   const t = $("#toast");
   t.textContent = msg;
@@ -48,7 +45,9 @@ function loadLS(key, fallback) {
   try {
     const v = localStorage.getItem(key);
     return v ? JSON.parse(v) : fallback;
-  } catch { return fallback; }
+  } catch {
+    return fallback;
+  }
 }
 function saveLS(key, value) { localStorage.setItem(key, JSON.stringify(value)); }
 
@@ -82,9 +81,7 @@ function escapeHTML(s) {
     .replaceAll('"', "&quot;")
     .replaceAll("'", "&#039;");
 }
-
 function escapeRegExp(s) { return s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"); }
-
 function normalizeName(s) {
   return String(s || "")
     .toLowerCase()
@@ -92,7 +89,7 @@ function normalizeName(s) {
     .replace(/[^a-z0-9]/g, "");
 }
 
-/* ---------- THEME / UI ---------- */
+/* ---------- thème / UI ---------- */
 function applyTheme(theme) {
   document.documentElement.dataset.theme = theme;
   saveLS(LS.THEME, theme);
@@ -107,25 +104,25 @@ function applyUI() {
   $("#pageWidth").value = String(state.ui.pageWidth);
 }
 
-/* ---------- BIBLE NORMALIZATION (ROBUST) ---------- */
+/* ---------- normalisation Bible (robuste) ---------- */
 function normalizeBible(json) {
-  // A) LaBible format: { books:[{id,name,chapters:[[...]]}] }
+  // A) Format LaBible: { books:[{id,name,chapters:[[...]]}] }
   if (json && Array.isArray(json.books) && json.books.length) {
     const b0 = json.books[0];
     if (Array.isArray(b0.chapters)) return { mode: "chapters", data: json };
   }
 
-  // B) Our verses-array format: { books:[...], verses:[{bookId,chapter,verse,text}] }
+  // B) Format verses: { books:[...], verses:[{bookId,chapter,verse,text}] }
   if (json && Array.isArray(json.books) && Array.isArray(json.verses)) {
     return { mode: "verses", data: json };
   }
 
-  // C) Object with verses array only: { verses:[...] }
+  // C) { verses:[...] }
   if (json && Array.isArray(json.verses) && json.verses.length) {
     return { mode: "verses", data: buildVersesBible(json.verses) };
   }
 
-  // D) Raw array of verses: [ {book_name/book/bookId, chapter, verse, text}, ... ]
+  // D) [ {book_name/book/bookId, chapter, verse, text}, ... ]
   if (Array.isArray(json) && json.length && typeof json[0] === "object") {
     const v0 = json[0];
     const looks = ("text" in v0 || "t" in v0 || "content" in v0) &&
@@ -133,8 +130,7 @@ function normalizeBible(json) {
     if (looks) return { mode: "verses", data: buildVersesBible(json) };
   }
 
-  // E) Nested object: { "Genèse": { "1": { "1":"...", "2":"..." }, ... }, ... }
-  // or {books:{...}} where books is NOT an array
+  // E) objet imbriqué: { "Genèse": { "1": { "1":"..." } } }
   if (json && typeof json === "object" && !Array.isArray(json)) {
     const candidate = (json.books && !Array.isArray(json.books)) ? json.books : json;
     if (candidate && typeof candidate === "object" && !Array.isArray(candidate)) {
@@ -145,7 +141,7 @@ function normalizeBible(json) {
     }
   }
 
-  throw new Error("Formato não reconhecido. (Mostra-me as primeiras linhas do JSON.)");
+  throw new Error("Format JSON non reconnu. Montre-moi le début du fichier (premières lignes).");
 }
 
 function buildVersesBible(versesArr) {
@@ -157,9 +153,7 @@ function buildVersesBible(versesArr) {
     const short = (n.slice(0, 3) || "BIB");
     let id = short;
     let k = 2;
-    while ([...bookMap.values()].some(b => b.id === id)) {
-      id = `${short}${k++}`;
-    }
+    while ([...bookMap.values()].some(b => b.id === id)) id = `${short}${k++}`;
     return id;
   };
 
@@ -183,10 +177,9 @@ function buildVersesBible(versesArr) {
   }
 
   const books = [...bookMap.values()].map(x => ({ id: x.id, name: x.name }));
-
-  // deterministic sort: by book order (Map insertion), then chap, then verse
   const bookOrder = new Map();
   books.forEach((b, i) => bookOrder.set(b.id, i));
+
   outVerses.sort((a, b) =>
     (bookOrder.get(a.bookId) ?? 9999) - (bookOrder.get(b.bookId) ?? 9999) ||
     a.chapter - b.chapter ||
@@ -232,7 +225,41 @@ function buildChaptersBibleFromNested(nested) {
   return { books };
 }
 
-/* ---------- SET BIBLE + GET CHAPTERS ---------- */
+/* ---------- accès chapitres ---------- */
+function findBookIndexById(bookId) {
+  return (state.bible.books || []).findIndex(b => String(b.id) === String(bookId));
+}
+function inferChapterCountFromVerses(bookId) {
+  let m = 0;
+  for (const v of (state.bible.verses || [])) {
+    if (String(v.bookId) === String(bookId)) m = Math.max(m, Number(v.chapter) || 0);
+  }
+  return m || 1;
+}
+function getChapterCount(bookIndex) {
+  const book = state.bible.books[bookIndex];
+  if (!book) return 0;
+  if (state.mode === "chapters") return book.chapters?.length || 0;
+  return inferChapterCountFromVerses(book.id);
+}
+function getChapterVerses(bookIndex, chapterNumber) {
+  const book = state.bible.books[bookIndex];
+  if (!book) return [];
+  const chap = chapterNumber;
+
+  if (state.mode === "chapters") {
+    const arr = book.chapters?.[chap - 1] || [];
+    return arr.map((text, i) => ({ verse: i + 1, text }));
+  }
+
+  const verses = state.bible.verses || [];
+  return verses
+    .filter(v => String(v.bookId) === String(book.id) && Number(v.chapter) === chap)
+    .sort((a, b) => Number(a.verse) - Number(b.verse))
+    .map(v => ({ verse: Number(v.verse), text: String(v.text || "") }));
+}
+
+/* ---------- set Bible ---------- */
 function setBible(bibleObj, label) {
   state.bible = bibleObj.data;
   state.mode = bibleObj.mode;
@@ -259,49 +286,14 @@ function setBible(bibleObj, label) {
   renderReader();
   renderRecents();
   renderBookmarks();
+
   buildPlan365();
   renderPlan();
   renderDataStatus();
   renderDiagnostic();
 }
 
-function findBookIndexById(bookId) {
-  return (state.bible.books || []).findIndex(b => String(b.id) === String(bookId));
-}
-
-function inferChapterCountFromVerses(bookId) {
-  let m = 0;
-  for (const v of (state.bible.verses || [])) {
-    if (String(v.bookId) === String(bookId)) m = Math.max(m, Number(v.chapter) || 0);
-  }
-  return m || 1;
-}
-
-function getChapterCount(bookIndex) {
-  const book = state.bible.books[bookIndex];
-  if (!book) return 0;
-  if (state.mode === "chapters") return book.chapters?.length || 0;
-  return inferChapterCountFromVerses(book.id);
-}
-
-function getChapterVerses(bookIndex, chapterNumber) {
-  const book = state.bible.books[bookIndex];
-  if (!book) return [];
-  const chap = chapterNumber; // 1-based
-
-  if (state.mode === "chapters") {
-    const arr = book.chapters?.[chap - 1] || [];
-    return arr.map((text, i) => ({ verse: i + 1, text }));
-  }
-
-  const verses = state.bible.verses || [];
-  return verses
-    .filter(v => String(v.bookId) === String(book.id) && Number(v.chapter) === chap)
-    .sort((a, b) => Number(a.verse) - Number(b.verse))
-    .map(v => ({ verse: Number(v.verse), text: String(v.text || "") }));
-}
-
-/* ---------- READER UI ---------- */
+/* ---------- lecture UI ---------- */
 function fillBookSelect() {
   const sel = $("#bookSelect");
   sel.innerHTML = "";
@@ -314,7 +306,6 @@ function fillBookSelect() {
   sel.value = String(state.bookIndex);
   fillChapterSelect();
 }
-
 function fillChapterSelect() {
   const sel = $("#chapterSelect");
   sel.innerHTML = "";
@@ -322,7 +313,7 @@ function fillChapterSelect() {
   for (let i = 1; i <= count; i++) {
     const o = document.createElement("option");
     o.value = String(i - 1);
-    o.textContent = `Capítulo ${i}`;
+    o.textContent = `Chapitre ${i}`;
     sel.appendChild(o);
   }
   sel.value = String(clamp(state.chapterIndex, 0, Math.max(0, count - 1)));
@@ -343,7 +334,6 @@ function addRecent(bookId, chapter) {
   saveLS(LS.RECENTS, state.recents);
   renderRecents();
 }
-
 function renderRecents() {
   const wrap = $("#recentChips");
   wrap.innerHTML = "";
@@ -381,7 +371,7 @@ function selectVerse(verseNumber) {
     el.classList.add("is-selected");
     el.scrollIntoView({ block: "center", behavior: "smooth" });
   }
-  $("#statusHint").textContent = `Selecionado: ${state.bible.books[state.bookIndex].name} ${state.chapterIndex + 1}:${verseNumber}`;
+  $("#statusHint").textContent = `Sélectionné : ${state.bible.books[state.bookIndex].name} ${state.chapterIndex + 1}:${verseNumber}`;
   saveLastPos();
 }
 
@@ -390,15 +380,13 @@ function renderReader(afterRender) {
   if (!book) return;
 
   fillChapterSelect();
-
   const chapNo = state.chapterIndex + 1;
   const verses = getChapterVerses(state.bookIndex, chapNo);
 
-  $("#crumb").textContent = `${book.name} — Capítulo ${chapNo}`;
+  $("#crumb").textContent = `${book.name} — Chapitre ${chapNo}`;
 
   const wrap = $("#verses");
   wrap.innerHTML = "";
-
   verses.forEach(v => {
     const p = document.createElement("p");
     p.className = "v";
@@ -409,7 +397,7 @@ function renderReader(afterRender) {
   });
 
   state.selectedVerse = null;
-  $("#statusHint").textContent = `Total: ${verses.length} versículos`;
+  $("#statusHint").textContent = `Total : ${verses.length} versets`;
 
   addRecent(book.id, chapNo);
   saveLastPos();
@@ -418,21 +406,21 @@ function renderReader(afterRender) {
   if (typeof afterRender === "function") setTimeout(afterRender, 60);
 }
 
-/* ---------- BOOKMARKS ---------- */
+/* ---------- marque-pages ---------- */
 function bookmarkCurrent() {
   const book = state.bible.books[state.bookIndex];
   if (!book) return;
   const chap = state.chapterIndex + 1;
   const verse = state.selectedVerse?.verse || 1;
   const id = `${book.id}:${chap}:${verse}`;
-  if (state.bookmarks.some(b => b.id === id)) { toast("Já existe nos marcadores."); return; }
+  if (state.bookmarks.some(b => b.id === id)) { toast("Déjà dans les marque-pages."); return; }
 
   const item = { id, bookId: book.id, bookName: book.name, chapter: chap, verse, createdAt: Date.now() };
   state.bookmarks.unshift(item);
   state.bookmarks = state.bookmarks.slice(0, 200);
   saveLS(LS.BOOKMARKS, state.bookmarks);
   renderBookmarks();
-  toast("Marcador guardado ★");
+  toast("Marque-page ajouté ★");
 }
 function removeBookmark(id) {
   state.bookmarks = state.bookmarks.filter(b => b.id !== id);
@@ -443,7 +431,7 @@ function renderBookmarks() {
   const list = $("#bookmarkList");
   list.innerHTML = "";
   if (!state.bookmarks.length) {
-    list.innerHTML = `<div class="muted">Nenhum marcador ainda.</div>`;
+    list.innerHTML = `<div class="muted">Aucun marque-page.</div>`;
     return;
   }
   state.bookmarks.slice(0, 25).forEach(bm => {
@@ -451,10 +439,10 @@ function renderBookmarks() {
     div.className = "item";
     div.innerHTML = `
       <div class="item__title">${bm.bookName} ${bm.chapter}:${bm.verse}</div>
-      <div class="item__sub"><span>${new Date(bm.createdAt).toLocaleString()}</span></div>
+      <div class="item__sub">${new Date(bm.createdAt).toLocaleString()}</div>
       <div class="item__actions">
-        <button class="linkbtn" data-open>Abrir</button>
-        <button class="linkbtn" data-del>Remover</button>
+        <button class="linkbtn" data-open>Ouvrir</button>
+        <button class="linkbtn" data-del>Supprimer</button>
       </div>
     `;
     div.querySelector("[data-open]").onclick = () => {
@@ -472,30 +460,29 @@ function renderBookmarks() {
   });
 }
 
-/* ---------- TABS ---------- */
+/* ---------- tabs ---------- */
 function switchTab(name) {
   $$(".tab").forEach(b => b.classList.toggle("is-active", b.dataset.tab === name));
   $$(".panel").forEach(p => p.classList.toggle("is-active", p.id === `tab-${name}`));
-  $("#hero").style.display = "none";
 }
 
-/* ---------- SEARCH ---------- */
+/* ---------- recherche ---------- */
 function fillSearchSelects() {
   const selBook = $("#searchBook");
-  selBook.innerHTML = `<option value="">Todos</option>`;
+  selBook.innerHTML = `<option value="">Tous</option>`;
   (state.bible.books || []).forEach(b => {
     const o = document.createElement("option");
     o.value = b.id;
     o.textContent = b.name;
     selBook.appendChild(o);
   });
-  $("#searchChapter").innerHTML = `<option value="">Todos</option>`;
+  $("#searchChapter").innerHTML = `<option value="">Tous</option>`;
   $("#searchChapter").disabled = true;
 }
 function updateSearchChapters() {
   const bookId = $("#searchBook").value;
   const chapSel = $("#searchChapter");
-  chapSel.innerHTML = `<option value="">Todos</option>`;
+  chapSel.innerHTML = `<option value="">Tous</option>`;
   if (!bookId) { chapSel.disabled = true; return; }
   const bi = findBookIndexById(bookId);
   if (bi < 0) return;
@@ -503,7 +490,7 @@ function updateSearchChapters() {
   for (let c = 1; c <= count; c++) {
     const o = document.createElement("option");
     o.value = String(c);
-    o.textContent = `Capítulo ${c}`;
+    o.textContent = `Chapitre ${c}`;
     chapSel.appendChild(o);
   }
   chapSel.disabled = false;
@@ -543,14 +530,13 @@ function searchBible(term, bookId, chapterStr) {
       }
     }
   }
-
   return results.slice(0, 300);
 }
 
 function renderResults(items, term) {
   const wrap = $("#results");
   wrap.innerHTML = "";
-  if (!items.length) { wrap.innerHTML = `<div class="muted">Sem resultados.</div>`; return; }
+  if (!items.length) { wrap.innerHTML = `<div class="muted">Aucun résultat.</div>`; return; }
 
   const re = new RegExp(escapeRegExp(term.trim()), "ig");
   items.forEach(r => {
@@ -562,8 +548,8 @@ function renderResults(items, term) {
     div.innerHTML = `
       <div class="result__ref">${bname} ${r.chapter}:${r.verse}</div>
       <div class="result__txt">${safe}</div>
-      <div class="row row--gap" style="margin-top:10px">
-        <button class="linkbtn" data-open>Abrir</button>
+      <div class="row gap" style="margin-top:10px">
+        <button class="linkbtn" data-open>Ouvrir</button>
         <button class="linkbtn" data-mark>★</button>
       </div>
     `;
@@ -578,17 +564,17 @@ function renderResults(items, term) {
     };
     div.querySelector("[data-mark]").onclick = () => {
       const id = `${r.bookId}:${r.chapter}:${r.verse}`;
-      if (state.bookmarks.some(b => b.id === id)) { toast("Já existe."); return; }
+      if (state.bookmarks.some(b => b.id === id)) { toast("Déjà enregistré."); return; }
       state.bookmarks.unshift({ id, bookId: r.bookId, bookName: bname, chapter: r.chapter, verse: r.verse, createdAt: Date.now() });
       saveLS(LS.BOOKMARKS, state.bookmarks);
       renderBookmarks();
-      toast("Marcador guardado ★");
+      toast("Marque-page ajouté ★");
     };
     wrap.appendChild(div);
   });
 }
 
-/* ---------- PLAN 365 (AUTO) ---------- */
+/* ---------- plan 365 ---------- */
 function loadPlanState() {
   state.doneDays = new Set(loadLS(LS.PLAN_DONE, []));
   state.planStart = loadLS(LS.PLAN_START, null);
@@ -597,9 +583,7 @@ function loadPlanState() {
     saveLS(LS.PLAN_START, state.planStart);
   }
 }
-function planIndexForDate(iso) {
-  return clamp(diffDays(state.planStart, iso), 0, 364);
-}
+function planIndexForDate(iso) { return clamp(diffDays(state.planStart, iso), 0, 364); }
 function isDone(dayIndex) { return state.doneDays.has(String(dayIndex + 1)); }
 function setDone(dayIndex, done) {
   const key = String(dayIndex + 1);
@@ -623,11 +607,10 @@ function parseRef(ref) {
 
 function gotoRef(bookNameOrId, chapter, verse) {
   const target = normalizeName(bookNameOrId);
-
   let bi = state.bible.books.findIndex(b => normalizeName(b.id) === target);
   if (bi < 0) bi = state.bible.books.findIndex(b => normalizeName(b.name) === target);
   if (bi < 0) bi = state.bible.books.findIndex(b => normalizeName(b.name).startsWith(target));
-  if (bi < 0) { toast(`Livro não encontrado: ${bookNameOrId}`); return; }
+  if (bi < 0) { toast(`Livre introuvable : ${bookNameOrId}`); return; }
 
   state.bookIndex = bi;
   state.chapterIndex = clamp((chapter || 1) - 1, 0, getChapterCount(bi) - 1);
@@ -637,12 +620,12 @@ function gotoRef(bookNameOrId, chapter, verse) {
 }
 
 function openRefs(refs) {
-  if (!refs?.length) { toast("Sem referências."); return; }
+  if (!refs?.length) { toast("Aucune référence."); return; }
   const first = parseRef(refs[0]);
-  if (!first) { toast("Referência inválida."); return; }
+  if (!first) { toast("Référence invalide."); return; }
   gotoRef(first.book, first.chapter, first.verse || 1);
   switchTab("read");
-  toast("Leitura aberta (1ª referência).");
+  toast("Lecture ouverte.");
 }
 
 function buildPlan365() {
@@ -653,7 +636,6 @@ function buildPlan365() {
     const count = (state.mode === "chapters")
       ? (b.chapters?.length || 0)
       : inferChapterCountFromVerses(b.id);
-
     for (let c = 1; c <= count; c++) all.push({ bookName: b.name, bookId: b.id, chapter: c });
   }
 
@@ -663,7 +645,6 @@ function buildPlan365() {
 
   for (let d = 0; d < 365; d++) {
     const refs = [];
-
     const remaining = total - i;
     const daysLeft = 365 - d;
     const ideal = Math.ceil(remaining / daysLeft);
@@ -676,7 +657,7 @@ function buildPlan365() {
 
     days.push({
       refs,
-      note: refs.length ? "Lis attentivement, et marque ce qui te parle. Puis valide ta lecture." : "—"
+      note: refs.length ? "Lis attentivement, puis valide ta lecture." : "—"
     });
   }
 
@@ -709,7 +690,7 @@ function renderCalendar(todayIdx) {
     el.classList.toggle("is-done", isDone(idx));
     el.classList.toggle("is-today", idx === focus);
     el.innerHTML = `<div class="day__n">${idx + 1}</div><div class="day__dot"></div>`;
-    el.title = `Dia ${idx + 1} — ${iso}\n${(state.plan[idx]?.refs || []).join(" / ")}`;
+    el.title = `Jour ${idx + 1} — ${iso}\n${(state.plan[idx]?.refs || []).join(" / ")}`;
     el.onclick = () => openPlanDay(idx);
     cal.appendChild(el);
   }
@@ -719,15 +700,15 @@ function openPlanDay(dayIndex) {
   const iso = addDaysISO(state.planStart, dayIndex);
   const day = state.plan[dayIndex] || { refs: [] };
 
-  $("#todayTitle").textContent = `Dia ${dayIndex + 1} — ${iso}`;
+  $("#todayTitle").textContent = `Jour ${dayIndex + 1} — ${iso}`;
   $("#todayRefs").textContent = (day.refs || []).join(" • ") || "—";
   $("#todayNote").textContent = day.note || "—";
 
   const done = isDone(dayIndex);
-  $("#btnToggleDone").textContent = done ? "✓ Concluído" : "✓ Marcar";
+  $("#btnToggleDone").textContent = done ? "✓ Fait" : "✓ Marquer";
   $("#btnToggleDone").onclick = () => setDone(dayIndex, !done);
   $("#btnOpenRefs").onclick = () => openRefs(day.refs || []);
-  toast(`Dia ${dayIndex + 1}`);
+  toast(`Jour ${dayIndex + 1}`);
 }
 
 function renderPlan() {
@@ -737,37 +718,36 @@ function renderPlan() {
   const pct = Math.round((doneCount / 365) * 100);
 
   $("#planBar").style.width = `${pct}%`;
-  $("#planStats").textContent = `${doneCount}/365 concluídos (${pct}%)`;
-  $("#planStreak").textContent = `Sequência: ${computeStreak()} dia(s)`;
+  $("#planStats").textContent = `${doneCount}/365 (${pct}%)`;
+  $("#planStreak").textContent = `Série : ${computeStreak()} jour(s)`;
 
   const iso = todayISO();
   const idx = planIndexForDate(iso);
   const day = state.plan[idx] || { refs: [] };
 
-  $("#todayTitle").textContent = `Dia ${idx + 1} — ${iso}`;
+  $("#todayTitle").textContent = `Jour ${idx + 1} — ${iso}`;
   $("#todayRefs").textContent = (day.refs || []).join(" • ") || "—";
   $("#todayNote").textContent = day.note || "—";
 
   const done = isDone(idx);
-  $("#btnToggleDone").textContent = done ? "✓ Concluído" : "✓ Marcar";
+  $("#btnToggleDone").textContent = done ? "✓ Fait" : "✓ Marquer";
   $("#btnToggleDone").onclick = () => setDone(idx, !done);
   $("#btnOpenRefs").onclick = () => openRefs(day.refs || []);
 
   renderCalendar(idx);
 }
 
-/* ---------- LIBRARY (DEFAULT + UPLOAD) ---------- */
+/* ---------- bibliothèque (défaut + import) ---------- */
 async function loadDefaultBible() {
-  // default: LSG 1910
   const res = await fetch("data/ls1910.json", { cache: "no-store" });
-  if (!res.ok) throw new Error("Não consegui carregar data/ls1910.json (confere se existe no repo).");
+  if (!res.ok) throw new Error("Impossible de charger data/ls1910.json (vérifie le fichier dans le repo).");
   const json = await res.json();
   setBible(normalizeBible(json), "LSG 1910");
 }
 
 async function loadCustomBibleFromLS() {
   const custom = loadLS(LS.BIBLE_CUSTOM, null);
-  const label = loadLS(LS.BIBLE_LABEL, "Custom");
+  const label = loadLS(LS.BIBLE_LABEL, "Import");
   if (!custom) return false;
   try {
     setBible(normalizeBible(custom), label);
@@ -781,15 +761,15 @@ async function loadCustomBibleFromLS() {
 function forgetCustomBible() {
   localStorage.removeItem(LS.BIBLE_CUSTOM);
   localStorage.removeItem(LS.BIBLE_LABEL);
-  toast("Bíblia carregada removida. A usar default.");
+  toast("Import supprimé. Retour au défaut.");
   loadDefaultBible();
 }
 
-/* ---------- SETTINGS / DATA ---------- */
+/* ---------- données ---------- */
 function renderDataStatus() {
   const last = loadLS(LS.LAST_POS, null);
   $("#dataStatus").textContent =
-    `Bíblia: ${state.bibleLabel} • Marcadores: ${state.bookmarks.length} • Recentes: ${state.recents.length} • Última posição: ${
+    `Bible : ${state.bibleLabel} • Marque-pages : ${state.bookmarks.length} • Récents : ${state.recents.length} • Position : ${
       last ? `${last.bookId} ${last.chapter}:${last.verse}` : "—"
     }`;
 }
@@ -814,13 +794,13 @@ function exportData() {
   a.download = `labible-backup-${todayISO()}.json`;
   a.click();
   URL.revokeObjectURL(a.href);
-  toast("Export concluído.");
+  toast("Export terminé.");
 }
 
 async function importData(file) {
   const txt = await file.text();
   const p = JSON.parse(txt);
-  if (!p || p.v !== 1) throw new Error("Backup inválido.");
+  if (!p || p.v !== 1) throw new Error("Sauvegarde invalide.");
 
   if (p.theme) applyTheme(p.theme);
   if (p.ui) { state.ui = p.ui; applyUI(); }
@@ -851,11 +831,11 @@ async function importData(file) {
   buildPlan365();
   renderPlan();
   renderDataStatus();
-  toast("Import concluído.");
+  toast("Import terminé.");
 }
 
 function wipeAll() {
-  if (!confirm("Apagar tudo (posições, marcadores, plano, Bíblia carregada)?")) return;
+  if (!confirm("Tout effacer (position, marque-pages, plan, import) ?")) return;
   Object.values(LS).forEach(k => localStorage.removeItem(k));
   location.reload();
 }
@@ -868,18 +848,18 @@ function renderDiagnostic() {
     : 0;
 
   $("#diagnostic").innerHTML =
-    `<div><strong>Modo:</strong> ${mode}</div>
-     <div><strong>Livros:</strong> ${books}</div>
-     <div><strong>Total de capítulos:</strong> ${totalCh}</div>
-     <div class="muted" style="margin-top:8px">Plano 365 é gerado automaticamente a partir dos capítulos.</div>`;
+    `<div><strong>Mode :</strong> ${mode}</div>
+     <div><strong>Livres :</strong> ${books}</div>
+     <div><strong>Total chapitres :</strong> ${totalCh}</div>
+     <div class="muted" style="margin-top:8px">Le plan 365 est généré automatiquement à partir des chapitres.</div>`;
 }
 
-/* ---------- EVENTS ---------- */
+/* ---------- events ---------- */
 function initEvents() {
   // Tabs
   $$(".tab").forEach(btn => btn.addEventListener("click", () => switchTab(btn.dataset.tab)));
 
-  // Reader navigation
+  // Lecture nav
   $("#bookSelect").addEventListener("change", (e) => {
     state.bookIndex = Number(e.target.value);
     state.chapterIndex = 0;
@@ -904,37 +884,33 @@ function initEvents() {
     renderReader();
   };
 
-  // Bookmark + theme
+  // Actions
   $("#btnBookmark").onclick = bookmarkCurrent;
   $("#btnTheme").onclick = () => applyTheme((loadLS(LS.THEME, "dark") === "light") ? "dark" : "light");
 
-  // Reader tools
+  // Tools
   $("#btnFontMinus").onclick = () => { state.ui.font = clamp(state.ui.font - 1, 16, 28); applyUI(); };
   $("#btnFontPlus").onclick = () => { state.ui.font = clamp(state.ui.font + 1, 16, 28); applyUI(); };
-  $("#btnColumns").onclick = () => { state.ui.columns = (state.ui.columns === 2 ? 1 : 2); applyUI(); toast(`Colunas: ${state.ui.columns}`); };
-
-  // Hero
-  $("#btnContinue").onclick = () => { switchTab("read"); toast("Continuar leitura"); };
-  $("#btnOpenToday").onclick = () => { switchTab("plan"); openPlanDay(planIndexForDate(todayISO())); };
+  $("#btnColumns").onclick = () => { state.ui.columns = (state.ui.columns === 2 ? 1 : 2); applyUI(); toast(`Colonnes : ${state.ui.columns}`); };
 
   // Plan
   $("#btnGoToday").onclick = () => openPlanDay(planIndexForDate(todayISO()));
   $("#btnMarkToday").onclick = () => {
     const idx = planIndexForDate(todayISO());
     setDone(idx, true);
-    toast("Hoje concluído ✓");
+    toast("Aujourd’hui : fait ✓");
   };
   $("#btnResetPlan").onclick = () => {
-    if (!confirm("Reiniciar progresso do plano?")) return;
+    if (!confirm("Réinitialiser la progression du plan ?")) return;
     state.doneDays = new Set();
     saveLS(LS.PLAN_DONE, []);
     state.planStart = todayISO();
     saveLS(LS.PLAN_START, state.planStart);
     renderPlan();
-    toast("Plano reiniciado.");
+    toast("Plan réinitialisé.");
   };
 
-  // Search
+  // Recherche
   $("#searchBook").addEventListener("change", updateSearchChapters);
   $("#btnSearch").onclick = () => {
     const term = $("#searchInput").value;
@@ -944,14 +920,14 @@ function initEvents() {
     renderResults(results, term);
   };
   $("#searchInput").addEventListener("keydown", (e) => { if (e.key === "Enter") $("#btnSearch").click(); });
-  $("#btnClearSearch").onclick = () => { $("#searchInput").value = ""; $("#results").innerHTML = ""; toast("Limpo."); };
+  $("#btnClearSearch").onclick = () => { $("#searchInput").value = ""; $("#results").innerHTML = ""; toast("Recherche effacée."); };
 
-  // Library
+  // Bibliothèque
   $("#btnUseDefault").onclick = () => {
     localStorage.removeItem(LS.BIBLE_CUSTOM);
     localStorage.removeItem(LS.BIBLE_LABEL);
     loadDefaultBible();
-    toast("A usar LSG 1910 (default).");
+    toast("Bible par défaut : LSG 1910");
   };
   $("#btnForgetBible").onclick = forgetCustomBible;
 
@@ -966,7 +942,7 @@ function initEvents() {
       const label = file.name.replace(".json", "");
       saveLS(LS.BIBLE_LABEL, label);
       setBible(normalized, label);
-      toast("Bíblia carregada com sucesso.");
+      toast("Bible importée.");
     } catch (err) {
       console.error(err);
       alert(String(err.message || err));
@@ -975,7 +951,7 @@ function initEvents() {
     }
   });
 
-  // Settings
+  // Réglages
   $("#btnLight").onclick = () => applyTheme("light");
   $("#btnDark").onclick = () => applyTheme("dark");
   $("#fontRange").addEventListener("input", (e) => { state.ui.font = Number(e.target.value); applyUI(); });
@@ -983,10 +959,10 @@ function initEvents() {
   $("#btnResetUi").onclick = () => {
     state.ui = { font: 20, pageWidth: 920, columns: 2 };
     applyUI();
-    toast("UI reposta.");
+    toast("Réglages d’affichage réinitialisés.");
   };
 
-  // Data
+  // Données
   $("#btnExport").onclick = exportData;
   $("#btnImport").onclick = () => $("#importFile").click();
   $("#importFile").addEventListener("change", async (e) => {
@@ -999,7 +975,7 @@ function initEvents() {
   $("#btnWipe").onclick = wipeAll;
 }
 
-/* ---------- BOOT ---------- */
+/* ---------- boot ---------- */
 async function boot() {
   applyTheme(loadLS(LS.THEME, "dark"));
   state.ui = loadLS(LS.UI, state.ui);

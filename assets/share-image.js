@@ -2,47 +2,32 @@ export async function shareVerseAsImage({ title, text, footer }) {
   const canvas = document.createElement("canvas");
   const ctx = canvas.getContext("2d");
 
-  const W = 1080;
-  const H = 1080;
-  canvas.width = W;
-  canvas.height = H;
+  const W = 1080, H = 1080;
+  canvas.width = W; canvas.height = H;
 
-  // Background (simple gradient without hard-coded colors? keep neutral)
   const g = ctx.createLinearGradient(0, 0, W, H);
   g.addColorStop(0, "#0b0b0b");
   g.addColorStop(1, "#1a1a1a");
   ctx.fillStyle = g;
   ctx.fillRect(0, 0, W, H);
 
-  // Card
   const pad = 72;
-  const cardX = pad;
-  const cardY = pad;
-  const cardW = W - pad * 2;
-  const cardH = H - pad * 2;
+  const cardX = pad, cardY = pad, cardW = W - pad * 2, cardH = H - pad * 2;
 
   roundRect(ctx, cardX, cardY, cardW, cardH, 42);
   ctx.fillStyle = "rgba(255,255,255,0.06)";
   ctx.fill();
-
   ctx.strokeStyle = "rgba(255,255,255,0.14)";
   ctx.lineWidth = 4;
   ctx.stroke();
 
-  // Text
   ctx.fillStyle = "rgba(255,255,255,0.92)";
   ctx.font = "700 46px system-ui, -apple-system, Segoe UI, Roboto, Arial";
   ctx.fillText(title, cardX + 48, cardY + 90);
 
   ctx.fillStyle = "rgba(255,255,255,0.86)";
   ctx.font = "400 44px system-ui, -apple-system, Segoe UI, Roboto, Arial";
-
-  const textBoxX = cardX + 48;
-  const textBoxY = cardY + 140;
-  const textBoxW = cardW - 96;
-  const textBoxH = cardH - 240;
-
-  wrapText(ctx, text, textBoxX, textBoxY, textBoxW, 60, textBoxH);
+  wrapText(ctx, text, cardX + 48, cardY + 140, cardW - 96, 60, cardH - 240);
 
   ctx.fillStyle = "rgba(255,255,255,0.62)";
   ctx.font = "500 34px system-ui, -apple-system, Segoe UI, Roboto, Arial";
@@ -51,13 +36,11 @@ export async function shareVerseAsImage({ title, text, footer }) {
   const blob = await new Promise(resolve => canvas.toBlob(resolve, "image/png", 0.92));
   const file = new File([blob], "verset.png", { type: "image/png" });
 
-  // Try native share
   if (navigator.canShare && navigator.canShare({ files: [file] })) {
-    await navigator.share({ title: "LaBible.app", text: `${title}\n\n${text}`, files: [file] });
+    await navigator.share({ title: "2026 LaBible.app | LSG 1910", text: `${title}\n\n${text}`, files: [file] });
     return;
   }
 
-  // Fallback download
   const a = document.createElement("a");
   a.href = URL.createObjectURL(blob);
   a.download = "verset.png";

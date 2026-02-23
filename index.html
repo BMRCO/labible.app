@@ -12,6 +12,40 @@
 
   <link rel="stylesheet" href="assets/style.css" />
   <title>2026 LaBible.app | LSG 1910</title>
+
+  <!-- Ajustes leves só para header mobile (sem mexer no resto do CSS) -->
+  <style>
+    .topbar{
+      display:grid !important;
+      grid-template-columns: 1fr auto;
+      gap: 10px 12px;
+      align-items:center;
+    }
+
+    .topbar__actions{
+      justify-content:flex-end;
+    }
+
+    /* Linha 2 de ações no mobile para não apertar tudo */
+    @media (max-width: 760px){
+      .topbar{
+        grid-template-columns: 1fr;
+        align-items:start;
+      }
+      .topbar__actions{
+        justify-content:flex-start;
+        row-gap: 10px;
+      }
+
+      /* botão instalar primeiro e mais visível */
+      #btnInstallAlways{
+        order: -2;
+      }
+      #installBadge{
+        order: -1;
+      }
+    }
+  </style>
 </head>
 
 <body>
@@ -21,18 +55,22 @@
       <span class="brand__subtitle">LSG 1910</span>
     </a>
 
-    <nav class="topbar__actions">
+    <nav class="topbar__actions" aria-label="Actions principales">
+      <!-- PWA -->
       <button class="btn btn--primary" id="btnInstallAlways" type="button" title="Installer">⬇️ Installer</button>
       <span class="chip" id="installBadge" title="Statut PWA">ℹ️</span>
 
-      <button class="btn btn--ghost" id="btnSearch" title="Rechercher">🔎</button>
-      <button class="btn btn--ghost" id="btnPlan" title="Plan 365">📅</button>
-      <button class="btn btn--ghost" id="btnFav" title="Favoris">⭐</button>
-      <button class="btn btn--ghost" id="btnSettings" title="Réglages">⚙️</button>
+      <!-- Navigation -->
+      <button class="btn btn--ghost" id="btnSearch" title="Rechercher" type="button">🔎</button>
+      <button class="btn btn--ghost" id="btnPlan" title="Plan 365" type="button">📅</button>
+      <button class="btn btn--ghost" id="btnFav" title="Favoris" type="button">⭐</button>
+      <button class="btn btn--ghost" id="btnSettings" title="Réglages" type="button">⚙️</button>
     </nav>
   </header>
 
   <main class="container" id="app">
+    <div id="debugBar" hidden></div>
+
     <section class="card hero" id="hero">
       <div class="hero__left">
         <h1>Lire la Bible, simplement.</h1>
@@ -58,7 +96,7 @@
               <div class="kicker">Verset du jour</div>
               <div class="title" id="vddRef">—</div>
             </div>
-            <button class="btn btn--ghost" id="btnShareVdd" title="Partager">📤</button>
+            <button class="btn btn--ghost" id="btnShareVdd" title="Partager" type="button">📤</button>
           </div>
           <div class="vdd__text" id="vddText">Chargement…</div>
           <div class="vdd__foot">
@@ -103,9 +141,9 @@
           <div class="muted small" id="readerMeta">—</div>
         </div>
         <div class="row">
-          <button class="btn btn--ghost" id="btnReaderFav" title="Ajouter aux favoris">⭐</button>
-          <button class="btn btn--ghost" id="btnReaderCopy" title="Copier">📋</button>
-          <button class="btn btn--ghost" id="btnReaderShare" title="Partager image">🖼️</button>
+          <button class="btn btn--ghost" id="btnReaderFav" title="Ajouter aux favoris" type="button">⭐</button>
+          <button class="btn btn--ghost" id="btnReaderCopy" title="Copier" type="button">📋</button>
+          <button class="btn btn--ghost" id="btnReaderShare" title="Partager image" type="button">🖼️</button>
         </div>
       </div>
 
@@ -194,7 +232,7 @@
 
     <footer class="footer">
       <div class="muted small">
-        © <span id="year"></span> LaBible.app | LSG 1910
+        © <span id="year"></span> 2026 LaBible.app | LSG 1910
       </div>
     </footer>
   </main>

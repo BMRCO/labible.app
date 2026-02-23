@@ -4,24 +4,27 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
   <meta name="theme-color" content="#111111" />
-  <meta name="description" content="Lire la Bible en ligne gratuitement — Louis Segond 1910 (LSG). Recherche rapide, favoris, plan 365 jours, hors ligne (PWA)." />
+  <meta name="description" content="Lire la Bible en ligne gratuitement — Louis Segond 1910 (LSG). Recherche, favoris, plan 365, hors ligne (PWA)." />
+
   <link rel="manifest" href="manifest.webmanifest" />
-  <link rel="icon" href="assets/icon-192.png" />
-  <link rel="apple-touch-icon" href="assets/icon-192.png" />
+  <link rel="icon" href="icons/icon-192.png" />
+  <link rel="apple-touch-icon" href="icons/icon-192.png" />
+
   <link rel="stylesheet" href="assets/style.css" />
-  <title>LaBible.app — LSG 1910</title>
+  <title>2026 LaBible.app | LSG 1910</title>
 </head>
 
 <body>
   <header class="topbar">
     <a class="brand" href="/" data-link>
       <span class="brand__title">LaBible.app</span>
-      <span class="brand__subtitle">Louis Segond 1910</span>
+      <span class="brand__subtitle">LSG 1910</span>
     </a>
 
     <nav class="topbar__actions">
-      <button class="btn btn--primary" id="btnInstallAlways" type="button">⬇️ Installer</button>
-      <span class="chip" id="installBadge">—</span>
+      <button class="btn btn--primary" id="btnInstallAlways" type="button" title="Installer">⬇️ Installer</button>
+      <span class="chip" id="installBadge" title="Statut PWA">ℹ️</span>
+
       <button class="btn btn--ghost" id="btnSearch" title="Rechercher">🔎</button>
       <button class="btn btn--ghost" id="btnPlan" title="Plan 365">📅</button>
       <button class="btn btn--ghost" id="btnFav" title="Favoris">⭐</button>
@@ -30,21 +33,19 @@
   </header>
 
   <main class="container" id="app">
-    <!-- HERO -->
     <section class="card hero" id="hero">
       <div class="hero__left">
         <h1>Lire la Bible, simplement.</h1>
         <p class="muted">
-          Rapide, sans distraction, installable (PWA), hors ligne, avec recherche, favoris, plan 365 jours, et partage.
+          Rapide, sans distraction, installable (PWA), hors ligne, recherche, favoris, plan 365 jours, partage d’image.
         </p>
 
         <div class="hero__actions">
           <a class="btn btn--primary" href="/plan/aujourdhui" data-link>📅 Lecture du jour</a>
-          <a class="btn" href="/v/jean/3/16" data-link>📖 Ouvrir Jean 3:16</a>
+          <a class="btn" href="/recherche" data-link>🔎 Rechercher</a>
         </div>
 
         <div class="chips">
-          <span class="chip" id="chipInstall" hidden>📲 Installer</span>
           <span class="chip" id="chipOffline" hidden>📴 Hors ligne</span>
           <span class="chip" id="chipUpdated" hidden>✅ Mise à jour</span>
         </div>
@@ -61,13 +62,12 @@
           </div>
           <div class="vdd__text" id="vddText">Chargement…</div>
           <div class="vdd__foot">
-            <a class="link" href="/vdd" data-link>Voir tous les jours</a>
+            <a class="link" href="/vdd" data-link>Voir les 365 jours</a>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- QUICK NAV -->
     <section class="card" id="quickNav">
       <div class="row row--space">
         <h2>Ouvrir</h2>
@@ -88,42 +88,40 @@
         <div class="field">
           <span>Actions</span>
           <div class="row">
-            <button class="btn btn--primary" id="openBtn">Ouvrir</button>
-            <button class="btn" id="continueBtn">Continuer</button>
+            <button class="btn btn--primary" id="openBtn" type="button">Ouvrir</button>
+            <button class="btn" id="continueBtn" type="button">Continuer</button>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- READER -->
     <section class="card" id="reader" hidden>
       <div class="row row--space">
         <div>
-          <div class="kicker" id="readerKicker">Lecture</div>
+          <div class="kicker">Lecture</div>
           <h2 id="readerTitle">—</h2>
           <div class="muted small" id="readerMeta">—</div>
         </div>
         <div class="row">
           <button class="btn btn--ghost" id="btnReaderFav" title="Ajouter aux favoris">⭐</button>
           <button class="btn btn--ghost" id="btnReaderCopy" title="Copier">📋</button>
-          <button class="btn btn--ghost" id="btnReaderShare" title="Partager">📤</button>
+          <button class="btn btn--ghost" id="btnReaderShare" title="Partager image">🖼️</button>
         </div>
       </div>
 
       <div class="reader__toolbar">
-        <button class="btn" id="prevChapter">← Précédent</button>
-        <button class="btn" id="nextChapter">Suivant →</button>
+        <button class="btn" id="prevChapter" type="button">← Précédent</button>
+        <button class="btn" id="nextChapter" type="button">Suivant →</button>
       </div>
 
       <article class="verses" id="verses"></article>
 
       <div class="reader__toolbar">
-        <button class="btn" id="prevChapter2">← Précédent</button>
-        <button class="btn" id="nextChapter2">Suivant →</button>
+        <button class="btn" id="prevChapter2" type="button">← Précédent</button>
+        <button class="btn" id="nextChapter2" type="button">Suivant →</button>
       </div>
     </section>
 
-    <!-- SEARCH -->
     <section class="card" id="search" hidden>
       <div class="row row--space">
         <h2>Recherche</h2>
@@ -132,46 +130,44 @@
 
       <div class="row">
         <input class="input" id="searchInput" placeholder="Mot-clé ou référence (ex: Jn 3:16) …" autocomplete="off" />
-        <button class="btn btn--primary" id="searchGo">Rechercher</button>
+        <button class="btn btn--primary" id="searchGo" type="button">Rechercher</button>
       </div>
 
       <div class="muted small" id="searchInfo"></div>
       <div class="results" id="searchResults"></div>
     </section>
 
-    <!-- FAVORITES -->
     <section class="card" id="favorites" hidden>
       <div class="row row--space">
         <h2>Favoris</h2>
         <div class="row">
-          <button class="btn" id="btnExportFav">Exporter</button>
+          <button class="btn" id="btnExportFav" type="button">Exporter</button>
           <label class="btn">
             Importer <input type="file" id="btnImportFav" accept="application/json" hidden />
           </label>
-          <button class="btn btn--danger" id="btnClearFav">Tout effacer</button>
+          <button class="btn btn--danger" id="btnClearFav" type="button">Tout effacer</button>
         </div>
       </div>
 
       <div class="row">
         <input class="input" id="favSearch" placeholder="Rechercher dans les favoris…" />
         <input class="input" id="favTag" placeholder="Tag (ex: foi, paix) — optionnel" />
-        <button class="btn btn--primary" id="favApplyTag">Appliquer tag</button>
+        <button class="btn btn--primary" id="favApplyTag" type="button">Appliquer tag</button>
       </div>
 
       <div class="results" id="favList"></div>
     </section>
 
-    <!-- PLAN -->
     <section class="card" id="plan" hidden>
       <div class="row row--space">
         <div>
           <h2>Plan 365 jours</h2>
-          <div class="muted small">Généré automatiquement à partir des chapitres (hors ligne). Progrès stocké localement.</div>
+          <div class="muted small">Généré automatiquement à partir des chapitres. Progrès stocké localement.</div>
         </div>
         <div class="row">
-          <button class="btn" id="planPrev">←</button>
-          <button class="btn" id="planToday">Aujourd’hui</button>
-          <button class="btn" id="planNext">→</button>
+          <button class="btn" id="planPrev" type="button">←</button>
+          <button class="btn" id="planToday" type="button">Aujourd’hui</button>
+          <button class="btn" id="planNext" type="button">→</button>
         </div>
       </div>
 
@@ -179,8 +175,8 @@
         <div class="kicker" id="planDayKicker">Jour —</div>
         <h3 id="planDayTitle">—</h3>
         <div class="row">
-          <button class="btn btn--primary" id="planOpen">Ouvrir la lecture</button>
-          <button class="btn" id="planToggleDone">✅ Marquer comme fait</button>
+          <button class="btn btn--primary" id="planOpen" type="button">Ouvrir la lecture</button>
+          <button class="btn" id="planToggleDone" type="button">✅ Marquer comme fait</button>
           <span class="muted small" id="planProgress"></span>
         </div>
       </div>
@@ -188,32 +184,26 @@
       <div class="results" id="planRefs"></div>
     </section>
 
-    <!-- VDD LIST -->
     <section class="card" id="vdd" hidden>
       <div class="row row--space">
         <h2>Verset du jour (365)</h2>
-        <div class="muted small">Liste calculée automatiquement (stable) — vous pouvez partager chaque verset.</div>
+        <div class="muted small">Clique pour ouvrir/partager.</div>
       </div>
       <div class="results" id="vddList"></div>
     </section>
 
-    <!-- FOOTER -->
     <footer class="footer">
       <div class="muted small">
-        © <span id="year"></span> LaBible.app — LSG 1910 ·
-        <a class="link" href="/mentions" data-link>Mentions</a> ·
-        <a class="link" href="/privacy" data-link>Confidentialité</a> ·
-        <a class="link" href="/contact" data-link>Contact</a>
+        © <span id="year"></span> 2026 LaBible.app | LSG 1910
       </div>
     </footer>
   </main>
 
-  <!-- SETTINGS MODAL -->
   <dialog class="modal" id="settingsModal">
     <form method="dialog" class="modal__panel">
       <div class="row row--space">
         <h3>Réglages</h3>
-        <button class="btn btn--ghost" value="close">✖</button>
+        <button class="btn btn--ghost" value="close" type="submit">✖</button>
       </div>
 
       <div class="grid grid--2">
@@ -238,12 +228,12 @@
       </div>
 
       <div class="row">
-        <button class="btn btn--primary" id="saveSettings" value="close">Enregistrer</button>
-        <button class="btn" id="resetSettings" value="close">Réinitialiser</button>
+        <button class="btn btn--primary" id="saveSettings" value="close" type="submit">Enregistrer</button>
+        <button class="btn" id="resetSettings" value="close" type="submit">Réinitialiser</button>
       </div>
 
       <div class="muted small">
-        Astuce: Installez l’app (PWA) via le menu du navigateur (ou bouton “Installer”).
+        iPhone: Safari → Partager (⬆️) → “Sur l’écran d’accueil”.
       </div>
     </form>
   </dialog>

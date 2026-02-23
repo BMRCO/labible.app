@@ -10,7 +10,6 @@
 
   --radius: 18px;
   --shadow: 0 12px 30px rgba(0,0,0,.32);
-
   --fontScale: 100%;
 }
 
@@ -54,8 +53,7 @@ a{color:inherit}
 .brand{display:flex; flex-direction:column; gap:2px; text-decoration:none}
 .brand__title{font-weight:800; letter-spacing:.2px}
 .brand__subtitle{font-size:.85rem; color:var(--muted)}
-
-.topbar__actions{display:flex; gap:8px; align-items:center}
+.topbar__actions{display:flex; gap:8px; align-items:center; flex-wrap:wrap;}
 
 .card{
   background: var(--panel);
@@ -67,9 +65,7 @@ a{color:inherit}
 }
 
 .hero{display:grid; grid-template-columns: 1.3fr .9fr; gap:14px;}
-@media (max-width: 860px){
-  .hero{grid-template-columns:1fr;}
-}
+@media (max-width: 860px){ .hero{grid-template-columns:1fr;} }
 
 h1{margin:0 0 8px; font-size:2rem; line-height:1.15}
 h2{margin:0; font-size:1.25rem}
@@ -84,9 +80,7 @@ h3{margin:0; font-size:1.1rem}
 .grid{display:grid; gap:12px;}
 .grid--3{grid-template-columns: 1fr 1fr 1fr;}
 .grid--2{grid-template-columns: 1fr 1fr;}
-@media (max-width: 760px){
-  .grid--3,.grid--2{grid-template-columns:1fr;}
-}
+@media (max-width: 760px){ .grid--3,.grid--2{grid-template-columns:1fr;} }
 
 .field{display:flex; flex-direction:column; gap:6px;}
 .field span{color:var(--muted); font-size:.9rem}
@@ -129,6 +123,7 @@ select,input{
   border: 1px solid var(--border);
   background: color-mix(in srgb, var(--panel2) 92%, transparent);
   font-size: .9rem;
+  color: var(--muted);
 }
 
 .vdd{padding:14px; border-radius:16px; background: color-mix(in srgb, var(--panel2) 82%, transparent); border:1px solid var(--border)}
@@ -137,7 +132,6 @@ select,input{
 .vdd__foot{margin-top:10px}
 
 .reader__toolbar{display:flex; justify-content:space-between; margin: 10px 0;}
-
 .verses{margin-top:8px}
 .verse{
   padding: 10px 10px;
@@ -155,12 +149,10 @@ select,input{
   border: 1px solid var(--border);
   background: color-mix(in srgb, var(--panel2) 80%, transparent);
 }
-.result__head{display:flex; justify-content:space-between; gap:10px; align-items:flex-start;}
+.result__row{display:flex; justify-content:space-between; gap:10px; align-items:flex-start;}
 .result__ref{font-weight:700}
+.result__right{font-size:.85rem; color:var(--muted)}
 .result__text{margin-top:8px}
-.badge{font-size:.85rem; color:var(--muted)}
-.tags{display:flex; gap:6px; flex-wrap:wrap; margin-top:8px}
-.tag{font-size:.85rem; padding:3px 8px; border:1px solid var(--border); border-radius:999px; color:var(--muted)}
 
 .footer{margin-top: 18px; padding: 8px 2px;}
 

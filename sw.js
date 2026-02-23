@@ -1,4 +1,4 @@
-const CACHE_NAME = "labible-zero-v1";
+const CACHE_NAME = "labible-zero-v2";
 const OFFLINE_URL = "/offline.html";
 
 const PRECACHE_URLS = [
@@ -24,10 +24,12 @@ const PRECACHE_URLS = [
 self.addEventListener("install", (event) => {
   event.waitUntil((async () => {
     const cache = await caches.open(CACHE_NAME);
-    // anti-404: tenta 1 a 1
+
+    // anti-404: tenta 1 a 1 (um erro não mata o SW)
     await Promise.all(PRECACHE_URLS.map(async (url) => {
       try { await cache.add(url); } catch (_) {}
     }));
+
     self.skipWaiting();
   })());
 });
@@ -46,7 +48,7 @@ self.addEventListener("fetch", (event) => {
 
   if (url.origin !== location.origin) return;
 
-  // Navigations: network-first
+  // Navegação: network-first com fallback offline
   if (req.mode === "navigate") {
     event.respondWith((async () => {
       try {
@@ -62,7 +64,7 @@ self.addEventListener("fetch", (event) => {
     return;
   }
 
-  // Assets/data: cache-first
+  // Assets/JSON: cache-first
   event.respondWith((async () => {
     const cache = await caches.open(CACHE_NAME);
     const cached = await cache.match(req);

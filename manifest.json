@@ -1,9 +1,9 @@
 {
-  "name": "LaBible.app | LSG 1910",
+  "name": "LaBible.app — LSG 1910",
   "short_name": "LaBible",
   "description": "Bible Louis Segond 1910 — lecture, recherche, favoris, partage.",
-  "start_url": "/?source=pwa",
-  "scope": "/",
+  "start_url": "./",
+  "scope": "./",
   "display": "standalone",
   "background_color": "#0b0b0b",
   "theme_color": "#0b0b0b",

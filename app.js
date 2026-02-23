@@ -760,3 +760,89 @@ async function init(){
 }
 
 init();
+
+async function loadBible(){
+  const res = await fetch("/data/lsg1910.json", { cache: "no-store" });
+  if(!res.ok) throw new Error("Bible JSON introuvable: /data/lsg1910.json");
+
+  const raw = await res.json();
+
+  // --- Normalisation multi-formats ---
+  // Format A (recommandé): { meta, books:[{name, chapters:[[v1,v2...], ...]}] }
+  // Format B: { books:[...] } mais chapitres sous forme d'objets
+  // Format C: { bible:[...] } ou { data:[...] }
+  let data = raw;
+
+  if (data && Array.isArray(data.bible) && !data.books) data = { books: data.bible, meta: data.meta || {} };
+  if (data && Array.isArray(data.data) && !data.books) data = { books: data.data, meta: data.meta || {} };
+
+  // Si books est un objet (clé->livre), on convertit en array
+  if (data && data.books && !Array.isArray(data.books) && typeof data.books === "object") {
+    data.books = Object.values(data.books);
+  }
+
+  if(!data || !Array.isArray(data.books)) {
+    throw new Error("Format Bible JSON invalide (attendu: books:[])");
+  }
+
+  // Convertit chaque livre vers le format interne
+  const books = data.books.map((b, bi) => {
+    const name = b.name || b.title || b.book || b.nom || `Livre ${bi+1}`;
+
+    // chapters peut être:
+    // - array de chapitres => chaque chapitre array de versets (ok)
+    // - objet { "1": [...], "2":[...] } => convertir
+    // - array d'objets versets => convertir
+    let chapters = b.chapters || b.chapter || b.chaps || b.capitres || b.contents;
+
+    if (chapters && !Array.isArray(chapters) && typeof chapters === "object") {
+      // { "1": [...], "2": [...] }
+      const keys = Object.keys(chapters).sort((a,b)=>parseInt(a,10)-parseInt(b,10));
+      chapters = keys.map(k => chapters[k]);
+    }
+
+    if (!Array.isArray(chapters)) chapters = [];
+
+    // Nettoie chapitres/versets
+    chapters = chapters.map(ch => {
+      // ch peut être:
+      // - array de strings (ok)
+      // - objet { "1":"txt", "2":"txt" } => convertir en array
+      // - array d'objets {v:1, t:""} => convertir
+      if (ch && !Array.isArray(ch) && typeof ch === "object") {
+        const k = Object.keys(ch).sort((a,b)=>parseInt(a,10)-parseInt(b,10));
+        return k.map(x => String(ch[x] ?? ""));
+      }
+      if (Array.isArray(ch)) {
+        // array de strings ou d'objets
+        if (ch.length && typeof ch[0] === "object") {
+          // ex: [{verse:1,text:"..."}, ...]
+          return ch.map(v => String(v.text ?? v.t ?? v.verseText ?? v.val ?? ""));
+        }
+        return ch.map(v => String(v ?? ""));
+      }
+      return [];
+    });
+
+    const abbr = Array.isArray(b.abbr) ? b.abbr : (Array.isArray(b.abbrev) ? b.abbrev : []);
+
+    return {
+      id: b.id || b.slug || b.code || String(bi),
+      name,
+      abbr,
+      chapters
+    };
+  });
+
+  // Validation minimal
+  books.forEach((b, i) => {
+    if(!b.name || !Array.isArray(b.chapters)) {
+      throw new Error(`Livre invalide à l'index ${i}`);
+    }
+  });
+
+  state.bible = { meta: data.meta || {}, books };
+
+  buildSearchIndex();
+  initSelectors();
+}

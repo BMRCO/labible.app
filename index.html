@@ -2,21 +2,967 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <title>2026 LaBible.app | LSG 1910</title>
+
+  <!-- IMPORTANT: ton repo utilise manifest.webmanifest -->
+  <link rel="manifest" href="manifest.webmanifest">
   <meta name="theme-color" content="#0b0b0b">
-  <title>LaBible.app — Hors ligne</title>
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <link rel="apple-touch-icon" href="icons/icon-192.png">
+
   <style>
-    body{margin:0;font-family:system-ui;background:#0b0b0b;color:#fff;display:grid;place-items:center;height:100vh}
-    .box{max-width:560px;padding:22px;border:1px solid rgba(255,255,255,.1);border-radius:18px;background:rgba(255,255,255,.04)}
-    .muted{opacity:.7;line-height:1.6}
-    .btn{margin-top:14px;display:inline-flex;padding:12px 14px;border-radius:14px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.05);color:#fff;text-decoration:none}
+    :root{
+      --bg:#0b0b0b; --text:#fff; --muted:rgba(255,255,255,.65);
+      --border:rgba(255,255,255,.10);
+      --accent:#2c3e50; --accent2:#3f5d7a;
+      --shadow:0 12px 30px rgba(0,0,0,.35);
+      --radius:18px;
+    }
+    *{box-sizing:border-box}
+    body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial;background:var(--bg);color:var(--text);padding-bottom:84px}
+    a{color:#9fc3ff;text-decoration:none}
+    a:hover{text-decoration:underline}
+    .header{
+      position:sticky;top:0;z-index:30;
+      background:linear-gradient(to bottom, rgba(11,11,11,.96), rgba(11,11,11,.86));
+      backdrop-filter: blur(10px);
+      border-bottom:1px solid rgba(255,255,255,.07);
+      padding:14px 14px 10px;
+    }
+    .top{display:flex;align-items:center;gap:12px}
+    .brand{display:flex;flex-direction:column;line-height:1.05;min-width:0}
+    .brand .t{font-size:20px;font-weight:700;letter-spacing:.2px}
+    .brand .s{font-size:13px;color:var(--muted);margin-top:3px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+    .spacer{flex:1}
+    .pill{
+      display:inline-flex;align-items:center;gap:8px;
+      padding:9px 12px;border-radius:14px;
+      border:1px solid var(--border);
+      background:rgba(255,255,255,.04);
+      color:var(--text);cursor:pointer;white-space:nowrap;user-select:none
+    }
+    .pill.primary{background:rgba(44,62,80,.75);border-color:rgba(63,93,122,.9)}
+    .pill:active{transform:translateY(1px)}
+    .bar{display:flex;gap:10px;margin-top:12px;overflow:auto;padding-bottom:6px;scrollbar-width:none}
+    .bar::-webkit-scrollbar{display:none}
+    .container{padding:16px;max-width:980px;margin:0 auto}
+    .grid{display:grid;gap:14px;grid-template-columns:1fr}
+    @media(min-width:900px){.grid{grid-template-columns:1.2fr .8fr}}
+    .card{
+      background:linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.02));
+      border:1px solid rgba(255,255,255,.08);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+      padding:16px;
+    }
+    .muted{color:var(--muted)}
+    .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+    .btn{
+      display:inline-flex;align-items:center;justify-content:center;gap:8px;
+      padding:12px 14px;border-radius:14px;
+      border:1px solid rgba(255,255,255,.12);
+      background:rgba(255,255,255,.05);
+      color:var(--text);cursor:pointer;font-size:15px;user-select:none
+    }
+    .btn.primary{background:rgba(44,62,80,.9);border-color:rgba(63,93,122,1)}
+    .btn.good{background:rgba(31,138,76,.22);border-color:rgba(31,138,76,.5)}
+    .btn.warn{background:rgba(176,122,31,.18);border-color:rgba(176,122,31,.45)}
+    .btn:disabled{opacity:.45;cursor:not-allowed}
+    .btn:active{transform:translateY(1px)}
+    .field{margin-top:10px}
+    label{display:block;font-size:13px;color:var(--muted);margin:0 0 6px}
+    input,select{
+      width:100%;background:rgba(0,0,0,.25);
+      border:1px solid rgba(255,255,255,.10);
+      color:var(--text);border-radius:14px;
+      padding:12px 12px;outline:none;font-size:15px
+    }
+    input::placeholder{color:rgba(255,255,255,.45)}
+    .divider{height:1px;background:rgba(255,255,255,.08);margin:14px 0}
+    .verseRef{font-weight:800;font-size:16px}
+    .verseText{font-size:18px;line-height:1.55;margin-top:10px;white-space:pre-wrap}
+    .poetic{text-align:center;font-size:18px;line-height:1.75;letter-spacing:.2px}
+    .chip{
+      display:inline-flex;gap:8px;align-items:center;
+      padding:7px 10px;border:1px solid rgba(255,255,255,.10);
+      background:rgba(255,255,255,.04);border-radius:999px;
+      font-size:13px;color:rgba(255,255,255,.8)
+    }
+    .kbd{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:12px;padding:2px 6px;border:1px solid rgba(255,255,255,.15);border-radius:8px;background:rgba(255,255,255,.06)}
+    .miniHelp{font-size:13px;color:rgba(255,255,255,.6);margin-top:8px}
+    .toast{
+      position:fixed;left:12px;right:12px;bottom:14px;max-width:980px;margin:0 auto;
+      background:rgba(15,15,15,.92);
+      border:1px solid rgba(255,255,255,.12);
+      border-radius:18px;padding:12px 12px;
+      display:none;align-items:center;gap:10px;box-shadow:0 18px 40px rgba(0,0,0,.55);
+      z-index:50;
+    }
+    .toast.show{display:flex}
+    .toast .msg{flex:1;color:rgba(255,255,255,.9);font-size:14px}
+    .list{display:flex;flex-direction:column;gap:10px;margin-top:12px}
+    .favItem{
+      display:flex;gap:10px;align-items:flex-start;padding:12px;border-radius:16px;
+      border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.03);cursor:pointer
+    }
+    .favItem:hover{border-color:rgba(159,195,255,.35)}
+    .favItem .r{font-weight:800}
+    .favItem .t{color:rgba(255,255,255,.75);margin-top:2px;line-height:1.35}
+    .badgeOffline{
+      display:none;margin-left:6px;color:rgba(255,255,255,.85);
+      border:1px solid rgba(255,255,255,.18);
+      background:rgba(176,122,31,.18);
+      padding:5px 10px;border-radius:999px;font-size:12px
+    }
+    .badgeOffline.show{display:inline-flex}
+    .logo{
+      width:44px;height:44px;border-radius:14px;background:rgba(255,255,255,.04);
+      border:1px solid rgba(255,255,255,.10);display:grid;place-items:center;overflow:hidden;flex:0 0 auto;
+    }
+    .logo svg{opacity:.95}
+
+    /* Footer */
+    .footer{
+      max-width:980px;margin:0 auto;
+      padding:16px;
+    }
+    .footerCard{
+      border-radius:18px;
+      border:1px solid rgba(255,255,255,.08);
+      background:rgba(255,255,255,.03);
+      padding:14px 14px;
+    }
+    .footerLinks{
+      display:flex;flex-wrap:wrap;gap:10px;margin-top:10px
+    }
+    .footerLinks a{
+      display:inline-flex;align-items:center;gap:8px;
+      padding:9px 12px;border-radius:999px;
+      border:1px solid rgba(255,255,255,.10);
+      background:rgba(255,255,255,.04);
+      color:rgba(255,255,255,.85);
+      text-decoration:none;
+      font-size:13px;
+    }
+    .footerLinks a:hover{border-color:rgba(159,195,255,.35)}
+    .small{font-size:12px;color:rgba(255,255,255,.55);line-height:1.5}
   </style>
 </head>
 <body>
-  <div class="box">
-    <h2>Hors ligne</h2>
-    <p class="muted">Vous n’avez pas de connexion. La PWA reste utilisable avec le contenu mis en cache.</p>
-    <a class="btn" href="./">↻ Réessayer</a>
+
+  <div class="header">
+    <div class="top">
+      <div class="logo" aria-hidden="true">
+        <svg width="28" height="28" viewBox="0 0 64 64" fill="none">
+          <path d="M10 16c0-3 2-5 5-5h30c5 0 9 4 9 9v30c0 2-2 3-4 2l-6-3-6 3-6-3-6 3-6-3-6 3c-2 1-4 0-4-2V16Z" stroke="rgba(255,255,255,.85)" stroke-width="3"/>
+          <path d="M22 22h22M22 30h18M22 38h20" stroke="rgba(255,255,255,.65)" stroke-width="3" stroke-linecap="round"/>
+          <path d="M34 8v10" stroke="rgba(159,195,255,.9)" stroke-width="3" stroke-linecap="round"/>
+          <path d="M29 13h10" stroke="rgba(159,195,255,.9)" stroke-width="3" stroke-linecap="round"/>
+        </svg>
+      </div>
+
+      <div class="brand">
+        <div class="t">LaBible.app</div>
+        <div class="s">
+          LSG 1910
+          <span class="badgeOffline" id="offlineBadge">Hors ligne</span>
+          <span class="chip" id="dataStatus">Données: …</span>
+        </div>
+      </div>
+
+      <div class="spacer"></div>
+      <button class="pill primary" id="installBtn" style="display:none">📲 Installer</button>
+    </div>
+
+    <div class="bar">
+      <button class="pill" id="tabToday">📅 Lecture du jour</button>
+      <button class="pill" id="tabSearch">🔎 Rechercher</button>
+      <button class="pill" id="tabOpen">📖 Ouvrir</button>
+      <button class="pill" id="tabFav">⭐ Favoris</button>
+      <button class="pill" id="tabSettings">⚙️ Réglages</button>
+    </div>
   </div>
+
+  <div class="container">
+    <div class="grid">
+      <div class="card" id="viewLeft"></div>
+      <div class="card" id="viewRight"></div>
+    </div>
+  </div>
+
+  <!-- Footer (rodapés) -->
+  <div class="footer">
+    <div class="footerCard">
+      <div class="small">
+        © <span id="year"></span> LaBible.app — Louis Segond 1910 (LSG 1910).<br>
+        Ressource biblique en ligne (PWA).
+      </div>
+      <div class="footerLinks">
+        <a href="a-propos.html">ℹ️ À propos</a>
+        <a href="confidentialite.html">🔒 Confidentialité</a>
+        <a href="conditions.html">📜 Conditions</a>
+        <a href="mentions-legales.html">⚖️ Mentions légales</a>
+        <a href="contact.html">✉️ Contact</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast">
+    <div class="msg" id="toastMsg">…</div>
+    <button class="btn primary" id="toastAction" style="display:none">OK</button>
+    <button class="btn" id="toastClose">Fermer</button>
+  </div>
+
+<script>
+/* ==========================================================
+   LaBible.app PWA PRO (stable)
+   - manifest.webmanifest
+   - install button (Android)
+   - offline badge
+   - cache/update via sw.js
+   - lecture / recherche / ouvrir / favoris
+   - partage en image (canvas)
+   - loader /data (on-demand)
+========================================================== */
+
+const $ = (id)=>document.getElementById(id);
+$("year").textContent = new Date().getFullYear();
+
+const state = {
+  tab: localStorage.getItem("tab") || "today",
+  poetic: localStorage.getItem("poetic")==="1",
+  lastRef: localStorage.getItem("lastRef") || "Genèse 1:1",
+  favs: JSON.parse(localStorage.getItem("favs")||"[]"),
+};
+
+function save(){
+  localStorage.setItem("tab", state.tab);
+  localStorage.setItem("poetic", state.poetic ? "1":"0");
+  localStorage.setItem("lastRef", state.lastRef);
+  localStorage.setItem("favs", JSON.stringify(state.favs));
+}
+
+function toast(msg, actionText, actionFn){
+  $("toastMsg").textContent = msg;
+  if(actionText && actionFn){
+    $("toastAction").style.display = "inline-flex";
+    $("toastAction").textContent = actionText;
+    $("toastAction").onclick = ()=>{ actionFn(); hideToast(); };
+  }else{
+    $("toastAction").style.display = "none";
+    $("toastAction").onclick = null;
+  }
+  $("toast").classList.add("show");
+}
+function hideToast(){ $("toast").classList.remove("show"); }
+$("toastClose").onclick = hideToast;
+
+function escapeHtml(s){ return String(s).replace(/[&<>"']/g, c=>({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;" }[c])); }
+function escapeAttr(s){ return escapeHtml(s).replace(/"/g,"&quot;"); }
+
+/* ============================
+   BOOKS + aliases (search)
+   -> slugs correspondem aos nomes mais comuns de ficheiros
+============================ */
+const BOOKS = [
+  ["Genèse","gen"],["Exode","exo"],["Lévitique","lev"],["Nombres","num"],["Deutéronome","deu"],
+  ["Josué","jos"],["Juges","jdg"],["Ruth","rut"],["1 Samuel","1sa"],["2 Samuel","2sa"],
+  ["1 Rois","1ki"],["2 Rois","2ki"],["1 Chroniques","1ch"],["2 Chroniques","2ch"],
+  ["Esdras","ezr"],["Néhémie","neh"],["Esther","est"],["Job","job"],["Psaumes","psa"],
+  ["Proverbes","pro"],["Ecclésiaste","ecc"],["Cantique des cantiques","sng"],
+  ["Ésaïe","isa"],["Jérémie","jer"],["Lamentations","lam"],["Ézéchiel","ezk"],["Daniel","dan"],
+  ["Osée","hos"],["Joël","jol"],["Amos","amo"],["Abdias","oba"],["Jonas","jon"],["Michée","mic"],
+  ["Nahum","nam"],["Habacuc","hab"],["Sophonie","zep"],["Aggée","hag"],["Zacharie","zec"],["Malachie","mal"],
+  ["Matthieu","mat"],["Marc","mrk"],["Luc","luk"],["Jean","jhn"],["Actes","act"],
+  ["Romains","rom"],["1 Corinthiens","1co"],["2 Corinthiens","2co"],["Galates","gal"],["Éphésiens","eph"],
+  ["Philippiens","php"],["Colossiens","col"],["1 Thessaloniciens","1th"],["2 Thessaloniciens","2th"],
+  ["1 Timothée","1ti"],["2 Timothée","2ti"],["Tite","tit"],["Philémon","phm"],
+  ["Hébreux","heb"],["Jacques","jas"],["1 Pierre","1pe"],["2 Pierre","2pe"],
+  ["1 Jean","1jn"],["2 Jean","2jn"],["3 Jean","3jn"],["Jude","jud"],["Apocalypse","rev"],
+];
+
+const BOOK_ALIASES = new Map([
+  ["gen","Genèse"],["ge","Genèse"],["gn","Genèse"],
+  ["exo","Exode"],["ex","Exode"],
+  ["lev","Lévitique"],["lv","Lévitique"],
+  ["nb","Nombres"],["nom","Nombres"],["nm","Nombres"],["num","Nombres"],["nombres","Nombres"],
+  ["deu","Deutéronome"],["dt","Deutéronome"],
+  ["ps","Psaumes"],["psa","Psaumes"],["psaumes","Psaumes"],
+  ["pr","Proverbes"],["pro","Proverbes"],
+  ["esa","Ésaïe"],["isa","Ésaïe"],
+  ["jr","Jérémie"],["jer","Jérémie"],
+  ["ez","Ézéchiel"],["ezk","Ézéchiel"],
+  ["dn","Daniel"],["dan","Daniel"],
+  ["mt","Matthieu"],["mat","Matthieu"],
+  ["mc","Marc"],["mr","Marc"],["mrk","Marc"],
+  ["lc","Luc"],["lk","Luc"],["luk","Luc"],
+  ["jn","Jean"],["jhn","Jean"],["jean","Jean"],
+  ["ac","Actes"],["act","Actes"],
+  ["rm","Romains"],["rom","Romains"],
+  ["1co","1 Corinthiens"],["2co","2 Corinthiens"],
+  ["ga","Galates"],["gal","Galates"],
+  ["ep","Éphésiens"],["eph","Éphésiens"],
+  ["ph","Philippiens"],["php","Philippiens"],
+  ["col","Colossiens"],
+  ["1th","1 Thessaloniciens"],["2th","2 Thessaloniciens"],
+  ["1ti","1 Timothée"],["2ti","2 Timothée"],
+  ["tit","Tite"],["heb","Hébreux"],
+  ["jc","Jacques"],["jas","Jacques"],
+  ["1pe","1 Pierre"],["2pe","2 Pierre"],
+  ["1jn","1 Jean"],["2jn","2 Jean"],["3jn","3 Jean"],
+  ["jud","Jude"],["ap","Apocalypse"],["rev","Apocalypse"]
+]);
+
+/* ============================
+   DATA LOADER (/data)
+   - on-demand por livro
+   - suporta vários formatos de JSON
+============================ */
+const Bible = {
+  loaded:false,
+  basePaths:["./data/ls1910/","./data/LSG1910/","./data/"],
+  bookCache:new Map(),
+
+  filenameVariants(slug){
+    const s = slug.toLowerCase();
+    const variants = [
+      `${s}.json`,
+      `${s.toUpperCase()}.json`,
+      `${s.replace(/\d/g,"")}.json`,
+    ];
+    const long = { gen:"genese", exo:"exode", lev:"levitique", num:"nombres", deu:"deuteronome", jhn:"jean", rev:"apocalypse" };
+    if(long[s]) variants.unshift(`${long[s]}.json`);
+    return [...new Set(variants)];
+  },
+
+  async init(){
+    // tenta detectar um “master file” (se existir), senão fica on-demand
+    const candidates = [
+      ...this.basePaths.map(p=>`${p}bible_ls1910.json`),
+      ...this.basePaths.map(p=>`${p}bible.json`),
+      ...this.basePaths.map(p=>`${p}ls1910.json`),
+      ...this.basePaths.map(p=>`${p}bible_lsg1910.json`),
+    ];
+
+    for(const url of candidates){
+      const data = await safeFetchJson(url);
+      if(!data) continue;
+
+      if(Array.isArray(data)){
+        for(const item of data){
+          const norm = normalizeBookData(item);
+          if(norm?.book && norm?.chapters) this.bookCache.set(norm.book, norm);
+        }
+        if(this.bookCache.size){
+          this.loaded=true;
+          $("dataStatus").textContent = `Données: OK (${this.bookCache.size} livres)`;
+          return true;
+        }
+      }
+    }
+
+    this.loaded=true;
+    $("dataStatus").textContent = "Données: OK";
+    return true;
+  },
+
+  async getBook(bookName){
+    if(this.bookCache.has(bookName)) return this.bookCache.get(bookName);
+    const entry = BOOKS.find(([name])=>name===bookName);
+    if(!entry) return null;
+    const slug = entry[1];
+
+    for(const base of this.basePaths){
+      for(const fn of this.filenameVariants(slug)){
+        const url = base + fn;
+        const data = await safeFetchJson(url);
+        if(!data) continue;
+
+        if(Array.isArray(data)){
+          const maybe = data.find(x=>{
+            const bn = (x.book||x.name||"").toLowerCase();
+            return bn.includes(bookName.toLowerCase()) || (x.abbrev||"").toLowerCase()===slug;
+          });
+          const norm = normalizeBookData(maybe, bookName);
+          if(norm){ this.bookCache.set(bookName, norm); return norm; }
+        } else {
+          const norm = normalizeBookData(data, bookName);
+          if(norm){ this.bookCache.set(bookName, norm); return norm; }
+        }
+      }
+    }
+    return null;
+  },
+
+  async getVerse(bookName, chapter, verse){
+    const book = await this.getBook(bookName);
+    if(!book) return null;
+    const c = chapter-1;
+    const v = verse-1;
+    if(!book.chapters[c] || book.chapters[c][v]==null) return null;
+    return book.chapters[c][v];
+  }
+};
+
+async function safeFetchJson(url){
+  try{
+    const r = await fetch(url, {cache:"no-store"});
+    if(!r.ok) return null;
+    return await r.json();
+  }catch(_){ return null; }
+}
+
+function normalizeBookData(data, forcedBookName){
+  if(!data || typeof data!=="object") return null;
+  const bookName = forcedBookName || data.book || data.Book || data.name || data.title;
+  if(!bookName) return null;
+
+  // A) chapters: [ [v1,v2], ... ]
+  if(Array.isArray(data.chapters) && Array.isArray(data.chapters[0])){
+    return { book: bookName, chapters: data.chapters.map(ch=>ch.map(v=>String(v))) };
+  }
+
+  // B) chapters: { "1": ["v1","v2"] } ou { "1": { "1":"text" } }
+  if(data.chapters && typeof data.chapters==="object" && !Array.isArray(data.chapters)){
+    const keys = Object.keys(data.chapters).sort((a,b)=>parseInt(a,10)-parseInt(b,10));
+    const chapters = [];
+    for(const k of keys){
+      const ch = data.chapters[k];
+      if(Array.isArray(ch)){
+        chapters.push(ch.map(v=>String(v)));
+      }else if(ch && typeof ch==="object"){
+        const vkeys = Object.keys(ch).sort((a,b)=>parseInt(a,10)-parseInt(b,10));
+        chapters.push(vkeys.map(vk=>String(ch[vk])));
+      }
+    }
+    if(chapters.length) return { book: bookName, chapters };
+  }
+
+  return null;
+}
+
+/* ============================
+   Verse of the day (stable)
+============================ */
+async function verseOfDayRef(){
+  const pool = [
+    "Psaumes 23:1","Jean 3:16","Romains 8:28","Proverbes 3:5","Ésaïe 41:10",
+    "Philippiens 4:6","Matthieu 11:28","Psaumes 91:1","Psaumes 119:105","Hébreux 11:1"
+  ];
+  const now = new Date();
+  const start = new Date(now.getFullYear(),0,0);
+  const day = Math.floor((now-start) / (1000*60*60*24));
+
+  for(let i=0;i<pool.length;i++){
+    const ref = pool[(day+i) % pool.length];
+    const p = splitRef(parseRef(ref) || ref);
+    const t = await Bible.getVerse(p.book, p.chapter, p.verse);
+    if(t) return `${p.book} ${p.chapter}:${p.verse}`;
+  }
+  return state.lastRef;
+}
+
+/* ============================
+   Parsing refs
+============================ */
+function splitRef(ref){
+  const m = ref.match(/^(.+?)\s+(\d+)\s*:\s*(\d+)$/);
+  if(!m) return {book:"Genèse",chapter:1,verse:1};
+  return {book:m[1],chapter:parseInt(m[2],10),verse:parseInt(m[3],10)};
+}
+
+function parseRef(q){
+  if(!q) return null;
+  const raw = q.trim().replace(/\s+/g," ");
+  const m = raw.match(/^(.+?)\s+(\d+)\s*[:.]\s*(\d+)$/i);
+  if(!m) return null;
+
+  const bookIn = m[1].toLowerCase().trim();
+  const c = parseInt(m[2],10);
+  const v = parseInt(m[3],10);
+
+  const alias = BOOK_ALIASES.get(bookIn);
+  if(alias) return `${alias} ${c}:${v}`;
+
+  const found = BOOKS.find(([name])=>name.toLowerCase()===bookIn);
+  if(found) return `${found[0]} ${c}:${v}`;
+
+  const partial = BOOKS.find(([name])=>name.toLowerCase().replace(/é/g,"e").includes(bookIn.replace(/é/g,"e")));
+  if(partial) return `${partial[0]} ${c}:${v}`;
+
+  return null;
+}
+
+/* ============================
+   UI
+============================ */
+function verseCard(ref, text){
+  const isFav = state.favs.some(f=>f.ref===ref);
+  return `
+    <div class="row" style="justify-content:space-between;align-items:flex-start">
+      <div style="min-width:0">
+        <div class="verseRef">${escapeHtml(ref)}</div>
+        <div class="verseText ${state.poetic ? "poetic":""}">${escapeHtml(text)}</div>
+      </div>
+      <div class="row">
+        <button class="btn ${isFav?"good":""}" id="btnFav">${isFav?"★":"☆"} Favori</button>
+        <button class="btn primary" id="btnShare">📤 Partager</button>
+      </div>
+    </div>
+  `;
+}
+
+function render(){
+  save();
+  ["tabToday","tabSearch","tabOpen","tabFav","tabSettings"].forEach(id=>$(id).classList.remove("primary"));
+  const map = {today:"tabToday",search:"tabSearch",open:"tabOpen",fav:"tabFav",settings:"tabSettings"};
+  $(map[state.tab]).classList.add("primary");
+
+  if(state.tab==="today") renderToday();
+  if(state.tab==="search") renderSearch();
+  if(state.tab==="open") renderOpen();
+  if(state.tab==="fav") renderFav();
+  if(state.tab==="settings") renderSettings();
+}
+
+async function renderToday(){
+  $("viewLeft").innerHTML = `<h2>Verset du jour</h2><p class="muted">Chargement…</p>`;
+  $("viewRight").innerHTML = `
+    <h3>Continuer</h3>
+    <p class="muted">Reprendre là où vous étiez.</p>
+    <button class="btn primary" id="btnContinue">▶️ Continuer</button>
+    <div class="miniHelp">Dernier passage: <span class="kbd">${escapeHtml(state.lastRef)}</span></div>
+  `;
+  $("btnContinue").onclick = ()=>{ state.tab="open"; render(); };
+
+  const ref = await verseOfDayRef();
+  const p = splitRef(ref);
+  const text = await Bible.getVerse(p.book, p.chapter, p.verse);
+
+  if(!text){
+    $("dataStatus").textContent = "Données: ERREUR";
+    $("viewLeft").innerHTML = `
+      <h2>Verset du jour</h2>
+      <p class="muted">Impossible de charger les données.</p>
+      <div class="divider"></div>
+      <p class="muted">Vérifie que tes fichiers JSON sont bien dans <span class="kbd">/data</span> (ou <span class="kbd">/data/ls1910</span>).</p>
+      <button class="btn primary" id="btnGoOpen">📖 Ouvrir</button>
+    `;
+    $("btnGoOpen").onclick = ()=>{ state.tab="open"; render(); };
+    return;
+  }
+
+  $("dataStatus").textContent = "Données: OK";
+  $("viewLeft").innerHTML = `
+    ${verseCard(ref, text)}
+    <div class="divider"></div>
+    <div class="row">
+      <span class="chip">Astuce: tape <span class="kbd">Jn 3:16</span> dans la recherche</span>
+    </div>
+  `;
+  $("btnFav").onclick = ()=>toggleFav(ref,text);
+  $("btnShare").onclick = ()=>shareAsImage(ref,text);
+}
+
+function renderSearch(){
+  $("viewLeft").innerHTML = `
+    <h2>Rechercher</h2>
+    <div class="field">
+      <label>Référence (ex: Jn 3:16)</label>
+      <input id="q" placeholder="Jn 3:16" autocomplete="off" />
+      <div class="miniHelp">Supporte: <span class="kbd">Jn 3:16</span>, <span class="kbd">Jean 3:16</span>, <span class="kbd">Nombres 26:27</span></div>
+    </div>
+    <div class="row" style="margin-top:12px">
+      <button class="btn primary" id="btnGo">🔎 Chercher</button>
+      <button class="btn" id="btnPaste">📋 Coller</button>
+    </div>
+    <div class="divider"></div>
+    <div id="result" class="muted">Entrez une référence…</div>
+  `;
+
+  $("viewRight").innerHTML = `
+    <h3>Exemples</h3>
+    <div class="list">
+      ${["Jn 3:16","Psaumes 23:1","Romains 8:28","Proverbes 3:5"].map(x=>`
+        <div class="favItem" data-ex="${escapeAttr(x)}">
+          <div>
+            <div class="r">${escapeHtml(x)}</div>
+            <div class="t">Ouvrir directement</div>
+          </div>
+        </div>
+      `).join("")}
+    </div>
+  `;
+
+  $("btnGo").onclick = async()=>{
+    const q = $("q").value.trim();
+    const ref = parseRef(q);
+    if(!ref){ $("result").textContent="Référence invalide."; return; }
+    const p = splitRef(ref);
+    const text = await Bible.getVerse(p.book, p.chapter, p.verse);
+    if(!text){ $("result").textContent="Introuvable (dataset /data)."; return; }
+
+    $("result").innerHTML = verseCard(ref,text);
+    $("btnFav").onclick = ()=>toggleFav(ref,text);
+    $("btnShare").onclick = ()=>shareAsImage(ref,text);
+
+    state.lastRef = ref; save();
+  };
+
+  $("btnPaste").onclick = async()=>{
+    try{
+      const t = await navigator.clipboard.readText();
+      $("q").value = t;
+      $("btnGo").click();
+    }catch(_){
+      toast("Impossible de coller (permissions).", "OK", ()=>{});
+    }
+  };
+
+  document.querySelectorAll("[data-ex]").forEach(el=>{
+    el.onclick = ()=>{
+      $("q").value = el.getAttribute("data-ex");
+      $("btnGo").click();
+    };
+  });
+}
+
+function renderOpen(){
+  const current = parseRef(state.lastRef) || state.lastRef;
+  const parts = splitRef(current);
+
+  $("viewLeft").innerHTML = `
+    <h2>Ouvrir</h2>
+
+    <div class="field">
+      <label>Livre</label>
+      <select id="book">
+        ${BOOKS.map(([name])=>`<option ${name===parts.book?"selected":""}>${escapeHtml(name)}</option>`).join("")}
+      </select>
+    </div>
+
+    <div class="field">
+      <label>Chapitre</label>
+      <input id="chap" type="number" min="1" value="${parts.chapter}" />
+    </div>
+
+    <div class="field">
+      <label>Verset</label>
+      <input id="vers" type="number" min="1" value="${parts.verse}" />
+    </div>
+
+    <div class="row" style="margin-top:12px">
+      <button class="btn primary" id="btnOpen">📖 Ouvrir</button>
+      <button class="btn" id="btnPrev">◀︎</button>
+      <button class="btn" id="btnNext">▶︎</button>
+    </div>
+
+    <div class="divider"></div>
+    <div id="openResult" class="muted">—</div>
+  `;
+
+  $("viewRight").innerHTML = `
+    <h3>Actions</h3>
+    <p class="muted">Sauvegarde automatique du dernier passage.</p>
+    <div class="row">
+      <button class="btn ${state.poetic?"good":""}" id="btnPoetic">✍️ Style poésie</button>
+      <button class="btn warn" id="btnReset">↺ Reset</button>
+      <button class="btn" id="btnResetPWA">🧹 Reset PWA</button>
+    </div>
+    <div class="divider"></div>
+    <p class="muted">Astuce: recherche rapide avec <span class="kbd">Jn 3:16</span>.</p>
+  `;
+
+  async function doOpen(){
+    const b = $("book").value;
+    const c = Math.max(1, parseInt($("chap").value||"1",10));
+    const v = Math.max(1, parseInt($("vers").value||"1",10));
+    const ref = `${b} ${c}:${v}`;
+
+    const text = await Bible.getVerse(b, c, v);
+    if(!text){
+      $("openResult").textContent = "Introuvable. Vérifie le nom/format de tes fichiers dans /data.";
+      state.lastRef = ref; save();
+      return;
+    }
+
+    $("openResult").innerHTML = verseCard(ref,text);
+    $("btnFav").onclick = ()=>toggleFav(ref,text);
+    $("btnShare").onclick = ()=>shareAsImage(ref,text);
+
+    state.lastRef = ref; save();
+  }
+
+  $("btnOpen").onclick = doOpen;
+  $("btnPrev").onclick = ()=>{ $("vers").value = Math.max(1, parseInt($("vers").value||"1",10)-1); doOpen(); };
+  $("btnNext").onclick = ()=>{ $("vers").value = Math.max(1, parseInt($("vers").value||"1",10)+1); doOpen(); };
+
+  $("btnPoetic").onclick = ()=>{ state.poetic = !state.poetic; render(); };
+  $("btnReset").onclick = ()=>{ state.lastRef="Genèse 1:1"; state.poetic=false; save(); render(); };
+  $("btnResetPWA").onclick = async()=>{
+    if(!("serviceWorker" in navigator)) { toast("SW non supporté.", "OK", ()=>{}); return; }
+    const regs = await navigator.serviceWorker.getRegistrations();
+    for(const r of regs) await r.unregister();
+    const keys = await caches.keys();
+    await Promise.all(keys.map(k=>caches.delete(k)));
+    toast("PWA réinitialisée. Recharge.", "Recharger", ()=>location.reload());
+  };
+
+  doOpen();
+}
+
+function renderFav(){
+  $("viewLeft").innerHTML = `
+    <h2>Favoris</h2>
+    <p class="muted">${state.favs.length ? "Vos versets enregistrés." : "Aucun favori pour le moment."}</p>
+    <div class="list" id="favList"></div>
+  `;
+  $("viewRight").innerHTML = `
+    <h3>Gestion</h3>
+    <p class="muted">Jusqu’à 200 favoris.</p>
+    <div class="divider"></div>
+    <button class="btn warn" id="btnClearFav" ${state.favs.length?"":"disabled"}>🗑️ Vider</button>
+  `;
+
+  const list = $("favList");
+  if(state.favs.length){
+    list.innerHTML = state.favs.map(f=>`
+      <div class="favItem" data-ref="${escapeAttr(f.ref)}">
+        <div style="flex:1">
+          <div class="r">${escapeHtml(f.ref)}</div>
+          <div class="t">${escapeHtml(f.text)}</div>
+        </div>
+      </div>
+    `).join("");
+    document.querySelectorAll("[data-ref]").forEach(el=>{
+      el.onclick = ()=>{
+        state.lastRef = el.getAttribute("data-ref");
+        state.tab = "open";
+        render();
+      };
+    });
+  }
+
+  $("btnClearFav").onclick = ()=>{ state.favs=[]; save(); render(); };
+}
+
+function renderSettings(){
+  $("viewLeft").innerHTML = `
+    <h2>Réglages</h2>
+    <div class="row" style="margin-top:8px">
+      <span class="chip">Version PWA PRO</span>
+      <span class="chip">Offline</span>
+      <span class="chip">Update auto</span>
+    </div>
+    <div class="divider"></div>
+    <p class="muted">Installation:</p>
+    <ul class="muted" style="line-height:1.6;margin-top:6px">
+      <li><b>Android/Chrome</b>: bouton <span class="kbd">Installer</span> en haut si disponible.</li>
+      <li><b>iPhone/Safari</b>: Partager → <b>Ajouter à l’écran d’accueil</b>.</li>
+    </ul>
+  `;
+  $("viewRight").innerHTML = `
+    <h3>Maintenance</h3>
+    <p class="muted">Vérifier la mise à jour du SW.</p>
+    <div class="row">
+      <button class="btn primary" id="btnUpdate">🔄 Vérifier update</button>
+      <button class="btn warn" id="btnHardReload">♻️ Recharger</button>
+    </div>
+  `;
+
+  $("btnUpdate").onclick = ()=>{
+    if(navigator.serviceWorker?.controller){
+      navigator.serviceWorker.controller.postMessage({type:"CHECK_UPDATE"});
+      toast("Demande de mise à jour envoyée.", "OK", ()=>{});
+    }else{
+      toast("Service Worker non actif.", "OK", ()=>{});
+    }
+  };
+
+  $("btnHardReload").onclick = ()=>location.reload();
+}
+
+/* ============================
+   Favorites
+============================ */
+function toggleFav(ref, text){
+  const i = state.favs.findIndex(f=>f.ref===ref);
+  if(i>=0){
+    state.favs.splice(i,1);
+    toast("Retiré des favoris.", "OK", ()=>{});
+  }else{
+    state.favs.unshift({ref, text});
+    state.favs = state.favs.slice(0, 200);
+    toast("Ajouté aux favoris.", "Voir", ()=>{ state.tab="fav"; render(); });
+  }
+  save();
+  render();
+}
+
+/* ============================
+   Share as Image (Canvas)
+============================ */
+function roundRect(ctx, x,y,w,h,r){
+  const rr = Math.min(r, w/2, h/2);
+  ctx.beginPath();
+  ctx.moveTo(x+rr, y);
+  ctx.arcTo(x+w, y, x+w, y+h, rr);
+  ctx.arcTo(x+w, y+h, x, y+h, rr);
+  ctx.arcTo(x, y+h, x, y, rr);
+  ctx.arcTo(x, y, x+w, y, rr);
+  ctx.closePath();
+}
+function wrapText(ctx, text, maxWidth){
+  const words = String(text).split(/\s+/);
+  const lines = [];
+  let line = "";
+  for(const w of words){
+    const test = line ? line + " " + w : w;
+    if(ctx.measureText(test).width <= maxWidth) line = test;
+    else { if(line) lines.push(line); line = w; }
+  }
+  if(line) lines.push(line);
+  return lines;
+}
+async function makeShareImage(ref, text){
+  const W=1080, H=1350;
+  const canvas=document.createElement("canvas");
+  canvas.width=W; canvas.height=H;
+  const ctx=canvas.getContext("2d");
+
+  ctx.fillStyle="#0b0b0b";
+  ctx.fillRect(0,0,W,H);
+
+  const pad=80;
+  ctx.fillStyle="rgba(255,255,255,0.06)";
+  ctx.strokeStyle="rgba(255,255,255,0.14)";
+  ctx.lineWidth=3;
+  roundRect(ctx,pad,pad,W-pad*2,H-pad*2,48);
+  ctx.fill(); ctx.stroke();
+
+  ctx.fillStyle="rgba(255,255,255,0.92)";
+  ctx.font="700 44px system-ui,-apple-system,Segoe UI,Roboto,Arial";
+  ctx.fillText("LaBible.app",pad+56,pad+90);
+
+  ctx.fillStyle="rgba(255,255,255,0.65)";
+  ctx.font="500 28px system-ui,-apple-system,Segoe UI,Roboto,Arial";
+  ctx.fillText("LSG 1910",pad+56,pad+132);
+
+  ctx.fillStyle="rgba(159,195,255,0.95)";
+  ctx.font="800 40px system-ui,-apple-system,Segoe UI,Roboto,Arial";
+  ctx.fillText(ref,pad+56,pad+210);
+
+  ctx.fillStyle="rgba(255,255,255,0.92)";
+  ctx.font="500 40px system-ui,-apple-system,Segoe UI,Roboto,Arial";
+  const maxW=W-(pad+56)*2;
+  const lines=wrapText(ctx,text,maxW);
+  let y=pad+290;
+  for(const line of lines.slice(0,18)){
+    ctx.fillText(line,pad+56,y);
+    y+=56;
+  }
+
+  ctx.fillStyle="rgba(255,255,255,0.55)";
+  ctx.font="500 28px system-ui,-apple-system,Segoe UI,Roboto,Arial";
+  ctx.fillText("#LaBible #LSG1910 #versetdujour",pad+56,H-pad-80);
+
+  return await new Promise((res)=>canvas.toBlob(res,"image/png",0.95));
+}
+async function shareAsImage(ref, text){
+  try{
+    const blob = await makeShareImage(ref,text);
+    const file = new File([blob],"labible.png",{type:"image/png"});
+    if(navigator.canShare && navigator.canShare({files:[file]})){
+      await navigator.share({title:"LaBible.app",text:`${ref} — LSG 1910`,files:[file]});
+      return;
+    }
+    const url = URL.createObjectURL(blob);
+    const a=document.createElement("a");
+    a.href=url; a.download="labible.png"; a.click();
+    URL.revokeObjectURL(url);
+  }catch(_){
+    toast("Partage indisponible sur cet appareil.", "OK", ()=>{});
+  }
+}
+
+/* ============================
+   Tabs
+============================ */
+$("tabToday").onclick = ()=>{ state.tab="today"; render(); };
+$("tabSearch").onclick = ()=>{ state.tab="search"; render(); };
+$("tabOpen").onclick = ()=>{ state.tab="open"; render(); };
+$("tabFav").onclick = ()=>{ state.tab="fav"; render(); };
+$("tabSettings").onclick = ()=>{ state.tab="settings"; render(); };
+
+/* ============================
+   Offline badge
+============================ */
+function updateOnlineUI(){ $("offlineBadge").classList.toggle("show", !navigator.onLine); }
+window.addEventListener("online", updateOnlineUI);
+window.addEventListener("offline", updateOnlineUI);
+
+/* ============================
+   Install button (Android/Chrome)
+============================ */
+let deferredPrompt;
+const installBtn = $("installBtn");
+installBtn.style.display = "none";
+
+window.addEventListener("beforeinstallprompt", (e)=>{
+  e.preventDefault();
+  deferredPrompt = e;
+  installBtn.style.display = "inline-flex";
+});
+
+installBtn.addEventListener("click", async ()=>{
+  if(!deferredPrompt){
+    toast("Sur iPhone: Partager → Ajouter à l’écran d’accueil.", "OK", ()=>{});
+    return;
+  }
+  deferredPrompt.prompt();
+  const { outcome } = await deferredPrompt.userChoice;
+  if(outcome === "accepted"){
+    installBtn.textContent = "✔️ Installé";
+    toast("Application installée.", "OK", ()=>{});
+  }
+  deferredPrompt = null;
+});
+
+/* ============================
+   Service worker register + update toast
+============================ */
+async function registerSW(){
+  if(!("serviceWorker" in navigator)) return;
+  try{
+    const reg = await navigator.serviceWorker.register("sw.js");
+    reg.addEventListener("updatefound", ()=>{
+      const sw = reg.installing;
+      if(!sw) return;
+      sw.addEventListener("statechange", ()=>{
+        if(sw.state==="installed"){
+          if(navigator.serviceWorker.controller){
+            toast("Mise à jour disponible.", "Recharger", ()=>location.reload());
+          }else{
+            toast("PWA prête (offline activé).", "OK", ()=>{});
+          }
+        }
+      });
+    });
+  }catch(_){}
+}
+
+/* ============================
+   Boot
+============================ */
+(async()=>{
+  $("dataStatus").textContent = "Données: chargement…";
+  await Bible.init();
+  updateOnlineUI();
+  registerSW();
+  render();
+})();
+</script>
 </body>
 </html>

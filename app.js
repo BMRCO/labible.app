@@ -216,61 +216,104 @@ async function loadChapter(bookIdx, chapNr) {
 }
 
 // Slugs locaux : nom du dossier dans data/ (minuscules, sans accents)
+// Noms des fichiers dans data/bible/ (un fichier = un livre entier)
 const BOOK_SLUGS = [
   'genese','exode','levitique','nombres','deuteronome','josue','juges','ruth',
-  '1samuel','2samuel','1rois','2rois','1chroniques','2chroniques','esdras',
+  '1_samuel','2_samuel','1_rois','2_rois','1_chroniques','2_chroniques','esdras',
   'nehemie','esther','job','psaumes','proverbes','ecclesiaste','cantique',
   'esaie','jeremie','lamentations','ezechiel','daniel','osee','joel','amos',
   'abdias','jonas','michee','nahoum','habacuc','sophonie','aggee','zacharie',
   'malachie','matthieu','marc','luc','jean','actes','romains',
-  '1corinthiens','2corinthiens','galates','ephesiens','philippiens','colossiens',
-  '1thessaloniciens','2thessaloniciens','1timothee','2timothee','tite','philemon',
-  'hebreux','jacques','1pierre','2pierre','1jean','2jean','3jean','jude','apocalypse'
+  '1_corinthiens','2_corinthiens','galates','ephesiens','philippiens','colossiens',
+  '1_thessaloniciens','2_thessaloniciens','1_timothee','2_timothee','tite','philemon',
+  'hebreux','jacques','1_pierre','2_pierre','1_jean','2_jean','3_jean','jude','apocalypse'
 ];
 
-// Stratégie : data/bible/{slug} → data/bible/{nr} → data/{slug} → API
-async function fetchChapter(bookIdx, chapNr) {
-  const key    = `${bookIdx}_${chapNr}`;
-  const bookNr = bookIdx + 1;
-  const slug   = BOOK_SLUGS[bookIdx] || String(bookNr);
+// Cache des livres entiers (un fetch par livre, pas par chapitre)
+const BOOK_CACHE = {};
 
-  if (S.chapCache[key]) return S.chapCache[key];
+// CDN jsDelivr — miroir du repo, CORS activé
+const CDN = 'https://cdn.jsdelivr.net/gh/BMRCO/labible.app@main';
 
+// Structure réelle : data/bible/{slug}.json contient le livre entier
+// Fetch le livre une seule fois, extrait ensuite le chapitre en mémoire
+async function fetchBook(bookIdx) {
+  if (BOOK_CACHE[bookIdx]) return BOOK_CACHE[bookIdx];
+
+  const slug = BOOK_SLUGS[bookIdx];
   const paths = [
-    `./data/bible/${slug}/${chapNr}.json`,
-    `./data/bible/${bookNr}/${chapNr}.json`,
-    `./data/${slug}/${chapNr}.json`,
-    `./data/${bookNr}/${chapNr}.json`,
+    `./data/bible/${slug}.json`,           // local — même domaine
+    `${CDN}/data/bible/${slug}.json`,       // jsDelivr CDN — CORS OK
   ];
 
   for (const path of paths) {
     try {
       const r = await fetch(path);
       if (r.ok) {
-        const d    = await r.json();
-        const norm = normalise(d, bookIdx, chapNr);
-        if (norm.verses.length > 0) {
-          console.log('[LaBible] Chargé depuis :', path);
-          S.chapCache[key] = norm;
-          return norm;
-        } else {
-          console.warn('[LaBible] JSON vide ou format inconnu :', path, d);
-        }
-      } else {
-        console.warn('[LaBible] HTTP', r.status, path);
+        const d = await r.json();
+        console.log('[LaBible] ✅ livre chargé:', path);
+        BOOK_CACHE[bookIdx] = d;
+        return d;
       }
+      console.warn('[LaBible] ❌', r.status, path);
     } catch(e) {
-      console.warn('[LaBible] Erreur fetch :', path, e.message);
+      console.warn('[LaBible] ❌', path, e.message);
     }
   }
+  throw new Error('Livre introuvable : ' + BOOKS[bookIdx].n);
+}
 
-  // Fallback : API getBible.net v2
-  const url = `https://api.getbible.net/v2/lsg/${bookNr}/${chapNr}.json`;
-  const r   = await fetch(url);
-  if (!r.ok) throw new Error('API ' + r.status);
-  const d   = await r.json();
-  S.chapCache[key] = normalise(d, bookIdx, chapNr);
-  return S.chapCache[key];
+async function fetchChapter(bookIdx, chapNr) {
+  const key = `${bookIdx}_${chapNr}`;
+  if (S.chapCache[key]) return S.chapCache[key];
+
+  const book = await fetchBook(bookIdx);
+  const norm = extractChapter(book, chapNr);
+
+  if (norm.verses.length === 0) {
+    throw new Error(`Chapitre ${chapNr} introuvable dans ${BOOKS[bookIdx].n}`);
+  }
+
+  S.chapCache[key] = norm;
+  return norm;
+}
+
+// Extrait un chapitre depuis la structure du fichier livre
+function extractChapter(data, chapNr) {
+  // Structure 1 : { chapters: { "1": [{verse,text},...], ... } }
+  if (data && data.chapters) {
+    const ch = data.chapters[chapNr] || data.chapters[String(chapNr)];
+    if (Array.isArray(ch)) {
+      return { verses: ch.map((v, i) => ({
+        verse: v.verse || v.verseNr || (i + 1),
+        text:  (v.text || v.t || String(v)).trim()
+      })).filter(v => v.text) };
+    }
+  }
+  // Structure 2 : [ [ch1v1, ch1v2...], [ch2v1...], ... ]  (tableau de tableaux)
+  if (Array.isArray(data)) {
+    const ch = data[chapNr - 1];
+    if (Array.isArray(ch)) {
+      return { verses: ch.map((t, i) => ({
+        verse: i + 1,
+        text:  (typeof t === 'string' ? t : t.text || '').trim()
+      })).filter(v => v.text) };
+    }
+  }
+  // Structure 3 : { "1": { "1": "texte", "2": "texte" }, "2": {...} }
+  if (data && typeof data === 'object') {
+    const ch = data[chapNr] || data[String(chapNr)];
+    if (ch && typeof ch === 'object') {
+      const keys = Object.keys(ch).filter(k => !isNaN(k)).sort((a,b) => +a - +b);
+      if (keys.length > 0) {
+        return { verses: keys.map(k => ({
+          verse: parseInt(k),
+          text:  (typeof ch[k] === 'string' ? ch[k] : ch[k].text || '').trim()
+        })).filter(v => v.text) };
+      }
+    }
+  }
+  return { verses: [] };
 }
 
 // Normaliser toutes les structures possibles en { verses: [{verse, text}] }

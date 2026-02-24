@@ -127,9 +127,9 @@ document.addEventListener('DOMContentLoaded', () => {
   refreshLibrary();
   registerSW();
 
-  // Hero → fermer automatiquement après premier clic
+  // Hero toujours masqué
   const hero = $('hero');
-  if (hero && localStorage.getItem('lb_heroSeen')) hero.style.display = 'none';
+  if (hero) hero.style.display = 'none';
 });
 
 // ── THÈME ─────────────────────────────────────────────────────
@@ -911,11 +911,7 @@ function bindEvents() {
   $$('.tab').forEach(t => { t.onclick = () => switchView(t.dataset.view); });
 
   // Accueil
-  $('btnHome').onclick = () => {
-    switchView('read');
-    $('hero') && ($('hero').style.display = 'flex');
-    localStorage.removeItem('lb_heroSeen');
-  };
+  $('btnHome').onclick = () => { switchView('read'); };
 
   // Install
   $('btnInstall').onclick = promptInstall;

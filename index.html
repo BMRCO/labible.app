@@ -1,10 +1,11 @@
+<!-- index.html (COMPLETO) -->
 <!doctype html>
 <html lang="fr">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
   <meta name="theme-color" content="#0b0b0b" />
-  <meta name="description" content="La Bible Louis Segond 1910 (domaine public) — Lecture, recherche et plan de lecture." />
+  <meta name="description" content="LaBible.app — LSG1910. Lecture, recherche, favoris, historique et plan de lecture." />
 
   <link rel="manifest" href="/manifest.webmanifest">
   <link rel="icon" href="/icons/icon-192.png">
@@ -16,9 +17,7 @@
 
 <body>
   <header class="topbar">
-    <button class="iconBtn" id="btnHome" title="Accueil" aria-label="Accueil">
-      <span class="bookIcon">📖</span>
-    </button>
+    <button class="iconBtn" id="btnHome" title="Accueil" aria-label="Accueil">📖</button>
 
     <div class="brand">
       <div class="brandTitle">LaBible.app</div>
@@ -26,6 +25,7 @@
     </div>
 
     <div class="topActions">
+      <button id="btnTheme" class="chip" title="Thème">🌙</button>
       <button id="btnInstall" class="chip chipGold" hidden>⬇️ Installer</button>
       <a class="chip" href="https://t.me/" target="_blank" rel="noopener">📣 Telegram</a>
       <a class="chip" href="mailto:contact@labible.app">✉️ Contact</a>
@@ -35,30 +35,39 @@
   <main class="container">
     <section class="hero" id="hero">
       <div class="heroBadge">LaBible.app</div>
-      <h1 class="heroTitle">La Bible Louis Segond 1910</h1>
+      <h1 class="heroTitle">Bible Louis Segond 1910</h1>
       <p class="heroText">
-        Une interface simple et rapide pour <b>lire</b>, <b>rechercher</b> et suivre un <b>plan de lecture</b>.
-        Texte : <b>LSG 1910</b> (domaine public).
+        Lecture “pages”, <b>recherche</b> rapide, <b>favoris</b>, <b>historique</b> et <b>plan 365 jours</b>.
       </p>
 
       <div class="heroButtons">
-        <button class="btnPrimary" id="btnOpenRead">📖 Lire la Bible</button>
+        <button class="btnPrimary" id="btnOpenRead">📖 Lire</button>
         <button class="btn" id="btnOpenSearch">🔎 Rechercher</button>
-        <button class="btn" id="btnOpenPlan">📅 Plan de lecture</button>
+        <button class="btn" id="btnOpenPlan">📅 Plan</button>
+        <button class="btn" id="btnOpenLibrary">📚 Bibliothèque</button>
       </div>
     </section>
 
     <nav class="tabs" aria-label="Navigation">
       <button class="tab active" data-view="read">Lecture</button>
       <button class="tab" data-view="search">Recherche</button>
-      <button class="tab" data-view="plan">Plan de lecture</button>
+      <button class="tab" data-view="plan">Plan</button>
+      <button class="tab" data-view="library">Bibliothèque</button>
     </nav>
 
+    <!-- LECTURE -->
     <section class="view active" id="view-read">
       <div class="card">
         <div class="cardHeader">
-          <h2>Lecture</h2>
-          <div class="muted">Navigation par livres et chapitres, style “pages”.</div>
+          <div>
+            <h2>Lecture</h2>
+            <div class="muted">Swipe gauche/droite pour chapitre suivant/précédent.</div>
+          </div>
+          <div class="row gap8">
+            <button class="chip" id="btnVDD" title="Verset du jour">✨ Verset du jour</button>
+            <button class="chip" id="btnFontMinus" title="Plus petit">A−</button>
+            <button class="chip" id="btnFontPlus" title="Plus grand">A+</button>
+          </div>
         </div>
 
         <div class="controls">
@@ -84,22 +93,29 @@
         </div>
 
         <div class="pageFooter">
-          <button class="chip" id="btnCopyRef">📎 Copier la référence</button>
+          <button class="chip" id="btnBookmark">🔖 Favori</button>
+          <button class="chip" id="btnCopyRef">📎 Copier</button>
           <button class="chip" id="btnShare">📤 Partager</button>
-          <button class="chip" id="btnBookmark">🔖 Signet</button>
         </div>
       </div>
     </section>
 
+    <!-- RECHERCHE -->
     <section class="view" id="view-search">
       <div class="card">
         <div class="cardHeader">
-          <h2>Recherche</h2>
-          <div class="muted">Mots clés + références (ex : <b>Jean 3:16</b>).</div>
+          <div>
+            <h2>Recherche</h2>
+            <div class="muted">Mots clés + références (ex : <b>Jean 3:16</b>).</div>
+          </div>
+          <div class="row gap8">
+            <button class="chip" id="btnBuildIndex" title="Construire l’index">⚡ Index</button>
+            <button class="chip" id="btnClearSearch" title="Effacer">✖️</button>
+          </div>
         </div>
 
         <div class="searchBar">
-          <input id="searchInput" type="text" placeholder="Rechercher un mot ou une référence (ex : Jean 3:16)…" autocomplete="off" />
+          <input id="searchInput" type="text" placeholder="Mot clé ou référence (ex : Romains 8:1)…" autocomplete="off" />
           <button class="btnPrimary" id="btnSearch">Rechercher</button>
         </div>
 
@@ -108,11 +124,18 @@
       </div>
     </section>
 
+    <!-- PLAN -->
     <section class="view" id="view-plan">
       <div class="card">
         <div class="cardHeader">
-          <h2>Plan de lecture</h2>
-          <div class="muted">Progression simple, enregistrée sur l’appareil.</div>
+          <div>
+            <h2>Plan de lecture</h2>
+            <div class="muted">365 jours — progression enregistrée sur l’appareil.</div>
+          </div>
+          <div class="row gap8">
+            <button class="chip" id="btnResetPlan">↺ Reset</button>
+            <button class="chip" id="btnJumpDay">📌 Jour…</button>
+          </div>
         </div>
 
         <div class="planGrid">
@@ -121,7 +144,7 @@
             <div class="planToday" id="planTodayText">—</div>
             <div class="planActions">
               <button class="btnPrimary" id="btnOpenToday">📖 Ouvrir</button>
-              <button class="btn" id="btnMarkDone">✅ Marquer comme lu</button>
+              <button class="btn" id="btnMarkDone">✅ Marquer lu</button>
             </div>
             <div class="muted small" id="planTodayMeta"></div>
           </div>
@@ -132,22 +155,51 @@
               <div class="progressBar"><div class="progressFill" id="progressFill"></div></div>
               <div class="progressText" id="progressText">0%</div>
             </div>
+            <div class="muted small">Conseil: utilise “Index” pour accélérer la recherche.</div>
+          </div>
+        </div>
+      </div>
+    </section>
 
-            <div class="planActions">
-              <button class="btn" id="btnResetPlan">↺ Réinitialiser</button>
-              <button class="btn" id="btnJumpDay">Aller au jour…</button>
-            </div>
+    <!-- BIBLIOTHÈQUE -->
+    <section class="view" id="view-library">
+      <div class="card">
+        <div class="cardHeader">
+          <div>
+            <h2>Bibliothèque</h2>
+            <div class="muted">Favoris + historique.</div>
+          </div>
+          <div class="row gap8">
+            <button class="chip" id="btnClearFav">🧹 Favoris</button>
+            <button class="chip" id="btnClearHistory">🧹 Historique</button>
+          </div>
+        </div>
 
-            <div class="muted small">
-              Plan : <b>365 jours</b> (chapitres).
+        <div class="libraryGrid">
+          <div class="libBox">
+            <div class="planTitle">✨ Verset du jour</div>
+            <div class="vdd" id="vddBox">—</div>
+            <div class="row gap8 wrap">
+              <button class="btn" id="btnOpenVDD">📖 Ouvrir</button>
+              <button class="btn" id="btnCopyVDD">📎 Copier</button>
             </div>
+          </div>
+
+          <div class="libBox">
+            <div class="planTitle">🔖 Favoris</div>
+            <div class="list" id="favList"></div>
+          </div>
+
+          <div class="libBox">
+            <div class="planTitle">🕘 Historique</div>
+            <div class="list" id="historyList"></div>
           </div>
         </div>
       </div>
     </section>
 
     <footer class="footer">
-      <div>© <span id="year"></span> · <b>LaBible.app</b> · Texte : LSG1910 — Domaine public</div>
+      <div>© <span id="year"></span> · <b>LaBible.app</b> · LSG1910 — Domaine public</div>
       <div class="footerLinks">
         <a href="https://t.me/" target="_blank" rel="noopener">Telegram</a>
         <span>·</span>

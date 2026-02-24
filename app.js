@@ -167,9 +167,12 @@ function buildBookSelect() {
 }
 
 function syncChapterSelect() {
-  const sel = $('chapterSelect');
+  const sel    = $('chapterSelect');
+  const maxCh  = BOOKS[S.book].ch;
+  // Sécurité : corriger un chapitre invalide
+  if (S.chapter < 1 || S.chapter > maxCh) S.chapter = 1;
   sel.innerHTML = '';
-  for (let c = 1; c <= BOOKS[S.book].ch; c++) {
+  for (let c = 1; c <= maxCh; c++) {
     const o = document.createElement('option');
     o.value = c;
     o.textContent = 'Ch. ' + c;
@@ -212,24 +215,54 @@ async function loadChapter(bookIdx, chapNr) {
   }
 }
 
-// Stratégie : fichier local → cache mémoire → API getBible.net
+// Slugs locaux : nom du dossier dans data/ (minuscules, sans accents)
+const BOOK_SLUGS = [
+  'genese','exode','levitique','nombres','deuteronome','josue','juges','ruth',
+  '1samuel','2samuel','1rois','2rois','1chroniques','2chroniques','esdras',
+  'nehemie','esther','job','psaumes','proverbes','ecclesiaste','cantique',
+  'esaie','jeremie','lamentations','ezechiel','daniel','osee','joel','amos',
+  'abdias','jonas','michee','nahoum','habacuc','sophonie','aggee','zacharie',
+  'malachie','matthieu','marc','luc','jean','actes','romains',
+  '1corinthiens','2corinthiens','galates','ephesiens','philippiens','colossiens',
+  '1thessaloniciens','2thessaloniciens','1timothee','2timothee','tite','philemon',
+  'hebreux','jacques','1pierre','2pierre','1jean','2jean','3jean','jude','apocalypse'
+];
+
+// Stratégie : fichier local (slug) → fichier local (numéro) → API getBible.net
 async function fetchChapter(bookIdx, chapNr) {
-  const key     = `${bookIdx}_${chapNr}`;
-  const bookNr  = bookIdx + 1; // l'API est 1-indexed
+  const key    = `${bookIdx}_${chapNr}`;
+  const bookNr = bookIdx + 1; // 1-indexed pour l'API
+  const slug   = BOOK_SLUGS[bookIdx] || String(bookNr);
 
   if (S.chapCache[key]) return S.chapCache[key];
 
-  // 1. Fichier local data/{bookNr}/{chapNr}.json
+  // 1. data/{slug}/{chapNr}.json  (structure du repo)
+  try {
+    const r = await fetch(`./data/${slug}/${chapNr}.json`);
+    if (r.ok) {
+      const d = await r.json();
+      const norm = normalise(d, bookIdx, chapNr);
+      if (norm.verses.length > 0) {
+        S.chapCache[key] = norm;
+        return norm;
+      }
+    }
+  } catch(_) {}
+
+  // 2. data/{bookNr}/{chapNr}.json  (structure alternative)
   try {
     const r = await fetch(`./data/${bookNr}/${chapNr}.json`);
     if (r.ok) {
       const d = await r.json();
-      S.chapCache[key] = normalise(d, bookIdx, chapNr);
-      return S.chapCache[key];
+      const norm = normalise(d, bookIdx, chapNr);
+      if (norm.verses.length > 0) {
+        S.chapCache[key] = norm;
+        return norm;
+      }
     }
   } catch(_) {}
 
-  // 2. API getBible.net v2
+  // 3. API getBible.net v2
   const url = `https://api.getbible.net/v2/lsg/${bookNr}/${chapNr}.json`;
   const r   = await fetch(url);
   if (!r.ok) throw new Error('API ' + r.status);
@@ -238,15 +271,37 @@ async function fetchChapter(bookIdx, chapNr) {
   return S.chapCache[key];
 }
 
-// Normaliser la réponse API en { verses: [{verse, text}] }
+// Normaliser toutes les structures possibles en { verses: [{verse, text}] }
 function normalise(data, bookIdx, chapNr) {
-  if (Array.isArray(data.verses)) return data;
-  if (Array.isArray(data)) {
-    return { verses: data.map((t, i) => ({ verse: i+1, text: t })) };
+  // Déjà normalisé : tableau de versets avec .verse et .text
+  if (data && Array.isArray(data.verses) && data.verses.length > 0
+      && data.verses[0].text !== undefined) {
+    return { verses: data.verses.map(v => ({
+      verse: parseInt(v.verse) || v.verse,
+      text:  (v.text || '').replace(/\s+/g,' ').trim()
+    })) };
   }
-  // Format getBible v2 : { book_nr, chapter, verses: {1:{verse,text},...} }
-  if (data.verses && !Array.isArray(data.verses)) {
-    return { verses: Object.values(data.verses) };
+  // Tableau simple de strings : ["Au commencement...", ...]
+  if (Array.isArray(data)) {
+    return { verses: data.map((t, i) => ({ verse: i + 1, text: String(t).trim() })) };
+  }
+  // Objet verses non-tableau : { "1": {verse:1, text:"..."}, "2": ... }
+  if (data && data.verses && !Array.isArray(data.verses)) {
+    return { verses: Object.values(data.verses).map(v => ({
+      verse: parseInt(v.verse) || v.verse,
+      text:  (v.text || '').replace(/\s+/g,' ').trim()
+    })) };
+  }
+  // Objet clés numériques directement : { "1": "texte...", "2": ... }
+  if (data && typeof data === 'object') {
+    const keys = Object.keys(data).filter(k => !isNaN(k));
+    if (keys.length > 0) {
+      return { verses: keys.sort((a,b)=>+a-+b).map(k => ({
+        verse: parseInt(k),
+        text:  typeof data[k] === 'string' ? data[k].trim()
+               : (data[k].text || '').trim()
+      })) };
+    }
   }
   return { verses: [] };
 }

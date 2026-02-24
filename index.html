@@ -4,13 +4,13 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
   <meta name="theme-color" content="#0b0b0b" />
-  <meta name="description" content="La Bible Louis Segond 1910 (domaine public) — Lecture, recherche et plan de lecture." />
+  <meta name="description" content="La Bible Louis Segond 1910 (domaine public) — Recherche et plan de lecture." />
 
   <link rel="manifest" href="/manifest.webmanifest">
   <link rel="icon" href="/icons/icon-192.png">
   <link rel="apple-touch-icon" href="/icons/icon-192.png">
 
-  <title>LaBible.app — LSG 1910</title>
+  <title>LaBible.app | LSG1910</title>
   <link rel="stylesheet" href="/styles.css" />
 </head>
 
@@ -22,7 +22,7 @@
 
     <div class="brand">
       <div class="brandTitle">LaBible.app</div>
-      <div class="brandSub">LSG 1910 — Domaine public</div>
+      <div class="brandSub">LSG1910 — Domaine public</div>
     </div>
 
     <div class="topActions">
@@ -37,65 +37,46 @@
       <div class="heroBadge">LaBible.app</div>
       <h1 class="heroTitle">La Bible Louis Segond 1910</h1>
       <p class="heroText">
-        Une interface simple et rapide pour <b>lire</b>, <b>rechercher</b> et suivre un <b>plan de lecture</b>.
+        Une interface simple et rapide pour <b>rechercher</b> et suivre un <b>plan de lecture</b>.
         Texte : <b>LSG 1910</b> (domaine public).
       </p>
 
       <div class="heroButtons">
-        <button class="btnPrimary" id="btnOpenRead">📖 Lire la Bible</button>
-        <button class="btn" id="btnOpenSearch">🔎 Rechercher</button>
+        <!-- Lecture masquée pour l’instant -->
+        <button class="btnPrimary" id="btnOpenRead" style="display:none">📖 Lire la Bible</button>
+
+        <button class="btnPrimary" id="btnOpenSearch">🔎 Rechercher</button>
         <button class="btn" id="btnOpenPlan">📅 Plan de lecture</button>
       </div>
-
-      <p class="hint" id="installHint">💡 Astuce : ajoutez LaBible.app à l’écran d’accueil pour une expérience comme une application native.</p>
+      <!-- Astuce supprimée -->
     </section>
 
     <nav class="tabs" aria-label="Navigation">
-      <button class="tab active" data-view="read">Lecture</button>
-      <button class="tab" data-view="search">Recherche</button>
+      <!-- Lecture masquée pour l’instant -->
+      <button class="tab" data-view="read" style="display:none">Lecture</button>
+
+      <button class="tab active" data-view="search">Recherche</button>
       <button class="tab" data-view="plan">Plan de lecture</button>
     </nav>
 
-    <!-- LECTURE -->
-    <section class="view active" id="view-read">
+    <!-- LECTURE (masqué / placeholder) -->
+    <section class="view" id="view-read" style="display:none">
       <div class="card">
         <div class="cardHeader">
           <h2>Lecture</h2>
-          <div class="muted">Navigation par livres et chapitres, style “pages”.</div>
+          <div class="muted">En cours d’activation.</div>
         </div>
-
-        <div class="controls">
-          <label class="field">
-            <span>Livre</span>
-            <select id="bookSelect"></select>
-          </label>
-
-          <label class="field">
-            <span>Chapitre</span>
-            <select id="chapterSelect"></select>
-          </label>
-
-          <div class="navBtns">
-            <button class="btn" id="btnPrev">← Précédent</button>
-            <button class="btn" id="btnNext">Suivant →</button>
+        <div class="page">
+          <div class="pageHeader">Lecture</div>
+          <div class="verses">
+            <p class="verse"><span class="vnum">!</span> <span>Lecture désactivée temporairement.</span></p>
           </div>
-        </div>
-
-        <div class="page" id="readerPage" aria-live="polite">
-          <div class="pageHeader" id="pageHeader"></div>
-          <div class="verses" id="verses"></div>
-        </div>
-
-        <div class="pageFooter">
-          <button class="chip" id="btnCopyRef">📎 Copier la référence</button>
-          <button class="chip" id="btnShare">📤 Partager</button>
-          <button class="chip" id="btnBookmark">🔖 Signet</button>
         </div>
       </div>
     </section>
 
     <!-- RECHERCHE -->
-    <section class="view" id="view-search">
+    <section class="view active" id="view-search">
       <div class="card">
         <div class="cardHeader">
           <h2>Recherche</h2>
@@ -144,7 +125,7 @@
             </div>
 
             <div class="muted small">
-              Plan : <b>365 jours</b> (Ancien + Nouveau Testament).
+              Plan : <b>365 jours</b> (chapitres).
             </div>
           </div>
         </div>
@@ -152,7 +133,7 @@
         <div class="divider"></div>
 
         <div class="muted small">
-          Astuce : tu peux utiliser la recherche pour aller vite à un passage, puis revenir ici.
+          Astuce : utilisez la recherche pour aller vite à un passage.
         </div>
       </div>
     </section>

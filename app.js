@@ -216,104 +216,58 @@ async function loadChapter(bookIdx, chapNr) {
 }
 
 // Slugs locaux : nom du dossier dans data/ (minuscules, sans accents)
-// Noms des fichiers dans data/bible/ (un fichier = un livre entier)
-const BOOK_SLUGS = [
-  'genese','exode','levitique','nombres','deuteronome','josue','juges','ruth',
-  '1_samuel','2_samuel','1_rois','2_rois','1_chroniques','2_chroniques','esdras',
-  'nehemie','esther','job','psaumes','proverbes','ecclesiaste','cantique',
-  'esaie','jeremie','lamentations','ezechiel','daniel','osee','joel','amos',
-  'abdias','jonas','michee','nahoum','habacuc','sophonie','aggee','zacharie',
-  'malachie','matthieu','marc','luc','jean','actes','romains',
-  '1_corinthiens','2_corinthiens','galates','ephesiens','philippiens','colossiens',
-  '1_thessaloniciens','2_thessaloniciens','1_timothee','2_timothee','tite','philemon',
-  'hebreux','jacques','1_pierre','2_pierre','1_jean','2_jean','3_jean','jude','apocalypse'
-];
+// ── BIBLE DATA ─────────────────────────────────────────────────
+// lsg1910.json : tableau plat de 31102 versets {book, chapter, verse, text}
+// Chargé une seule fois, tout en mémoire.
+let BIBLE_DATA   = null;  // array de tous les versets
+let BIBLE_LOADING = null; // Promise en cours
 
-// Cache des livres entiers (un fetch par livre, pas par chapitre)
-const BOOK_CACHE = {};
-
-// CDN jsDelivr — miroir du repo, CORS activé
 const CDN = 'https://cdn.jsdelivr.net/gh/BMRCO/labible.app@main';
 
-// Structure réelle : data/bible/{slug}.json contient le livre entier
-// Fetch le livre une seule fois, extrait ensuite le chapitre en mémoire
-async function fetchBook(bookIdx) {
-  if (BOOK_CACHE[bookIdx]) return BOOK_CACHE[bookIdx];
+async function loadBibleData() {
+  if (BIBLE_DATA) return BIBLE_DATA;
+  if (BIBLE_LOADING) return BIBLE_LOADING;
 
-  const slug = BOOK_SLUGS[bookIdx];
-  const paths = [
-    `./data/bible/${slug}.json`,           // local — même domaine
-    `${CDN}/data/bible/${slug}.json`,       // jsDelivr CDN — CORS OK
-  ];
-
-  for (const path of paths) {
-    try {
-      const r = await fetch(path);
-      if (r.ok) {
+  BIBLE_LOADING = (async () => {
+    const paths = [
+      './data/lsg1910.json',          // local — même domaine, priorité
+      `${CDN}/data/lsg1910.json`,     // jsDelivr CDN — CORS OK
+    ];
+    for (const path of paths) {
+      try {
+        const r = await fetch(path);
+        if (!r.ok) { console.warn('[LaBible] ❌', r.status, path); continue; }
         const d = await r.json();
-        console.log('[LaBible] ✅ livre chargé:', path);
-        BOOK_CACHE[bookIdx] = d;
-        return d;
+        // Extraire le tableau de versets selon la structure
+        BIBLE_DATA = Array.isArray(d) ? d : (d.verses || []);
+        console.log('[LaBible] ✅ Bible chargée:', path, '—', BIBLE_DATA.length, 'versets');
+        return BIBLE_DATA;
+      } catch(e) {
+        console.warn('[LaBible] ❌', path, e.message);
       }
-      console.warn('[LaBible] ❌', r.status, path);
-    } catch(e) {
-      console.warn('[LaBible] ❌', path, e.message);
     }
-  }
-  throw new Error('Livre introuvable : ' + BOOKS[bookIdx].n);
+    throw new Error('Impossible de charger lsg1910.json');
+  })();
+
+  return BIBLE_LOADING;
 }
 
 async function fetchChapter(bookIdx, chapNr) {
   const key = `${bookIdx}_${chapNr}`;
   if (S.chapCache[key]) return S.chapCache[key];
 
-  const book = await fetchBook(bookIdx);
-  const norm = extractChapter(book, chapNr);
+  const data  = await loadBibleData();
+  const bookNr = bookIdx + 1; // book dans le JSON est 1-indexed
 
-  if (norm.verses.length === 0) {
-    throw new Error(`Chapitre ${chapNr} introuvable dans ${BOOKS[bookIdx].n}`);
-  }
+  const verses = data
+    .filter(v => v.book === bookNr && v.chapter === chapNr)
+    .map(v => ({ verse: v.verse, text: (v.text || '').replace(/^¶\s*/, '').trim() }));
 
-  S.chapCache[key] = norm;
-  return norm;
-}
+  if (verses.length === 0) throw new Error(`Aucun verset: ${BOOKS[bookIdx].n} ${chapNr}`);
 
-// Extrait un chapitre depuis la structure du fichier livre
-function extractChapter(data, chapNr) {
-  // Structure 1 : { chapters: { "1": [{verse,text},...], ... } }
-  if (data && data.chapters) {
-    const ch = data.chapters[chapNr] || data.chapters[String(chapNr)];
-    if (Array.isArray(ch)) {
-      return { verses: ch.map((v, i) => ({
-        verse: v.verse || v.verseNr || (i + 1),
-        text:  (v.text || v.t || String(v)).trim()
-      })).filter(v => v.text) };
-    }
-  }
-  // Structure 2 : [ [ch1v1, ch1v2...], [ch2v1...], ... ]  (tableau de tableaux)
-  if (Array.isArray(data)) {
-    const ch = data[chapNr - 1];
-    if (Array.isArray(ch)) {
-      return { verses: ch.map((t, i) => ({
-        verse: i + 1,
-        text:  (typeof t === 'string' ? t : t.text || '').trim()
-      })).filter(v => v.text) };
-    }
-  }
-  // Structure 3 : { "1": { "1": "texte", "2": "texte" }, "2": {...} }
-  if (data && typeof data === 'object') {
-    const ch = data[chapNr] || data[String(chapNr)];
-    if (ch && typeof ch === 'object') {
-      const keys = Object.keys(ch).filter(k => !isNaN(k)).sort((a,b) => +a - +b);
-      if (keys.length > 0) {
-        return { verses: keys.map(k => ({
-          verse: parseInt(k),
-          text:  (typeof ch[k] === 'string' ? ch[k] : ch[k].text || '').trim()
-        })).filter(v => v.text) };
-      }
-    }
-  }
-  return { verses: [] };
+  const result = { verses };
+  S.chapCache[key] = result;
+  return result;
 }
 
 // Normaliser toutes les structures possibles en { verses: [{verse, text}] }
@@ -815,36 +769,35 @@ async function buildSearchIndex() {
   const btn = $('btnBuildIndex');
   btn.disabled = true;
   btn.textContent = '⏳ Index…';
-  toast('Construction de l\'index (cela peut prendre 1–2 min)…');
+  toast('Chargement de la Bible pour l\'index…');
 
-  S.index = {};
-  let loaded = 0;
-
-  for (let b = 0; b < BOOKS.length; b++) {
-    for (let c = 1; c <= BOOKS[b].ch; c++) {
-      try {
-        const data = await fetchChapter(b, c);
-        for (const v of (data.verses || [])) {
-          const words = (v.text || '').toLowerCase().replace(/[^a-zàâäéèêëîïôùûüç\s]/gi,'').split(/\s+/);
-          for (const w of words) {
-            if (w.length < 3) continue;
-            if (!S.index[w]) S.index[w] = [];
-            S.index[w].push([b, c, parseInt(v.verse)]);
-          }
-        }
-        loaded++;
-        if (loaded % 50 === 0) {
-          btn.textContent = `⏳ ${Math.round((loaded / (BOOKS.reduce((a,x)=>a+x.ch,0))) * 100)}%`;
-          await new Promise(r => setTimeout(r, 0)); // yield
-        }
-      } catch(_) {}
+  try {
+    const data = await loadBibleData();
+    S.index = {};
+    let i = 0;
+    for (const v of data) {
+      const bookIdx = v.book - 1;
+      const words = (v.text || '')
+        .replace(/¶/g, '')
+        .toLowerCase()
+        .replace(/[^a-z\u00C0-\u024F\s]/gi, '')
+        .split(/\s+/);
+      for (const w of words) {
+        if (w.length < 3) continue;
+        if (!S.index[w]) S.index[w] = [];
+        S.index[w].push([bookIdx, v.chapter, v.verse]);
+      }
+      if (++i % 5000 === 0) await new Promise(r => setTimeout(r, 0));
     }
+    S.indexBuilt = true;
+    btn.textContent = '✅ Index';
+    btn.disabled = false;
+    toast(`⚡ Index construit — ${data.length} versets indexés !`);
+  } catch(e) {
+    btn.textContent = '⚡ Index';
+    btn.disabled = false;
+    toast('Erreur lors de la construction de l\'index.');
   }
-
-  S.indexBuilt = true;
-  btn.textContent = '✅ Index';
-  btn.disabled = false;
-  toast('⚡ Index construit ! La recherche est maintenant complète.');
 }
 
 // ── TABS ─────────────────────────────────────────────────────

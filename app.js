@@ -1,14 +1,3 @@
-/* app.js (COMPLETO) — VERSION DÉFINITIVE
-   ✅ Lecture (livres séparés) + swipe chapitres
-   ✅ Recherche: référence + mot-clé (index on-demand)
-   ✅ Favoris (référence + verset) & Historique (dernier passages)
-   ✅ Verset du jour (déterministe) + copier/ouvrir
-   ✅ Thème sombre/clair + taille de police
-   ✅ Plan 365 jours sur chapitres réels
-   ✅ PWA install
-   🚫 Pas de mode offline (sw minimal)
-*/
-
 const $ = (s) => document.querySelector(s);
 const $$ = (s) => Array.from(document.querySelectorAll(s));
 
@@ -22,10 +11,12 @@ const LS = {
   vdd: "labible:vddCache"
 };
 
+const BOOKS_INDEX_URL = "/data/bible/books.json";
+
 const state = {
-  bible: null,            // { meta, books:[{id,name,abbr}] }
-  bookCache: new Map(),   // id -> {id,name,abbr,chapters:[[]]}
-  index: null,            // [{bi,c,v,norm,original}]
+  bible: null,
+  bookCache: new Map(),
+  index: null,
   indexing: false,
   current: { book: 0, chapter: 1 },
   deferredPrompt: null,
@@ -33,7 +24,6 @@ const state = {
   vddRef: null
 };
 
-// ---------- Utils ----------
 function toast(msg){
   const el = $("#toast");
   if(!el) return;
@@ -63,9 +53,9 @@ function dateKey(d=new Date()){
   const da=String(d.getDate()).padStart(2,"0");
   return `${y}-${m}-${da}`;
 }
-function bookFileUrl(bookId){ return `data/bible/${bookId}.json`; }
+function bookFileUrl(bookId){ return `/data/bible/${bookId}.json`; }
 
-// ---------- Views ----------
+// Views
 function setView(view){
   $$(".tab").forEach(t => t.classList.toggle("active", t.dataset.view === view));
   $$(".view").forEach(v => v.classList.toggle("active", v.id === `view-${view}`));
@@ -76,7 +66,7 @@ function bindTabs(){
   $$(".tab").forEach(tab => tab.addEventListener("click", () => setView(tab.dataset.view)));
 }
 
-// ---------- Theme / Font ----------
+// Theme / Font
 function applyTheme(theme){
   document.documentElement.setAttribute("data-theme", theme);
   localStorage.setItem(LS.theme, theme);
@@ -97,34 +87,7 @@ function loadFont(){
   applyFont(isFinite(v) ? v : 16);
 }
 
-// ---------- Data: load books index ----------
-async function loadBible(){
-  const idxUrl = "data/bible/books.json";
-  const res = await fetch(idxUrl, { cache:"no-store" });
-  if(!res.ok) throw new Error(`Index introuvable: ${idxUrl} (HTTP ${res.status})`);
-  const books = await res.json();
-  if(!Array.isArray(books) || !books.length) throw new Error("books.json invalide (array attendu).");
-
-  state.bible = {
-    meta: { name: "LSG1910" },
-    books: books.map((b,i)=>({
-      id: b.id || b.slug || b.code || String(i),
-      name: b.name || b.title || b.nom || `Livre ${i+1}`,
-      abbr: Array.isArray(b.abbr) ? b.abbr : (Array.isArray(b.abbrev) ? b.abbrev : [])
-    }))
-  };
-
-  initSelectors();
-  restoreLastRef();
-  await ensureBookLoaded(state.current.book);
-  refreshChapterSelect();
-  renderReading();
-
-  // Prépare VDD (sans index)
-  await computeVerseOfDay();
-}
-
-// Normalize book format (supports arrays/objects)
+// Data loader
 function normalizeBook(raw, fallback){
   const name = raw?.name || raw?.title || raw?.nom || fallback.name;
   const abbr = Array.isArray(raw?.abbr) ? raw.abbr : (Array.isArray(raw?.abbrev) ? raw.abbrev : (fallback.abbr || []));
@@ -133,8 +96,8 @@ function normalizeBook(raw, fallback){
 
   if(!chapters && raw && typeof raw === "object"){
     const keys = Object.keys(raw);
-    const looksLikeChapterMap = keys.length && keys.every(k => /^\d+$/.test(k));
-    if(looksLikeChapterMap) chapters = raw;
+    const looksLikeMap = keys.length && keys.every(k => /^\d+$/.test(k));
+    if(looksLikeMap) chapters = raw;
   }
 
   if(chapters && !Array.isArray(chapters) && typeof chapters === "object"){
@@ -178,7 +141,6 @@ async function ensureBookLoaded(bookIndex){
   return book;
 }
 
-// ---------- Selectors / reading ----------
 function restoreLastRef(){
   const last = localStorage.getItem(LS.last);
   if(!last) return;
@@ -187,6 +149,33 @@ function restoreLastRef(){
   state.current.book = ref.bi;
   state.current.chapter = ref.c;
 }
+
+async function loadBible(){
+  const res = await fetch(BOOKS_INDEX_URL, { cache:"no-store" });
+  if(!res.ok) throw new Error(`Index introuvable: ${BOOKS_INDEX_URL} (HTTP ${res.status})`);
+  const books = await res.json();
+  if(!Array.isArray(books) || !books.length) throw new Error("books.json invalide (array attendu).");
+
+  state.bible = {
+    meta: { name: "LSG1910" },
+    books: books.map((b,i)=>({
+      id: b.id || b.slug || b.code || String(i),
+      name: b.name || b.title || b.nom || `Livre ${i+1}`,
+      abbr: Array.isArray(b.abbr) ? b.abbr : (Array.isArray(b.abbrev) ? b.abbrev : [])
+    }))
+  };
+
+  initSelectors();
+  restoreLastRef();
+
+  $("#bookSelect").value = String(state.current.book);
+  await ensureBookLoaded(state.current.book);
+  refreshChapterSelect();
+  renderReading();
+
+  await computeVerseOfDay();
+}
+
 function initSelectors(){
   const bookSelect = $("#bookSelect");
   const chapterSelect = $("#chapterSelect");
@@ -199,19 +188,12 @@ function initSelectors(){
     bookSelect.appendChild(opt);
   });
 
-  bookSelect.value = String(state.current.book);
-
   bookSelect.addEventListener("change", async () => {
     state.current.book = parseInt(bookSelect.value,10);
     state.current.chapter = 1;
-    try{
-      await ensureBookLoaded(state.current.book);
-      refreshChapterSelect();
-      renderReading();
-    } catch(e){
-      renderError(e);
-      toast(String(e.message||e));
-    }
+    await ensureBookLoaded(state.current.book);
+    refreshChapterSelect();
+    renderReading();
   });
 
   chapterSelect.addEventListener("change", () => {
@@ -222,7 +204,7 @@ function initSelectors(){
   $("#btnPrev").addEventListener("click", () => navChapter(-1));
   $("#btnNext").addEventListener("click", () => navChapter(+1));
 
-  $("#btnCopyRef").addEventListener("click", copyCurrent);
+  $("#btnCopyRef").addEventListener("click", () => copyText(currentRefString()));
   $("#btnShare").addEventListener("click", shareCurrent);
   $("#btnBookmark").addEventListener("click", toggleFavCurrent);
 
@@ -231,7 +213,7 @@ function initSelectors(){
 
   $("#btnVDD").addEventListener("click", async () => {
     await computeVerseOfDay(true);
-    renderLibrary(); // update VDD box
+    renderLibrary();
     toast("Verset du jour ✅");
   });
 }
@@ -243,7 +225,7 @@ function refreshChapterSelect(){
   const total = book?.chapters?.length || 1;
 
   chapterSelect.innerHTML = "";
-  for(let c=1; c<=total; c++){
+  for(let c=1;c<=total;c++){
     const opt = document.createElement("option");
     opt.value = String(c);
     opt.textContent = String(c);
@@ -292,44 +274,69 @@ async function navChapter(delta){
   renderReading();
 }
 
-function currentRef(){
-  const meta = state.bible.books[state.current.book];
-  return { bi: state.current.book, c: state.current.chapter, book: meta.name };
-}
 function currentRefString(){
-  const r = currentRef();
-  return `${r.book} ${r.c}`;
+  const meta = state.bible.books[state.current.book];
+  return `${meta.name} ${state.current.chapter}`;
 }
 
-function renderError(err){
-  $("#pageHeader").textContent = "Erreur";
-  $("#verses").innerHTML = `
-    <p class="verse"><span class="vnum">!</span>
-    <span>${escapeHtml(String(err.message || err))}</span></p>
-  `;
-}
+function getFavs(){ try{ return JSON.parse(localStorage.getItem(LS.fav) || "[]"); } catch { return []; } }
+function setFavs(arr){ localStorage.setItem(LS.fav, JSON.stringify(arr)); }
+function getHistory(){ try{ return JSON.parse(localStorage.getItem(LS.hist) || "[]"); } catch { return []; } }
+function setHistory(arr){ localStorage.setItem(LS.hist, JSON.stringify(arr)); }
 
 function pushHistory(ref){
-  const entry = { ref, at: nowIso() };
-  let arr = [];
-  try{ arr = JSON.parse(localStorage.getItem(LS.hist) || "[]"); } catch {}
-  // remove dup
-  arr = arr.filter(x => x?.ref !== ref);
-  arr.unshift(entry);
+  let arr = getHistory().filter(x => x?.ref !== ref);
+  arr.unshift({ ref, at: nowIso() });
   arr = arr.slice(0, 30);
-  localStorage.setItem(LS.hist, JSON.stringify(arr));
+  setHistory(arr);
+}
+
+function updateFavButtonState(){
+  const ref = currentRefString();
+  const favs = getFavs();
+  $("#btnBookmark").textContent = favs.some(f => f.type==="ref" && f.ref===ref) ? "✅ Favori" : "🔖 Favori";
+}
+
+function toggleFavCurrent(){
+  const ref = currentRefString();
+  const favs = getFavs();
+  const idx = favs.findIndex(f => f.type==="ref" && f.ref===ref);
+  if(idx >= 0){
+    favs.splice(idx,1);
+    toast("Favori supprimé.");
+  } else {
+    favs.unshift({ type:"ref", ref, at: nowIso() });
+    toast("Favori ajouté.");
+  }
+  setFavs(favs.slice(0, 120));
+  updateFavButtonState();
+  renderLibrary();
+}
+
+function toggleFavVerse(bookName, chapter, verse, text){
+  const ref = `${bookName} ${chapter}:${verse}`;
+  const favs = getFavs();
+  const idx = favs.findIndex(f => f.type==="verse" && f.ref===ref);
+  if(idx >= 0){
+    favs.splice(idx,1);
+    toast("Verset retiré des favoris.");
+  } else {
+    favs.unshift({ type:"verse", ref, text: String(text||""), at: nowIso() });
+    toast("Verset ajouté aux favoris.");
+  }
+  setFavs(favs.slice(0, 200));
+  renderLibrary();
 }
 
 function renderReading(highlightVerse=null){
   try{
     const meta = state.bible.books[state.current.book];
     const book = state.bookCache.get(meta.id);
-    if(!book) throw new Error("Livre non chargé.");
-
     const c = state.current.chapter;
-    const verses = book.chapters[c-1] || [];
 
     $("#pageHeader").textContent = `${meta.name} ${c}`;
+
+    const verses = book.chapters[c-1] || [];
     const box = $("#verses");
     box.innerHTML = "";
 
@@ -347,11 +354,10 @@ function renderReading(highlightVerse=null){
       p.appendChild(vnum);
       p.appendChild(span);
 
-      // click verse -> favorite exact verse
       p.addEventListener("click", () => toggleFavVerse(meta.name, c, i+1, t));
 
       if(highlightVerse && (i+1) === highlightVerse){
-        p.style.outline = "2px solid color-mix(in srgb, var(--gold) 35%, transparent)";
+        p.style.outline = "2px solid rgba(226,197,122,.35)";
         p.style.borderRadius = "12px";
         p.style.padding = "6px 8px";
         p.scrollIntoView({ block:"center", behavior:"smooth" });
@@ -364,125 +370,34 @@ function renderReading(highlightVerse=null){
     localStorage.setItem(LS.last, refStr);
     pushHistory(refStr);
     updateFavButtonState();
-
-  } catch(e){
-    renderError(e);
+  } catch(err){
+    $("#pageHeader").textContent = "Erreur";
+    $("#verses").innerHTML = `<p class="verse"><span class="vnum">!</span><span>${escapeHtml(err.message||String(err))}</span></p>`;
   }
 }
 
-function updateFavButtonState(){
-  const ref = currentRefString();
-  const favs = getFavs();
-  $("#btnBookmark").textContent = favs.some(f => f.type==="ref" && f.ref===ref) ? "✅ Favori" : "🔖 Favori";
-}
-
-// ---------- Swipe reading ----------
 function bindSwipe(){
   const page = $("#readerPage");
-  if(!page) return;
-
   let startX=0, startY=0, active=false;
 
   page.addEventListener("touchstart", (e)=>{
-    if(!e.touches?.length) return;
-    const t=e.touches[0];
+    const t=e.touches?.[0]; if(!t) return;
     startX=t.clientX; startY=t.clientY; active=true;
   }, {passive:true});
 
   page.addEventListener("touchend", (e)=>{
-    if(!active) return;
-    active=false;
-    const t=e.changedTouches?.[0];
-    if(!t) return;
+    if(!active) return; active=false;
+    const t=e.changedTouches?.[0]; if(!t) return;
     const dx = t.clientX - startX;
     const dy = t.clientY - startY;
-
-    // ignore mostly vertical
     if(Math.abs(dx) < 55 || Math.abs(dx) < Math.abs(dy)*1.2) return;
-
-    if(dx < 0) navChapter(+1); // swipe left -> next
-    else navChapter(-1);       // swipe right -> prev
+    if(dx < 0) navChapter(+1); else navChapter(-1);
   }, {passive:true});
 }
 
-// ---------- Favorites ----------
-function getFavs(){
-  try{ return JSON.parse(localStorage.getItem(LS.fav) || "[]"); } catch { return []; }
-}
-function setFavs(arr){
-  localStorage.setItem(LS.fav, JSON.stringify(arr));
-}
-
-function toggleFavCurrent(){
-  const ref = currentRefString();
-  const favs = getFavs();
-  const idx = favs.findIndex(f => f.type==="ref" && f.ref===ref);
-  if(idx >= 0){
-    favs.splice(idx,1);
-    setFavs(favs);
-    toast("Favori supprimé.");
-  } else {
-    favs.unshift({ type:"ref", ref, at: nowIso() });
-    setFavs(favs.slice(0, 80));
-    toast("Favori ajouté.");
-  }
-  updateFavButtonState();
-  renderLibrary();
-}
-
-function toggleFavVerse(bookName, chapter, verse, text){
-  const ref = `${bookName} ${chapter}:${verse}`;
-  const favs = getFavs();
-  const idx = favs.findIndex(f => f.type==="verse" && f.ref===ref);
-  if(idx >= 0){
-    favs.splice(idx,1);
-    setFavs(favs);
-    toast("Verset retiré des favoris.");
-  } else {
-    favs.unshift({ type:"verse", ref, text: String(text||""), at: nowIso() });
-    setFavs(favs.slice(0, 120));
-    toast("Verset ajouté aux favoris.");
-  }
-  renderLibrary();
-}
-
-// ---------- Copy / Share ----------
-async function copyText(t){
-  try{ await navigator.clipboard.writeText(t); toast("Copié ✅"); }
-  catch{ toast("Impossible de copier."); }
-}
-async function copyCurrent(){
-  await copyText(currentRefString());
-}
-async function shareCurrent(){
-  const meta = state.bible.books[state.current.book];
-  const c = state.current.chapter;
-  const url = location.origin + location.pathname + `#${encodeURIComponent(meta.name)}-${c}`;
-  const text = `${meta.name} ${c} — LaBible.app | LSG1910`;
-  if(navigator.share){
-    try{ await navigator.share({ title:"LaBible.app", text, url }); } catch {}
-  } else {
-    await copyText(url);
-  }
-}
-
-// ---------- Search ----------
-function bindSearch(){
-  $("#btnSearch").addEventListener("click", doSearch);
-  $("#searchInput").addEventListener("keydown", (e)=>{ if(e.key==="Enter") doSearch(); });
-  $("#btnBuildIndex").addEventListener("click", async ()=>{
-    await buildSearchIndexOnDemand(true);
-  });
-  $("#btnClearSearch").addEventListener("click", ()=>{
-    $("#searchInput").value = "";
-    $("#searchMeta").textContent = "";
-    $("#searchResults").innerHTML = "";
-  });
-}
-
+// Search
 function findBookIndex(bookPart){
   const key = normalize(bookPart);
-
   for(let i=0;i<state.bible.books.length;i++){
     if(normalize(state.bible.books[i].name) === key) return i;
   }
@@ -499,8 +414,6 @@ function findBookIndex(bookPart){
 
 function parseReference(input){
   const s = normalize(input);
-  if(!s) return null;
-
   const m = s.match(/(\d+)\s*(?::\s*(\d+))?\s*$/);
   if(!m) return null;
 
@@ -520,14 +433,12 @@ function highlightText(text, query){
   const q = normalize(query);
   if(q.length < 2) return escapeHtml(text);
 
-  const words = q.split(" ").filter(w => w.length >= 2).slice(0, 6);
+  const words = q.split(" ").filter(w=>w.length>=2).slice(0,6);
   let out = escapeHtml(text);
-
   words.forEach(w=>{
     const re = new RegExp(escapeRegExp(w), "ig");
     out = out.replace(re, (m)=>`<span class="hl">${escapeHtml(m)}</span>`);
   });
-
   return out;
 }
 
@@ -549,15 +460,14 @@ async function openReference(ref){
   renderReading(ref.v ? clamp(ref.v, 1, (book.chapters[c-1]||[]).length || 1) : null);
 }
 
-async function buildSearchIndexOnDemand(force=false){
+async function buildIndex(force=false){
   if(state.index && !force) return;
   if(state.indexing) return;
 
   state.indexing = true;
-  $("#searchMeta").textContent = "Indexation… (première fois)";
+  $("#searchMeta").textContent = "Indexation…";
   toast("Indexation…");
 
-  // load all books once (needed for full search)
   for(let bi=0; bi<state.bible.books.length; bi++){
     await ensureBookLoaded(bi);
   }
@@ -570,21 +480,15 @@ async function buildSearchIndexOnDemand(force=false){
       const verses = book.chapters[ci];
       for(let vi=0; vi<verses.length; vi++){
         const original = String(verses[vi] || "");
-        items.push({
-          bi,
-          c: ci+1,
-          v: vi+1,
-          norm: normalize(original),
-          original
-        });
+        items.push({ bi, c: ci+1, v: vi+1, norm: normalize(original), original });
       }
     }
   }
 
   state.index = items;
   state.indexing = false;
-  toast("Recherche prête ✅");
   $("#searchMeta").textContent = `Index prêt — ${items.length.toLocaleString("fr-FR")} versets.`;
+  toast("Recherche prête ✅");
 }
 
 async function doSearch(){
@@ -594,22 +498,14 @@ async function doSearch(){
   $("#searchResults").innerHTML = "";
   $("#searchMeta").textContent = "";
 
-  if(!q){
-    toast("Entrez un mot ou une référence.");
-    return;
-  }
+  if(!q){ toast("Entrez un mot ou une référence."); return; }
 
-  // reference first
   const ref = parseReference(qRaw);
-  if(ref){
-    await openReference(ref);
-    return;
-  }
+  if(ref){ await openReference(ref); return; }
 
-  // keyword search
   if(!state.index){
-    $("#searchMeta").textContent = "Index requis pour la recherche mot-clé.";
-    toast("Appuie sur ⚡ Index (une seule fois)");
+    $("#searchMeta").textContent = "Appuie sur ⚡ Index (une seule fois).";
+    toast("Index requis ⚡");
     return;
   }
 
@@ -622,15 +518,12 @@ async function doSearch(){
     }
   }
 
-  $("#searchMeta").textContent = results.length
-    ? `${results.length}${results.length===max?"+":""} résultat(s)`
-    : "Aucun résultat.";
+  $("#searchMeta").textContent = results.length ? `${results.length}${results.length===max?"+":""} résultat(s)` : "Aucun résultat.";
 
   const box = $("#searchResults");
   results.forEach(r=>{
     const bName = state.bible.books[r.bi].name;
     const refStr = `${bName} ${r.c}:${r.v}`;
-
     const div = document.createElement("div");
     div.className = "result";
     div.innerHTML = `
@@ -639,7 +532,6 @@ async function doSearch(){
       <div class="itemBtns">
         <button class="chip" data-open="${escapeHtml(refStr)}">📖 Ouvrir</button>
         <button class="chip" data-copy="${escapeHtml(refStr)}">📎 Copier</button>
-        <button class="chip" data-fav="${escapeHtml(refStr)}">🔖 Favori</button>
       </div>
     `;
     box.appendChild(div);
@@ -651,54 +543,64 @@ async function doSearch(){
       if(r) await openReference(r);
     });
   });
+
   box.querySelectorAll("[data-copy]").forEach(btn=>{
-    btn.addEventListener("click", async ()=>{
-      await copyText(btn.getAttribute("data-copy"));
-    });
-  });
-  box.querySelectorAll("[data-fav]").forEach(btn=>{
-    btn.addEventListener("click", ()=>{
-      // store as ref favorite (book chapter:verse)
-      const ref = btn.getAttribute("data-fav");
-      const favs = getFavs();
-      const idx = favs.findIndex(f => f.ref === ref);
-      if(idx >= 0){
-        favs.splice(idx,1);
-        toast("Favori supprimé.");
-      } else {
-        favs.unshift({ type:"verseRef", ref, at: nowIso() });
-        toast("Favori ajouté.");
-      }
-      setFavs(favs.slice(0, 120));
-      renderLibrary();
-    });
+    btn.addEventListener("click", async ()=> copyText(btn.getAttribute("data-copy")));
   });
 }
 
-// ---------- Verse of the day (deterministic) ----------
+function bindSearch(){
+  $("#btnSearch").addEventListener("click", doSearch);
+  $("#searchInput").addEventListener("keydown", (e)=>{ if(e.key==="Enter") doSearch(); });
+
+  $("#btnBuildIndex").addEventListener("click", async ()=> buildIndex(false));
+  $("#btnClearSearch").addEventListener("click", ()=>{
+    $("#searchInput").value = "";
+    $("#searchMeta").textContent = "";
+    $("#searchResults").innerHTML = "";
+  });
+}
+
+async function copyText(t){
+  try{ await navigator.clipboard.writeText(t); toast("Copié ✅"); }
+  catch{ toast("Impossible de copier."); }
+}
+
+async function shareCurrent(){
+  const meta = state.bible.books[state.current.book];
+  const c = state.current.chapter;
+  const url = location.origin + location.pathname + `#${encodeURIComponent(meta.name)}-${c}`;
+  const text = `${meta.name} ${c} — LaBible.app | LSG1910`;
+  if(navigator.share){
+    try{ await navigator.share({ title:"LaBible.app", text, url }); } catch {}
+  } else {
+    await copyText(url);
+  }
+}
+
+// Verse of the day (deterministic)
 function seededRand(seed){
-  // xorshift32
   let x = seed >>> 0;
   x ^= x << 13; x >>>= 0;
   x ^= x >> 17; x >>>= 0;
   x ^= x << 5;  x >>>= 0;
   return x >>> 0;
 }
+
 async function computeVerseOfDay(force=false){
   const k = dateKey();
+
   if(!force){
     try{
       const cached = JSON.parse(localStorage.getItem(LS.vdd) || "null");
-      if(cached?.key === k && cached?.ref) {
+      if(cached?.key === k && cached?.ref){
         state.vddRef = cached.ref;
-        $("#vddBox").textContent = cached.text || cached.ref;
+        $("#vddBox").textContent = cached.text || "—";
         return;
       }
     } catch {}
   }
 
-  // We need book counts -> load just a few books until we get verse
-  // Strategy: pick a random book and chapter based on seed, then load that book, pick verse.
   const seedBase = Number(k.replace(/-/g,"")) || 1;
   const seed1 = seededRand(seedBase);
   const bi = seed1 % state.bible.books.length;
@@ -718,21 +620,16 @@ async function computeVerseOfDay(force=false){
   const line = `${meta.name} ${ci}:${vi} — ${text || "…"}`;
   $("#vddBox").textContent = line;
 
-  localStorage.setItem(LS.vdd, JSON.stringify({
-    key: k,
-    ref,
-    text: line,
-    at: nowIso()
-  }));
+  localStorage.setItem(LS.vdd, JSON.stringify({ key: k, ref, text: line, at: nowIso() }));
 }
 
-// ---------- Plan 365 ----------
+// Plan 365
 async function ensurePlan(){
   let st = null;
   try{ st = JSON.parse(localStorage.getItem(LS.plan) || "null"); } catch {}
+
   if(st && Array.isArray(st.plan) && typeof st.doneDay==="number" && st.createdAt) return st;
 
-  // Build plan (needs chapter counts) — load all books once
   for(let bi=0; bi<state.bible.books.length; bi++){
     await ensureBookLoaded(bi);
   }
@@ -761,12 +658,11 @@ async function ensurePlan(){
 
   for(let d=1; d<=days; d++){
     const refs = [];
-    if(ni < ntChaps.length){ refs.push(ntChaps[ni++]); }
+    if(ni < ntChaps.length) refs.push(ntChaps[ni++]);
 
     const remainingDays = days - d + 1;
     const remainingOT = otChaps.length - oi;
-    let otPerDay = 2;
-    if(remainingOT / remainingDays > 2.2) otPerDay = 3;
+    let otPerDay = (remainingOT / remainingDays > 2.2) ? 3 : 2;
 
     for(let k=0;k<otPerDay;k++){
       if(oi < otChaps.length) refs.push(otChaps[oi++]);
@@ -795,10 +691,7 @@ async function renderPlan(){
   const entry = st.plan[day-1];
 
   $("#planTodayText").textContent = `Jour ${day} — ${entry.refs.map(r=>r.label).join(" · ")}`;
-
-  $("#planTodayMeta").textContent = st.doneDay >= day
-    ? "✅ Déjà marqué comme lu."
-    : `Progression : jour ${st.doneDay} terminé.`;
+  $("#planTodayMeta").textContent = st.doneDay >= day ? "✅ Déjà marqué comme lu." : `Progression : jour ${st.doneDay} terminé.`;
 
   const pct = Math.round((st.doneDay / 365) * 100);
   $("#progressFill").style.width = `${pct}%`;
@@ -835,19 +728,14 @@ async function renderPlan(){
   };
 }
 
-// ---------- Library (Favs + History + VDD) ----------
+// Library
 function renderLibrary(){
-  // VDD
-  if(state.vddRef){
-    // vddBox is updated by computeVerseOfDay
-  }
-
-  // Fav list
   const favs = getFavs();
+  const hist = getHistory();
+
   const favList = $("#favList");
   favList.innerHTML = favs.length ? "" : `<div class="muted small">Aucun favori.</div>`;
-
-  favs.slice(0, 30).forEach(f=>{
+  favs.slice(0,30).forEach(f=>{
     const div = document.createElement("div");
     div.className = "item";
     div.innerHTML = `
@@ -861,7 +749,6 @@ function renderLibrary(){
       <div class="itemBtns">
         <button class="chip" data-open="${escapeHtml(f.ref)}">📖 Ouvrir</button>
         <button class="chip" data-copy="${escapeHtml(f.ref)}">📎 Copier</button>
-        <button class="chip" data-del="${escapeHtml(f.ref)}">🗑️</button>
       </div>
     `;
     favList.appendChild(div);
@@ -871,29 +758,16 @@ function renderLibrary(){
     btn.addEventListener("click", async ()=>{
       const r = parseReference(btn.getAttribute("data-open"));
       if(r) await openReference(r);
-      else toast("Ouvrir: référence non reconnue.");
+      else toast("Référence non reconnue.");
     });
   });
   favList.querySelectorAll("[data-copy]").forEach(btn=>{
     btn.addEventListener("click", async ()=> copyText(btn.getAttribute("data-copy")));
   });
-  favList.querySelectorAll("[data-del]").forEach(btn=>{
-    btn.addEventListener("click", ()=>{
-      const ref = btn.getAttribute("data-del");
-      let arr = getFavs();
-      arr = arr.filter(x => x.ref !== ref);
-      setFavs(arr);
-      renderLibrary();
-      toast("Supprimé.");
-    });
-  });
 
-  // History list
-  const hist = (()=>{ try{return JSON.parse(localStorage.getItem(LS.hist)||"[]");}catch{return[];} })();
   const historyList = $("#historyList");
   historyList.innerHTML = hist.length ? "" : `<div class="muted small">Aucun historique.</div>`;
-
-  hist.slice(0, 30).forEach(h=>{
+  hist.slice(0,30).forEach(h=>{
     const div = document.createElement("div");
     div.className = "item";
     div.innerHTML = `
@@ -931,6 +805,7 @@ function bindLibraryButtons(){
       toast("Favoris supprimés.");
     }
   });
+
   $("#btnClearHistory").addEventListener("click", ()=>{
     if(confirm("Supprimer l’historique ?")){
       localStorage.removeItem(LS.hist);
@@ -943,22 +818,20 @@ function bindLibraryButtons(){
     if(!state.vddRef) await computeVerseOfDay(true);
     if(state.vddRef) await openReference(state.vddRef);
   });
+
   $("#btnCopyVDD").addEventListener("click", async ()=>{
-    const t = $("#vddBox").textContent || "";
-    await copyText(t);
+    await copyText($("#vddBox").textContent || "");
   });
 }
 
-// ---------- PWA install ----------
+// Install PWA
 function bindInstall(){
   const btn = $("#btnInstall");
-
   window.addEventListener("beforeinstallprompt", (e)=>{
     e.preventDefault();
     state.deferredPrompt = e;
     btn.hidden = false;
   });
-
   btn.addEventListener("click", async ()=>{
     if(!state.deferredPrompt) return;
     btn.disabled = true;
@@ -967,11 +840,8 @@ function bindInstall(){
       await state.deferredPrompt.userChoice;
       state.deferredPrompt = null;
       btn.hidden = true;
-    } finally {
-      btn.disabled = false;
-    }
+    } finally { btn.disabled = false; }
   });
-
   window.addEventListener("appinstalled", ()=>{
     state.deferredPrompt = null;
     btn.hidden = true;
@@ -979,18 +849,7 @@ function bindInstall(){
   });
 }
 
-// ---------- SW register (no offline) ----------
-function registerSW(){
-  if(!("serviceWorker" in navigator)) return;
-  window.addEventListener("load", async ()=>{
-    try{
-      const reg = await navigator.serviceWorker.register("/sw.js");
-      reg.update();
-    } catch {}
-  });
-}
-
-// ---------- Hero / top actions ----------
+// Hero & Theme button
 function bindHero(){
   $("#btnOpenRead").addEventListener("click", ()=> setView("read"));
   $("#btnOpenSearch").addEventListener("click", ()=> setView("search"));
@@ -1004,42 +863,28 @@ function bindHero(){
   });
 }
 
-// ---------- Hash deep link ----------
-function handleHash(){
-  const h = decodeURIComponent((location.hash||"").replace(/^#/, ""));
-  if(!h) return;
-  const m = h.match(/(.+)-(\d+)$/);
-  if(!m) return;
-  const bookName = m[1];
-  const chap = parseInt(m[2],10);
-  const bi = findBookIndex(bookName);
-  if(bi >= 0) openReference({ bi, c: chap, v: null });
-}
-
-// ---------- Init ----------
+// Init
 async function init(){
   $("#year").textContent = String(new Date().getFullYear());
-
   loadTheme();
   loadFont();
 
   bindTabs();
   bindHero();
   bindSearch();
-  bindInstall();
   bindSwipe();
   bindLibraryButtons();
-  registerSW();
+  bindInstall();
 
   try{
     await loadBible();
     await renderPlan();
-    handleHash();
     renderLibrary();
     toast("Bible chargée ✅");
   } catch(err){
     console.error(err);
-    renderError(err);
+    $("#pageHeader").textContent = "Erreur";
+    $("#verses").innerHTML = `<p class="verse"><span class="vnum">!</span><span>${escapeHtml(err.message||String(err))}</span></p>`;
     toast(String(err.message || err));
   }
 }

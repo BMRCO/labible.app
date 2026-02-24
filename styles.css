@@ -48,10 +48,11 @@ a:hover{ text-decoration:underline; }
 .topbar{
   position:sticky; top:0; z-index:50;
   display:flex; align-items:center; gap:12px;
-  padding: 12px 14px;
+  padding: 10px 14px;
+  height: 56px;
   background: color-mix(in srgb, var(--bg) 70%, transparent);
   border-bottom: 1px solid color-mix(in srgb, var(--text) 12%, transparent);
-  backdrop-filter: blur(14px);
+  backdrop-filter: blur(8px);
 }
 
 .iconBtn{
@@ -66,50 +67,16 @@ a:hover{ text-decoration:underline; }
 .iconBtn:hover{ background: color-mix(in srgb, var(--text) 10%, transparent); }
 
 .brand{ min-width: 0; }
-.brandTitle{ font-weight: 820; letter-spacing:.2px; }
-.brandSub{ font-size:12px; color: var(--muted2); margin-top:2px; }
+.brandTitle{ font-size:16px; font-weight:700; line-height:1; letter-spacing:.2px; }
+.brandSub{ font-size:11px; color: var(--muted2); margin-top:2px; }
 
 .topActions{ margin-left:auto; display:flex; align-items:center; gap:8px; }
 
 /* LAYOUT */
-.container{ max-width: 980px; margin: 0 auto; padding: 18px 14px 40px; }
-
-.hero{
-  background:
-    radial-gradient(700px 400px at 30% 30%, var(--goldSoft), transparent 60%),
-    radial-gradient(900px 600px at 70% 20%, color-mix(in srgb, var(--text) 8%, transparent), transparent 55%),
-    linear-gradient(180deg, color-mix(in srgb, var(--text) 6%, transparent), color-mix(in srgb, var(--text) 3%, transparent));
-  border: 1px solid color-mix(in srgb, var(--text) 12%, transparent);
-  border-radius: var(--radius);
-  padding: 18px 18px 16px;
-  box-shadow: var(--shadow);
-}
-
-.heroBadge{
-  display:inline-flex;
-  align-items:center;
-  padding: 6px 10px;
-  border-radius: 999px;
-  background: color-mix(in srgb, var(--text) 6%, transparent);
-  border: 1px solid color-mix(in srgb, var(--text) 12%, transparent);
-  color: var(--muted);
-  font-size: 12px;
-}
-
-.heroTitle{
-  font-family: ui-serif, Georgia, "Times New Roman", serif;
-  font-weight: 820;
-  font-size: clamp(30px, 5vw, 44px);
-  margin: 12px 0 8px;
-  letter-spacing:.3px;
-}
-
-.heroText{ color: var(--muted); font-size: 15px; line-height: 1.55; margin: 0 0 14px; }
-
-.heroButtons{ display:flex; gap:10px; flex-wrap: wrap; margin-bottom: 8px; }
+.container{ max-width: 980px; margin: 0 auto; padding: 8px 14px 40px; }
 
 .tabs{
-  margin-top: 14px;
+  margin-top: 6px;
   display:flex; gap:10px;
   background: color-mix(in srgb, var(--text) 4%, transparent);
   border: 1px solid color-mix(in srgb, var(--text) 8%, transparent);
@@ -138,7 +105,7 @@ a:hover{ text-decoration:underline; }
 .view.active{ display:block; }
 
 .card{
-  border-radius: var(--radius);
+  border-radius: 18px;
   border: 1px solid color-mix(in srgb, var(--text) 12%, transparent);
   background: var(--panel);
   box-shadow: var(--shadow);

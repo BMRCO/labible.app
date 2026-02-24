@@ -1,5 +1,14 @@
-self.addEventListener("install", () => self.skipWaiting());
-self.addEventListener("activate", (event) => {
-  event.waitUntil(self.clients.claim());
+self.addEventListener("install", (event) => {
+  self.skipWaiting();
 });
-// Aucun cache, aucun fetch handler => pas de mode offline.
+
+self.addEventListener("activate", (event) => {
+  event.waitUntil((async () => {
+    // apaga quaisquer caches antigos de versões anteriores
+    const keys = await caches.keys();
+    await Promise.all(keys.map(k => caches.delete(k)));
+    await self.clients.claim();
+  })());
+});
+
+// Sem fetch handler => sem modo offline

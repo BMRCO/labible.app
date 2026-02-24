@@ -2,200 +2,213 @@
 <html lang="fr">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <meta name="theme-color" content="#0b0b0b" />
+  <meta name="description" content="LaBible.app — LSG1910. Lecture, recherche, favoris, historique et plan de lecture." />
 
-  <!-- ✅ Titre corrigé (sem duplicação) -->
-  <title>LaBible.app | LSG 1910</title>
+  <link rel="manifest" href="/manifest.webmanifest">
+  <link rel="icon" href="/icons/icon-192.png">
+  <link rel="apple-touch-icon" href="/icons/icon-192.png">
 
-  <meta name="description" content="Bible Louis Segond 1910 (domaine public) — lecture simple et rapide." />
-  <meta name="theme-color" content="#0b0f19" />
-  <meta name="color-scheme" content="light dark" />
-
-  <style>
-    :root{
-      --bg: #0b0f19;
-      --card: rgba(255,255,255,.06);
-      --text: rgba(255,255,255,.92);
-      --muted: rgba(255,255,255,.68);
-      --border: rgba(255,255,255,.12);
-      --accent: #d7b56d;
-    }
-    *{box-sizing:border-box}
-    body{
-      margin:0;
-      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, "Apple Color Emoji","Segoe UI Emoji";
-      background: radial-gradient(1200px 800px at 20% -10%, rgba(215,181,109,.25), transparent 60%),
-                  radial-gradient(900px 700px at 110% 10%, rgba(120,180,255,.18), transparent 55%),
-                  var(--bg);
-      color:var(--text);
-      min-height:100vh;
-    }
-    header{
-      position:sticky; top:0; z-index:10;
-      backdrop-filter: blur(12px);
-      background: rgba(11,15,25,.75);
-      border-bottom: 1px solid var(--border);
-    }
-    .wrap{max-width:1100px; margin:0 auto; padding:14px 18px;}
-    .topbar{display:flex; align-items:center; gap:12px; justify-content:space-between;}
-    .brand{display:flex; align-items:center; gap:10px; min-width: 220px;}
-    .logo{
-      width:34px; height:34px; border-radius:10px;
-      display:grid; place-items:center;
-      background: linear-gradient(135deg, rgba(215,181,109,.25), rgba(255,255,255,.06));
-      border:1px solid var(--border);
-      box-shadow: 0 10px 25px rgba(0,0,0,.25);
-      font-weight:800;
-      color: var(--accent);
-    }
-    .brand h1{margin:0; font-size:14px; letter-spacing:.3px;}
-    .brand small{display:block; margin-top:2px; color:var(--muted); font-size:12px;}
-    nav{display:flex; gap:10px; align-items:center; flex-wrap:wrap; justify-content:flex-end;}
-    a.btn{
-      text-decoration:none;
-      color:var(--text);
-      border:1px solid var(--border);
-      background: rgba(255,255,255,.05);
-      padding:8px 10px;
-      border-radius:12px;
-      font-size:13px;
-      transition: transform .12s ease, background .12s ease, border-color .12s ease;
-    }
-    a.btn:hover{transform: translateY(-1px); background: rgba(255,255,255,.08); border-color: rgba(215,181,109,.35);}
-    main .hero{
-      padding:26px 18px 6px;
-    }
-    .hero-grid{
-      max-width:1100px; margin:0 auto;
-      display:grid; gap:14px;
-      grid-template-columns: 1.2fr .8fr;
-      align-items:stretch;
-    }
-    .card{
-      border:1px solid var(--border);
-      background: rgba(255,255,255,.05);
-      border-radius:18px;
-      padding:16px;
-      box-shadow: 0 12px 30px rgba(0,0,0,.25);
-    }
-    .card h2{margin:0 0 6px; font-size:18px;}
-    .card p{margin:0; color:var(--muted); line-height:1.5;}
-    .pill{
-      display:inline-flex; gap:8px; align-items:center;
-      margin-top:10px;
-      padding:8px 10px;
-      border:1px solid rgba(215,181,109,.35);
-      background: rgba(215,181,109,.12);
-      color: var(--text);
-      border-radius:999px;
-      font-size:13px;
-      width: fit-content;
-    }
-    .mini{
-      display:grid; gap:10px;
-      grid-template-columns: 1fr 1fr;
-      margin-top:10px;
-    }
-    .mini .stat{
-      border:1px solid var(--border);
-      border-radius:14px;
-      padding:12px;
-      background: rgba(0,0,0,.12);
-    }
-    .stat b{display:block; font-size:14px;}
-    .stat span{color:var(--muted); font-size:12px;}
-    footer{
-      margin-top:26px;
-      border-top:1px solid var(--border);
-      background: rgba(0,0,0,.18);
-    }
-    footer .wrap{
-      display:flex; gap:10px; flex-wrap:wrap;
-      align-items:center; justify-content:space-between;
-      color: var(--muted);
-      font-size:13px;
-    }
-    .links{display:flex; gap:10px; flex-wrap:wrap;}
-    .links a{color:var(--muted); text-decoration:none;}
-    .links a:hover{color:var(--text)}
-    @media (max-width: 900px){
-      .hero-grid{grid-template-columns: 1fr;}
-      .brand{min-width:auto;}
-    }
-  </style>
+  <title>LaBible.app | LSG1910</title>
+  <link rel="stylesheet" href="/styles.css" />
 </head>
 
 <body>
-  <header>
-    <div class="wrap">
-      <div class="topbar">
-        <div class="brand">
-          <div class="logo">✦</div>
-          <div>
-            <h1>LaBible.app</h1>
-            <small>LSG 1910</small>
-          </div>
-        </div>
+  <header class="topbar">
+    <button class="iconBtn" id="btnHome" title="Accueil" aria-label="Accueil">📖</button>
 
-        <nav>
-          <a class="btn" href="#lecture">Lecture</a>
-          <a class="btn" href="#plan">Plan</a>
-          <a class="btn" href="#recherche">Recherche</a>
-          <a class="btn" href="#contact">Contact</a>
-        </nav>
-      </div>
+    <div class="brand">
+      <div class="brandTitle">LaBible.app</div>
+      <div class="brandSub">LSG1910 — Domaine public</div>
+    </div>
+
+    <div class="topActions">
+      <button id="btnTheme" class="chip" title="Thème">🌙</button>
+      <button id="btnInstall" class="chip chipGold" hidden>⬇️ Installer</button>
+      <a class="chip" href="https://t.me/" target="_blank" rel="noopener">📣 Telegram</a>
+      <a class="chip" href="mailto:contact@labible.app">✉️ Contact</a>
     </div>
   </header>
 
-  <main>
-    <section class="hero">
-      <div class="hero-grid">
-        <div class="card" id="lecture">
-          <h2>Bible Louis Segond 1910</h2>
-          <p>Une lecture simple, rapide et agréable, avec un style “premium” sobre. Version domaine public.</p>
-          <div class="pill">📖 LaBible.app | LSG 1910</div>
+  <main class="container">
+    <section class="hero" id="hero">
+      <div class="heroBadge">LaBible.app</div>
+      <h1 class="heroTitle">Bible Louis Segond 1910</h1>
+      <p class="heroText">
+        Lecture “pages”, <b>recherche</b> rapide, <b>favoris</b>, <b>historique</b> et <b>plan 365 jours</b>.
+      </p>
 
-          <div class="mini">
-            <div class="stat">
-              <b>Texte</b>
-              <span>LSG 1910 (domaine public)</span>
-            </div>
-            <div class="stat">
-              <b>Interface</b>
-              <span>Simple, claire, mobile-first</span>
-            </div>
+      <div class="heroButtons">
+        <button class="btnPrimary" id="btnOpenRead">📖 Lire</button>
+        <button class="btn" id="btnOpenSearch">🔎 Rechercher</button>
+        <button class="btn" id="btnOpenPlan">📅 Plan</button>
+        <button class="btn" id="btnOpenLibrary">📚 Bibliothèque</button>
+      </div>
+    </section>
+
+    <nav class="tabs" aria-label="Navigation">
+      <button class="tab active" data-view="read">Lecture</button>
+      <button class="tab" data-view="search">Recherche</button>
+      <button class="tab" data-view="plan">Plan</button>
+      <button class="tab" data-view="library">Bibliothèque</button>
+    </nav>
+
+    <!-- LECTURE -->
+    <section class="view active" id="view-read">
+      <div class="card">
+        <div class="cardHeader">
+          <div>
+            <h2>Lecture</h2>
+            <div class="muted">Swipe gauche/droite pour chapitre suivant/précédent.</div>
+          </div>
+          <div class="row gap8">
+            <button class="chip" id="btnVDD" title="Verset du jour">✨ Verset du jour</button>
+            <button class="chip" id="btnFontMinus" title="Plus petit">A−</button>
+            <button class="chip" id="btnFontPlus" title="Plus grand">A+</button>
           </div>
         </div>
 
-        <div class="card" id="recherche">
-          <h2>Recherche</h2>
-          <p>Ajoute ici ta recherche (mot, livre, chapitre, verset). Cette page est prête à évoluer avec ton JSON.</p>
-          <div class="pill">🔎 Recherche (à connecter)</div>
+        <div class="controls">
+          <label class="field">
+            <span>Livre</span>
+            <select id="bookSelect"></select>
+          </label>
+
+          <label class="field">
+            <span>Chapitre</span>
+            <select id="chapterSelect"></select>
+          </label>
+
+          <div class="navBtns">
+            <button class="btn" id="btnPrev">← Précédent</button>
+            <button class="btn" id="btnNext">Suivant →</button>
+          </div>
         </div>
 
-        <div class="card" id="plan" style="grid-column: 1 / -1;">
-          <h2>Plan de lecture</h2>
-          <p>Zone dédiée au plan de lecture (quotidien / hebdomadaire). On peut connecter ça à ton JSON + stockage local si besoin.</p>
-          <div class="pill">🗓️ Plan (à connecter)</div>
+        <div class="page" id="readerPage" aria-live="polite">
+          <div class="pageHeader" id="pageHeader"></div>
+          <div class="verses" id="verses"></div>
+        </div>
+
+        <div class="pageFooter">
+          <button class="chip" id="btnBookmark">🔖 Favori</button>
+          <button class="chip" id="btnCopyRef">📎 Copier</button>
+          <button class="chip" id="btnShare">📤 Partager</button>
         </div>
       </div>
     </section>
-  </main>
 
-  <footer id="contact">
-    <div class="wrap">
-      <div>© 2026 LaBible.app | Texte Bible : LSG1910 - Domaine Public</div>
-      <div class="links">
+    <!-- RECHERCHE -->
+    <section class="view" id="view-search">
+      <div class="card">
+        <div class="cardHeader">
+          <div>
+            <h2>Recherche</h2>
+            <div class="muted">Mots clés + références (ex : <b>Jean 3:16</b>).</div>
+          </div>
+          <div class="row gap8">
+            <button class="chip" id="btnBuildIndex" title="Construire l’index">⚡ Index</button>
+            <button class="chip" id="btnClearSearch" title="Effacer">✖️</button>
+          </div>
+        </div>
+
+        <div class="searchBar">
+          <input id="searchInput" type="text" placeholder="Mot clé ou référence (ex : Romains 8:1)…" autocomplete="off" />
+          <button class="btnPrimary" id="btnSearch">Rechercher</button>
+        </div>
+
+        <div class="muted small" id="searchMeta"></div>
+        <div class="results" id="searchResults"></div>
+      </div>
+    </section>
+
+    <!-- PLAN -->
+    <section class="view" id="view-plan">
+      <div class="card">
+        <div class="cardHeader">
+          <div>
+            <h2>Plan de lecture</h2>
+            <div class="muted">365 jours — progression enregistrée sur l’appareil.</div>
+          </div>
+          <div class="row gap8">
+            <button class="chip" id="btnResetPlan">↺ Reset</button>
+            <button class="chip" id="btnJumpDay">📌 Jour…</button>
+          </div>
+        </div>
+
+        <div class="planGrid">
+          <div class="planBox">
+            <div class="planTitle">Aujourd’hui</div>
+            <div class="planToday" id="planTodayText">—</div>
+            <div class="planActions">
+              <button class="btnPrimary" id="btnOpenToday">📖 Ouvrir</button>
+              <button class="btn" id="btnMarkDone">✅ Marquer lu</button>
+            </div>
+            <div class="muted small" id="planTodayMeta"></div>
+          </div>
+
+          <div class="planBox">
+            <div class="planTitle">Progression</div>
+            <div class="progressWrap">
+              <div class="progressBar"><div class="progressFill" id="progressFill"></div></div>
+              <div class="progressText" id="progressText">0%</div>
+            </div>
+            <div class="muted small">Conseil: utilise “Index” pour accélérer la recherche.</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- BIBLIOTHÈQUE -->
+    <section class="view" id="view-library">
+      <div class="card">
+        <div class="cardHeader">
+          <div>
+            <h2>Bibliothèque</h2>
+            <div class="muted">Favoris + historique.</div>
+          </div>
+          <div class="row gap8">
+            <button class="chip" id="btnClearFav">🧹 Favoris</button>
+            <button class="chip" id="btnClearHistory">🧹 Historique</button>
+          </div>
+        </div>
+
+        <div class="libraryGrid">
+          <div class="libBox">
+            <div class="planTitle">✨ Verset du jour</div>
+            <div class="vdd" id="vddBox">—</div>
+            <div class="row gap8 wrap">
+              <button class="btn" id="btnOpenVDD">📖 Ouvrir</button>
+              <button class="btn" id="btnCopyVDD">📎 Copier</button>
+            </div>
+          </div>
+
+          <div class="libBox">
+            <div class="planTitle">🔖 Favoris</div>
+            <div class="list" id="favList"></div>
+          </div>
+
+          <div class="libBox">
+            <div class="planTitle">🕘 Historique</div>
+            <div class="list" id="historyList"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <footer class="footer">
+      <div>© <span id="year"></span> · <b>LaBible.app</b> · LSG1910 — Domaine public</div>
+      <div class="footerLinks">
         <a href="https://t.me/" target="_blank" rel="noopener">Telegram</a>
+        <span>·</span>
         <a href="mailto:contact@labible.app">Contact</a>
       </div>
-    </div>
-  </footer>
+    </footer>
+  </main>
 
-  <!-- IMPORTANT: não colocar scripts que redefinam document.title -->
-  <script>
-    // Deixa vazio ou remove qualquer coisa que altere o título
-    // document.title = "..."  <-- NÃO usar
-  </script>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script src="/app.js"></script>
 </body>
 </html>

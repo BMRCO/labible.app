@@ -1,3 +1,8 @@
+/* =========================
+   LaBible.app — app.js
+   (stable, vdd opens in reader)
+   ========================= */
+
 const $ = (s) => document.querySelector(s);
 const $$ = (s) => Array.from(document.querySelectorAll(s));
 
@@ -11,7 +16,6 @@ const LS = {
   vdd: "labible:vddCache"
 };
 
-// ✅ usa o teu índice
 const BOOKS_INDEX_URL = "/data/bible/books.json";
 
 const state = {
@@ -25,6 +29,7 @@ const state = {
   vddRef: null
 };
 
+/* ---------- helpers ---------- */
 function toast(msg){
   const el = $("#toast");
   if(!el) return;
@@ -55,14 +60,14 @@ function dateKey(d=new Date()){
   return `${y}-${m}-${da}`;
 }
 
-// ✅ se books.json tiver "file", usa ele; senão usa <id>.json
+/* ---------- file urls ---------- */
 function bookFileUrl(bookId){
   const meta = state.bible?.books?.find(b => b.id === bookId);
   const filename = meta?.file ? meta.file : `${bookId}.json`;
   return `/data/bible/${filename}`;
 }
 
-// Views
+/* ---------- views / ui ---------- */
 function setView(view){
   $$(".tab").forEach(t => t.classList.toggle("active", t.dataset.view === view));
   $$(".view").forEach(v => v.classList.toggle("active", v.id === `view-${view}`));
@@ -73,11 +78,12 @@ function bindTabs(){
   $$(".tab").forEach(tab => tab.addEventListener("click", () => setView(tab.dataset.view)));
 }
 
-// Theme / Font
+/* ---------- theme / font ---------- */
 function applyTheme(theme){
   document.documentElement.setAttribute("data-theme", theme);
   localStorage.setItem(LS.theme, theme);
-  $("#btnTheme").textContent = theme === "light" ? "☀️" : "🌙";
+  const btn = $("#btnTheme");
+  if(btn) btn.textContent = theme === "light" ? "☀️" : "🌙";
 }
 function loadTheme(){
   const saved = localStorage.getItem(LS.theme);
@@ -94,8 +100,13 @@ function loadFont(){
   applyFont(isFinite(v) ? v : 16);
 }
 
-// ✅ NORMALIZA livro para o teu formato:
-// { "Ésaïe": { "1": { "1": "..." } } }
+/* ---------- normalize book formats ---------- */
+/*
+  Supports:
+  1) { "Ésaïe": { "1": { "1": "..." } } }
+  2) { chapters: [ [ "v1","v2" ], ... ] }
+  3) { "chapters": { "1": { "1":"..." } } } etc.
+*/
 function normalizeBook(raw, fallback){
   let detectedName = null;
   let payload = raw;
@@ -162,16 +173,11 @@ async function ensureBookLoaded(bookIndex){
   const url = bookFileUrl(meta.id);
   const res = await fetch(url, { cache:"no-store" });
 
-  if(!res.ok){
-    throw new Error(`Livre introuvable: ${url} (HTTP ${res.status})`);
-  }
+  if(!res.ok) throw new Error(`Livre introuvable: ${url} (HTTP ${res.status})`);
 
   let raw;
-  try{
-    raw = await res.json();
-  }catch{
-    throw new Error(`JSON invalide dans ${url}.`);
-  }
+  try{ raw = await res.json(); }
+  catch{ throw new Error(`JSON invalide dans ${url}.`); }
 
   const book = normalizeBook(raw, meta);
   if(!book.chapters.length) throw new Error(`Format invalide dans ${url} (chapitres).`);
@@ -194,8 +200,6 @@ async function loadBible(){
   if(!res.ok) throw new Error(`Index introuvable: ${BOOKS_INDEX_URL} (HTTP ${res.status})`);
 
   const idx = await res.json();
-
-  // ✅ aceita: [ ... ] OU { books: [ ... ] }
   const booksArr = Array.isArray(idx) ? idx : idx.books;
   if(!Array.isArray(booksArr) || !booksArr.length){
     throw new Error("books.json invalide (attendu: [..] ou {books:[..]}).");
@@ -228,6 +232,7 @@ async function loadBible(){
   renderLibrary();
 }
 
+/* ---------- selectors / reading ---------- */
 function initSelectors(){
   const bookSelect = $("#bookSelect");
   const chapterSelect = $("#chapterSelect");
@@ -263,10 +268,20 @@ function initSelectors(){
   $("#btnFontMinus")?.addEventListener("click", () => applyFont(state.readFont - 1));
   $("#btnFontPlus")?.addEventListener("click", () => applyFont(state.readFont + 1));
 
+  /* ✅ FIX: Verset du jour opens in reader */
   $("#btnVDD")?.addEventListener("click", async () => {
-    await computeVerseOfDay(true);
-    renderLibrary();
-    toast("Verset du jour ✅");
+    try{
+      await computeVerseOfDay(true);
+      if(state.vddRef){
+        await openReference(state.vddRef);
+        toast("Verset du jour ✅");
+      } else {
+        toast("Impossible d’ouvrir le verset du jour.");
+      }
+    }catch(e){
+      console.error(e);
+      toast("Erreur verset du jour.");
+    }
   });
 }
 
@@ -280,7 +295,7 @@ function refreshChapterSelect(){
   for(let c=1;c<=total;c++){
     const opt = document.createElement("option");
     opt.value = String(c);
-    opt.textContent = String(c);
+    opt.textContent = `Ch. ${c}`;
     chapterSelect.appendChild(opt);
   }
   state.current.chapter = clamp(state.current.chapter, 1, total);
@@ -331,6 +346,7 @@ function currentRefString(){
   return `${meta.name} ${state.current.chapter}`;
 }
 
+/* ---------- favorites / history ---------- */
 function getFavs(){ try{ return JSON.parse(localStorage.getItem(LS.fav) || "[]"); } catch { return []; } }
 function setFavs(arr){ localStorage.setItem(LS.fav, JSON.stringify(arr)); }
 function getHistory(){ try{ return JSON.parse(localStorage.getItem(LS.hist) || "[]"); } catch { return []; } }
@@ -346,7 +362,8 @@ function pushHistory(ref){
 function updateFavButtonState(){
   const ref = currentRefString();
   const favs = getFavs();
-  $("#btnBookmark").textContent = favs.some(f => f.type==="ref" && f.ref===ref) ? "✅ Favori" : "🔖 Favori";
+  const btn = $("#btnBookmark");
+  if(btn) btn.textContent = favs.some(f => f.type==="ref" && f.ref===ref) ? "✅ Favori" : "🔖 Favori";
 }
 
 function toggleFavCurrent(){
@@ -380,6 +397,7 @@ function toggleFavVerse(bookName, chapter, verse, text){
   renderLibrary();
 }
 
+/* ---------- render reading ---------- */
 function renderReading(highlightVerse=null){
   try{
     const meta = state.bible.books[state.current.book];
@@ -428,6 +446,7 @@ function renderReading(highlightVerse=null){
   }
 }
 
+/* ---------- swipe navigation ---------- */
 function bindSwipe(){
   const page = $("#readerPage");
   if(!page) return;
@@ -448,7 +467,7 @@ function bindSwipe(){
   }, {passive:true});
 }
 
-// Search
+/* ---------- search ---------- */
 function findBookIndex(bookPart){
   const key = normalize(bookPart);
   for(let i=0;i<state.bible.books.length;i++){
@@ -614,6 +633,7 @@ function bindSearch(){
   });
 }
 
+/* ---------- clipboard / share ---------- */
 async function copyText(t){
   try{ await navigator.clipboard.writeText(t); toast("Copié ✅"); }
   catch{ toast("Impossible de copier."); }
@@ -631,7 +651,7 @@ async function shareCurrent(){
   }
 }
 
-// Verse of the day (deterministic)
+/* ---------- verse of day ---------- */
 function seededRand(seed){
   let x = seed >>> 0;
   x ^= x << 13; x >>>= 0;
@@ -648,12 +668,14 @@ async function computeVerseOfDay(force=false){
       const cached = JSON.parse(localStorage.getItem(LS.vdd) || "null");
       if(cached?.key === k && cached?.ref){
         state.vddRef = cached.ref;
-        $("#vddBox").textContent = cached.text || "—";
+        const vddBox = $("#vddBox");
+        if(vddBox) vddBox.textContent = cached.text || "—";
         return;
       }
     } catch {}
   }
 
+  // pick deterministic random
   const seedBase = Number(k.replace(/-/g,"")) || 1;
   const seed1 = seededRand(seedBase);
   const bi = seed1 % state.bible.books.length;
@@ -671,18 +693,19 @@ async function computeVerseOfDay(force=false){
 
   state.vddRef = ref;
   const line = `${meta.name} ${ci}:${vi} — ${text || "…"}`;
-  $("#vddBox").textContent = line;
+  const vddBox = $("#vddBox");
+  if(vddBox) vddBox.textContent = line;
 
   localStorage.setItem(LS.vdd, JSON.stringify({ key: k, ref, text: line, at: nowIso() }));
 }
 
-// Plan 365
+/* ---------- plan 365 ---------- */
 async function ensurePlan(){
   let st = null;
   try{ st = JSON.parse(localStorage.getItem(LS.plan) || "null"); } catch {}
-
   if(st && Array.isArray(st.plan) && typeof st.doneDay==="number" && st.createdAt) return st;
 
+  // ensure all books loaded
   for(let bi=0; bi<state.bible.books.length; bi++){
     await ensureBookLoaded(bi);
   }
@@ -693,16 +716,14 @@ async function ensurePlan(){
 
   const otChaps = [];
   OT.forEach(bm=>{
-    const bi = books.findIndex(x=>x.id===bm.id);
     const b = state.bookCache.get(bm.id);
-    for(let c=1; c<=b.chapters.length; c++) otChaps.push({ bi, c, label:`${bm.name} ${c}` });
+    for(let c=1; c<=b.chapters.length; c++) otChaps.push({ bi: books.findIndex(x=>x.id===bm.id), c, label:`${bm.name} ${c}` });
   });
 
   const ntChaps = [];
   NT.forEach(bm=>{
-    const bi = books.findIndex(x=>x.id===bm.id);
     const b = state.bookCache.get(bm.id);
-    for(let c=1; c<=b.chapters.length; c++) ntChaps.push({ bi, c, label:`${bm.name} ${c}` });
+    for(let c=1; c<=b.chapters.length; c++) ntChaps.push({ bi: books.findIndex(x=>x.id===bm.id), c, label:`${bm.name} ${c}` });
   });
 
   const days = 365;
@@ -781,7 +802,7 @@ async function renderPlan(){
   };
 }
 
-// Library
+/* ---------- library ---------- */
 function renderLibrary(){
   const favs = getFavs();
   const hist = getHistory();
@@ -873,18 +894,19 @@ function bindLibraryButtons(){
   });
 
   $("#btnCopyVDD")?.addEventListener("click", async ()=>{
-    await copyText($("#vddBox").textContent || "");
+    await copyText($("#vddBox")?.textContent || "");
   });
 }
 
-// Install PWA
+/* ---------- PWA install ---------- */
 function bindInstall(){
   const btn = $("#btnInstall");
   window.addEventListener("beforeinstallprompt", (e)=>{
     e.preventDefault();
     state.deferredPrompt = e;
-    btn.hidden = false;
+    if(btn) btn.hidden = false;
   });
+
   btn?.addEventListener("click", async ()=>{
     if(!state.deferredPrompt) return;
     btn.disabled = true;
@@ -895,14 +917,15 @@ function bindInstall(){
       btn.hidden = true;
     } finally { btn.disabled = false; }
   });
+
   window.addEventListener("appinstalled", ()=>{
     state.deferredPrompt = null;
-    btn.hidden = true;
+    if(btn) btn.hidden = true;
     toast("Installé ✅");
   });
 }
 
-// ✅ versão segura: não depende de hero
+/* ---------- header actions ---------- */
 function bindHeaderActions(){
   $("#btnHome")?.addEventListener("click", ()=> window.scrollTo({top:0, behavior:"smooth"}));
   $("#btnTheme")?.addEventListener("click", ()=>{
@@ -911,9 +934,11 @@ function bindHeaderActions(){
   });
 }
 
-// Init
+/* ---------- init ---------- */
 async function init(){
-  $("#year").textContent = String(new Date().getFullYear());
+  const y = $("#year");
+  if(y) y.textContent = String(new Date().getFullYear());
+
   loadTheme();
   loadFont();
 
@@ -936,3 +961,9 @@ async function init(){
 }
 
 init();
+
+/* (Optional) offline later:
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => navigator.serviceWorker.register("/sw.js"));
+}
+*/

@@ -1,12 +1,12 @@
-{
-  "name": "LaBible.app | LSG1910",
-  "short_name": "LaBible",
-  "start_url": "/",
-  "display": "standalone",
-  "background_color": "#0b0b0b",
-  "theme_color": "#0b0b0b",
-  "icons": [
-    { "src": "/icons/icon-192.png", "sizes": "192x192", "type": "image/png" },
-    { "src": "/icons/icon-512.png", "sizes": "512x512", "type": "image/png" }
-  ]
-}
+// sw.js (COMPLETO) — sans offline (et nettoie les caches anciens)
+self.addEventListener("install", () => self.skipWaiting());
+
+self.addEventListener("activate", (event) => {
+  event.waitUntil((async () => {
+    const keys = await caches.keys();
+    await Promise.all(keys.map(k => caches.delete(k)));
+    await self.clients.claim();
+  })());
+});
+
+// Pas de fetch handler => pas de cache/offline

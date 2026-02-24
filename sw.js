@@ -1,4 +1,3 @@
-// sw.js (COMPLETO) — sans offline (et nettoie les caches anciens)
 self.addEventListener("install", () => self.skipWaiting());
 
 self.addEventListener("activate", (event) => {

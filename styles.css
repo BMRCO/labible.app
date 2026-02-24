@@ -1,12 +1,336 @@
-{
-  "name": "LaBible.app — LSG1910",
-  "short_name": "LaBible",
-  "start_url": "/",
-  "display": "standalone",
-  "background_color": "#0b0b0b",
-  "theme_color": "#0b0b0b",
-  "icons": [
-    { "src": "/icons/icon-192.png", "sizes": "192x192", "type": "image/png" },
-    { "src": "/icons/icon-512.png", "sizes": "512x512", "type": "image/png" }
-  ]
+:root{
+  --bg:#0b0b0b;
+  --panel:rgba(20,20,20,.75);
+  --panel2:rgba(255,255,255,.06);
+  --text:#f2f2f2;
+  --muted:rgba(255,255,255,.72);
+  --muted2:rgba(255,255,255,.55);
+  --gold1: rgba(226,197,122,.85);
+  --gold2: rgba(226,197,122,.18);
+  --shadow: 0 22px 60px rgba(0,0,0,.55);
+  --radius: 22px;
 }
+
+*{ box-sizing:border-box; }
+
+html,body{ height:100%; }
+
+body{
+  margin:0;
+  font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  color:var(--text);
+  background:
+    radial-gradient(1100px 600px at 25% 10%, rgba(226,197,122,.14), transparent 55%),
+    radial-gradient(900px 500px at 80% 25%, rgba(255,255,255,.08), transparent 60%),
+    linear-gradient(180deg, #0a0a0a 0%, #050505 100%);
+}
+
+/* ---------- LINKS ---------- */
+
+a{ color:inherit; text-decoration:none; }
+a:hover{ text-decoration:underline; }
+
+/* ---------- TOPBAR ---------- */
+
+.topbar{
+  position:sticky; top:0; z-index:50;
+  display:flex; align-items:center; gap:12px;
+  padding: 12px 14px;
+  background: rgba(10,10,10,.72);
+  border-bottom: 1px solid rgba(255,255,255,.08);
+  backdrop-filter: blur(14px);
+}
+
+.iconBtn{
+  width:44px; height:44px;
+  border-radius: 14px;
+  border: 1px solid rgba(255,255,255,.10);
+  background: rgba(255,255,255,.05);
+  color: var(--text);
+  display:flex; align-items:center; justify-content:center;
+  cursor:pointer;
+}
+
+.iconBtn:hover{ background: rgba(255,255,255,.08); }
+
+.bookIcon{ font-size:18px; }
+
+.brandTitle{ font-weight: 750; }
+.brandSub{ font-size:12px; color: var(--muted2); }
+
+.topActions{ margin-left:auto; display:flex; gap:8px; }
+
+/* ---------- CONTAINER ---------- */
+
+.container{
+  max-width: 980px;
+  margin: 0 auto;
+  padding: 18px 14px 40px;
+}
+
+/* ---------- HERO ---------- */
+
+.hero{
+  background:
+    radial-gradient(700px 400px at 30% 30%, rgba(226,197,122,.12), transparent 60%),
+    linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
+  border: 1px solid rgba(255,255,255,.10);
+  border-radius: var(--radius);
+  padding: 18px;
+  box-shadow: var(--shadow);
+}
+
+.heroBadge{
+  display:inline-block;
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: rgba(255,255,255,.06);
+  border: 1px solid rgba(255,255,255,.10);
+  font-size: 12px;
+}
+
+.heroTitle{
+  font-family: ui-serif, Georgia, "Times New Roman", serif;
+  font-weight: 780;
+  font-size: clamp(30px, 5vw, 44px);
+  margin: 12px 0 8px;
+}
+
+.heroText{
+  color: var(--muted);
+  line-height: 1.6;
+}
+
+.heroButtons{
+  margin-top:12px;
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+}
+
+/* ---------- TABS ---------- */
+
+.tabs{
+  margin-top: 14px;
+  display:flex;
+  gap:10px;
+  background: rgba(255,255,255,.04);
+  border-radius: 999px;
+  padding: 6px;
+}
+
+.tab{
+  flex:1;
+  border:none;
+  border-radius: 999px;
+  padding: 10px;
+  background: transparent;
+  color: var(--muted);
+  font-weight: 650;
+  cursor:pointer;
+}
+
+.tab.active{
+  background: rgba(255,255,255,.08);
+  color: var(--text);
+}
+
+/* ---------- VIEWS ---------- */
+
+.view{ display:none; margin-top: 14px; }
+.view.active{ display:block; }
+
+/* ---------- CARD ---------- */
+
+.card{
+  border-radius: var(--radius);
+  border: 1px solid rgba(255,255,255,.10);
+  background: var(--panel);
+  box-shadow: var(--shadow);
+  padding: 16px;
+}
+
+.muted{ color: var(--muted); }
+.small{ font-size:12px; color: var(--muted2); }
+
+/* ---------- CONTROLS ---------- */
+
+.controls{
+  margin-top: 14px;
+  display:flex;
+  gap:10px;
+  flex-wrap: wrap;
+}
+
+.field{
+  display:flex;
+  flex-direction:column;
+  gap:6px;
+  min-width: 180px;
+}
+
+select{
+  border-radius: 14px;
+  border: 1px solid rgba(255,255,255,.10);
+  background: rgba(0,0,0,.25);
+  color: var(--text);
+  padding: 10px;
+}
+
+/* ---------- BUTTONS ---------- */
+
+.btn, .btnPrimary, .chip{
+  border-radius: 999px;
+  padding: 10px 14px;
+  cursor:pointer;
+  border: 1px solid rgba(255,255,255,.12);
+  background: rgba(0,0,0,.25);
+  color: var(--text);
+  font-weight: 650;
+}
+
+.btnPrimary{
+  background: linear-gradient(180deg, rgba(226,197,122,.22), rgba(226,197,122,.10));
+  border-color: rgba(226,197,122,.30);
+}
+
+.chip{
+  background: rgba(255,255,255,.05);
+  color: var(--muted);
+}
+
+.chipGold{
+  background: rgba(226,197,122,.15);
+  border-color: rgba(226,197,122,.35);
+}
+
+/* ---------- PAGE BIBLE ---------- */
+
+.page{
+  margin-top: 14px;
+  border-radius: 20px;
+  border: 1px solid rgba(226,197,122,.18);
+  background:
+    radial-gradient(1200px 300px at 50% 0%, rgba(226,197,122,.10), transparent 60%),
+    linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
+  padding: 16px;
+}
+
+.pageHeader{
+  font-family: ui-serif, Georgia, "Times New Roman", serif;
+  font-size: 18px;
+  font-weight: 780;
+  margin-bottom: 10px;
+}
+
+.verses{
+  font-family: ui-serif, Georgia, "Times New Roman", serif;
+  line-height: 1.7;
+}
+
+.verse{ margin-bottom: 8px; }
+
+.vnum{
+  font-size: 12px;
+  color: var(--gold1);
+  font-weight: 800;
+  vertical-align: super;
+  margin-right: 6px;
+}
+
+/* ---------- SEARCH ---------- */
+
+.searchBar{
+  margin-top: 14px;
+  display:flex;
+  gap:10px;
+  flex-wrap: wrap;
+}
+
+.searchBar input{
+  flex:1;
+  min-width: 240px;
+  border-radius: 16px;
+  border: 1px solid rgba(255,255,255,.10);
+  background: rgba(0,0,0,.25);
+  color: var(--text);
+  padding: 12px 14px;
+}
+
+.results{
+  margin-top: 12px;
+  display:flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.result{
+  border-radius: 18px;
+  border: 1px solid rgba(255,255,255,.08);
+  background: rgba(255,255,255,.04);
+  padding: 12px;
+}
+
+.resultRef{ font-weight: 800; margin-bottom: 6px; }
+
+.hl{
+  background: rgba(226,197,122,.18);
+  border-radius: 6px;
+  padding: 0 4px;
+}
+
+/* ---------- PLAN ---------- */
+
+.planGrid{
+  margin-top: 14px;
+  display:grid;
+  gap: 12px;
+}
+
+.planBox{
+  border-radius: 20px;
+  border: 1px solid rgba(255,255,255,.10);
+  background: rgba(255,255,255,.04);
+  padding: 14px;
+}
+
+.progressBar{
+  height: 12px;
+  border-radius: 999px;
+  background: rgba(0,0,0,.35);
+  overflow:hidden;
+}
+
+.progressFill{
+  height:100%;
+  width: 0%;
+  background: linear-gradient(90deg, rgba(226,197,122,.35), rgba(226,197,122,.18));
+}
+
+/* ---------- FOOTER ---------- */
+
+.footer{
+  margin-top: 16px;
+  color: var(--muted2);
+  font-size: 12px;
+  display:flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+}
+
+/* ---------- TOAST ---------- */
+
+.toast{
+  position: fixed;
+  left: 50%;
+  bottom: 18px;
+  transform: translateX(-50%);
+  padding: 10px 12px;
+  border-radius: 999px;
+  background: rgba(0,0,0,.75);
+  color: rgba(255,255,255,.92);
+  opacity: 0;
+  transition: opacity .2s;
+}
+
+.toast.show{ opacity: 1; }

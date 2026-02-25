@@ -173,7 +173,7 @@ async function ensureBookLoaded(bookIndex){
   const url = bookFileUrl(meta.id);
   const res = await fetch(url, { cache:"no-store" });
 
-  if(!res.ok) throw new Error(`Livre introuvable: ${url} (HTTP ${res.status})`);
+  if(!res.ok) throw new Error(`Livre introuvable : ${url} (HTTP ${res.status})`);
 
   let raw;
   try{ raw = await res.json(); }
@@ -197,12 +197,12 @@ function restoreLastRef(){
 
 async function loadBible(){
   const res = await fetch(BOOKS_INDEX_URL, { cache:"no-store" });
-  if(!res.ok) throw new Error(`Index introuvable: ${BOOKS_INDEX_URL} (HTTP ${res.status})`);
+  if(!res.ok) throw new Error(`Index introuvable : ${BOOKS_INDEX_URL} (HTTP ${res.status})`);
 
   const idx = await res.json();
   const booksArr = Array.isArray(idx) ? idx : idx.books;
   if(!Array.isArray(booksArr) || !booksArr.length){
-    throw new Error("books.json invalide (attendu: [..] ou {books:[..]}).");
+    throw new Error("books.json invalide (attendu : [..] ou {books:[..]}).");
   }
 
   state.bible = {
@@ -280,7 +280,7 @@ function initSelectors(){
       }
     }catch(e){
       console.error(e);
-      toast("Erreur verset du jour.");
+      toast("Erreur : verset du jour.");
     }
   });
 }
@@ -570,13 +570,13 @@ async function doSearch(){
   $("#searchResults").innerHTML = "";
   $("#searchMeta").textContent = "";
 
-  if(!q){ toast("Entrez un mot ou une référence."); return; }
+  if(!q){ toast("Veuillez saisir un mot ou une référence."); return; }
 
   const ref = parseReference(qRaw);
   if(ref){ await openReference(ref); return; }
 
   if(!state.index){
-    $("#searchMeta").textContent = "Appuie sur ⚡ Index (une seule fois).";
+    $("#searchMeta").textContent = "Appuyez sur ⚡ Index (une seule fois).";
     toast("Index requis ⚡");
     return;
   }
@@ -798,7 +798,7 @@ async function renderPlan(){
     const d = clamp(parseInt(input,10)||1,1,365);
     const st2 = await ensurePlan();
     const e = st2.plan[d-1];
-    toast(`Jour ${d}: ${e.refs.map(r=>r.label).join(" · ")}`);
+    toast(`Jour ${d} : ${e.refs.map(r=>r.label).join(" · ")}`);
   };
 }
 
@@ -921,7 +921,7 @@ function bindInstall(){
   window.addEventListener("appinstalled", ()=>{
     state.deferredPrompt = null;
     if(btn) btn.hidden = true;
-    toast("Installé ✅");
+    toast("Installée ✅");
   });
 }
 

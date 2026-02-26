@@ -899,20 +899,19 @@ function bindInstall(){
     if(btn) btn.hidden = false;
   });
 
-  btn?.addEventListener("click", async () => {
+  btn?.addEventListener("click", () => {
     if(!state.deferredPrompt) return;
-    btn.disabled = true;
-    try {
-      await state.deferredPrompt.prompt();
-      const { outcome } = await state.deferredPrompt.userChoice;
-      if(outcome === "accepted") toast("Installation en cours ✅");
+
+    // prompt() doit être appelé directement dans le gestionnaire de clic (sans async/await)
+    state.deferredPrompt.prompt();
+
+    state.deferredPrompt.userChoice.then((result) => {
+      if(result.outcome === "accepted"){
+        toast("Installation en cours ✅");
+      }
       state.deferredPrompt = null;
       btn.hidden = true;
-    } catch(e) {
-      console.error("Install error:", e);
-    } finally {
-      btn.disabled = false;
-    }
+    });
   });
 
   window.addEventListener("appinstalled", () => {

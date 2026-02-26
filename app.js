@@ -42,7 +42,7 @@ function normalize(s){
   return (s||"")
     .toLowerCase()
     .normalize("NFD").replace(/[\u0300-\u036f]/g,"")
-    .replace(/[’']/g,"'")
+    .replace(/['']/g,"'")
     .replace(/\s+/g," ")
     .trim();
 }
@@ -101,12 +101,6 @@ function loadFont(){
 }
 
 /* ---------- normalize book formats ---------- */
-/*
-  Supports:
-  1) { "Ésaïe": { "1": { "1": "..." } } }
-  2) { chapters: [ [ "v1","v2" ], ... ] }
-  3) { "chapters": { "1": { "1":"..." } } } etc.
-*/
 function normalizeBook(raw, fallback){
   let detectedName = null;
   let payload = raw;
@@ -268,7 +262,6 @@ function initSelectors(){
   $("#btnFontMinus")?.addEventListener("click", () => applyFont(state.readFont - 1));
   $("#btnFontPlus")?.addEventListener("click", () => applyFont(state.readFont + 1));
 
-  /* ✅ FIX: Verset du jour opens in reader */
   $("#btnVDD")?.addEventListener("click", async () => {
     try{
       await computeVerseOfDay(true);
@@ -276,7 +269,7 @@ function initSelectors(){
         await openReference(state.vddRef);
         toast("Verset du jour ✅");
       } else {
-        toast("Impossible d’ouvrir le verset du jour.");
+        toast("Impossible d'ouvrir le verset du jour.");
       }
     }catch(e){
       console.error(e);
@@ -675,7 +668,6 @@ async function computeVerseOfDay(force=false){
     } catch {}
   }
 
-  // pick deterministic random
   const seedBase = Number(k.replace(/-/g,"")) || 1;
   const seed1 = seededRand(seedBase);
   const bi = seed1 % state.bible.books.length;
@@ -705,7 +697,6 @@ async function ensurePlan(){
   try{ st = JSON.parse(localStorage.getItem(LS.plan) || "null"); } catch {}
   if(st && Array.isArray(st.plan) && typeof st.doneDay==="number" && st.createdAt) return st;
 
-  // ensure all books loaded
   for(let bi=0; bi<state.bible.books.length; bi++){
     await ensureBookLoaded(bi);
   }
@@ -881,7 +872,7 @@ function bindLibraryButtons(){
   });
 
   $("#btnClearHistory")?.addEventListener("click", ()=>{
-    if(confirm("Supprimer l’historique ?")){
+    if(confirm("Supprimer l'historique ?")){
       localStorage.removeItem(LS.hist);
       renderLibrary();
       toast("Historique supprimé.");
@@ -901,24 +892,30 @@ function bindLibraryButtons(){
 /* ---------- PWA install ---------- */
 function bindInstall(){
   const btn = $("#btnInstall");
-  window.addEventListener("beforeinstallprompt", (e)=>{
+
+  window.addEventListener("beforeinstallprompt", (e) => {
     e.preventDefault();
     state.deferredPrompt = e;
     if(btn) btn.hidden = false;
   });
 
-  btn?.addEventListener("click", async ()=>{
+  btn?.addEventListener("click", async () => {
     if(!state.deferredPrompt) return;
     btn.disabled = true;
-    try{
-      state.deferredPrompt.prompt();
-      await state.deferredPrompt.userChoice;
+    try {
+      await state.deferredPrompt.prompt();
+      const { outcome } = await state.deferredPrompt.userChoice;
+      if(outcome === "accepted") toast("Installation en cours ✅");
       state.deferredPrompt = null;
       btn.hidden = true;
-    } finally { btn.disabled = false; }
+    } catch(e) {
+      console.error("Install error:", e);
+    } finally {
+      btn.disabled = false;
+    }
   });
 
-  window.addEventListener("appinstalled", ()=>{
+  window.addEventListener("appinstalled", () => {
     state.deferredPrompt = null;
     if(btn) btn.hidden = true;
     toast("Installée ✅");
@@ -932,6 +929,17 @@ function bindHeaderActions(){
     const cur = document.documentElement.getAttribute("data-theme") || "dark";
     applyTheme(cur === "dark" ? "light" : "dark");
   });
+}
+
+/* ---------- Service Worker ---------- */
+function registerServiceWorker(){
+  if("serviceWorker" in navigator){
+    window.addEventListener("load", () => {
+      navigator.serviceWorker.register("/sw.js")
+        .then((reg) => console.log("SW enregistré :", reg.scope))
+        .catch((err) => console.error("SW erreur :", err));
+    });
+  }
 }
 
 /* ---------- init ---------- */
@@ -948,6 +956,7 @@ async function init(){
   bindSwipe();
   bindLibraryButtons();
   bindInstall();
+  registerServiceWorker();
 
   try{
     await loadBible();
@@ -961,9 +970,3 @@ async function init(){
 }
 
 init();
-
-/* (Optional) offline later:
-if ("serviceWorker" in navigator) {
-  window.addEventListener("load", () => navigator.serviceWorker.register("/sw.js"));
-}
-*/

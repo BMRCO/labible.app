@@ -3,6 +3,12 @@
    (stable, vdd opens in reader)
    ========================= */
 
+// Capturer le prompt d'installation le plus tôt possible
+window.addEventListener("beforeinstallprompt", (e) => {
+  e.preventDefault();
+  window._installPrompt = e;
+});
+
 const $ = (s) => document.querySelector(s);
 const $$ = (s) => Array.from(document.querySelectorAll(s));
 
@@ -893,6 +899,12 @@ function bindLibraryButtons(){
 function bindInstall(){
   const btn = $("#btnInstall");
 
+  // Usar o evento já capturado no início da página
+  if(window._installPrompt){
+    state.deferredPrompt = window._installPrompt;
+    if(btn) btn.hidden = false;
+  }
+
   window.addEventListener("beforeinstallprompt", (e) => {
     e.preventDefault();
     state.deferredPrompt = e;
@@ -902,7 +914,7 @@ function bindInstall(){
   btn?.addEventListener("click", () => {
     if(!state.deferredPrompt) return;
 
-    // prompt() doit être appelé directement dans le gestionnaire de clic (sans async/await)
+    // prompt() deve ser chamado directamente no clique (sem async/await)
     state.deferredPrompt.prompt();
 
     state.deferredPrompt.userChoice.then((result) => {

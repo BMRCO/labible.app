@@ -3,6 +3,12 @@
    (stable, vdd opens in reader)
    ========================= */
 
+// Capturer le prompt d'installation le plus tôt possible
+window.addEventListener("beforeinstallprompt", (e) => {
+  e.preventDefault();
+  window._installPrompt = e;
+});
+
 const $ = (s) => document.querySelector(s);
 const $$ = (s) => Array.from(document.querySelectorAll(s));
 
@@ -13,8 +19,7 @@ const LS = {
   fav: "labible:favs",
   hist: "labible:history",
   plan: "labible:plan365",
-  vdd: "labible:vddCache",
-  installed: "labible:installed"
+  vdd: "labible:vddCache"
 };
 
 const BOOKS_INDEX_URL = "/data/bible/books.json";
@@ -43,7 +48,7 @@ function normalize(s){
   return (s||"")
     .toLowerCase()
     .normalize("NFD").replace(/[\u0300-\u036f]/g,"")
-    .replace(/[’']/g,"'")
+    .replace(/['']/g,"'")
     .replace(/\s+/g," ")
     .trim();
 }
@@ -102,12 +107,6 @@ function loadFont(){
 }
 
 /* ---------- normalize book formats ---------- */
-/*
-  Supports:
-  1) { "Ésaïe": { "1": { "1": "..." } } }
-  2) { chapters: [ [ "v1","v2" ], ... ] }
-  3) { "chapters": { "1": { "1":"..." } } } etc.
-*/
 function normalizeBook(raw, fallback){
   let detectedName = null;
   let payload = raw;
@@ -269,7 +268,6 @@ function initSelectors(){
   $("#btnFontMinus")?.addEventListener("click", () => applyFont(state.readFont - 1));
   $("#btnFontPlus")?.addEventListener("click", () => applyFont(state.readFont + 1));
 
-  /* ✅ FIX: Verset du jour opens in reader */
   $("#btnVDD")?.addEventListener("click", async () => {
     try{
       await computeVerseOfDay(true);
@@ -277,7 +275,7 @@ function initSelectors(){
         await openReference(state.vddRef);
         toast("Verset du jour ✅");
       } else {
-        toast("Impossible d’ouvrir le verset du jour.");
+        toast("Impossible d'ouvrir le verset du jour.");
       }
     }catch(e){
       console.error(e);
@@ -676,7 +674,6 @@ async function computeVerseOfDay(force=false){
     } catch {}
   }
 
-  // pick deterministic random
   const seedBase = Number(k.replace(/-/g,"")) || 1;
   const seed1 = seededRand(seedBase);
   const bi = seed1 % state.bible.books.length;
@@ -706,7 +703,6 @@ async function ensurePlan(){
   try{ st = JSON.parse(localStorage.getItem(LS.plan) || "null"); } catch {}
   if(st && Array.isArray(st.plan) && typeof st.doneDay==="number" && st.createdAt) return st;
 
-  // ensure all books loaded
   for(let bi=0; bi<state.bible.books.length; bi++){
     await ensureBookLoaded(bi);
   }
@@ -882,7 +878,7 @@ function bindLibraryButtons(){
   });
 
   $("#btnClearHistory")?.addEventListener("click", ()=>{
-    if(confirm("Supprimer l’historique ?")){
+    if(confirm("Supprimer l'historique ?")){
       localStorage.removeItem(LS.hist);
       renderLibrary();
       toast("Historique supprimé.");
@@ -899,94 +895,42 @@ function bindLibraryButtons(){
   });
 }
 
-/* ---------- PWA install (detect installed) ---------- */
-function isInStandalone(){
-  const standalone = window.matchMedia && window.matchMedia("(display-mode: standalone)").matches;
-  const iosStandalone = typeof navigator.standalone === "boolean" && navigator.standalone;
-  return !!(standalone || iosStandalone);
-}
-function isIOS(){
-  return /iphone|ipad|ipod/i.test(navigator.userAgent);
-}
-
+/* ---------- PWA install ---------- */
 function bindInstall(){
   const btn = $("#btnInstall");
-  if(!btn) return;
 
-  function setInstalledUI(installed){
-    btn.hidden = !!installed;
+  // Usar o evento já capturado no início da página
+  if(window._installPrompt){
+    state.deferredPrompt = window._installPrompt;
+    if(btn) btn.hidden = false;
   }
 
-  // If opened as installed app
-  if(isInStandalone()){
-    localStorage.setItem(LS.installed, "1");
-    setInstalledUI(true);
-  } else {
-    // If we already installed before (flag)
-    const flag = localStorage.getItem(LS.installed) === "1";
-    setInstalledUI(flag ? true : false);
-  }
-
-  window.addEventListener("beforeinstallprompt", (e)=>{
+  window.addEventListener("beforeinstallprompt", (e) => {
     e.preventDefault();
     state.deferredPrompt = e;
-    if(localStorage.getItem(LS.installed) !== "1"){
-      btn.hidden = false;
-    }
+    if(btn) btn.hidden = false;
   });
 
-  btn.addEventListener("click", async ()=>{
-    if(localStorage.getItem(LS.installed) === "1"){
-      toast("Déjà installée ✅");
-      btn.hidden = true;
-      return;
-    }
+  btn?.addEventListener("click", () => {
+    if(!state.deferredPrompt) return;
 
-    // Native prompt (Chrome/Android)
-    if(state.deferredPrompt){
-      btn.disabled = true;
-      try{
-        state.deferredPrompt.prompt();
-        const choice = await state.deferredPrompt.userChoice;
-        state.deferredPrompt = null;
+    // prompt() deve ser chamado directamente no clique (sem async/await)
+    state.deferredPrompt.prompt();
 
-        if(choice && choice.outcome === "accepted"){
-          localStorage.setItem(LS.installed, "1");
-          setInstalledUI(true);
-          toast("Installation lancée ✅");
-        }
-      } finally {
-        btn.disabled = false;
+    state.deferredPrompt.userChoice.then((result) => {
+      if(result.outcome === "accepted"){
+        toast("Installation en cours ✅");
       }
-      return;
-    }
-
-    // Fallback instructions
-    if(isIOS()){
-      alert("Pour installer sur iPhone/iPad :\n1) Partager (⤴︎)\n2) « Sur l’écran d’accueil »\n3) Ajouter");
-    } else {
-      alert("Installation :\n• Menu du navigateur → « Installer l’application »\n• Sinon, ajoutez cette page à l’écran d’accueil.");
-    }
+      state.deferredPrompt = null;
+      btn.hidden = true;
+    });
   });
 
-  // Official event
-  window.addEventListener("appinstalled", ()=>{
+  window.addEventListener("appinstalled", () => {
     state.deferredPrompt = null;
-    localStorage.setItem(LS.installed, "1");
-    setInstalledUI(true);
+    if(btn) btn.hidden = true;
     toast("Installée ✅");
   });
-
-  // If display-mode changes to standalone, mark installed
-  const mql = window.matchMedia ? window.matchMedia("(display-mode: standalone)") : null;
-  if(mql && mql.addEventListener){
-    mql.addEventListener("change", () => {
-      if(isInStandalone()){
-        localStorage.setItem(LS.installed, "1");
-        setInstalledUI(true);
-      }
-    });
-  }
 }
 
 /* ---------- header actions ---------- */
@@ -996,6 +940,17 @@ function bindHeaderActions(){
     const cur = document.documentElement.getAttribute("data-theme") || "dark";
     applyTheme(cur === "dark" ? "light" : "dark");
   });
+}
+
+/* ---------- Service Worker ---------- */
+function registerServiceWorker(){
+  if("serviceWorker" in navigator){
+    window.addEventListener("load", () => {
+      navigator.serviceWorker.register("/sw.js")
+        .then((reg) => console.log("SW enregistré :", reg.scope))
+        .catch((err) => console.error("SW erreur :", err));
+    });
+  }
 }
 
 /* ---------- init ---------- */
@@ -1012,6 +967,7 @@ async function init(){
   bindSwipe();
   bindLibraryButtons();
   bindInstall();
+  registerServiceWorker();
 
   try{
     await loadBible();
@@ -1025,8 +981,3 @@ async function init(){
 }
 
 init();
-
-/* Service Worker (minimal, no offline cache) */
-if ("serviceWorker" in navigator) {
-  window.addEventListener("load", () => navigator.serviceWorker.register("/sw.js"));
-}

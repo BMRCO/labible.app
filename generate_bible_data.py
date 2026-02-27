@@ -1,119 +1,97 @@
 #!/usr/bin/env python3
 """
 generate_bible_data.py — LaBible.app
-Fonte: getBible v2 (GitHub raw) — LSG1910 (fr_lsg)
+Fonte: https://api.getbible.net/v2/fr_lsg/{book}/{chapter}.json
 """
 
-import json, os, time, urllib.request, urllib.error
+import json, os, time, urllib.request
 
 OUTPUT_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "data", "bible")
-
-# URL base do getBible v2 no GitHub (mais fiável que a API)
-BASE_URL = "https://raw.githubusercontent.com/getbible/v2/master/bibles/fr_lsg"
+API_BASE   = "https://api.getbible.net/v2/fr_lsg"
 
 BOOKS = [
-    ("genese",               "Genèse",                1,  ["Gn","Gen"]),
-    ("exode",                "Exode",                 2,  ["Ex","Exo"]),
-    ("levitique",            "Lévitique",             3,  ["Lv","Lev"]),
-    ("nombres",              "Nombres",               4,  ["Nb","Nom"]),
-    ("deuteronome",          "Deutéronome",           5,  ["Dt","Deu"]),
-    ("josue",                "Josué",                 6,  ["Jos"]),
-    ("juges",                "Juges",                 7,  ["Jg","Jug"]),
-    ("ruth",                 "Ruth",                  8,  ["Rt","Rut"]),
-    ("1_samuel",             "1 Samuel",              9,  ["1S","1Sa"]),
-    ("2_samuel",             "2 Samuel",              10, ["2S","2Sa"]),
-    ("1_rois",               "1 Rois",                11, ["1R","1Ro"]),
-    ("2_rois",               "2 Rois",                12, ["2R","2Ro"]),
-    ("1_chroniques",         "1 Chroniques",          13, ["1Ch","1Cr"]),
-    ("2_chroniques",         "2 Chroniques",          14, ["2Ch","2Cr"]),
-    ("esdras",               "Esdras",                15, ["Esd"]),
-    ("nehemie",              "Néhémie",               16, ["Né","Neh"]),
-    ("esther",               "Esther",                17, ["Est"]),
-    ("job",                  "Job",                   18, ["Jb"]),
-    ("psaumes",              "Psaumes",               19, ["Ps"]),
-    ("proverbes",            "Proverbes",             20, ["Pr","Pro"]),
-    ("ecclesiaste",          "Ecclésiaste",           21, ["Ec","Qo"]),
-    ("cantique_des_cantiques","Cantique des cantiques",22, ["Ca","Ct"]),
-    ("esaie",                "Ésaïe",                 23, ["Es","Esa"]),
-    ("jeremie",              "Jérémie",               24, ["Jr","Jer"]),
-    ("lamentations",         "Lamentations",          25, ["Lm","La"]),
-    ("ezechiel",             "Ézéchiel",              26, ["Ez"]),
-    ("daniel",               "Daniel",                27, ["Dn","Da"]),
-    ("osee",                 "Osée",                  28, ["Os"]),
-    ("joel",                 "Joël",                  29, ["Jl"]),
-    ("amos",                 "Amos",                  30, ["Am"]),
-    ("abdias",               "Abdias",                31, ["Ab"]),
-    ("jonas",                "Jonas",                 32, ["Jon"]),
-    ("michee",               "Michée",                33, ["Mi"]),
-    ("nahum",                "Nahum",                 34, ["Na"]),
-    ("habacuc",              "Habacuc",               35, ["Ha"]),
-    ("sophonie",             "Sophonie",              36, ["So"]),
-    ("aggee",                "Aggée",                 37, ["Ag"]),
-    ("zacharie",             "Zacharie",              38, ["Za"]),
-    ("malachie",             "Malachie",              39, ["Ml","Mal"]),
-    ("matthieu",             "Matthieu",              40, ["Mt"]),
-    ("marc",                 "Marc",                  41, ["Mc","Mr"]),
-    ("luc",                  "Luc",                   42, ["Lc"]),
-    ("jean",                 "Jean",                  43, ["Jn"]),
-    ("actes",                "Actes",                 44, ["Ac","Act"]),
-    ("romains",              "Romains",               45, ["Rm","Ro"]),
-    ("1_corinthiens",        "1 Corinthiens",         46, ["1Co"]),
-    ("2_corinthiens",        "2 Corinthiens",         47, ["2Co"]),
-    ("galates",              "Galates",               48, ["Ga"]),
-    ("ephesiens",            "Éphésiens",             49, ["Ep","Eph"]),
-    ("philippiens",          "Philippiens",           50, ["Ph","Phi"]),
-    ("colossiens",           "Colossiens",            51, ["Col"]),
-    ("1_thessaloniciens",    "1 Thessaloniciens",     52, ["1Th"]),
-    ("2_thessaloniciens",    "2 Thessaloniciens",     53, ["2Th"]),
-    ("1_timothee",           "1 Timothée",            54, ["1Tm","1Ti"]),
-    ("2_timothee",           "2 Timothée",            55, ["2Tm","2Ti"]),
-    ("tite",                 "Tite",                  56, ["Tt"]),
-    ("philemon",             "Philémon",              57, ["Phm"]),
-    ("hebreux",              "Hébreux",               58, ["He","Heb"]),
-    ("jacques",              "Jacques",               59, ["Jc","Ja"]),
-    ("1_pierre",             "1 Pierre",              60, ["1P","1Pi"]),
-    ("2_pierre",             "2 Pierre",              61, ["2P","2Pi"]),
-    ("1_jean",               "1 Jean",                62, ["1Jn"]),
-    ("2_jean",               "2 Jean",                63, ["2Jn"]),
-    ("3_jean",               "3 Jean",                64, ["3Jn"]),
-    ("jude",                 "Jude",                  65, ["Jud"]),
-    ("apocalypse",           "Apocalypse",            66, ["Ap","Apo"]),
+    (1,  "genese",               "Genèse",                ["Gn","Gen"]),
+    (2,  "exode",                "Exode",                 ["Ex","Exo"]),
+    (3,  "levitique",            "Lévitique",             ["Lv","Lev"]),
+    (4,  "nombres",              "Nombres",               ["Nb","Nom"]),
+    (5,  "deuteronome",          "Deutéronome",           ["Dt","Deu"]),
+    (6,  "josue",                "Josué",                 ["Jos"]),
+    (7,  "juges",                "Juges",                 ["Jg","Jug"]),
+    (8,  "ruth",                 "Ruth",                  ["Rt","Rut"]),
+    (9,  "1_samuel",             "1 Samuel",              ["1S","1Sa"]),
+    (10, "2_samuel",             "2 Samuel",              ["2S","2Sa"]),
+    (11, "1_rois",               "1 Rois",                ["1R","1Ro"]),
+    (12, "2_rois",               "2 Rois",                ["2R","2Ro"]),
+    (13, "1_chroniques",         "1 Chroniques",          ["1Ch","1Cr"]),
+    (14, "2_chroniques",         "2 Chroniques",          ["2Ch","2Cr"]),
+    (15, "esdras",               "Esdras",                ["Esd"]),
+    (16, "nehemie",              "Néhémie",               ["Né","Neh"]),
+    (17, "esther",               "Esther",                ["Est"]),
+    (18, "job",                  "Job",                   ["Jb"]),
+    (19, "psaumes",              "Psaumes",               ["Ps"]),
+    (20, "proverbes",            "Proverbes",             ["Pr","Pro"]),
+    (21, "ecclesiaste",          "Ecclésiaste",           ["Ec","Qo"]),
+    (22, "cantique",             "Cantique des cantiques", ["Ca","Ct"]),
+    (23, "esaie",                "Ésaïe",                 ["Es","Esa"]),
+    (24, "jeremie",              "Jérémie",               ["Jr","Jer"]),
+    (25, "lamentations",         "Lamentations",          ["Lm","La"]),
+    (26, "ezechiel",             "Ézéchiel",              ["Ez"]),
+    (27, "daniel",               "Daniel",                ["Dn","Da"]),
+    (28, "osee",                 "Osée",                  ["Os"]),
+    (29, "joel",                 "Joël",                  ["Jl"]),
+    (30, "amos",                 "Amos",                  ["Am"]),
+    (31, "abdias",               "Abdias",                ["Ab"]),
+    (32, "jonas",                "Jonas",                 ["Jon"]),
+    (33, "michee",               "Michée",                ["Mi"]),
+    (34, "nahum",                "Nahum",                 ["Na"]),
+    (35, "habacuc",              "Habacuc",               ["Ha"]),
+    (36, "sophonie",             "Sophonie",              ["So"]),
+    (37, "aggee",                "Aggée",                 ["Ag"]),
+    (38, "zacharie",             "Zacharie",              ["Za"]),
+    (39, "malachie",             "Malachie",              ["Ml","Mal"]),
+    (40, "matthieu",             "Matthieu",              ["Mt"]),
+    (41, "marc",                 "Marc",                  ["Mc","Mr"]),
+    (42, "luc",                  "Luc",                   ["Lc"]),
+    (43, "jean",                 "Jean",                  ["Jn"]),
+    (44, "actes",                "Actes",                 ["Ac","Act"]),
+    (45, "romains",              "Romains",               ["Rm","Ro"]),
+    (46, "1_corinthiens",        "1 Corinthiens",         ["1Co"]),
+    (47, "2_corinthiens",        "2 Corinthiens",         ["2Co"]),
+    (48, "galates",              "Galates",               ["Ga"]),
+    (49, "ephesiens",            "Éphésiens",             ["Ep","Eph"]),
+    (50, "philippiens",          "Philippiens",           ["Ph","Phi"]),
+    (51, "colossiens",           "Colossiens",            ["Col"]),
+    (52, "1_thessaloniciens",    "1 Thessaloniciens",     ["1Th"]),
+    (53, "2_thessaloniciens",    "2 Thessaloniciens",     ["2Th"]),
+    (54, "1_timothee",           "1 Timothée",            ["1Tm","1Ti"]),
+    (55, "2_timothee",           "2 Timothée",            ["2Tm","2Ti"]),
+    (56, "tite",                 "Tite",                  ["Tt"]),
+    (57, "philemon",             "Philémon",              ["Phm"]),
+    (58, "hebreux",              "Hébreux",               ["He","Heb"]),
+    (59, "jacques",              "Jacques",               ["Jc","Ja"]),
+    (60, "1_pierre",             "1 Pierre",              ["1P","1Pi"]),
+    (61, "2_pierre",             "2 Pierre",              ["2P","2Pi"]),
+    (62, "1_jean",               "1 Jean",                ["1Jn"]),
+    (63, "2_jean",               "2 Jean",                ["2Jn"]),
+    (64, "3_jean",               "3 Jean",                ["3Jn"]),
+    (65, "jude",                 "Jude",                  ["Jud"]),
+    (66, "apocalypse",           "Apocalypse",            ["Ap","Apo"]),
 ]
 
-def fetch(url, retries=4):
+def fetch_json(url, retries=4):
     for attempt in range(retries):
         try:
             req = urllib.request.Request(url, headers={"User-Agent": "LaBible/1.0"})
             with urllib.request.urlopen(req, timeout=30) as r:
                 return json.loads(r.read().decode("utf-8"))
+        except urllib.error.HTTPError as e:
+            if e.code == 404:
+                return None  # capítulo não existe
+            print(f"    HTTP {e.code}, tentativa {attempt+1}/{retries}")
         except Exception as e:
-            print(f"    tentativa {attempt+1}/{retries} falhou: {e}")
-            time.sleep(2 ** attempt)
-    raise RuntimeError(f"Impossível descarregar: {url}")
-
-def convert(raw, slug, name):
-    """
-    getBible v2 formato por capítulo:
-    { "book_nr": 1, "book_name": "Genesis", "chapter": 1,
-      "verses": [{"chapter":1,"verse":1,"text":"..."},...] }
-    """
-    chapters = {}
-    for chap_num in range(1, 300):
-        url = f"{BASE_URL}/{chap_num}/{chap_num}.json"
-        # Só tentamos se o capítulo existir — paramos ao primeiro 404
-        try:
-            chap_data = fetch(url)
-        except Exception:
-            break
-
-        actual_chap = chap_data.get("chapter", chap_num)
-        verses = {}
-        for v in chap_data.get("verses", []):
-            verses[str(v["verse"])] = str(v.get("text", "")).strip()
-        if verses:
-            chapters[str(actual_chap)] = verses
-
-    return {name: chapters}
+            print(f"    erro: {e}, tentativa {attempt+1}/{retries}")
+        time.sleep(2 ** attempt)
+    return None
 
 def save(path, data):
     os.makedirs(os.path.dirname(path), exist_ok=True)
@@ -125,45 +103,33 @@ def main():
     print(f"Destino: {OUTPUT_DIR}\n")
 
     books_index = []
-    errors = []
 
-    for slug, name, book_nr, abbr in BOOKS:
+    for book_nr, slug, name, abbr in BOOKS:
         out_path = os.path.join(OUTPUT_DIR, f"{slug}.json")
         print(f"[{book_nr:02d}/66] {name}...", end=" ", flush=True)
 
-        # URL base deste livro
-        global BASE_URL
-        book_base = f"https://raw.githubusercontent.com/getbible/v2/master/bibles/fr_lsg/{book_nr}"
-        # Temporariamente redirecionar BASE_URL para este livro
-        old_base = BASE_URL
+        chapters = {}
+        for chap_num in range(1, 200):
+            url = f"{API_BASE}/{book_nr}/{chap_num}.json"
+            data = fetch_json(url)
+            if data is None:
+                break  # sem mais capítulos
 
-        try:
-            # Ler todos os capítulos do livro
-            chapters = {}
-            for chap_num in range(1, 200):
-                url = f"{book_base}/{chap_num}.json"
-                try:
-                    chap_data = fetch(url)
-                except Exception:
-                    break  # Sem mais capítulos
+            verses = {}
+            for v in data.get("verses", []):
+                verses[str(v["verse"])] = str(v.get("text", "")).strip()
 
-                verses = {}
-                for v in chap_data.get("verses", []):
-                    verses[str(v["verse"])] = str(v.get("text", "")).strip()
-                if verses:
-                    chapters[str(chap_num)] = verses
+            if verses:
+                chapters[str(chap_num)] = verses
 
-            if not chapters:
-                raise RuntimeError("Nenhum capítulo encontrado")
+            time.sleep(0.15)
 
-            data = {name: chapters}
-            save(out_path, data)
+        if chapters:
+            save(out_path, {name: chapters})
             print(f"✅ {len(chapters)} capítulos")
-
-        except Exception as e:
-            print(f"❌ {e}")
-            errors.append((slug, name, str(e)))
+        else:
             save(out_path, {name: {}})
+            print(f"⚠️  sem dados")
 
         books_index.append({
             "id": slug,
@@ -172,19 +138,11 @@ def main():
             "abbr": abbr
         })
 
-        time.sleep(0.2)
-
     # books.json
     books_path = os.path.join(OUTPUT_DIR, "books.json")
     save(books_path, books_index)
     print(f"\n✅ books.json com {len(books_index)} livros")
-
-    if errors:
-        print(f"\n⚠️  {len(errors)} erros:")
-        for s, n, e in errors:
-            print(f"   - {n}: {e}")
-    else:
-        print("✅ Todos os livros gerados com sucesso!")
+    print("✅ Concluído!")
 
 if __name__ == "__main__":
     main()

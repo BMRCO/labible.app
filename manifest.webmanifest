@@ -1,7 +1,7 @@
 {
   "name": "LaBible.app | LSG 1910",
   "short_name": "LaBible",
-  "description": "Lecture de la Bible en français — Louis Segond 1910 (domaine public).",
+  "description": "Lire la Bible Louis Segond 1910 en ligne gratuitement. Lecture, recherche, plan de lecture et verset du jour. Texte domaine public.",
   "id": "/",
   "start_url": "/",
   "scope": "/",

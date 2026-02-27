@@ -3,102 +3,52 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
-  <meta name="theme-color" content="#0b0b0b" />
-  <meta name="description" content="Lisez la Bible Louis Segond 1910 gratuitement en ligne. Recherche de versets, plan de lecture 365 jours, favoris et installation sur mobile." />
+
+  <title>LaBible.app – Bible Louis Segond 1910 en ligne (LSG1910)</title>
+
+  <meta name="description" content="Lire la Bible Louis Segond 1910 en ligne gratuitement. Lecture, recherche, plan de lecture et verset du jour. Texte domaine public." />
+  <meta name="keywords" content="Bible, Louis Segond 1910, LSG1910, Bible en ligne, Bible gratuite, Bible française, verset du jour" />
+  <meta name="author" content="LaBible.app" />
   <meta name="robots" content="index, follow" />
   <link rel="canonical" href="https://labible.app/" />
 
-  <!-- Open Graph -->
-  <meta property="og:title" content="LaBible.app — Lire la Bible LSG1910 en ligne" />
-  <meta property="og:description" content="Lisez la Bible Louis Segond 1910 gratuitement en ligne. Recherche de versets, plan de lecture 365 jours et installation sur mobile." />
-  <meta property="og:url" content="https://labible.app/" />
+  <!-- Open Graph (Facebook / WhatsApp / Telegram) -->
+  <meta property="og:title" content="LaBible.app – Bible Louis Segond 1910" />
+  <meta property="og:description" content="Lire la Bible Louis Segond 1910 en ligne gratuitement." />
   <meta property="og:type" content="website" />
-  <meta property="og:image" content="https://labible.app/icons/icon-192.png" />
-  <meta property="og:locale" content="fr_FR" />
+  <meta property="og:url" content="https://labible.app/" />
+  <meta property="og:image" content="https://labible.app/icons/icon-512x512.png" />
 
-  <!-- Twitter Card -->
-  <meta name="twitter:card" content="summary" />
-  <meta name="twitter:title" content="LaBible.app — Bible LSG1910" />
-  <meta name="twitter:description" content="Lisez la Bible Louis Segond 1910 gratuitement en ligne ou sur mobile." />
-  <meta name="twitter:image" content="https://labible.app/icons/icon-192.png" />
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="LaBible.app – Bible Louis Segond 1910" />
+  <meta name="twitter:description" content="Lire la Bible Louis Segond 1910 gratuitement en ligne." />
+  <meta name="twitter:image" content="https://labible.app/icons/icon-512x512.png" />
+
+  <meta name="theme-color" content="#0b0b0b" />
 
   <link rel="manifest" href="/manifest.webmanifest">
   <link rel="icon" href="/icons/icon-192.png">
   <link rel="apple-touch-icon" href="/icons/icon-192.png">
 
-  <title>LaBible.app — Lire la Bible LSG1910 en ligne</title>
-  <link rel="stylesheet" href="/styles.css?v=3" />
-
-  <!-- Schema.org -->
-  <script type="application/ld+json">
-  {
-    "@context": "https://schema.org",
-    "@type": "SoftwareApplication",
-    "name": "LaBible.app",
-    "description": "Lire la Bible Louis Segond 1910 en ligne gratuitement",
-    "applicationCategory": "ReligiousApp",
-    "operatingSystem": "Web, iOS, Android",
-    "url": "https://labible.app",
-    "inLanguage": "fr",
-    "offers": { "@type": "Offer", "price": "0", "priceCurrency": "EUR" }
-  }
-  </script>
+  <link rel="stylesheet" href="/styles.css?v=2" />
 </head>
 
 <body>
   <header class="topbar">
+    <button class="iconBtn" id="btnHome" title="Accueil" aria-label="Accueil">📖</button>
 
-    <!-- Bouton Accueil -->
-    <button class="iconBtn" id="btnHome" title="Accueil" aria-label="Accueil">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" width="20" height="20" aria-hidden="true">
-        <path d="M3 12L12 4l9 8"/>
-        <path d="M5 10.5V20a1 1 0 001 1h4v-5h4v5h4a1 1 0 001-1V10.5"/>
-      </svg>
-    </button>
-
-    <!-- Marque -->
     <div class="brand">
-      <span class="brandTitle">LaBible<span class="brandDot">.app</span></span>
-      <span class="brandBadge">LSG 1910</span>
+      <div class="brandTitle">LaBible.app</div>
+      <div class="brandSub">LSG1910</div>
     </div>
 
-    <!-- Actions droite -->
     <div class="topActions">
+      <button id="btnTheme" class="chip" title="Thème">🌙</button>
+      <button id="btnInstall" class="chip chipGold" hidden>⬇️ Installer</button>
 
-      <!-- Thème -->
-      <button id="btnTheme" class="iconBtn themeBtn" title="Changer le thème" aria-label="Changer le thème">
-        <svg class="iconMoon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" width="18" height="18" aria-hidden="true">
-          <path d="M21 12.79A9 9 0 1111.21 3a7 7 0 109.79 9.79z"/>
-        </svg>
-        <svg class="iconSun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" width="18" height="18" aria-hidden="true" style="display:none">
-          <circle cx="12" cy="12" r="5"/>
-          <line x1="12" y1="1" x2="12" y2="3"/>
-          <line x1="12" y1="21" x2="12" y2="23"/>
-          <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/>
-          <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
-          <line x1="1" y1="12" x2="3" y2="12"/>
-          <line x1="21" y1="12" x2="23" y2="12"/>
-          <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/>
-          <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
-        </svg>
-      </button>
-
-      <!-- Installer (caché par défaut) -->
-      <button id="btnInstall" class="chip chipGold" hidden>
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" width="14" height="14" aria-hidden="true">
-          <path d="M12 3v13m0 0l-4-4m4 4l4-4M3 17v2a2 2 0 002 2h14a2 2 0 002-2v-2"/>
-        </svg>
-        <span>Installer</span>
-      </button>
-
-      <!-- Telegram -->
-      <a class="chip chipTelegram" href="https://t.me/appbible" target="_blank" rel="noopener" aria-label="Rejoindre la chaîne Telegram">
-        <svg viewBox="0 0 24 24" fill="currentColor" width="14" height="14" aria-hidden="true">
-          <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.894 8.221-1.97 9.28c-.145.658-.537.818-1.084.508l-3-2.21-1.447 1.394c-.16.16-.295.295-.605.295l.213-3.053 5.56-5.023c.242-.213-.054-.333-.373-.12L8.32 13.617l-2.96-.924c-.643-.204-.657-.643.136-.953l11.57-4.461c.537-.194 1.006.131.828.942z"/>
-        </svg>
-        <span class="telegramLabel">Telegram</span>
-      </a>
-
+      <!-- Telegram (responsivo: no mobile vira só ícone) -->
+      <a class="chip telegram" href="https://t.me/appbible" target="_blank" rel="noopener">📣 <span>Telegram</span></a>
     </div>
   </header>
 
@@ -148,7 +98,7 @@
         </div>
 
         <div class="pageFooter">
-          <button class="chip" id="btnBookmark">🔖 Favoris</button>
+          <button class="chip" id="btnBookmark">🔖 Favori</button>
           <button class="chip" id="btnCopyRef">📎 Copier</button>
           <button class="chip" id="btnShare">📤 Partager</button>
         </div>
@@ -161,16 +111,16 @@
         <div class="cardHeader">
           <div>
             <h2>Recherche</h2>
-            <div class="muted">Mots-clés + références (ex. : <b>Jean 3:16</b>).</div>
+            <div class="muted">Mots clés + références (ex : <b>Jean 3:16</b>).</div>
           </div>
           <div class="row gap8">
-            <button class="chip" id="btnBuildIndex" title="Construire l'index">⚡ Index</button>
+            <button class="chip" id="btnBuildIndex" title="Construire l’index">⚡ Index</button>
             <button class="chip" id="btnClearSearch" title="Effacer">✖️</button>
           </div>
         </div>
 
         <div class="searchBar">
-          <input id="searchInput" type="text" placeholder="Mot-clé ou référence (ex. : Romains 8:1)…" autocomplete="off" />
+          <input id="searchInput" type="text" placeholder="Mot clé ou référence (ex : Romains 8:1)…" autocomplete="off" />
           <button class="btnPrimary" id="btnSearch">Rechercher</button>
         </div>
 
@@ -185,21 +135,21 @@
         <div class="cardHeader">
           <div>
             <h2>Plan de lecture</h2>
-            <div class="muted">365 jours — progression enregistrée sur l'appareil.</div>
+            <div class="muted">365 jours — progression enregistrée sur l’appareil.</div>
           </div>
           <div class="row gap8">
-            <button class="chip" id="btnResetPlan">↺ Réinitialiser</button>
+            <button class="chip" id="btnResetPlan">↺ Reset</button>
             <button class="chip" id="btnJumpDay">📌 Jour…</button>
           </div>
         </div>
 
         <div class="planGrid">
           <div class="planBox">
-            <div class="planTitle">Aujourd'hui</div>
+            <div class="planTitle">Aujourd’hui</div>
             <div class="planToday" id="planTodayText">—</div>
             <div class="planActions">
               <button class="btnPrimary" id="btnOpenToday">📖 Ouvrir</button>
-              <button class="btn" id="btnMarkDone">✅ Marquer comme lu</button>
+              <button class="btn" id="btnMarkDone">✅ Marquer lu</button>
             </div>
             <div class="muted small" id="planTodayMeta"></div>
           </div>
@@ -210,7 +160,7 @@
               <div class="progressBar"><div class="progressFill" id="progressFill"></div></div>
               <div class="progressText" id="progressText">0%</div>
             </div>
-            <div class="muted small">Conseil : utilisez « Index » pour accélérer la recherche.</div>
+            <div class="muted small">Conseil: utilise “Index” pour accélérer la recherche.</div>
           </div>
         </div>
       </div>
@@ -266,5 +216,21 @@
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
   <script src="/app.js?v=1"></script>
+
+  <!-- Schema.org -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "name": "LaBible.app",
+    "url": "https://labible.app/",
+    "description": "Lire la Bible Louis Segond 1910 en ligne gratuitement.",
+    "inLanguage": "fr",
+    "publisher": {
+      "@type": "Organization",
+      "name": "LaBible.app"
+    }
+  }
+  </script>
 </body>
 </html>

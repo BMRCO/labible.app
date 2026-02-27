@@ -3,12 +3,6 @@
    (stable, vdd opens in reader)
    ========================= */
 
-// Capturer le prompt d'installation le plus tôt possible
-window.addEventListener("beforeinstallprompt", (e) => {
-  e.preventDefault();
-  window._installPrompt = e;
-});
-
 const $ = (s) => document.querySelector(s);
 const $$ = (s) => Array.from(document.querySelectorAll(s));
 
@@ -48,7 +42,7 @@ function normalize(s){
   return (s||"")
     .toLowerCase()
     .normalize("NFD").replace(/[\u0300-\u036f]/g,"")
-    .replace(/['']/g,"'")
+    .replace(/[’']/g,"'")
     .replace(/\s+/g," ")
     .trim();
 }
@@ -107,6 +101,12 @@ function loadFont(){
 }
 
 /* ---------- normalize book formats ---------- */
+/*
+  Supports:
+  1) { "Ésaïe": { "1": { "1": "..." } } }
+  2) { chapters: [ [ "v1","v2" ], ... ] }
+  3) { "chapters": { "1": { "1":"..." } } } etc.
+*/
 function normalizeBook(raw, fallback){
   let detectedName = null;
   let payload = raw;
@@ -268,6 +268,7 @@ function initSelectors(){
   $("#btnFontMinus")?.addEventListener("click", () => applyFont(state.readFont - 1));
   $("#btnFontPlus")?.addEventListener("click", () => applyFont(state.readFont + 1));
 
+  /* ✅ FIX: Verset du jour opens in reader */
   $("#btnVDD")?.addEventListener("click", async () => {
     try{
       await computeVerseOfDay(true);
@@ -275,7 +276,7 @@ function initSelectors(){
         await openReference(state.vddRef);
         toast("Verset du jour ✅");
       } else {
-        toast("Impossible d'ouvrir le verset du jour.");
+        toast("Impossible d’ouvrir le verset du jour.");
       }
     }catch(e){
       console.error(e);
@@ -878,7 +879,7 @@ function bindLibraryButtons(){
   });
 
   $("#btnClearHistory")?.addEventListener("click", ()=>{
-    if(confirm("Supprimer l'historique ?")){
+    if(confirm("Supprimer l’historique ?")){
       localStorage.removeItem(LS.hist);
       renderLibrary();
       toast("Historique supprimé.");
@@ -895,40 +896,60 @@ function bindLibraryButtons(){
   });
 }
 
-/* ---------- PWA install ---------- */
+/* ---------- PWA install (improved, no structure change) ---------- */
+function isInStandalone(){
+  const mql = window.matchMedia && window.matchMedia("(display-mode: standalone)").matches;
+  const ios = typeof navigator.standalone === "boolean" && navigator.standalone;
+  return !!(mql || ios);
+}
+function isIOS(){
+  return /iphone|ipad|ipod/i.test(navigator.userAgent);
+}
+
 function bindInstall(){
   const btn = $("#btnInstall");
+  if(!btn) return;
 
-  // Usar o evento já capturado no início da página
-  if(window._installPrompt){
-    state.deferredPrompt = window._installPrompt;
-    if(btn) btn.hidden = false;
+  // already installed -> hide
+  if(isInStandalone()){
+    btn.hidden = true;
+    return;
   }
 
-  window.addEventListener("beforeinstallprompt", (e) => {
+  // show as fallback (even if beforeinstallprompt doesn't fire)
+  btn.hidden = false;
+
+  window.addEventListener("beforeinstallprompt", (e)=>{
     e.preventDefault();
     state.deferredPrompt = e;
-    if(btn) btn.hidden = false;
+    btn.hidden = false;
   });
 
-  btn?.addEventListener("click", () => {
-    if(!state.deferredPrompt) return;
-
-    // prompt() deve ser chamado directamente no clique (sem async/await)
-    state.deferredPrompt.prompt();
-
-    state.deferredPrompt.userChoice.then((result) => {
-      if(result.outcome === "accepted"){
-        toast("Installation en cours ✅");
+  btn.addEventListener("click", async ()=>{
+    if(state.deferredPrompt){
+      btn.disabled = true;
+      try{
+        state.deferredPrompt.prompt();
+        await state.deferredPrompt.userChoice;
+        state.deferredPrompt = null;
+        btn.hidden = true;
+      } finally {
+        btn.disabled = false;
       }
-      state.deferredPrompt = null;
-      btn.hidden = true;
-    });
+      return;
+    }
+
+    // fallback instructions
+    if(isIOS()){
+      alert("Pour installer sur iPhone/iPad :\n1) Appuyez sur Partager (⤴︎)\n2) Choisissez « Sur l’écran d’accueil »\n3) Validez « Ajouter »");
+    } else {
+      alert("Installation :\n• Ouvrez le menu de votre navigateur et choisissez « Installer l’application ».\n• Sinon, ajoutez cette page à l’écran d’accueil.");
+    }
   });
 
-  window.addEventListener("appinstalled", () => {
+  window.addEventListener("appinstalled", ()=>{
     state.deferredPrompt = null;
-    if(btn) btn.hidden = true;
+    btn.hidden = true;
     toast("Installée ✅");
   });
 }
@@ -940,17 +961,6 @@ function bindHeaderActions(){
     const cur = document.documentElement.getAttribute("data-theme") || "dark";
     applyTheme(cur === "dark" ? "light" : "dark");
   });
-}
-
-/* ---------- Service Worker ---------- */
-function registerServiceWorker(){
-  if("serviceWorker" in navigator){
-    window.addEventListener("load", () => {
-      navigator.serviceWorker.register("/sw.js")
-        .then((reg) => console.log("SW enregistré :", reg.scope))
-        .catch((err) => console.error("SW erreur :", err));
-    });
-  }
 }
 
 /* ---------- init ---------- */
@@ -967,7 +977,6 @@ async function init(){
   bindSwipe();
   bindLibraryButtons();
   bindInstall();
-  registerServiceWorker();
 
   try{
     await loadBible();
@@ -981,3 +990,9 @@ async function init(){
 }
 
 init();
+
+/* (Optional) offline later:
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => navigator.serviceWorker.register("/sw.js"));
+}
+*/

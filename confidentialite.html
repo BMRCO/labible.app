@@ -2,18 +2,84 @@
 <html lang="fr">
 <head>
   <meta charset="utf-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1"/>
-  <title>Confidentialité — LaBible.app</title>
-  <meta name="theme-color" content="#111827" />
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="/assets/style.css" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/>
+  <title>Politique de confidentialité — LaBible.app</title>
+  <meta name="description" content="Politique de confidentialité de LaBible.app. Vos données restent sur votre appareil. Aucun cookie de traçage, aucune publicité, aucune collecte de données personnelles." />
+  <meta name="keywords" content="confidentialité, LaBible.app, données personnelles, RGPD, vie privée" />
+  <meta name="robots" content="index, follow" />
+  <link rel="canonical" href="https://labible.app/confidentialite.html" />
+  <meta property="og:title" content="Politique de confidentialité — LaBible.app" />
+  <meta property="og:description" content="Vos données restent sur votre appareil. Aucun cookie de traçage, aucune publicité." />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://labible.app/confidentialite.html" />
+  <meta name="theme-color" content="#0b0b0b" />
+  <link rel="icon" href="/icons/icon-192.png">
+  <link rel="apple-touch-icon" href="/icons/icon-192.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --bg: #0b0b0b; --card: #141414; --border: #222;
+      --text: #e8e0d0; --muted: #7a7060;
+      --accent: #e2c57a; --accent2: #c8a84b;
+      --radius: 14px; --font-body: 'EB Garamond', Georgia, serif;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body { background: var(--bg); color: var(--text); font-family: var(--font-body); font-size: 1.08rem; line-height: 1.75; min-height: 100vh; display: flex; flex-direction: column; }
+
+    .topbar { display: flex; align-items: center; justify-content: space-between; padding: 14px 24px; border-bottom: 1px solid var(--border); background: rgba(11,11,11,.95); backdrop-filter: blur(12px); position: sticky; top: 0; z-index: 100; }
+    .brand { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+    .brand__text { display: flex; flex-direction: column; line-height: 1.2; }
+    .brand__name { font-size: 1.05rem; font-weight: 700; color: var(--accent); }
+    .brand__sub  { font-size: .72rem; color: var(--muted); letter-spacing: .04em; }
+    .topnav { display: flex; gap: 20px; }
+    .topnav a { color: var(--muted); text-decoration: none; font-size: .88rem; transition: color .2s; }
+    .topnav a:hover { color: var(--accent); }
+
+    main { flex: 1; max-width: 720px; width: 100%; margin: 0 auto; padding: 48px 24px 64px; }
+
+    .hero { margin-bottom: 48px; animation: fadeUp .5s ease both; }
+    .hero__eyebrow { font-size: .78rem; letter-spacing: .12em; text-transform: uppercase; color: var(--accent); margin-bottom: 10px; }
+    .hero__title { font-size: 2.2rem; font-weight: 700; line-height: 1.2; margin-bottom: 14px; }
+    .hero__desc { color: var(--muted); font-size: 1rem; }
+    .hero__date { font-size: .82rem; color: var(--muted); margin-top: 8px; }
+
+    .section { margin-bottom: 32px; animation: fadeUp .5s ease both; }
+    .section + .section { animation-delay: .07s; }
+    .section__header { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; padding-bottom: 10px; border-bottom: 1px solid var(--border); }
+    .section__icon { font-size: 1.3rem; }
+    .section__title { font-size: 1.1rem; font-weight: 700; color: var(--accent); }
+    .section p { color: var(--muted); font-size: .97rem; line-height: 1.75; }
+    .section p + p { margin-top: 10px; }
+    .section strong { color: var(--text); }
+
+    .badge { display: inline-block; background: rgba(226,197,122,.12); border: 1px solid rgba(226,197,122,.25); color: var(--accent); border-radius: 6px; font-size: .8rem; padding: 3px 10px; margin-bottom: 16px; letter-spacing: .04em; }
+
+    footer { border-top: 1px solid var(--border); padding: 20px 24px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px; font-size: .82rem; color: var(--muted); }
+    footer a { color: var(--muted); text-decoration: none; transition: color .2s; }
+    footer a:hover { color: var(--accent); }
+    .footer__links { display: flex; gap: 16px; }
+
+    @keyframes fadeUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
+    @media (max-width: 600px) { .hero__title { font-size: 1.7rem; } main { padding: 32px 16px 48px; } .topnav { gap: 12px; } }
+  </style>
 </head>
 <body>
+
   <header class="topbar">
     <a class="brand" href="/">
-      <div class="brand__name">LaBible.app</div>
-      <div class="brand__sub">Louis Segond 1910</div>
+      <svg width="28" height="28" viewBox="0 0 32 32" fill="none" aria-hidden="true">
+        <rect x="4" y="5" width="13" height="22" rx="2" fill="#e2c57a" opacity=".9"/>
+        <rect x="15" y="5" width="13" height="22" rx="2" fill="#c8a84b" opacity=".7"/>
+        <rect x="13" y="4" width="6" height="24" rx="1.5" fill="#0b0b0b" stroke="#e2c57a" stroke-width="1"/>
+        <line x1="16" y1="4" x2="16" y2="28" stroke="#e2c57a" stroke-width="1.5" opacity=".6"/>
+      </svg>
+      <div class="brand__text">
+        <div class="brand__name">LaBible.app</div>
+        <div class="brand__sub">LSG 1910</div>
+      </div>
     </a>
     <nav class="topnav">
       <a href="/">Bible</a>
@@ -22,31 +88,67 @@
     </nav>
   </header>
 
-  <main class="wrap">
-    <section class="panel">
-      <h1 class="h1">Politique de confidentialité</h1>
+  <main>
+    <div class="hero">
+      <div class="hero__eyebrow">Vie privée</div>
+      <h1 class="hero__title">Politique de confidentialité</h1>
+      <p class="hero__desc">Votre vie privée est une priorité. LaBible.app ne collecte aucune donnée personnelle et ne dépose aucun cookie de traçage.</p>
+      <div class="hero__date">Dernière mise à jour : janvier 2026</div>
+    </div>
 
-      <p class="p muted">
-        <strong>Favoris & dernier lu :</strong> stockés localement sur votre appareil (stockage du navigateur).
-        Ils ne sont pas envoyés à un serveur.
-      </p>
+    <div class="badge">🛡️ Conforme RGPD — Aucune donnée collectée</div>
 
-      <p class="p muted">
-        <strong>Cookies :</strong> la mesure d’audience est optionnelle et n’est activée qu’après votre consentement.
-      </p>
+    <div class="section">
+      <div class="section__header">
+        <span class="section__icon">💾</span>
+        <div class="section__title">Données stockées localement</div>
+      </div>
+      <p>LaBible.app utilise le <strong>stockage local de votre navigateur</strong> (localStorage) pour sauvegarder vos préférences : favoris, historique de lecture, progression du plan 365 jours, thème et taille de police.</p>
+      <p>Ces données <strong>ne quittent jamais votre appareil</strong> et ne sont transmises à aucun serveur. Vous pouvez les supprimer à tout moment depuis les paramètres de votre navigateur.</p>
+    </div>
 
-      <p class="p muted">
-        <strong>Contact :</strong> si vous nous écrivez, les informations transmises servent uniquement à répondre à votre demande.
-      </p>
-    </section>
+    <div class="section" style="animation-delay:.07s">
+      <div class="section__header">
+        <span class="section__icon">🍪</span>
+        <div class="section__title">Cookies</div>
+      </div>
+      <p>LaBible.app <strong>n'utilise aucun cookie de traçage</strong> ni cookie publicitaire. Aucune donnée n'est partagée avec des tiers à des fins commerciales.</p>
+    </div>
+
+    <div class="section" style="animation-delay:.14s">
+      <div class="section__header">
+        <span class="section__icon">📊</span>
+        <div class="section__title">Mesure d'audience</div>
+      </div>
+      <p>Des statistiques de trafic anonymes peuvent être collectées via <strong>Cloudflare</strong> (notre fournisseur d'infrastructure) à des fins techniques uniquement — nombre de visites, pays d'origine, type d'appareil. Ces données sont agrégées et ne permettent pas d'identifier un utilisateur.</p>
+    </div>
+
+    <div class="section" style="animation-delay:.21s">
+      <div class="section__header">
+        <span class="section__icon">✉️</span>
+        <div class="section__title">Contact</div>
+      </div>
+      <p>Si vous nous contactez via le formulaire, votre nom et votre adresse email sont utilisés <strong>uniquement pour répondre à votre demande</strong>. Ces informations ne sont ni vendues ni partagées.</p>
+    </div>
+
+    <div class="section" style="animation-delay:.28s">
+      <div class="section__header">
+        <span class="section__icon">⚖️</span>
+        <div class="section__title">Vos droits (RGPD)</div>
+      </div>
+      <p>Conformément au Règlement Général sur la Protection des Données (RGPD), vous disposez d'un droit d'accès, de rectification et de suppression de vos données. Pour exercer ces droits, contactez-nous à <strong><a href="mailto:contact@labible.app" style="color:var(--accent)">contact@labible.app</a></strong>.</p>
+    </div>
+
   </main>
 
-  <footer class="footer">
-    <div>© LaBible.app — Louis Segond 1910</div>
+  <footer>
+    <div>© <span id="yr"></span> · <b>LaBible.app</b> · LSG1910 — Domaine public</div>
     <div class="footer__links">
       <a href="/mentions-legales.html">Mentions légales</a>
       <a href="/conditions.html">Conditions</a>
     </div>
   </footer>
+
+  <script>document.getElementById('yr').textContent = new Date().getFullYear();</script>
 </body>
 </html>

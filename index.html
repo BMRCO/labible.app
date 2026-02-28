@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
-  <title>LaBible.app | LSG1910</title>
+  <title>LSG 1910</title>
   <meta name="description" content="Lire la Bible Louis Segond 1910 en ligne gratuitement. Lecture, recherche, plan de lecture et verset du jour. Texte domaine public." />
   <meta name="keywords" content="Bible, Louis Segond 1910, LSG1910, Bible en ligne, Bible gratuite, Bible française, verset du jour" />
   <meta name="author" content="LaBible.app" />
@@ -204,14 +204,21 @@
       <div class="footerLinks">
         <a href="https://t.me/appbible" target="_blank" rel="noopener">Telegram</a>
         <span>·</span>
-        <a href="/cdn-cgi/l/email-protection#6f0c00011b0e0c1b2f030e0d060d030a410e1f1f">Contact</a>
+        <a href="/a-propos.html">À propos</a>
+        <span>·</span>
+        <a href="/contact.html">Contact</a>
+        <span>·</span>
+        <a href="/mentions-legales.html">Mentions légales</a>
+        <span>·</span>
+        <a href="/confidentialite.html">Confidentialité</a>
+        <span>·</span>
+        <a href="/conditions.html">Conditions</a>
       </div>
     </footer>
   </main>
 
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
-  <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script>
   <script src="/app.js?v=2"></script>
 
   <script type="application/ld+json">
@@ -292,7 +299,7 @@
       // Mettre à jour le bouton Retour à chaque changement d'onglet
       document.querySelectorAll('.tab').forEach(function (tab) {
         tab.addEventListener('click', function () {
-          setTimeout(updateBackButton, 50); // petit délai pour laisser la classe "active" se mettre à jour
+          setTimeout(updateBackButton, 50);
         });
       });
 

@@ -466,13 +466,20 @@ select:focus{
   margin-top: 16px;
   color: var(--muted2);
   font-size: 12px;
-  display:flex;
-  justify-content: space-between;
-  gap: 10px;
-  flex-wrap: wrap;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
   padding: 0 6px;
+  text-align: center;
 }
-.footerLinks{ display:flex; align-items:center; gap:10px; }
+.footerLinks{
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 6px 10px;
+}
 
 .toast{
   position: fixed;

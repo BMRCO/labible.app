@@ -1,6 +1,6 @@
 {
   "name": "LaBible.app",
-  "short_name": "LaBible",
+  "short_name": "LaBible.app",
   "description": "Lire la Bible Louis Segond 1910 en ligne gratuitement. Lecture, recherche, plan de lecture et verset du jour. Texte domaine public.",
   "id": "/",
   "start_url": "/",

@@ -12,6 +12,7 @@
   <meta property="og:description" content="Conditions d'utilisation de LaBible.app. Service gratuit, sans publicité." />
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://labible.app/conditions.html" />
+  <meta property="og:image" content="https://labible.app/icons/icon-512x512.png" />
   <meta name="theme-color" content="#0b0b0b" />
   <link rel="icon" href="/icons/icon-192.png">
   <link rel="apple-touch-icon" href="/icons/icon-192.png">
@@ -19,49 +20,37 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
   <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet"/>
   <style>
-    :root {
-      --bg: #0b0b0b; --card: #141414; --border: #222;
-      --text: #e8e0d0; --muted: #7a7060;
-      --accent: #e2c57a; --accent2: #c8a84b;
-      --radius: 14px; --font-body: 'EB Garamond', Georgia, serif;
-    }
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    html { scroll-behavior: smooth; }
-    body { background: var(--bg); color: var(--text); font-family: var(--font-body); font-size: 1.08rem; line-height: 1.75; min-height: 100vh; display: flex; flex-direction: column; }
-
-    .topbar { display: flex; align-items: center; justify-content: space-between; padding: 14px 24px; border-bottom: 1px solid var(--border); background: rgba(11,11,11,.95); backdrop-filter: blur(12px); position: sticky; top: 0; z-index: 100; }
-    .brand { display: flex; align-items: center; gap: 10px; text-decoration: none; }
-    .brand__text { display: flex; flex-direction: column; line-height: 1.2; }
-    .brand__name { font-size: 1.05rem; font-weight: 700; color: var(--accent); }
-    .brand__sub  { font-size: .72rem; color: var(--muted); letter-spacing: .04em; }
-    .topnav { display: flex; gap: 20px; }
-    .topnav a { color: var(--muted); text-decoration: none; font-size: .88rem; transition: color .2s; }
-    .topnav a:hover { color: var(--accent); }
-
-    main { flex: 1; max-width: 720px; width: 100%; margin: 0 auto; padding: 48px 24px 64px; }
-
-    .hero { margin-bottom: 40px; animation: fadeUp .5s ease both; }
-    .hero__eyebrow { font-size: .78rem; letter-spacing: .12em; text-transform: uppercase; color: var(--accent); margin-bottom: 10px; }
-    .hero__title { font-size: 2.2rem; font-weight: 700; line-height: 1.2; margin-bottom: 14px; }
-    .hero__desc { color: var(--muted); font-size: 1rem; }
-    .hero__date { font-size: .82rem; color: var(--muted); margin-top: 8px; }
-
-    .section { margin-bottom: 28px; animation: fadeUp .5s ease both; }
-    .section + .section { animation-delay: .07s; }
-    .section__header { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; padding-bottom: 10px; border-bottom: 1px solid var(--border); }
-    .section__icon { font-size: 1.2rem; }
-    .section__title { font-size: 1.05rem; font-weight: 700; color: var(--accent); }
-    .section p { color: var(--muted); font-size: .97rem; line-height: 1.75; }
-    .section p + p { margin-top: 10px; }
-    .section strong { color: var(--text); }
-
-    footer { border-top: 1px solid var(--border); padding: 20px 24px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px; font-size: .82rem; color: var(--muted); }
-    footer a { color: var(--muted); text-decoration: none; transition: color .2s; }
-    footer a:hover { color: var(--accent); }
-    .footer__links { display: flex; gap: 16px; }
-
-    @keyframes fadeUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
-    @media (max-width: 600px) { .hero__title { font-size: 1.7rem; } main { padding: 32px 16px 48px; } .topnav { gap: 12px; } }
+    :root{--bg:#0b0b0b;--card:#141414;--border:#222;--text:#e8e0d0;--muted:#7a7060;--accent:#e2c57a;--accent2:#c8a84b;--radius:14px;--font-body:'EB Garamond',Georgia,serif}
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    html{scroll-behavior:smooth}
+    body{background:var(--bg);color:var(--text);font-family:var(--font-body);font-size:1.08rem;line-height:1.75;min-height:100vh;display:flex;flex-direction:column}
+    .topbar{display:flex;align-items:center;justify-content:space-between;padding:14px 24px;border-bottom:1px solid var(--border);background:rgba(11,11,11,.95);backdrop-filter:blur(12px);position:sticky;top:0;z-index:100}
+    .brand{display:flex;align-items:center;gap:10px;text-decoration:none}
+    .brand__text{display:flex;flex-direction:column;line-height:1.2}
+    .brand__name{font-size:1.05rem;font-weight:700;color:var(--accent)}
+    .brand__sub{font-size:.72rem;color:var(--muted);letter-spacing:.04em}
+    .topnav{display:flex;gap:20px}
+    .topnav a{color:var(--muted);text-decoration:none;font-size:.88rem;transition:color .2s}
+    .topnav a:hover{color:var(--accent)}
+    main{flex:1;max-width:720px;width:100%;margin:0 auto;padding:48px 24px 64px}
+    .hero{margin-bottom:40px;animation:fadeUp .5s ease both}
+    .hero__eyebrow{font-size:.78rem;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);margin-bottom:10px}
+    .hero__title{font-size:2.2rem;font-weight:700;line-height:1.2;margin-bottom:14px}
+    .hero__desc{color:var(--muted);font-size:1rem}
+    .hero__date{font-size:.82rem;color:var(--muted);margin-top:8px}
+    .section{margin-bottom:28px;animation:fadeUp .5s ease both}
+    .section__header{display:flex;align-items:center;gap:10px;margin-bottom:12px;padding-bottom:10px;border-bottom:1px solid var(--border)}
+    .section__icon{font-size:1.2rem}
+    .section__title{font-size:1.05rem;font-weight:700;color:var(--accent)}
+    .section p{color:var(--muted);font-size:.97rem;line-height:1.75}
+    .section p+p{margin-top:10px}
+    .section strong{color:var(--text)}
+    footer{border-top:1px solid var(--border);padding:20px 24px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;font-size:.82rem;color:var(--muted)}
+    footer a{color:var(--muted);text-decoration:none;transition:color .2s}
+    footer a:hover{color:var(--accent)}
+    .footer__links{display:flex;gap:16px;flex-wrap:wrap}
+    @keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+    @media(max-width:600px){.hero__title{font-size:1.7rem}main{padding:32px 16px 48px}.topnav{gap:12px}.footer__links{gap:10px}}
   </style>
 </head>
 <body>
@@ -95,59 +84,42 @@
     </div>
 
     <div class="section">
-      <div class="section__header">
-        <span class="section__icon">🆓</span>
-        <div class="section__title">Service gratuit</div>
-      </div>
+      <div class="section__header"><span class="section__icon">🆓</span><div class="section__title">Service gratuit</div></div>
       <p>LaBible.app est un service <strong>entièrement gratuit</strong>, sans abonnement, sans publicité et sans compte requis. L'accès à la totalité du contenu biblique est libre et ouvert à tous.</p>
     </div>
 
     <div class="section" style="animation-delay:.07s">
-      <div class="section__header">
-        <span class="section__icon">📜</span>
-        <div class="section__title">Contenu biblique</div>
-      </div>
+      <div class="section__header"><span class="section__icon">📜</span><div class="section__title">Contenu biblique</div></div>
       <p>Le texte de la Bible <strong>Louis Segond 1910 (LSG)</strong> est dans le domaine public. Il est chargé depuis les fichiers de données hébergés sur ce site. Aucune reproduction commerciale n'est autorisée sans vérification préalable des droits applicables dans votre pays.</p>
     </div>
 
     <div class="section" style="animation-delay:.14s">
-      <div class="section__header">
-        <span class="section__icon">💾</span>
-        <div class="section__title">Données utilisateur</div>
-      </div>
+      <div class="section__header"><span class="section__icon">💾</span><div class="section__title">Données utilisateur</div></div>
       <p>Les favoris, l'historique de lecture et la progression du plan 365 jours sont <strong>stockés localement sur votre appareil</strong> (localStorage). Aucune donnée personnelle n'est transmise à nos serveurs.</p>
       <p>En effaçant les données de votre navigateur, vous supprimez également ces informations de façon définitive.</p>
     </div>
 
     <div class="section" style="animation-delay:.21s">
-      <div class="section__header">
-        <span class="section__icon">⚠️</span>
-        <div class="section__title">Limitation de responsabilité</div>
-      </div>
+      <div class="section__header"><span class="section__icon">⚠️</span><div class="section__title">Limitation de responsabilité</div></div>
       <p>Le service est fourni <strong>"tel quel"</strong>, sans garantie de disponibilité permanente. Nous nous efforçons de maintenir le service accessible en continu, mais ne pouvons garantir l'absence d'interruptions.</p>
     </div>
 
     <div class="section" style="animation-delay:.28s">
-      <div class="section__header">
-        <span class="section__icon">✏️</span>
-        <div class="section__title">Modifications</div>
-      </div>
+      <div class="section__header"><span class="section__icon">✏️</span><div class="section__title">Modifications</div></div>
       <p>Ces conditions peuvent être mises à jour à tout moment. La date de dernière modification est indiquée en haut de cette page. L'utilisation continue du service vaut acceptation des conditions en vigueur.</p>
     </div>
 
     <div class="section" style="animation-delay:.35s">
-      <div class="section__header">
-        <span class="section__icon">✉️</span>
-        <div class="section__title">Contact</div>
-      </div>
+      <div class="section__header"><span class="section__icon">✉️</span><div class="section__title">Contact</div></div>
       <p>Pour toute question relative à ces conditions : <a href="/contact.html" style="color:var(--accent)">formulaire de contact</a> ou <a href="mailto:contact@labible.app" style="color:var(--accent)">contact@labible.app</a>.</p>
     </div>
-
   </main>
 
   <footer>
     <div>© <span id="yr"></span> · <b>LaBible.app</b> · LSG1910 — Domaine public</div>
     <div class="footer__links">
+      <a href="/a-propos.html">À propos</a>
+      <a href="/contact.html">Contact</a>
       <a href="/mentions-legales.html">Mentions légales</a>
       <a href="/confidentialite.html">Confidentialité</a>
     </div>

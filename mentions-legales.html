@@ -2,18 +2,78 @@
 <html lang="fr">
 <head>
   <meta charset="utf-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/>
   <title>Mentions légales — LaBible.app</title>
-  <meta name="theme-color" content="#111827" />
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="/assets/style.css" />
+  <meta name="description" content="Mentions légales de LaBible.app. Informations sur l'éditeur, l'hébergement et les droits d'auteur du texte biblique Louis Segond 1910." />
+  <meta name="keywords" content="mentions légales, LaBible.app, éditeur, hébergement, droits auteur" />
+  <meta name="robots" content="index, follow" />
+  <link rel="canonical" href="https://labible.app/mentions-legales.html" />
+  <meta property="og:title" content="Mentions légales — LaBible.app" />
+  <meta property="og:description" content="Mentions légales de LaBible.app. Informations sur l'éditeur et l'hébergement." />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://labible.app/mentions-legales.html" />
+  <meta property="og:image" content="https://labible.app/icons/icon-512x512.png" />
+  <meta name="theme-color" content="#0b0b0b" />
+  <link rel="icon" href="/icons/icon-192.png">
+  <link rel="apple-touch-icon" href="/icons/icon-192.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet"/>
+  <style>
+    :root{--bg:#0b0b0b;--card:#141414;--border:#222;--text:#e8e0d0;--muted:#7a7060;--accent:#e2c57a;--accent2:#c8a84b;--radius:14px;--font-body:'EB Garamond',Georgia,serif}
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    html{scroll-behavior:smooth}
+    body{background:var(--bg);color:var(--text);font-family:var(--font-body);font-size:1.08rem;line-height:1.75;min-height:100vh;display:flex;flex-direction:column}
+    .topbar{display:flex;align-items:center;justify-content:space-between;padding:14px 24px;border-bottom:1px solid var(--border);background:rgba(11,11,11,.95);backdrop-filter:blur(12px);position:sticky;top:0;z-index:100}
+    .brand{display:flex;align-items:center;gap:10px;text-decoration:none}
+    .brand__text{display:flex;flex-direction:column;line-height:1.2}
+    .brand__name{font-size:1.05rem;font-weight:700;color:var(--accent)}
+    .brand__sub{font-size:.72rem;color:var(--muted);letter-spacing:.04em}
+    .topnav{display:flex;gap:20px}
+    .topnav a{color:var(--muted);text-decoration:none;font-size:.88rem;transition:color .2s}
+    .topnav a:hover{color:var(--accent)}
+    main{flex:1;max-width:720px;width:100%;margin:0 auto;padding:48px 24px 64px}
+    .hero{margin-bottom:48px;animation:fadeUp .5s ease both}
+    .hero__eyebrow{font-size:.78rem;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);margin-bottom:10px}
+    .hero__title{font-size:2.2rem;font-weight:700;line-height:1.2;margin-bottom:14px}
+    .hero__desc{color:var(--muted);font-size:1rem}
+    .hero__date{font-size:.82rem;color:var(--muted);margin-top:8px}
+    .section{margin-bottom:28px;animation:fadeUp .5s ease both}
+    .section__header{display:flex;align-items:center;gap:10px;margin-bottom:14px;padding-bottom:10px;border-bottom:1px solid var(--border)}
+    .section__icon{font-size:1.3rem}
+    .section__title{font-size:1.1rem;font-weight:700;color:var(--accent)}
+    .section p{color:var(--muted);font-size:.97rem;line-height:1.75}
+    .section p+p{margin-top:10px}
+    .section strong{color:var(--text)}
+    .info-grid{display:grid;gap:10px}
+    .info-row{display:grid;grid-template-columns:160px 1fr;gap:12px;padding:10px 0;border-bottom:1px solid rgba(255,255,255,.04)}
+    .info-row:last-child{border-bottom:none}
+    .info-label{font-size:.85rem;color:var(--muted);padding-top:2px}
+    .info-value{font-size:.95rem;color:var(--text)}
+    .info-value a{color:var(--accent);text-decoration:none}
+    .info-value a:hover{text-decoration:underline}
+    footer{border-top:1px solid var(--border);padding:20px 24px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;font-size:.82rem;color:var(--muted)}
+    footer a{color:var(--muted);text-decoration:none;transition:color .2s}
+    footer a:hover{color:var(--accent)}
+    .footer__links{display:flex;gap:16px;flex-wrap:wrap}
+    @keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+    @media(max-width:600px){.hero__title{font-size:1.7rem}main{padding:32px 16px 48px}.topnav{gap:12px}.info-row{grid-template-columns:1fr}.info-label{font-size:.8rem}.footer__links{gap:10px}}
+  </style>
 </head>
 <body>
+
   <header class="topbar">
     <a class="brand" href="/">
-      <div class="brand__name">LaBible.app</div>
-      <div class="brand__sub">Louis Segond 1910</div>
+      <svg width="28" height="28" viewBox="0 0 32 32" fill="none" aria-hidden="true">
+        <rect x="4" y="5" width="13" height="22" rx="2" fill="#e2c57a" opacity=".9"/>
+        <rect x="15" y="5" width="13" height="22" rx="2" fill="#c8a84b" opacity=".7"/>
+        <rect x="13" y="4" width="6" height="24" rx="1.5" fill="#0b0b0b" stroke="#e2c57a" stroke-width="1"/>
+        <line x1="16" y1="4" x2="16" y2="28" stroke="#e2c57a" stroke-width="1.5" opacity=".6"/>
+      </svg>
+      <div class="brand__text">
+        <div class="brand__name">LaBible.app</div>
+        <div class="brand__sub">LSG 1910</div>
+      </div>
     </a>
     <nav class="topnav">
       <a href="/">Bible</a>
@@ -22,18 +82,96 @@
     </nav>
   </header>
 
-  <main class="wrap">
-    <section class="panel">
-      <h1 class="h1">Mentions légales</h1>
-      <p class="p muted"><strong>Éditeur :</strong> LaBible.app</p>
-      <p class="p muted"><strong>Contact :</strong> contact@labible.app</p>
-      <p class="p muted"><strong>Hébergement :</strong> (à compléter : GitHub Pages / Cloudflare Pages)</p>
-      <p class="p muted"><strong>Version affichée :</strong> Louis Segond 1910</p>
-    </section>
+  <main>
+    <div class="hero">
+      <div class="hero__eyebrow">Légal</div>
+      <h1 class="hero__title">Mentions légales</h1>
+      <p class="hero__desc">Informations légales relatives à l'édition et à l'hébergement du site LaBible.app.</p>
+      <div class="hero__date">Dernière mise à jour : janvier 2026</div>
+    </div>
+
+    <div class="section">
+      <div class="section__header">
+        <span class="section__icon">🏢</span>
+        <div class="section__title">Éditeur du site</div>
+      </div>
+      <div class="info-grid">
+        <div class="info-row">
+          <div class="info-label">Nom du site</div>
+          <div class="info-value"><strong>LaBible.app</strong></div>
+        </div>
+        <div class="info-row">
+          <div class="info-label">Nature</div>
+          <div class="info-value">Application web à but non lucratif</div>
+        </div>
+        <div class="info-row">
+          <div class="info-label">Contact</div>
+          <div class="info-value"><a href="mailto:contact@labible.app">contact@labible.app</a></div>
+        </div>
+        <div class="info-row">
+          <div class="info-label">Telegram</div>
+          <div class="info-value"><a href="https://t.me/appbible" target="_blank" rel="noopener">@appbible</a></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section" style="animation-delay:.07s">
+      <div class="section__header">
+        <span class="section__icon">🌐</span>
+        <div class="section__title">Hébergement</div>
+      </div>
+      <div class="info-grid">
+        <div class="info-row">
+          <div class="info-label">Hébergeur</div>
+          <div class="info-value"><strong>GitHub Pages</strong> — GitHub, Inc.</div>
+        </div>
+        <div class="info-row">
+          <div class="info-label">Adresse</div>
+          <div class="info-value">88 Colin P Kelly Jr St, San Francisco, CA 94107, USA</div>
+        </div>
+        <div class="info-row">
+          <div class="info-label">CDN & Sécurité</div>
+          <div class="info-value"><strong>Cloudflare, Inc.</strong> — 101 Townsend St, San Francisco, CA 94107, USA</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section" style="animation-delay:.14s">
+      <div class="section__header">
+        <span class="section__icon">📜</span>
+        <div class="section__title">Propriété intellectuelle</div>
+      </div>
+      <p>Le texte de la <strong>Bible Louis Segond 1910 (LSG)</strong> est dans le domaine public. Sa diffusion est libre et gratuite.</p>
+      <p>Le code source, le design, les icônes et les textes originaux de LaBible.app sont la propriété de leurs auteurs. Toute reproduction sans autorisation est interdite.</p>
+    </div>
+
+    <div class="section" style="animation-delay:.21s">
+      <div class="section__header">
+        <span class="section__icon">🔒</span>
+        <div class="section__title">Données personnelles</div>
+      </div>
+      <p>LaBible.app ne collecte aucune donnée personnelle. Pour plus d'informations, consultez notre <a href="/confidentialite.html" style="color:var(--accent)">politique de confidentialité</a>.</p>
+    </div>
+
+    <div class="section" style="animation-delay:.28s">
+      <div class="section__header">
+        <span class="section__icon">⚖️</span>
+        <div class="section__title">Droit applicable</div>
+      </div>
+      <p>Le présent site est soumis au droit français. En cas de litige, les tribunaux français seront seuls compétents.</p>
+    </div>
   </main>
 
-  <footer class="footer">
-    <div>© LaBible.app — Louis Segond 1910</div>
+  <footer>
+    <div>© <span id="yr"></span> · <b>LaBible.app</b> · LSG1910 — Domaine public</div>
+    <div class="footer__links">
+      <a href="/a-propos.html">À propos</a>
+      <a href="/contact.html">Contact</a>
+      <a href="/conditions.html">Conditions</a>
+      <a href="/confidentialite.html">Confidentialité</a>
+    </div>
   </footer>
+
+  <script>document.getElementById('yr').textContent = new Date().getFullYear();</script>
 </body>
 </html>

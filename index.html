@@ -24,6 +24,14 @@
   <link rel="apple-touch-icon" href="/icons/icon-192.png">
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect x='4' y='5' width='13' height='22' rx='2' fill='%23e2c57a' opacity='.9'/%3E%3Crect x='15' y='5' width='13' height='22' rx='2' fill='%23c8a84b' opacity='.7'/%3E%3Crect x='13' y='4' width='6' height='24' rx='1.5' fill='%231a1a1a' stroke='%23e2c57a' stroke-width='1'/%3E%3Cline x1='16' y1='4' x2='16' y2='28' stroke='%23e2c57a' stroke-width='1.5' opacity='.6'/%3E%3C/svg%3E">
   <link rel="stylesheet" href="/styles.css?v=3" />
+
+  <!-- ═══════════════════════════════════════════════
+       TELEGRAM MINI APP — SDK
+       Carrega em todos os ambientes mas só activa
+       dentro do Telegram (initData não vazio).
+  ═══════════════════════════════════════════════ -->
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+
 </head>
 <body>
 
@@ -203,7 +211,8 @@
 
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
-  <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script src="/app.js?v=2"></script>
+  <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script>
+  <script src="/app.js?v=2"></script>
 
   <script type="application/ld+json">
   {
@@ -211,4 +220,87 @@
     "@type": "WebSite",
     "name": "LaBible.app",
     "url": "https://labible.app/",
-    "description": "Lire la Bible Louis Segond 1910
+    "description": "Lire la Bible Louis Segond 1910 en ligne gratuitement."
+  }
+  </script>
+
+  <!-- ═══════════════════════════════════════════════════════
+       TELEGRAM MINI APP — Initialisation isolée
+       ─────────────────────────────────────────────────────
+       • Si ouvert dans un BROWSER NORMAL : initData est vide
+         → la fonction retourne immédiatement, rien ne change.
+       • Si ouvert dans TELEGRAM : toutes les améliorations
+         s'activent automatiquement.
+       • Aucune ligne du code existant n'est modifiée.
+  ═══════════════════════════════════════════════════════ -->
+  <script>
+    (function () {
+
+      // ── Vérification : sommes-nous dans Telegram ? ──────
+      var tg = window.Telegram && window.Telegram.WebApp;
+      if (!tg || !tg.initData) return; // Browser normal → sortie immédiate
+
+      // ── 1. Signaler que l'app est prête ─────────────────
+      tg.ready();
+
+      // ── 2. Passer en plein écran ─────────────────────────
+      tg.expand();
+
+      // ── 3. Adapter les couleurs CSS au thème Telegram ───
+      //    Les variables CSS doivent déjà exister dans styles.css
+      //    On les écrase uniquement si Telegram fournit une valeur.
+      var p = tg.themeParams || {};
+      var r = document.documentElement;
+      if (p.bg_color)            r.style.setProperty('--bg',          p.bg_color);
+      if (p.secondary_bg_color)  r.style.setProperty('--card',        p.secondary_bg_color);
+      if (p.text_color)          r.style.setProperty('--text',         p.text_color);
+      if (p.hint_color)          r.style.setProperty('--muted',        p.hint_color);
+      if (p.button_color)        r.style.setProperty('--accent',       p.button_color);
+      if (p.button_text_color)   r.style.setProperty('--accentText',   p.button_text_color);
+
+      // ── 4. Masquer le lien Telegram (déjà dans Telegram) ─
+      var tgChip = document.querySelector('a.chip.telegram');
+      if (tgChip) tgChip.style.display = 'none';
+
+      // ── 5. Masquer le bouton "Installer" PWA ─────────────
+      //    Inutile à l'intérieur du Telegram Mini App
+      var installBtn = document.getElementById('btnInstall');
+      if (installBtn) installBtn.hidden = true;
+
+      // ── 6. Bouton Retour natif du Telegram ───────────────
+      //    • Sur l'onglet "Lecture" → ferme le Mini App
+      //    • Sur tout autre onglet  → revient à "Lecture"
+      function updateBackButton() {
+        var activeTab = document.querySelector('.tab.active');
+        if (activeTab && activeTab.dataset.view === 'read') {
+          tg.BackButton.hide();
+        } else {
+          tg.BackButton.show();
+        }
+      }
+
+      tg.BackButton.onClick(function () {
+        var activeTab = document.querySelector('.tab.active');
+        if (activeTab && activeTab.dataset.view === 'read') {
+          tg.close();
+        } else {
+          var readTab = document.querySelector('[data-view="read"]');
+          if (readTab) readTab.click();
+        }
+      });
+
+      // Mettre à jour le bouton Retour à chaque changement d'onglet
+      document.querySelectorAll('.tab').forEach(function (tab) {
+        tab.addEventListener('click', function () {
+          setTimeout(updateBackButton, 50); // petit délai pour laisser la classe "active" se mettre à jour
+        });
+      });
+
+      // État initial
+      updateBackButton();
+
+    })();
+  </script>
+
+</body>
+</html>

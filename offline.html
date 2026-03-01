@@ -1,30 +1,140 @@
 <!doctype html>
 <html lang="fr">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Hors ligne - LaBible.app</title>
-  <meta name="theme-color" content="#111827" />
-  <link rel="stylesheet" href="/assets/style.css" />
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/>
+  <title>Hors ligne — LaBible.app | LSG1910</title>
+  <meta name="theme-color" content="#0b0b0b"/>
+  <link rel="icon" href="/icons/icon-192.png">
+  <style>
+    :root{--bg:#0b0b0b;--text:#e8e0d0;--muted:#7a7060;--accent:#e2c57a;--font:'EB Garamond',Georgia,serif}
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{
+      background:var(--bg);
+      color:var(--text);
+      font-family:var(--font);
+      min-height:100vh;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      justify-content:center;
+      padding:32px 24px;
+      text-align:center;
+      background:
+        radial-gradient(800px 400px at 50% 20%, rgba(226,197,122,.07), transparent 60%),
+        #0b0b0b;
+    }
+    .icon{
+      font-size:4rem;
+      margin-bottom:24px;
+      animation:float 3s ease-in-out infinite;
+    }
+    @keyframes float{
+      0%,100%{transform:translateY(0)}
+      50%{transform:translateY(-10px)}
+    }
+    h1{
+      font-size:1.8rem;
+      font-weight:700;
+      color:var(--accent);
+      margin-bottom:12px;
+      line-height:1.2;
+    }
+    p{
+      color:var(--muted);
+      font-size:1.05rem;
+      line-height:1.7;
+      max-width:380px;
+      margin-bottom:32px;
+    }
+    .verse{
+      background:rgba(226,197,122,.06);
+      border:1px solid rgba(226,197,122,.15);
+      border-radius:16px;
+      padding:24px 28px;
+      max-width:420px;
+      margin-bottom:32px;
+      font-style:italic;
+      font-size:1.08rem;
+      line-height:1.75;
+      color:var(--text);
+    }
+    .verse cite{
+      display:block;
+      margin-top:12px;
+      font-size:.82rem;
+      font-style:normal;
+      color:var(--accent);
+      letter-spacing:.04em;
+    }
+    .btn{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      background:rgba(226,197,122,.12);
+      border:1px solid rgba(226,197,122,.25);
+      color:var(--accent);
+      border-radius:10px;
+      padding:12px 28px;
+      font-family:var(--font);
+      font-size:1rem;
+      font-weight:700;
+      cursor:pointer;
+      text-decoration:none;
+      transition:background .2s, transform .15s;
+    }
+    .btn:hover{background:rgba(226,197,122,.2);transform:translateY(-1px)}
+    .status{
+      margin-top:24px;
+      font-size:.8rem;
+      color:var(--muted);
+      display:flex;
+      align-items:center;
+      gap:6px;
+    }
+    .dot{
+      width:8px;height:8px;
+      border-radius:50%;
+      background:#e55;
+      animation:pulse 2s ease-in-out infinite;
+    }
+    @keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+  </style>
 </head>
 <body>
-  <div class="container">
-    <header class="header">
-      <a class="brand" href="/">
-        <div class="brand__name">LaBible.app</div>
-        <div class="brand__sub">Louis Segond 1910</div>
-      </a>
-    </header>
 
-    <main class="offline-main">
-      <section class="card">
-        <h1 class="title">Vous êtes hors ligne</h1>
-        <p class="desc">LaBible.app reste disponible pour les pages déjà consultées. Vérifiez votre connexion puis réessayez.</p>
-        <div class="actions">
-          <a class="btn primary" href="/">Réessayer</a>
-        </div>
-      </section>
-    </main>
+  <div class="icon">📖</div>
+
+  <h1>Vous êtes hors ligne</h1>
+  <p>La connexion internet est introuvable. Vérifiez votre réseau et réessayez.</p>
+
+  <div class="verse">
+    Ta parole est une lampe à mes pieds, et une lumière sur mon sentier.
+    <cite>— Psaumes 119:105</cite>
   </div>
+
+  <a class="btn" href="/" onclick="window.location.reload();return false;">
+    🔄 Réessayer
+  </a>
+
+  <div class="status">
+    <div class="dot" id="dot"></div>
+    <span id="statusText">Pas de connexion</span>
+  </div>
+
+  <script>
+    // Détecte le retour de connexion et redirige automatiquement
+    function checkOnline() {
+      if (navigator.onLine) {
+        document.getElementById('dot').style.background = '#4caf50';
+        document.getElementById('statusText').textContent = 'Connexion rétablie — redirection…';
+        setTimeout(() => window.location.href = '/', 1000);
+      }
+    }
+
+    window.addEventListener('online', checkOnline);
+    setInterval(checkOnline, 3000);
+  </script>
+
 </body>
 </html>

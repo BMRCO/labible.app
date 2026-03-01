@@ -46,7 +46,7 @@
     .card strong{color:var(--text)}
     .features{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px}
     .feat{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:20px;animation:fadeUp .5s ease both}
-    .feat__icon{font-size:1.4rem;margin-bottom:8px}
+    .feat__icon{font-size:1.4rem;margin-bottom:8px;display:flex;align-items:center}
     .feat__title{font-size:.95rem;font-weight:700;color:var(--text);margin-bottom:4px}
     .feat__desc{font-size:.85rem;color:var(--muted);line-height:1.55}
     .stat-row{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:20px}
@@ -55,10 +55,10 @@
     .stat__label{font-size:.78rem;color:var(--muted);margin-top:4px}
     .cta{display:inline-flex;align-items:center;gap:8px;background:var(--accent);color:#0b0b0b;font-family:var(--font-body);font-size:1rem;font-weight:700;border:none;border-radius:10px;padding:13px 28px;cursor:pointer;text-decoration:none;transition:background .2s,transform .15s;margin-top:8px}
     .cta:hover{background:var(--accent2);transform:translateY(-1px)}
-    footer{border-top:1px solid var(--border);padding:20px 24px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;font-size:.82rem;color:var(--muted)}
+    footer{border-top:1px solid var(--border);padding:20px 24px;display:flex;flex-direction:column;align-items:center;gap:8px;font-size:.82rem;color:var(--muted);text-align:center}
     footer a{color:var(--muted);text-decoration:none;transition:color .2s}
     footer a:hover{color:var(--accent)}
-    .footer__links{display:flex;gap:16px;flex-wrap:wrap}
+    .footer__links{display:flex;flex-wrap:wrap;justify-content:center;gap:6px 14px}
     @keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
     @media(max-width:600px){.features,.stat-row{grid-template-columns:1fr}.hero__title{font-size:1.8rem}.card{padding:20px}main{padding:32px 16px 48px}.topnav{gap:12px}.footer__links{gap:10px}}
   </style>
@@ -81,7 +81,7 @@
     <nav class="topnav">
       <a href="/">Bible</a>
       <a href="/contact.html">Contact</a>
-      <a href="/confidentialite.html">Confidentialité</a>
+      <a href="/legal.html">Légal</a>
     </nav>
   </header>
 
@@ -147,7 +147,13 @@
         <div class="feat__desc">Installe l'app sur ton écran d'accueil pour un accès rapide, comme une vraie appli.</div>
       </div>
       <div class="feat" style="animation-delay:.25s">
-        <div class="feat__icon">✈️</div>
+        <div class="feat__icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <circle cx="12" cy="12" r="12" fill="#2aabee"/>
+            <path d="M5.5 11.5l10-4-3.5 10-2-3.5-4.5-2.5z" fill="white"/>
+            <path d="M10 14l6.5-6.5" stroke="white" stroke-width="1" stroke-linecap="round"/>
+          </svg>
+        </div>
         <div class="feat__title">Telegram Mini App</div>
         <div class="feat__desc">Disponible directement dans Telegram via <a href="https://t.me/appbible" style="color:var(--accent)">@appbible</a>.</div>
       </div>
@@ -165,10 +171,10 @@
   <footer>
     <div>© <span id="yr"></span> · <b>LaBible.app</b> · LSG1910 — Domaine public</div>
     <div class="footer__links">
+      <a href="https://t.me/appbible" target="_blank" rel="noopener">Telegram</a>
+      <a href="/a-propos.html">À propos</a>
       <a href="/contact.html">Contact</a>
-      <a href="/mentions-legales.html">Mentions légales</a>
-      <a href="/conditions.html">Conditions</a>
-      <a href="/confidentialite.html">Confidentialité</a>
+      <a href="/legal.html">Légal</a>
     </div>
   </footer>
 

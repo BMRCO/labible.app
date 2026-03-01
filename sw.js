@@ -1,8 +1,9 @@
-const CACHE_NAME = 'labible-v4';
+const CACHE_NAME = 'labible-v5';
 
 const STATIC_ASSETS = [
   '/',
   '/index.html',
+  '/offline.html',
   '/styles.css',
   '/app.js',
   '/manifest.webmanifest',
@@ -104,7 +105,7 @@ async function cacheFirst(request) {
   }
 }
 
-// Network First — essaie le réseau, fallback sur le cache
+// Network First — essaie le réseau, fallback sur le cache puis offline.html
 async function networkFirst(request) {
   try {
     const response = await fetch(request);
@@ -115,7 +116,9 @@ async function networkFirst(request) {
     return response;
   } catch {
     const cached = await caches.match(request);
-    return cached || new Response('Page non disponible hors ligne.', { status: 503 });
+    if (cached) return cached;
+    // Fallback vers la page offline
+    return caches.match('/offline.html');
   }
 }
 

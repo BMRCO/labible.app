@@ -1,4 +1,4 @@
-const CACHE_NAME = 'labible-v3';
+const CACHE_NAME = 'labible-v4';
 
 const STATIC_ASSETS = [
   '/',
@@ -15,21 +15,25 @@ const STATIC_ASSETS = [
 
 const BIBLE_DATA = '/data/lsg1910.json';
 
-// Installation — mise en cache de tout
+// Installation — cache individual pour éviter l'échec global
 self.addEventListener('install', event => {
   event.waitUntil(
     caches.open(CACHE_NAME).then(async cache => {
-      // Fichiers statiques
-      await cache.addAll(STATIC_ASSETS);
-      // JSON Bible séparé (gros fichier)
+      // Cache chaque fichier individuellement — un échec n'arrête pas tout
+      await Promise.allSettled(
+        STATIC_ASSETS.map(url =>
+          fetch(url).then(res => {
+            if (res.ok) return cache.put(url, res);
+          }).catch(() => {})
+        )
+      );
+      // JSON Bible séparé
       try {
-        const response = await fetch(BIBLE_DATA);
-        if (response.ok) {
-          await cache.put(BIBLE_DATA, response);
-          console.log('[SW] Bible JSON mis en cache ✓');
-        }
+        const res = await fetch(BIBLE_DATA);
+        if (res.ok) await cache.put(BIBLE_DATA, res);
+        console.log('[SW] Bible JSON mis en cache ✓');
       } catch (e) {
-        console.warn('[SW] Bible JSON non disponible hors ligne:', e);
+        console.warn('[SW] Bible JSON non disponible:', e);
       }
     })
   );
@@ -74,6 +78,12 @@ self.addEventListener('fetch', event => {
     return;
   }
 
+  // Pages HTML → Network First (toujours la version fraîche si possible)
+  if (url.pathname.endsWith('.html') || url.pathname === '/') {
+    event.respondWith(networkFirst(request));
+    return;
+  }
+
   // Fichiers statiques → Stale While Revalidate
   event.respondWith(staleWhileRevalidate(request));
 });
@@ -91,6 +101,21 @@ async function cacheFirst(request) {
     return response;
   } catch {
     return new Response('Contenu non disponible hors ligne.', { status: 503 });
+  }
+}
+
+// Network First — essaie le réseau, fallback sur le cache
+async function networkFirst(request) {
+  try {
+    const response = await fetch(request);
+    if (response.ok) {
+      const cache = await caches.open(CACHE_NAME);
+      cache.put(request, response.clone());
+    }
+    return response;
+  } catch {
+    const cached = await caches.match(request);
+    return cached || new Response('Page non disponible hors ligne.', { status: 503 });
   }
 }
 

@@ -1,15 +1,17 @@
 {
-  "name": "LaBible.app",
+  "name": "LaBible.app â€” Bible Louis Segond 1910",
   "short_name": "LaBible.app",
-  "description": "Lire la Bible Louis Segond 1910 en ligne gratuitement. Lecture, recherche, plan de lecture et verset du jour. Texte domaine public.",
+  "description": "Lisez toute la Bible Louis Segond 1910 gratuitement. 31 102 versets, recherche instantanÃ©e, plan de lecture 365 jours, favoris et verset du jour. Sans publicitÃ©.",
   "id": "/",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",
-  "background_color": "#0D1B2A",
-  "theme_color": "#0D1B2A",
+  "background_color": "#0b0b0b",
+  "theme_color": "#0b0b0b",
   "orientation": "portrait-primary",
   "lang": "fr",
+  "dir": "ltr",
+  "categories": ["books", "education", "lifestyle"],
   "icons": [
     {
       "src": "/icons/icon-192x192.png",
@@ -34,6 +36,22 @@
       "sizes": "1024x1024",
       "type": "image/png",
       "purpose": "any"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Verset du jour",
+      "short_name": "Verset",
+      "description": "Ouvrir le verset du jour",
+      "url": "/?vdd=1",
+      "icons": [{ "src": "/icons/icon-192x192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Recherche",
+      "short_name": "Recherche",
+      "description": "Rechercher dans la Bible",
+      "url": "/?tab=search",
+      "icons": [{ "src": "/icons/icon-192x192.png", "sizes": "192x192" }]
     }
   ]
 }

@@ -10,8 +10,8 @@ const STATIC_ASSETS = [
   '/a-propos.html',
   '/contact.html',
   '/legal.html',
-  '/icons/icon-192.png',
-  '/icons/icon-512.png',
+  '/icons/icon-192x192.png',
+  '/icons/icon-512x512.png',
 ];
 
 const BIBLE_DATA = '/data/lsg1910.json';

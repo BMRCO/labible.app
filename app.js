@@ -328,6 +328,9 @@ function renderReading(highlightVerse=null){
     localStorage.setItem(LS.last, refStr);
     pushHistory(refStr);
     updateFavButtonState();
+    // Actualizar URL e título
+    history.replaceState(null, "", `#${encodeURIComponent(book.name)}-${c}`);
+    document.title = `${book.name} ${c} — LaBible.app`;
   } catch(err){
     $("#pageHeader").textContent = "Erreur";
     $("#verses").innerHTML = `<p class="verse"><span class="vnum">!</span><span>${escapeHtml(err.message)}</span></p>`;
@@ -504,11 +507,20 @@ async function copyText(t){
 async function shareCurrent(){
   const book = state.bible.books[state.current.book];
   const c = state.current.chapter;
+  const bookMap = getBookData(state.current.book);
+  const verses = bookMap?.get(c) || [];
+  const first = verses[0] ? String(verses[0]).replace(/^¶\s*/, "").slice(0, 100) : "";
   const url = `${location.origin}${location.pathname}#${encodeURIComponent(book.name)}-${c}`;
+  const text = first ? `${book.name} ${c} :
+"${first}…"
+
+📖 ${url}` : `${book.name} ${c}
+
+📖 ${url}`;
   if(navigator.share){
-    try{ await navigator.share({ title:"LaBible.app", text:`${book.name} ${c}`, url }); } catch{}
+    try{ await navigator.share({ title:`${book.name} ${c} — LaBible.app`, text, url }); } catch{}
   } else {
-    await copyText(url);
+    await copyText(text);
   }
 }
 

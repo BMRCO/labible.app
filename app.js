@@ -17,6 +17,7 @@ const LS = {
 };
 
 const DATA_URL = "/data/lsg1910.json";
+const DATA_URL_CDN = "https://cdn.jsdelivr.net/gh/BMRCO/labible@main/data/lsg1910.json";
 
 const state = {
   bible: null,       // { books: [{id, name, abbr}], data: Map<bookNr, Map<chap, [verses]>> }
@@ -86,8 +87,14 @@ function loadFont(){
 
 /* ---------- charger la bible ---------- */
 async function loadBible(){
-  const res = await fetch(DATA_URL);
-  if(!res.ok) throw new Error(`Impossible de charger ${DATA_URL} (HTTP ${res.status})`);
+  let res;
+  try{
+    res = await fetch(DATA_URL);
+    if(!res.ok) throw new Error("local failed");
+  } catch(e){
+    res = await fetch(DATA_URL_CDN);
+    if(!res.ok) throw new Error(`Impossible de charger la Bible (HTTP ${res.status})`);
+  }
 
   const raw = await res.json();
 

@@ -497,7 +497,17 @@ async function doSearch(){
     })
   );
   box.querySelectorAll("[data-copy]").forEach(btn =>
-    btn.addEventListener("click", () => copyText(btn.getAttribute("data-copy")))
+    btn.addEventListener("click", () => {
+      const ref = btn.getAttribute("data-copy");
+      const parsed = parseReference(ref);
+      const bookMap = parsed ? getBookData(parsed.bi) : null;
+      const verses = bookMap?.get(parsed?.c) || [];
+      const text = parsed?.v ? String(verses[parsed.v - 1] || "").slice(0, 120) : "";
+      const url = parsed ? `https://labible.app/#${state.bible.books[parsed.bi].name}-${parsed.c}` : "";
+      const out = text ? `${ref} — "${text}"
+📖 ${url}` : ref;
+      copyText(out);
+    })
   );
 }
 
@@ -687,7 +697,17 @@ function renderLibrary(){
       })
     );
     box.querySelectorAll("[data-copy]").forEach(btn =>
-      btn.addEventListener("click", () => copyText(btn.getAttribute("data-copy")))
+      btn.addEventListener("click", () => {
+        const ref = btn.getAttribute("data-copy");
+        const parsed = parseReference(ref);
+        const bookMap = parsed ? getBookData(parsed.bi) : null;
+        const verses = bookMap?.get(parsed?.c) || [];
+        const text = parsed?.v ? String(verses[parsed.v - 1] || "").slice(0, 120) : "";
+        const url = parsed ? `https://labible.app/#${state.bible.books[parsed.bi].name}-${parsed.c}` : "";
+        const out = text ? `${ref} — "${text}"
+📖 ${url}` : ref;
+        copyText(out);
+      })
     );
   };
 

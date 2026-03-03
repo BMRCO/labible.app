@@ -1,5 +1,5 @@
 /* =========================
-   LaBible.app — app.js
+   LaBible.app \u2014 app.js
    Fonte: /data/lsg1910.json
    ========================= */
 
@@ -344,7 +344,7 @@ function renderReading(highlightVerse=null){
     updateFavButtonState();
     // Actualizar URL e título
     history.replaceState(null, "", `#${book.name}-${c}`.normalize('NFC'));
-    document.title = `${book.name} ${c} — LaBible.app`;
+    document.title = `${book.name} ${c} \u2014 LaBible.app`;
   } catch(err){
     $("#pageHeader").textContent = "Erreur";
     $("#verses").innerHTML = `<p class="verse"><span class="vnum">!</span><span>${escapeHtml(err.message)}</span></p>`;
@@ -444,7 +444,7 @@ async function buildIndex(force=false){
 
   state.index = items;
   state.indexing = false;
-  $("#searchMeta").textContent = `Index prêt — ${items.length.toLocaleString("fr-FR")} versets.`;
+  $("#searchMeta").textContent = `Index prêt \u2014 ${items.length.toLocaleString("fr-FR")} versets.`;
   toast("Recherche prête ✅");
 }
 
@@ -504,7 +504,7 @@ async function doSearch(){
       const verses = bookMap?.get(parsed?.c) || [];
       const text = parsed?.v ? String(verses[parsed.v - 1] || "").slice(0, 120) : "";
       const url = parsed ? `https://labible.app/#${state.bible.books[parsed.bi].name}-${parsed.c}` : "";
-      const out = text ? `${ref} — "${text}"
+      const out = text ? `${ref} \u2014 "${text}"
 📖 ${url}` : ref;
       copyText(out);
     })
@@ -538,7 +538,7 @@ async function shareCurrent(){
   const shareText = first ? `${book.name} ${c} :
 "${first}…"` : `${book.name} ${c}`;
   if(navigator.share){
-    try{ await navigator.share({ title:`${book.name} ${c} — LaBible.app`, text: shareText, url }); } catch{}
+    try{ await navigator.share({ title:`${book.name} ${c} \u2014 LaBible.app`, text: shareText, url }); } catch{}
   } else {
     await copyText(`${shareText}
 
@@ -561,7 +561,7 @@ async function computeVerseOfDay(force=false){
       if(cached?.key===k && cached?.ref){
         state.vddRef = cached.ref;
         const el = $("#vddBox");
-        if(el) el.textContent = cached.text || "—";
+        if(el) el.textContent = cached.text || "\u2014";
         return;
       }
     } catch{}
@@ -582,7 +582,7 @@ async function computeVerseOfDay(force=false){
   const text = String(verses[vi] || "").trim();
 
   state.vddRef = { bi, c: ci, v: vi+1 };
-  const line = `${books[bi].name} ${ci}:${vi+1} — ${text||"…"}`;
+  const line = `${books[bi].name} ${ci}:${vi+1} \u2014 ${text||"…"}`;
   const el = $("#vddBox");
   if(el) el.textContent = line;
   localStorage.setItem(LS.vdd, JSON.stringify({ key:k, ref:state.vddRef, text:line, at:nowIso() }));
@@ -633,7 +633,7 @@ async function renderPlan(){
   const day = planDayFrom(st.createdAt);
   const entry = st.plan[day-1];
 
-  $("#planTodayText").textContent = `Jour ${day} — ${entry.refs.map(r=>r.label).join(" · ")}`;
+  $("#planTodayText").textContent = `Jour ${day} \u2014 ${entry.refs.map(r=>r.label).join(" · ")}`;
   $("#planTodayMeta").textContent = st.doneDay >= day ? "✅ Déjà marqué." : `Progression : jour ${st.doneDay} terminé.`;
 
   const pct = Math.round((st.doneDay/365)*100);
@@ -704,7 +704,7 @@ function renderLibrary(){
         const verses = bookMap?.get(parsed?.c) || [];
         const text = parsed?.v ? String(verses[parsed.v - 1] || "").slice(0, 120) : "";
         const url = parsed ? `https://labible.app/#${state.bible.books[parsed.bi].name}-${parsed.c}` : "";
-        const out = text ? `${ref} — "${text}"
+        const out = text ? `${ref} \u2014 "${text}"
 📖 ${url}` : ref;
         copyText(out);
       })

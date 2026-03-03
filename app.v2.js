@@ -343,7 +343,7 @@ function renderReading(highlightVerse=null){
     pushHistory(refStr);
     updateFavButtonState();
     // Actualizar URL e título
-    history.replaceState(null, "", `#${book.name}-${c}`);
+    history.replaceState(null, "", `#${book.name}-${c}`.normalize('NFC'));
     document.title = `${book.name} ${c} — LaBible.app`;
   } catch(err){
     $("#pageHeader").textContent = "Erreur";
@@ -524,7 +524,7 @@ async function shareCurrent(){
   const bookMap = getBookData(state.current.book);
   const verses = bookMap?.get(c) || [];
   const first = verses[0] ? String(verses[0]).replace(/^¶\s*/, "").slice(0, 100) : "";
-  const url = `${location.origin}/#${book.name}-${c}`;
+  const url = `https://labible.app/#${book.name}-${c}`;
   const shareText = first ? `${book.name} ${c} :
 "${first}…"` : `${book.name} ${c}`;
   if(navigator.share){

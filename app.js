@@ -86,7 +86,7 @@ function loadFont(){
 
 /* ---------- charger la bible ---------- */
 async function loadBible(){
-  const res = await fetch(DATA_URL, { cache: "force-cache" });
+  const res = await fetch(DATA_URL);
   if(!res.ok) throw new Error(`Impossible de charger ${DATA_URL} (HTTP ${res.status})`);
 
   const raw = await res.json();

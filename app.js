@@ -87,6 +87,7 @@ function loadFont(){
 
 /* ---------- charger la bible ---------- */
 async function loadBible(){
+  toast("Chargement Bible…");
   let res;
   try{
     const ctrl = new AbortController();
@@ -99,7 +100,8 @@ async function loadBible(){
       res = await fetch(DATA_URL_CDN);
       if(!res.ok) throw new Error(`HTTP ${res.status}`);
     } catch(e2){
-      throw new Error("Impossible de charger la Bible. Vérifiez votre connexion.");
+      toast("❌ " + (e2.message || "Erreur réseau"));
+      throw new Error("❌ Impossible de charger la Bible: " + e2.message);
     }
   }
 

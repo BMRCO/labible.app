@@ -1,11 +1,11 @@
-const CACHE_NAME = 'labible-v6';
+const CACHE_NAME = 'labible-v7';
 
 const STATIC_ASSETS = [
   '/',
   '/index.html',
   '/offline.html',
   '/styles.css',
-  '/app.js',
+  '/app.v2.js',
   '/manifest.webmanifest',
   '/a-propos.html',
   '/contact.html',

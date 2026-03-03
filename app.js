@@ -89,11 +89,18 @@ function loadFont(){
 async function loadBible(){
   let res;
   try{
-    res = await fetch(DATA_URL);
+    const ctrl = new AbortController();
+    const timer = setTimeout(() => ctrl.abort(), 8000);
+    res = await fetch(DATA_URL, { signal: ctrl.signal });
+    clearTimeout(timer);
     if(!res.ok) throw new Error("local failed");
   } catch(e){
-    res = await fetch(DATA_URL_CDN);
-    if(!res.ok) throw new Error(`Impossible de charger la Bible (HTTP ${res.status})`);
+    try{
+      res = await fetch(DATA_URL_CDN);
+      if(!res.ok) throw new Error(`HTTP ${res.status}`);
+    } catch(e2){
+      throw new Error("Impossible de charger la Bible. Vérifiez votre connexion.");
+    }
   }
 
   const raw = await res.json();

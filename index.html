@@ -3,14 +3,14 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
-  <title>LaBible.app — Bible Louis Segond 1910 en ligne gratuite</title>
+  <title>LaBible.app &mdash; Bible Louis Segond 1910 en ligne gratuite</title>
   <meta name="description" content="Lisez toute la Bible Louis Segond 1910 gratuitement en ligne. 31 102 versets, recherche instantanée, plan de lecture 365 jours, favoris et verset du jour. Sans publicité." />
   <meta name="keywords" content="Bible Louis Segond 1910, LSG1910, Bible en ligne gratuite, lire la Bible, verset du jour, plan de lecture Bible, Bible française, Bible protestante" />
   <meta name="author" content="LaBible.app" />
   <meta name="robots" content="index, follow" />
   <link rel="canonical" href="https://labible.app/" />
   <link rel="alternate" hreflang="fr" href="https://labible.app/" />
-  <meta property="og:title" content="LaBible.app — Bible Louis Segond 1910 gratuite" />
+  <meta property="og:title" content="LaBible.app &mdash; Bible Louis Segond 1910 gratuite" />
   <meta property="og:description" content="Lisez toute la Bible Louis Segond 1910 gratuitement. 31 102 versets, recherche, plan 365 jours. Sans publicité." />
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://labible.app/" />
@@ -18,7 +18,7 @@
   <meta property="og:locale" content="fr_FR" />
   <meta property="og:site_name" content="LaBible.app" />
   <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="LaBible.app — Bible Louis Segond 1910 gratuite" />
+  <meta name="twitter:title" content="LaBible.app &mdash; Bible Louis Segond 1910 gratuite" />
   <meta name="twitter:description" content="Lisez toute la Bible Louis Segond 1910 gratuitement. 31 102 versets, recherche, plan 365 jours." />
   <meta name="twitter:image" content="https://labible.app/icons/icon-512x512.png" />
   <meta name="theme-color" content="#0b0b0b" />
@@ -29,7 +29,7 @@
   <link rel="stylesheet" href="/styles.css?v=3" />
 
   <!-- ═══════════════════════════════════════════════
-       TELEGRAM MINI APP — SDK
+       TELEGRAM MINI APP &mdash; SDK
        Carrega em todos os ambientes mas só activa
        dentro do Telegram (initData não vazio).
   ═══════════════════════════════════════════════ -->
@@ -139,7 +139,7 @@
         <div class="cardHeader">
           <div>
             <h2>Plan de lecture</h2>
-            <div class="muted">365 jours — progression enregistrée sur l'appareil.</div>
+            <div class="muted">365 jours &mdash; progression enregistrée sur l'appareil.</div>
           </div>
           <div class="row gap8">
             <button class="chip" id="btnResetPlan">↺ Reset</button>
@@ -149,7 +149,7 @@
         <div class="planGrid">
           <div class="planBox">
             <div class="planTitle">Aujourd'hui</div>
-            <div class="planToday" id="planTodayText">—</div>
+            <div class="planToday" id="planTodayText">&mdash;</div>
             <div class="planActions">
               <button class="btnPrimary" id="btnOpenToday">📖 Ouvrir</button>
               <button class="btn" id="btnMarkDone">✅ Marquer lu</button>
@@ -184,7 +184,7 @@
         <div class="libraryGrid">
           <div class="libBox">
             <div class="planTitle">✨ Verset du jour</div>
-            <div class="vdd" id="vddBox">—</div>
+            <div class="vdd" id="vddBox">&mdash;</div>
             <div class="row gap8 wrap">
               <button class="btn" id="btnOpenVDD">📖 Ouvrir</button>
               <button class="btn" id="btnCopyVDD">📎 Copier</button>
@@ -203,7 +203,7 @@
     </section>
 
     <footer class="footer">
-      <div>© <span id="year"></span> · <b>LaBible.app</b> · LSG1910 — Domaine public</div>
+      <div>© <span id="year"></span> · <b>LaBible.app</b> · LSG1910 &mdash; Domaine public</div>
       <div class="footerLinks">
         <a href="https://t.me/appbible" target="_blank" rel="noopener">Telegram</a>
         <span>·</span>
@@ -218,7 +218,7 @@
 
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
-  <script src="/app.js?v=2"></script>
+  <script src="/app.v2.js"></script>
 
   <script type="application/ld+json">
   {
@@ -241,7 +241,7 @@
     "@type": "SoftwareApplication",
     "name": "LaBible.app",
     "url": "https://labible.app/",
-    "description": "Application Bible Louis Segond 1910 — 31 102 versets, recherche instantanée, plan de lecture 365 jours, favoris. Gratuit, sans publicité.",
+    "description": "Application Bible Louis Segond 1910 &mdash; 31 102 versets, recherche instantanée, plan de lecture 365 jours, favoris. Gratuit, sans publicité.",
     "applicationCategory": "ReferenceApplication",
     "operatingSystem": "Web, Android, iOS",
     "offers": {
@@ -259,7 +259,7 @@
   </script>
 
   <!-- ═══════════════════════════════════════════════════════
-       TELEGRAM MINI APP — Initialisation isolée
+       TELEGRAM MINI APP &mdash; Initialisation isolée
        ─────────────────────────────────────────────────────
        • Si ouvert dans un BROWSER NORMAL : initData est vide
          → la fonction retourne immédiatement, rien ne change.
@@ -337,7 +337,7 @@
   </script>
 
   <script>
-    // Service Worker — cache offline
+    // Service Worker &mdash; cache offline
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', function () {
         navigator.serviceWorker.register('/sw.js').then(function (reg) {
@@ -348,7 +348,7 @@
             const newWorker = reg.installing;
             newWorker.addEventListener('statechange', function () {
               if (newWorker.state === 'activated' && navigator.serviceWorker.controller) {
-                console.log('[SW] Nouvelle version active — rechargement');
+                console.log('[SW] Nouvelle version active &mdash; rechargement');
                 window.location.reload();
               }
             });

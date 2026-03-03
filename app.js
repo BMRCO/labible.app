@@ -86,7 +86,7 @@ function loadFont(){
 
 /* ---------- charger la bible ---------- */
 async function loadBible(){
-  const res = await fetch(DATA_URL);
+  const res = await fetch(DATA_URL, { cache: "force-cache" });
   if(!res.ok) throw new Error(`Impossible de charger ${DATA_URL} (HTTP ${res.status})`);
 
   const raw = await res.json();
@@ -133,22 +133,11 @@ async function loadBible(){
 
   initSelectors();
 
-  // Restaurer depuis hash URL ou dernière position
-  const urlHash = location.hash.slice(1);
-  let restored = false;
-  if(urlHash){
-    try{
-      const decoded = decodeURIComponent(urlHash).replace(/-(\d)/, " $1");
-      const ref = parseReference(decoded);
-      if(ref){ state.current.book = ref.bi; state.current.chapter = ref.c; restored = true; }
-    } catch(e){}
-  }
-  if(!restored){
-    const last = localStorage.getItem(LS.last);
-    if(last){
-      const ref = parseReference(last);
-      if(ref){ state.current.book = ref.bi; state.current.chapter = ref.c; }
-    }
+  // Restaurer dernière position
+  const last = localStorage.getItem(LS.last);
+  if(last){
+    const ref = parseReference(last);
+    if(ref){ state.current.book = ref.bi; state.current.chapter = ref.c; }
   }
 
   $("#bookSelect").value = String(state.current.book);
@@ -339,11 +328,6 @@ function renderReading(highlightVerse=null){
     localStorage.setItem(LS.last, refStr);
     pushHistory(refStr);
     updateFavButtonState();
-
-    // Actualizar URL e título da página
-    const hash = `#${encodeURIComponent(book.name)}-${c}`;
-    history.replaceState(null, "", hash);
-    document.title = `${book.name} ${c} — LaBible.app`;
   } catch(err){
     $("#pageHeader").textContent = "Erreur";
     $("#verses").innerHTML = `<p class="verse"><span class="vnum">!</span><span>${escapeHtml(err.message)}</span></p>`;
@@ -520,19 +504,11 @@ async function copyText(t){
 async function shareCurrent(){
   const book = state.bible.books[state.current.book];
   const c = state.current.chapter;
-  const bookMap = getBookData(state.current.book);
-  const verses = bookMap?.get(c) || [];
-  const firstVerse = verses[0] ? String(verses[0]).slice(0, 80) + (verses[0].length > 80 ? "…" : "") : "";
   const url = `${location.origin}${location.pathname}#${encodeURIComponent(book.name)}-${c}`;
-  const text = firstVerse ? `${book.name} ${c} — "${firstVerse}"
-
-` : `${book.name} ${c}
-
-`;
   if(navigator.share){
-    try{ await navigator.share({ title:`${book.name} ${c} — LaBible.app`, text, url }); } catch{}
+    try{ await navigator.share({ title:"LaBible.app", text:`${book.name} ${c}`, url }); } catch{}
   } else {
-    await copyText(`${text}${url}`);
+    await copyText(url);
   }
 }
 

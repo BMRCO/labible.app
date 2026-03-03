@@ -16,7 +16,7 @@ const LS = {
   vdd: "labible:vddCache"
 };
 
-const DATA_URL = "/data/lsg1910.json";
+const DATA_URL = "/bible/lsg1910.json";
 
 const state = {
   bible: null,       // { books: [{id, name, abbr}], data: Map<bookNr, Map<chap, [verses]>> }
@@ -136,7 +136,7 @@ async function loadBible(){
   // Restaurer depuis hash URL ou dernière position
   const hash = location.hash.slice(1);
   if(hash){
-    const decoded = decodeURIComponent(hash).replace("-", " ");
+    const decoded = decodeURIComponent(hash).replace(/-(?=\d)/, " ");
     const ref = parseReference(decoded);
     if(ref){ state.current.book = ref.bi; state.current.chapter = ref.c; }
   } else {

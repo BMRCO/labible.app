@@ -1,0 +1,491 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/>
+  <title>Installer LaBible.app — Guide complet</title>
+  <meta name="description" content="Comment installer LaBible.app sur Android, iPhone, PC et accéder via Telegram. Guide étape par étape." />
+  <link rel="icon" href="/icons/icon-192x192.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --bg: #0b0b0b;
+      --card: #111111;
+      --card2: #161616;
+      --border: #1e1e1e;
+      --text: #e8e0d0;
+      --muted: #6a6055;
+      --accent: #e2c57a;
+      --accent2: #c8a84b;
+      --radius: 16px;
+      --serif: 'EB Garamond', Georgia, serif;
+      --sans: 'DM Sans', system-ui, sans-serif;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--sans);
+      font-size: 1rem;
+      line-height: 1.6;
+      min-height: 100vh;
+    }
+
+    /* TOPBAR */
+    .topbar {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 16px 32px;
+      border-bottom: 1px solid var(--border);
+      background: rgba(11,11,11,.96);
+      backdrop-filter: blur(16px);
+      position: sticky; top: 0; z-index: 100;
+    }
+    .brand { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+    .brand__name { font-family: var(--serif); font-size: 1.1rem; font-weight: 700; color: var(--accent); }
+    .brand__sub { font-size: .7rem; color: var(--muted); letter-spacing: .06em; }
+
+    /* HERO */
+    .hero {
+      text-align: center;
+      padding: 80px 24px 60px;
+      position: relative;
+      overflow: hidden;
+    }
+    .hero::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: radial-gradient(ellipse 60% 40% at 50% 0%, rgba(226,197,122,.08) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .hero__eyebrow {
+      font-size: .72rem; letter-spacing: .16em; text-transform: uppercase;
+      color: var(--accent); margin-bottom: 16px;
+      display: inline-flex; align-items: center; gap: 8px;
+    }
+    .hero__eyebrow::before, .hero__eyebrow::after {
+      content: ''; display: block; width: 30px; height: 1px; background: var(--accent); opacity: .4;
+    }
+    .hero__title {
+      font-family: var(--serif);
+      font-size: clamp(2rem, 5vw, 3.2rem);
+      font-weight: 700; line-height: 1.15;
+      margin-bottom: 16px;
+    }
+    .hero__title span { color: var(--accent); }
+    .hero__desc { color: var(--muted); max-width: 520px; margin: 0 auto; font-size: 1.05rem; }
+
+    /* PLATFORM TABS */
+    .platform-tabs {
+      display: flex; justify-content: center; gap: 8px;
+      padding: 32px 24px 0; flex-wrap: wrap;
+    }
+    .ptab {
+      display: flex; align-items: center; gap: 8px;
+      padding: 10px 20px;
+      border: 1px solid var(--border);
+      border-radius: 50px;
+      background: transparent;
+      color: var(--muted);
+      font-family: var(--sans); font-size: .88rem;
+      cursor: pointer;
+      transition: all .2s;
+      text-decoration: none;
+    }
+    .ptab:hover, .ptab.active {
+      border-color: var(--accent);
+      color: var(--accent);
+      background: rgba(226,197,122,.06);
+    }
+    .ptab__icon { font-size: 1.1rem; }
+
+    /* MAIN CONTENT */
+    main { max-width: 780px; margin: 0 auto; padding: 48px 24px 80px; }
+
+    /* PLATFORM SECTION */
+    .platform {
+      margin-bottom: 56px;
+      animation: fadeUp .5s ease both;
+    }
+    .platform__header {
+      display: flex; align-items: center; gap: 16px;
+      margin-bottom: 28px;
+      padding-bottom: 20px;
+      border-bottom: 1px solid var(--border);
+    }
+    .platform__icon {
+      width: 52px; height: 52px;
+      border-radius: 14px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.6rem;
+      flex-shrink: 0;
+    }
+    .platform__icon.android { background: linear-gradient(135deg, #1a2f1a, #0f1f0f); border: 1px solid #2d4a2d; }
+    .platform__icon.ios { background: linear-gradient(135deg, #1a1a2e, #0f0f1f); border: 1px solid #2d2d4a; }
+    .platform__icon.pc { background: linear-gradient(135deg, #1a1a1a, #0f0f0f); border: 1px solid #2d2d2d; }
+    .platform__icon.telegram { background: linear-gradient(135deg, #0d2235, #071525); border: 1px solid #1a4060; }
+    .platform__name { font-family: var(--serif); font-size: 1.5rem; font-weight: 700; color: var(--text); }
+    .platform__desc { font-size: .88rem; color: var(--muted); margin-top: 2px; }
+
+    /* STEPS */
+    .steps { display: flex; flex-direction: column; gap: 12px; }
+    .step {
+      display: flex; gap: 16px; align-items: flex-start;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 18px 20px;
+      transition: border-color .2s;
+    }
+    .step:hover { border-color: rgba(226,197,122,.2); }
+    .step__num {
+      width: 28px; height: 28px; border-radius: 50%;
+      background: rgba(226,197,122,.1);
+      border: 1px solid rgba(226,197,122,.3);
+      color: var(--accent);
+      font-size: .78rem; font-weight: 700;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0; margin-top: 1px;
+    }
+    .step__content { flex: 1; }
+    .step__title { font-weight: 500; color: var(--text); margin-bottom: 3px; font-size: .95rem; }
+    .step__desc { font-size: .85rem; color: var(--muted); line-height: 1.5; }
+    .step__desc strong { color: var(--text); }
+    .step__desc a { color: var(--accent); text-decoration: none; }
+    .step__desc a:hover { text-decoration: underline; }
+    .step__img {
+      width: 32px; height: 32px;
+      border-radius: 8px;
+      background: var(--card2);
+      border: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.1rem; flex-shrink: 0;
+    }
+
+    /* TIP BOX */
+    .tip {
+      display: flex; gap: 12px; align-items: flex-start;
+      background: rgba(226,197,122,.05);
+      border: 1px solid rgba(226,197,122,.15);
+      border-radius: var(--radius);
+      padding: 16px 18px;
+      margin-top: 16px;
+    }
+    .tip__icon { font-size: 1.1rem; flex-shrink: 0; margin-top: 1px; }
+    .tip__text { font-size: .85rem; color: var(--muted); line-height: 1.55; }
+    .tip__text strong { color: var(--accent); }
+
+    /* CTA */
+    .cta-box {
+      text-align: center;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 40px 32px;
+      margin-top: 48px;
+    }
+    .cta-box h2 { font-family: var(--serif); font-size: 1.8rem; margin-bottom: 10px; }
+    .cta-box p { color: var(--muted); margin-bottom: 24px; font-size: .95rem; }
+    .cta-row { display: flex; justify-content: center; gap: 12px; flex-wrap: wrap; }
+    .cta-btn {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 12px 24px; border-radius: 10px;
+      font-family: var(--sans); font-size: .92rem; font-weight: 500;
+      text-decoration: none; transition: all .2s;
+    }
+    .cta-btn.primary { background: var(--accent); color: #0b0b0b; }
+    .cta-btn.primary:hover { background: var(--accent2); transform: translateY(-1px); }
+    .cta-btn.secondary { background: transparent; color: var(--accent); border: 1px solid rgba(226,197,122,.3); }
+    .cta-btn.secondary:hover { border-color: var(--accent); background: rgba(226,197,122,.06); }
+
+    /* FOOTER */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 20px 24px;
+      text-align: center;
+      font-size: .8rem; color: var(--muted);
+    }
+    footer a { color: var(--muted); text-decoration: none; }
+    footer a:hover { color: var(--accent); }
+
+    @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+    @media(max-width: 600px) {
+      .topbar { padding: 14px 16px; }
+      .hero { padding: 56px 16px 40px; }
+      main { padding: 32px 16px 60px; }
+      .cta-box { padding: 28px 20px; }
+    }
+  </style>
+</head>
+<body>
+
+  <header class="topbar">
+    <a class="brand" href="/">
+      <svg width="26" height="26" viewBox="0 0 32 32" fill="none">
+        <rect x="4" y="5" width="13" height="22" rx="2" fill="#e2c57a" opacity=".9"/>
+        <rect x="15" y="5" width="13" height="22" rx="2" fill="#c8a84b" opacity=".7"/>
+        <rect x="13" y="4" width="6" height="24" rx="1.5" fill="#0b0b0b" stroke="#e2c57a" stroke-width="1"/>
+        <line x1="16" y1="4" x2="16" y2="28" stroke="#e2c57a" stroke-width="1.5" opacity=".6"/>
+      </svg>
+      <div>
+        <div class="brand__name">LaBible.app</div>
+        <div class="brand__sub">LSG 1910</div>
+      </div>
+    </a>
+    <a href="/" style="color:var(--muted);font-size:.85rem;text-decoration:none;">← Retour</a>
+  </header>
+
+  <section class="hero">
+    <div class="hero__eyebrow">Guide d'installation</div>
+    <h1 class="hero__title">Installez <span>LaBible.app</span><br>sur tous vos appareils</h1>
+    <p class="hero__desc">Gratuit, sans compte, sans publicité. Disponible sur Android, iPhone, PC et Telegram.</p>
+  </section>
+
+  <div class="platform-tabs">
+    <a class="ptab active" href="#android"><span class="ptab__icon">🤖</span> Android</a>
+    <a class="ptab" href="#iphone"><span class="ptab__icon">🍎</span> iPhone</a>
+    <a class="ptab" href="#pc"><span class="ptab__icon">💻</span> PC / Mac</a>
+    <a class="ptab" href="#telegram"><span class="ptab__icon">✈️</span> Telegram</a>
+  </div>
+
+  <main>
+
+    <!-- ANDROID -->
+    <div class="platform" id="android">
+      <div class="platform__header">
+        <div class="platform__icon android">🤖</div>
+        <div>
+          <div class="platform__name">Android</div>
+          <div class="platform__desc">Chrome · Samsung Internet · Firefox</div>
+        </div>
+      </div>
+      <div class="steps">
+        <div class="step">
+          <div class="step__num">1</div>
+          <div class="step__content">
+            <div class="step__title">Ouvrez Chrome sur votre téléphone</div>
+            <div class="step__desc">Allez sur <a href="https://labible.app" target="_blank"><strong>labible.app</strong></a> dans votre navigateur Chrome.</div>
+          </div>
+          <div class="step__img">🌐</div>
+        </div>
+        <div class="step">
+          <div class="step__num">2</div>
+          <div class="step__content">
+            <div class="step__title">Appuyez sur le bouton "Installer"</div>
+            <div class="step__desc">Un bouton <strong>✦ Installer</strong> apparaît en haut de la page — appuyez dessus. Sinon, appuyez sur les <strong>⋮ trois points</strong> en haut à droite.</div>
+          </div>
+          <div class="step__img">📲</div>
+        </div>
+        <div class="step">
+          <div class="step__num">3</div>
+          <div class="step__content">
+            <div class="step__title">Sélectionnez "Ajouter à l'écran d'accueil"</div>
+            <div class="step__desc">Dans le menu, choisissez <strong>"Ajouter à l'écran d'accueil"</strong> puis confirmez.</div>
+          </div>
+          <div class="step__img">🏠</div>
+        </div>
+        <div class="step">
+          <div class="step__num">4</div>
+          <div class="step__content">
+            <div class="step__title">L'app est installée !</div>
+            <div class="step__desc">L'icône <strong>LaBible.app</strong> apparaît sur votre écran d'accueil. Elle s'ouvre comme une vraie application, sans barre de navigateur.</div>
+          </div>
+          <div class="step__img">✅</div>
+        </div>
+      </div>
+      <div class="tip">
+        <div class="tip__icon">💡</div>
+        <div class="tip__text"><strong>Fonctionne hors connexion !</strong> Une fois installée, vous pouvez lire la Bible même sans internet.</div>
+      </div>
+    </div>
+
+    <!-- IPHONE -->
+    <div class="platform" id="iphone">
+      <div class="platform__header">
+        <div class="platform__icon ios">🍎</div>
+        <div>
+          <div class="platform__name">iPhone / iPad</div>
+          <div class="platform__desc">Safari uniquement</div>
+        </div>
+      </div>
+      <div class="steps">
+        <div class="step">
+          <div class="step__num">1</div>
+          <div class="step__content">
+            <div class="step__title">Ouvrez Safari</div>
+            <div class="step__desc">L'installation ne fonctionne qu'avec <strong>Safari</strong> sur iPhone. Allez sur <a href="https://labible.app" target="_blank"><strong>labible.app</strong></a>.</div>
+          </div>
+          <div class="step__img">🧭</div>
+        </div>
+        <div class="step">
+          <div class="step__num">2</div>
+          <div class="step__content">
+            <div class="step__title">Appuyez sur le bouton Partager</div>
+            <div class="step__desc">En bas de l'écran, appuyez sur l'icône <strong>□↑ Partager</strong> (carré avec une flèche vers le haut).</div>
+          </div>
+          <div class="step__img">📤</div>
+        </div>
+        <div class="step">
+          <div class="step__num">3</div>
+          <div class="step__content">
+            <div class="step__title">Choisissez "Sur l'écran d'accueil"</div>
+            <div class="step__desc">Faites défiler le menu vers le bas et appuyez sur <strong>"Sur l'écran d'accueil"</strong> puis sur <strong>Ajouter</strong>.</div>
+          </div>
+          <div class="step__img">🏠</div>
+        </div>
+        <div class="step">
+          <div class="step__num">4</div>
+          <div class="step__content">
+            <div class="step__title">L'app est installée !</div>
+            <div class="step__desc">L'icône apparaît sur votre écran d'accueil. Appuyez dessus pour ouvrir LaBible.app en plein écran.</div>
+          </div>
+          <div class="step__img">✅</div>
+        </div>
+      </div>
+      <div class="tip">
+        <div class="tip__icon">⚠️</div>
+        <div class="tip__text"><strong>Important :</strong> Sur iPhone, l'installation ne fonctionne qu'avec <strong>Safari</strong>, pas Chrome ni Firefox.</div>
+      </div>
+    </div>
+
+    <!-- PC / MAC -->
+    <div class="platform" id="pc">
+      <div class="platform__header">
+        <div class="platform__icon pc">💻</div>
+        <div>
+          <div class="platform__name">PC / Mac</div>
+          <div class="platform__desc">Chrome · Edge · Brave</div>
+        </div>
+      </div>
+      <div class="steps">
+        <div class="step">
+          <div class="step__num">1</div>
+          <div class="step__content">
+            <div class="step__title">Ouvrez Chrome ou Edge</div>
+            <div class="step__desc">Allez sur <a href="https://labible.app" target="_blank"><strong>labible.app</strong></a> dans votre navigateur.</div>
+          </div>
+          <div class="step__img">🌐</div>
+        </div>
+        <div class="step">
+          <div class="step__num">2</div>
+          <div class="step__content">
+            <div class="step__title">Cliquez sur l'icône d'installation</div>
+            <div class="step__desc">Une icône <strong>⊕</strong> apparaît à droite de la barre d'adresse. Cliquez dessus. Sur Edge, c'est l'icône <strong>+</strong> ou le menu <strong>⋯</strong> → <strong>Applications</strong>.</div>
+          </div>
+          <div class="step__img">📥</div>
+        </div>
+        <div class="step">
+          <div class="step__num">3</div>
+          <div class="step__content">
+            <div class="step__title">Cliquez sur "Installer"</div>
+            <div class="step__desc">Une fenêtre apparaît avec <strong>"Installer LaBible.app ?"</strong> — cliquez sur <strong>Installer</strong>.</div>
+          </div>
+          <div class="step__img">✅</div>
+        </div>
+        <div class="step">
+          <div class="step__num">4</div>
+          <div class="step__content">
+            <div class="step__title">L'app s'ouvre dans sa propre fenêtre</div>
+            <div class="step__desc">LaBible.app s'ouvre comme une application de bureau, sans barre de navigateur. Un raccourci est créé sur votre bureau.</div>
+          </div>
+          <div class="step__img">🖥️</div>
+        </div>
+      </div>
+      <div class="tip">
+        <div class="tip__icon">💡</div>
+        <div class="tip__text"><strong>Accès rapide :</strong> Épinglez LaBible.app dans votre barre des tâches pour l'ouvrir en un clic.</div>
+      </div>
+    </div>
+
+    <!-- TELEGRAM -->
+    <div class="platform" id="telegram">
+      <div class="platform__header">
+        <div class="platform__icon telegram">✈️</div>
+        <div>
+          <div class="platform__name">Telegram</div>
+          <div class="platform__desc">Mini App · Canal de versets</div>
+        </div>
+      </div>
+      <div class="steps">
+        <div class="step">
+          <div class="step__num">1</div>
+          <div class="step__content">
+            <div class="step__title">Ouvrez Telegram</div>
+            <div class="step__desc">Assurez-vous d'avoir <strong>Telegram</strong> installé sur votre téléphone ou PC.</div>
+          </div>
+          <div class="step__img">✈️</div>
+        </div>
+        <div class="step">
+          <div class="step__num">2</div>
+          <div class="step__content">
+            <div class="step__title">Rejoignez le canal @appbible</div>
+            <div class="step__desc">Appuyez sur ce lien : <a href="https://t.me/appbible" target="_blank"><strong>t.me/appbible</strong></a> — vous recevrez un verset chaque matin et soir.</div>
+          </div>
+          <div class="step__img">📣</div>
+        </div>
+        <div class="step">
+          <div class="step__num">3</div>
+          <div class="step__content">
+            <div class="step__title">Accédez à la Mini App</div>
+            <div class="step__desc">Dans le canal, appuyez sur le bouton <strong>"📖 Lire dans LaBible.app"</strong> ou allez directement sur <a href="https://t.me/BIBLE_APP_BOT/labible" target="_blank"><strong>t.me/BIBLE_APP_BOT/labible</strong></a>.</div>
+          </div>
+          <div class="step__img">📖</div>
+        </div>
+        <div class="step">
+          <div class="step__num">4</div>
+          <div class="step__content">
+            <div class="step__title">La Bible s'ouvre dans Telegram !</div>
+            <div class="step__desc">Lisez toute la Bible <strong>directement dans Telegram</strong>, sans quitter l'application.</div>
+          </div>
+          <div class="step__img">✅</div>
+        </div>
+      </div>
+      <div class="tip">
+        <div class="tip__icon">🌟</div>
+        <div class="tip__text"><strong>Verset du jour :</strong> En rejoignant <strong>@appbible</strong>, recevez automatiquement un verset inspirant chaque matin à 7h et chaque soir à 18h.</div>
+      </div>
+    </div>
+
+    <!-- CTA -->
+    <div class="cta-box">
+      <h2>Prêt à lire la Parole ?</h2>
+      <p>Gratuit, sans compte, sans publicité. Juste la Bible.</p>
+      <div class="cta-row">
+        <a class="cta-btn primary" href="/">📖 Lire maintenant</a>
+        <a class="cta-btn secondary" href="https://t.me/appbible" target="_blank">✈️ Rejoindre Telegram</a>
+      </div>
+    </div>
+
+  </main>
+
+  <footer>
+    <div>© <span id="yr"></span> · <b>LaBible.app</b> · LSG1910 &mdash; Domaine public</div>
+  </footer>
+
+  <script>
+    document.getElementById('yr').textContent = new Date().getFullYear();
+    // Smooth scroll + active tab
+    document.querySelectorAll('.ptab').forEach(tab => {
+      tab.addEventListener('click', e => {
+        document.querySelectorAll('.ptab').forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+      });
+    });
+    // Highlight tab on scroll
+    const sections = ['android','iphone','pc','telegram'];
+    window.addEventListener('scroll', () => {
+      sections.forEach(id => {
+        const el = document.getElementById(id);
+        if (!el) return;
+        const rect = el.getBoundingClientRect();
+        if (rect.top < 200 && rect.bottom > 200) {
+          document.querySelectorAll('.ptab').forEach(t => t.classList.remove('active'));
+          document.querySelector(`.ptab[href="#${id}"]`)?.classList.add('active');
+        }
+      });
+    });
+  </script>
+</body>
+</html>

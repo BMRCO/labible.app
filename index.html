@@ -170,6 +170,28 @@
       font-family: inherit;
       cursor: pointer;
     }
+    /* ── Verse — clicável e seleccionado ── */
+    .verse {
+      cursor: pointer;
+      border-radius: 8px;
+      padding: 4px 6px;
+      margin: 0 -6px;
+      transition: background 0.15s;
+    }
+    .verse:hover {
+      background: rgba(226, 197, 122, 0.05);
+    }
+    .verse.selected {
+      background: rgba(226, 197, 122, 0.09);
+      outline: 1px solid rgba(226, 197, 122, 0.2);
+    }
+
+    /* ── Highlight pesquisa ── */
+    .hl {
+      background: rgba(226, 197, 122, 0.3);
+      border-radius: 3px;
+      padding: 0 2px;
+    }
   </style>
 
   <script src="https://telegram.org/js/telegram-web-app.js" defer></script>

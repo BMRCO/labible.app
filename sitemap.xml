@@ -4,24 +4,30 @@
     <loc>https://labible.app/</loc>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
-    <lastmod>2026-01-01</lastmod>
+    <lastmod>2026-03-13</lastmod>
   </url>
   <url>
-    <loc>https://labible.app/a-propos.html</loc>
+    <loc>https://labible.app/a-propos</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
-    <lastmod>2026-01-01</lastmod>
+    <lastmod>2026-03-13</lastmod>
   </url>
   <url>
-    <loc>https://labible.app/contact.html</loc>
+    <loc>https://labible.app/contact</loc>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
-    <lastmod>2026-01-01</lastmod>
+    <lastmod>2026-03-13</lastmod>
   </url>
   <url>
-    <loc>https://labible.app/legal.html</loc>
+    <loc>https://labible.app/confidentialite</loc>
+    <changefreq>yearly</changefreq>
+    <priority>0.5</priority>
+    <lastmod>2026-03-13</lastmod>
+  </url>
+  <url>
+    <loc>https://labible.app/legal</loc>
     <changefreq>yearly</changefreq>
     <priority>0.4</priority>
-    <lastmod>2026-01-01</lastmod>
+    <lastmod>2026-03-13</lastmod>
   </url>
 </urlset>

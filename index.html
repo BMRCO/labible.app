@@ -402,23 +402,29 @@
       var q = input.value.trim();
       if (!q) return;
 
-      // ── Cas 1 : app.v2.js expose window.appSearch ──────
-      // Si tu ajoutes cette fonction dans app.v2.js plus tard,
-      // la recherche se fait directement ici.
-      if (typeof window.appSearch === 'function') {
-        var hits = window.appSearch(q);
-        renderResults(q, hits);
+      if (typeof window.appSearch !== 'function') {
+        // app.v2.js ainda não carregou — não devia acontecer
         return;
       }
 
-      // ── Cas 2 : fallback → appSearch não disponível ainda ──
-      // Adicionar window.appSearch(q) no app.v2.js para activar resultados inline
-      console.warn('[GlobalSearch] window.appSearch() não definido.');
+      var hits = window.appSearch(q);
+
+      // índice ainda a construir (Bible não carregada ainda)
+      if (hits === null) {
+        resultsMeta.textContent = '⏳ Chargement… réessaie dans un instant.';
+        resultsBox.classList.add('active');
+        resultsList.innerHTML = '';
+        // tentar de novo após 1.5s
+        setTimeout(function () { doSearch(); }, 1500);
+        return;
+      }
+
+      renderResults(q, hits);
     }
 
     function renderResults(q, hits) {
       resultsList.innerHTML = '';
-      if (!hits || !hits.length) {
+      if (!hits.length) {
         resultsMeta.textContent = 'Aucun résultat pour « ' + q + ' »';
         resultsBox.classList.add('active');
         return;
@@ -427,15 +433,17 @@
       hits.slice(0, 20).forEach(function (hit) {
         var el = document.createElement('div');
         el.className = 'gResultItem';
+        // usar textHtml (com highlight) se disponível, senão texto simples
+        var bodyHtml = hit.textHtml ? '« ' + hit.textHtml + ' »' : '« ' + hit.text + ' »';
         el.innerHTML =
           '<div class="gResultHead">' +
             '<span class="gResultRef">' + hit.ref + '</span>' +
             '<span class="gResultArrow">›</span>' +
           '</div>' +
-          '<div class="gResultBody">« ' + hit.text + ' »' +
+          '<div class="gResultBody">' + bodyHtml +
             '<div class="gResultActions">' +
-              '<button class="btnOpen" data-ref="' + hit.ref + '">📖 Ouvrir</button>' +
-              '<button class="btnCopy" data-text="' + hit.text.replace(/"/g,'&quot;') + '">📎 Copier</button>' +
+              '<button class="btnOpen">📖 Ouvrir</button>' +
+              '<button class="btnCopy">📎 Copier</button>' +
             '</div>' +
           '</div>';
 
@@ -444,12 +452,16 @@
         });
         el.querySelector('.btnOpen').addEventListener('click', function (e) {
           e.stopPropagation();
-          // Navigue vers la référence si app.v2.js expose window.appGoTo
-          if (typeof window.appGoTo === 'function') window.appGoTo(hit.ref);
+          if (typeof window.appGoTo === 'function') {
+            window.appGoTo(hit.ref);
+            closeResults();          // fecha resultados e limpa barra
+            input.value = '';
+            showClear(false);
+          }
         });
         el.querySelector('.btnCopy').addEventListener('click', function (e) {
           e.stopPropagation();
-          navigator.clipboard && navigator.clipboard.writeText('« ' + hit.text + ' » — ' + hit.ref);
+          navigator.clipboard && navigator.clipboard.writeText('« ' + hit.text + ' »\n— ' + hit.ref + ' (LSG 1910)\n📖 https://labible.app');
         });
         resultsList.appendChild(el);
       });

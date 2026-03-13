@@ -10,7 +10,7 @@
   <meta name="robots" content="index, follow" />
   <link rel="canonical" href="https://labible.app/" />
   <link rel="alternate" hreflang="fr" href="https://labible.app/" />
-  <meta property="og:title" content="LaBible.app &mdash; Bible Louis Segond 1910 gratuite" />
+  <meta property="og:title" content="LaBible.app — Bible Louis Segond 1910 gratuite" />
   <meta property="og:description" content="Lisez toute la Bible Louis Segond 1910 gratuitement. 31 102 versets, recherche, plan 365 jours. Sans publicité." />
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://labible.app/" />
@@ -18,7 +18,7 @@
   <meta property="og:locale" content="fr_FR" />
   <meta property="og:site_name" content="LaBible.app" />
   <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="LaBible.app &mdash; Bible Louis Segond 1910 gratuite" />
+  <meta name="twitter:title" content="LaBible.app — Bible Louis Segond 1910 gratuite" />
   <meta name="twitter:description" content="Lisez toute la Bible Louis Segond 1910 gratuitement. 31 102 versets, recherche, plan 365 jours." />
   <meta name="twitter:image" content="https://labible.app/icons/icon-512x512.png" />
   <meta name="theme-color" content="#0b0b0b" />
@@ -28,13 +28,151 @@
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect x='4' y='5' width='13' height='22' rx='2' fill='%23e2c57a' opacity='.9'/%3E%3Crect x='15' y='5' width='13' height='22' rx='2' fill='%23c8a84b' opacity='.7'/%3E%3Crect x='13' y='4' width='6' height='24' rx='1.5' fill='%231a1a1a' stroke='%23e2c57a' stroke-width='1'/%3E%3Cline x1='16' y1='4' x2='16' y2='28' stroke='%23e2c57a' stroke-width='1.5' opacity='.6'/%3E%3C/svg%3E">
   <link rel="stylesheet" href="/styles.css?v=3" />
 
-  <!-- ═══════════════════════════════════════════════
-       TELEGRAM MINI APP &mdash; SDK
-       Carrega em todos os ambientes mas só activa
-       dentro do Telegram (initData não vazio).
-  ═══════════════════════════════════════════════ -->
-  <script src="https://telegram.org/js/telegram-web-app.js" defer></script>
+  <style>
+    /* ── Barra de pesquisa global ── */
+    .globalSearch {
+      padding: 10px 16px 8px;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+      background: var(--bg, #0b0b0b);
+      position: sticky;
+      top: 0;           /* fica colada abaixo do header */
+      z-index: 90;
+    }
+    .globalSearchInner {
+      position: relative;
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+    .globalSearchInner .gsIcon {
+      position: absolute;
+      left: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 14px;
+      opacity: .35;
+      pointer-events: none;
+    }
+    #globalSearchInput {
+      flex: 1;
+      padding: 11px 36px 11px 36px;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(226,197,122,0.25);
+      border-radius: 10px;
+      color: var(--text, #f0ead8);
+      font-size: 13px;
+      font-family: inherit;
+      outline: none;
+      transition: border-color .2s;
+    }
+    #globalSearchInput:focus {
+      border-color: rgba(226,197,122,0.55);
+    }
+    #globalSearchInput::placeholder { color: rgba(255,255,255,0.3); }
+    #globalSearchClear {
+      position: absolute;
+      right: 90px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: rgba(255,255,255,0.1);
+      border: none;
+      color: rgba(255,255,255,0.45);
+      border-radius: 50%;
+      width: 20px; height: 20px;
+      font-size: 10px;
+      cursor: pointer;
+      display: none;
+      align-items: center;
+      justify-content: center;
+    }
+    #globalSearchBtn {
+      padding: 10px 16px;
+      background: var(--accent, #c9a640);
+      color: var(--accentText, #0b0b0b);
+      border: none;
+      border-radius: 10px;
+      font-size: 13px;
+      font-weight: 700;
+      font-family: inherit;
+      cursor: pointer;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
 
+
+
+    /* Overlay de resultados inline */
+    #globalResults {
+      display: none;
+      padding: 12px 16px;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+    #globalResults.active { display: block; }
+    .gResultsMeta {
+      font-size: 10px;
+      color: rgba(255,255,255,0.3);
+      letter-spacing: .3em;
+      margin-bottom: 10px;
+      text-transform: uppercase;
+    }
+    .gResultItem {
+      border-radius: 10px;
+      border: 1px solid rgba(255,255,255,0.07);
+      background: rgba(255,255,255,0.03);
+      margin-bottom: 7px;
+      overflow: hidden;
+      cursor: pointer;
+      transition: border-color .2s, background .2s;
+    }
+    .gResultItem:hover { border-color: rgba(226,197,122,0.3); }
+    .gResultItem.open {
+      border-color: rgba(226,197,122,0.4);
+      background: rgba(226,197,122,0.05);
+    }
+    .gResultHead {
+      padding: 11px 14px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .gResultRef {
+      font-size: 13px;
+      color: #e2c57a;
+      font-weight: 700;
+    }
+    .gResultArrow {
+      color: rgba(226,197,122,.5);
+      font-size: 14px;
+      transition: transform .2s;
+    }
+    .gResultItem.open .gResultArrow { transform: rotate(90deg); }
+    .gResultBody {
+      display: none;
+      padding: 0 14px 13px;
+      font-size: 14px;
+      font-style: italic;
+      line-height: 1.7;
+      color: rgba(240,234,216,.85);
+    }
+    .gResultItem.open .gResultBody { display: block; }
+    .gResultActions {
+      display: flex;
+      gap: 8px;
+      margin-top: 10px;
+    }
+    .gResultActions button {
+      padding: 5px 12px;
+      border-radius: 8px;
+      border: 1px solid rgba(255,255,255,0.1);
+      background: rgba(255,255,255,0.06);
+      color: rgba(240,234,216,.7);
+      font-size: 11px;
+      font-family: inherit;
+      cursor: pointer;
+    }
+  </style>
+
+  <script src="https://telegram.org/js/telegram-web-app.js" defer></script>
 </head>
 <body>
 
@@ -57,7 +195,6 @@
         <div class="brandSub">LSG 1910</div>
       </div>
     </div>
-
     <div class="topActions">
       <button id="btnTheme" class="iconBtn" title="Thème">🌙</button>
       <div class="topDivider"></div>
@@ -71,11 +208,30 @@
     </div>
   </header>
 
+  <!-- ═══════════════════════════════
+       BARRA DE PESQUISA GLOBAL
+       Visível em todas as tabs
+  ═══════════════════════════════ -->
+  <div class="globalSearch">
+    <div class="globalSearchInner">
+      <span class="gsIcon">🔍</span>
+      <input id="globalSearchInput" type="text" placeholder="Rechercher un verset, mot clé… (ex : Jean 3:16)" autocomplete="off" />
+      <button id="globalSearchClear">✕</button>
+      <button id="globalSearchBtn">Rechercher</button>
+    </div>
+
+  </div>
+
+  <!-- Resultados inline da pesquisa global -->
+  <div id="globalResults">
+    <div class="gResultsMeta" id="gResultsMeta"></div>
+    <div id="gResultsList"></div>
+  </div>
+
   <main class="container">
 
     <nav class="tabs" aria-label="Navigation">
       <button class="tab active" data-view="read">Lecture</button>
-      <button class="tab" data-view="search">Recherche</button>
       <button class="tab" data-view="plan">Plan</button>
       <button class="tab" data-view="library">Bibliothèque</button>
     </nav>
@@ -111,27 +267,7 @@
       </div>
     </section>
 
-    <!-- RECHERCHE -->
-    <section class="view" id="view-search">
-      <div class="card">
-        <div class="cardHeader">
-          <div>
-            <h2>Recherche</h2>
-            <div class="muted">Mots clés + références (ex : <b>Jean 3:16</b>).</div>
-          </div>
-          <div class="row gap8">
-            <button class="chip" id="btnBuildIndex">⚡ Index</button>
-            <button class="chip" id="btnClearSearch">✖️</button>
-          </div>
-        </div>
-        <div class="searchBar">
-          <input id="searchInput" type="text" placeholder="Mot clé ou référence (ex : Romains 8:1)…" autocomplete="off" />
-          <button class="btnPrimary" id="btnSearch">Rechercher</button>
-        </div>
-        <div class="muted small" id="searchMeta"></div>
-        <div class="results" id="searchResults"></div>
-      </div>
-    </section>
+
 
     <!-- PLAN -->
     <section class="view" id="view-plan">
@@ -139,7 +275,7 @@
         <div class="cardHeader">
           <div>
             <h2>Plan de lecture</h2>
-            <div class="muted">365 jours &mdash; progression enregistrée sur l'appareil.</div>
+            <div class="muted">365 jours — progression enregistrée sur l'appareil.</div>
           </div>
           <div class="row gap8">
             <button class="chip" id="btnResetPlan">↺ Reset</button>
@@ -149,7 +285,7 @@
         <div class="planGrid">
           <div class="planBox">
             <div class="planTitle">Aujourd'hui</div>
-            <div class="planToday" id="planTodayText">&mdash;</div>
+            <div class="planToday" id="planTodayText">—</div>
             <div class="planActions">
               <button class="btnPrimary" id="btnOpenToday">📖 Ouvrir</button>
               <button class="btn" id="btnMarkDone">✅ Marquer lu</button>
@@ -184,7 +320,7 @@
         <div class="libraryGrid">
           <div class="libBox">
             <div class="planTitle">✨ Verset du jour</div>
-            <div class="vdd" id="vddBox">&mdash;</div>
+            <div class="vdd" id="vddBox">—</div>
             <div class="row gap8 wrap">
               <button class="btn" id="btnOpenVDD">📖 Ouvrir</button>
               <button class="btn" id="btnCopyVDD">📎 Copier</button>
@@ -220,6 +356,108 @@
 
   <script src="/app.v2.js"></script>
 
+  <!-- ═══════════════════════════════════════════════
+       PESQUISA GLOBAL — script autónomo
+       Usa o mesmo índice/função de pesquisa do app.v2.js
+       via window.appSearch() se disponível,
+       senão faz redirect para a tab Recherche.
+  ═══════════════════════════════════════════════ -->
+  <script>
+  (function () {
+    var input   = document.getElementById('globalSearchInput');
+    var btn     = document.getElementById('globalSearchBtn');
+    var clearBtn= document.getElementById('globalSearchClear');
+    var resultsBox = document.getElementById('globalResults');
+    var resultsMeta= document.getElementById('gResultsMeta');
+    var resultsList= document.getElementById('gResultsList');
+
+    function showClear(val) {
+      clearBtn.style.display = val ? 'flex' : 'none';
+    }
+
+    input.addEventListener('input', function () {
+      showClear(input.value);
+      if (!input.value) closeResults();
+    });
+
+    input.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter') doSearch();
+    });
+
+    clearBtn.addEventListener('click', function () {
+      input.value = '';
+      showClear(false);
+      closeResults();
+      input.focus();
+    });
+
+    btn.addEventListener('click', doSearch);
+
+    function closeResults() {
+      resultsBox.classList.remove('active');
+      resultsList.innerHTML = '';
+    }
+
+    function doSearch() {
+      var q = input.value.trim();
+      if (!q) return;
+
+      // ── Cas 1 : app.v2.js expose window.appSearch ──────
+      // Si tu ajoutes cette fonction dans app.v2.js plus tard,
+      // la recherche se fait directement ici.
+      if (typeof window.appSearch === 'function') {
+        var hits = window.appSearch(q);
+        renderResults(q, hits);
+        return;
+      }
+
+      // ── Cas 2 : fallback → appSearch não disponível ainda ──
+      // Adicionar window.appSearch(q) no app.v2.js para activar resultados inline
+      console.warn('[GlobalSearch] window.appSearch() não definido.');
+    }
+
+    function renderResults(q, hits) {
+      resultsList.innerHTML = '';
+      if (!hits || !hits.length) {
+        resultsMeta.textContent = 'Aucun résultat pour « ' + q + ' »';
+        resultsBox.classList.add('active');
+        return;
+      }
+      resultsMeta.textContent = '✦ ' + hits.length + ' résultat' + (hits.length > 1 ? 's' : '') + ' — « ' + q.toUpperCase() + ' »';
+      hits.slice(0, 20).forEach(function (hit) {
+        var el = document.createElement('div');
+        el.className = 'gResultItem';
+        el.innerHTML =
+          '<div class="gResultHead">' +
+            '<span class="gResultRef">' + hit.ref + '</span>' +
+            '<span class="gResultArrow">›</span>' +
+          '</div>' +
+          '<div class="gResultBody">« ' + hit.text + ' »' +
+            '<div class="gResultActions">' +
+              '<button class="btnOpen" data-ref="' + hit.ref + '">📖 Ouvrir</button>' +
+              '<button class="btnCopy" data-text="' + hit.text.replace(/"/g,'&quot;') + '">📎 Copier</button>' +
+            '</div>' +
+          '</div>';
+
+        el.querySelector('.gResultHead').addEventListener('click', function () {
+          el.classList.toggle('open');
+        });
+        el.querySelector('.btnOpen').addEventListener('click', function (e) {
+          e.stopPropagation();
+          // Navigue vers la référence si app.v2.js expose window.appGoTo
+          if (typeof window.appGoTo === 'function') window.appGoTo(hit.ref);
+        });
+        el.querySelector('.btnCopy').addEventListener('click', function (e) {
+          e.stopPropagation();
+          navigator.clipboard && navigator.clipboard.writeText('« ' + hit.text + ' » — ' + hit.ref);
+        });
+        resultsList.appendChild(el);
+      });
+      resultsBox.classList.add('active');
+    }
+  })();
+  </script>
+
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
@@ -235,54 +473,13 @@
     }
   }
   </script>
-  <script type="application/ld+json">
-  {
-    "@context": "https://schema.org",
-    "@type": "SoftwareApplication",
-    "name": "LaBible.app",
-    "url": "https://labible.app/",
-    "description": "Application Bible Louis Segond 1910 &mdash; 31 102 versets, recherche instantanée, plan de lecture 365 jours, favoris. Gratuit, sans publicité.",
-    "applicationCategory": "ReferenceApplication",
-    "operatingSystem": "Web, Android, iOS",
-    "offers": {
-      "@type": "Offer",
-      "price": "0",
-      "priceCurrency": "EUR"
-    },
-    "inLanguage": "fr",
-    "author": {
-      "@type": "Organization",
-      "name": "LaBible.app",
-      "url": "https://labible.app/"
-    }
-  }
-  </script>
 
-  <!-- ═══════════════════════════════════════════════════════
-       TELEGRAM MINI APP &mdash; Initialisation isolée
-       ─────────────────────────────────────────────────────
-       • Si ouvert dans un BROWSER NORMAL : initData est vide
-         → la fonction retourne immédiatement, rien ne change.
-       • Si ouvert dans TELEGRAM : toutes les améliorations
-         s'activent automatiquement.
-       • Aucune ligne du code existant n'est modifiée.
-  ═══════════════════════════════════════════════════════ -->
   <script>
     (function () {
-
-      // ── Vérification : sommes-nous dans Telegram ? ──────
       var tg = window.Telegram && window.Telegram.WebApp;
-      if (!tg || !tg.initData) return; // Browser normal → sortie immédiate
-
-      // ── 1. Signaler que l'app est prête ─────────────────
+      if (!tg || !tg.initData) return;
       tg.ready();
-
-      // ── 2. Passer en plein écran ─────────────────────────
       tg.expand();
-
-      // ── 3. Adapter les couleurs CSS au thème Telegram ───
-      //    Les variables CSS doivent déjà exister dans styles.css
-      //    On les écrase uniquement si Telegram fournit une valeur.
       var p = tg.themeParams || {};
       var r = document.documentElement;
       if (p.bg_color)            r.style.setProperty('--bg',          p.bg_color);
@@ -291,19 +488,10 @@
       if (p.hint_color)          r.style.setProperty('--muted',        p.hint_color);
       if (p.button_color)        r.style.setProperty('--accent',       p.button_color);
       if (p.button_text_color)   r.style.setProperty('--accentText',   p.button_text_color);
-
-      // ── 4. Masquer le lien Telegram (déjà dans Telegram) ─
       var tgChip = document.querySelector('a.chip.telegram');
       if (tgChip) tgChip.style.display = 'none';
-
-      // ── 5. Masquer le bouton "Installer" PWA ─────────────
-      //    Inutile à l'intérieur du Telegram Mini App
       var installBtn = document.getElementById('btnInstall');
       if (installBtn) installBtn.hidden = true;
-
-      // ── 6. Bouton Retour natif du Telegram ───────────────
-      //    • Sur l'onglet "Lecture" → ferme le Mini App
-      //    • Sur tout autre onglet  → revient à "Lecture"
       function updateBackButton() {
         var activeTab = document.querySelector('.tab.active');
         if (activeTab && activeTab.dataset.view === 'read') {
@@ -312,7 +500,6 @@
           tg.BackButton.show();
         }
       }
-
       tg.BackButton.onClick(function () {
         var activeTab = document.querySelector('.tab.active');
         if (activeTab && activeTab.dataset.view === 'read') {
@@ -322,33 +509,25 @@
           if (readTab) readTab.click();
         }
       });
-
-      // Mettre à jour le bouton Retour à chaque changement d'onglet
       document.querySelectorAll('.tab').forEach(function (tab) {
         tab.addEventListener('click', function () {
           setTimeout(updateBackButton, 50);
         });
       });
-
-      // État initial
       updateBackButton();
-
     })();
   </script>
 
   <script>
-    // Service Worker &mdash; cache offline
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', function () {
         navigator.serviceWorker.register('/sw.js').then(function (reg) {
           console.log('[SW] Enregistré:', reg.scope);
-
-          // Détecte une nouvelle version et recharge la page
           reg.addEventListener('updatefound', function () {
             const newWorker = reg.installing;
             newWorker.addEventListener('statechange', function () {
               if (newWorker.state === 'activated' && navigator.serviceWorker.controller) {
-                console.log('[SW] Nouvelle version active &mdash; rechargement');
+                console.log('[SW] Nouvelle version active — rechargement');
                 window.location.reload();
               }
             });

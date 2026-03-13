@@ -1,5 +1,5 @@
 /* =========================
-   LaBible.app — app.js
+   LaBible.app — app.v2.js
    Fonte: /data/lsg1910.json
    ========================= */
 
@@ -8,26 +8,26 @@ const $$ = (s) => Array.from(document.querySelectorAll(s));
 
 const LS = {
   theme: "labible:theme",
-  font: "labible:font",
-  last: "labible:lastRef",
-  fav: "labible:favs",
-  hist: "labible:history",
-  plan: "labible:plan365",
-  vdd: "labible:vddCache"
+  font:  "labible:font",
+  last:  "labible:lastRef",
+  fav:   "labible:favs",
+  hist:  "labible:history",
+  plan:  "labible:plan365",
+  vdd:   "labible:vddCache"
 };
 
-const DATA_URL = "/data/lsg1910.json";
+const DATA_URL     = "/data/lsg1910.json";
 const DATA_URL_CDN = "https://cdn.jsdelivr.net/gh/BMRCO/labible@main/data/lsg1910.json";
 
 const state = {
-  bible: null,
-  index: null,
-  indexing: false,
-  current: { book: 0, chapter: 1 },
+  bible:         null,
+  index:         null,
+  indexing:      false,
+  current:       { book: 0, chapter: 1 },
   deferredPrompt: null,
-  readFont: 16,
-  vddRef: null,
-  selectedVerse: null  // { bookName, chapter, verse, text }
+  readFont:      16,
+  vddRef:        null,
+  selectedVerse: null
 };
 
 /* ---------- helpers ---------- */
@@ -36,7 +36,7 @@ function toast(msg){
   if(!el) return;
   el.textContent = msg;
   el.classList.add("show");
-  setTimeout(()=> el.classList.remove("show"), 2200);
+  setTimeout(() => el.classList.remove("show"), 2200);
 }
 function clamp(n, a, b){ return Math.max(a, Math.min(b, n)); }
 function normalize(s){
@@ -64,12 +64,9 @@ function buildVerseShareText(bookName, chapter, verse, text){
 }
 
 function showVerseActions(bookName, chapter, verse, text, el){
-  // Retirer sélection précédente
   $$(".verse.selected").forEach(p => p.classList.remove("selected"));
   el.classList.add("selected");
   state.selectedVerse = { bookName, chapter, verse, text };
-
-  // Retirer ancien panel si existir
   $("#verseActionBar")?.remove();
 
   const bar = document.createElement("div");
@@ -79,31 +76,23 @@ function showVerseActions(bookName, chapter, verse, text, el){
     background:rgba(226,197,122,.1); border-radius:12px;
     border:1px solid rgba(226,197,122,.25); flex-wrap:wrap;
   `;
-
   const ref = `${bookName} ${chapter}:${verse}`;
 
   const btnFav = document.createElement("button");
   btnFav.className = "chip";
-  const favs = getFavs();
-  const isFav = favs.some(f => f.type==="verse" && f.ref===ref);
+  const isFav = getFavs().some(f => f.type==="verse" && f.ref===ref);
   btnFav.textContent = isFav ? "✅ Favori" : "🔖 Favori";
   btnFav.onclick = () => { toggleFavVerse(bookName, chapter, verse, text); bar.remove(); el.classList.remove("selected"); state.selectedVerse=null; };
 
   const btnCopy = document.createElement("button");
   btnCopy.className = "chip";
   btnCopy.textContent = "📎 Copier";
-  btnCopy.onclick = async () => {
-    await copyText(buildVerseShareText(bookName, chapter, verse, text));
-    bar.remove(); el.classList.remove("selected"); state.selectedVerse=null;
-  };
+  btnCopy.onclick = async () => { await copyText(buildVerseShareText(bookName, chapter, verse, text)); bar.remove(); el.classList.remove("selected"); state.selectedVerse=null; };
 
   const btnShare = document.createElement("button");
   btnShare.className = "chip";
   btnShare.textContent = "🔗 Partager";
-  btnShare.onclick = async () => {
-    await shareVerse(bookName, chapter, verse, text);
-    bar.remove(); el.classList.remove("selected"); state.selectedVerse=null;
-  };
+  btnShare.onclick = async () => { await shareVerse(bookName, chapter, verse, text); bar.remove(); el.classList.remove("selected"); state.selectedVerse=null; };
 
   const btnClose = document.createElement("button");
   btnClose.className = "chip";
@@ -111,11 +100,7 @@ function showVerseActions(bookName, chapter, verse, text, el){
   btnClose.style.marginLeft = "auto";
   btnClose.onclick = () => { bar.remove(); el.classList.remove("selected"); state.selectedVerse=null; };
 
-  bar.appendChild(btnFav);
-  bar.appendChild(btnCopy);
-  bar.appendChild(btnShare);
-  bar.appendChild(btnClose);
-
+  bar.append(btnFav, btnCopy, btnShare, btnClose);
   el.insertAdjacentElement("afterend", bar);
 }
 
@@ -133,9 +118,7 @@ async function shareVerse(bookName, chapter, verse, text){
 function setView(view){
   $$(".tab").forEach(t => t.classList.toggle("active", t.dataset.view === view));
   $$(".view").forEach(v => v.classList.toggle("active", v.id === `view-${view}`));
-  if(view === "search") $("#searchInput")?.focus();
   if(view === "library") renderLibrary();
-  // Fermer le panel de verset si on change de vue
   $("#verseActionBar")?.remove();
   $$(".verse.selected").forEach(p => p.classList.remove("selected"));
   state.selectedVerse = null;
@@ -183,11 +166,10 @@ async function loadBible(){
   }
 
   const raw = await res.json();
-
   const verses = Array.isArray(raw) ? raw : (raw.verses || raw.data || raw);
   if(!Array.isArray(verses) || !verses.length) throw new Error("Format lsg1910.json invalide.");
 
-  const dataMap = new Map();
+  const dataMap  = new Map();
   const bookMeta = new Map();
 
   for(const v of verses){
@@ -200,24 +182,15 @@ async function loadBible(){
     const bname   = v.book_name ?? v.bookName ?? v.name ?? `Livre ${bookNr}`;
 
     if(!bookNr || !chapNr || !verseNr) continue;
-
     if(!bookMeta.has(bookNr)) bookMeta.set(bookNr, bname);
-
     if(!dataMap.has(bookNr)) dataMap.set(bookNr, new Map());
     const bookMap = dataMap.get(bookNr);
-
     if(!bookMap.has(chapNr)) bookMap.set(chapNr, []);
-    const chArr = bookMap.get(chapNr);
-    chArr[verseNr - 1] = text;
+    bookMap.get(chapNr)[verseNr - 1] = text;
   }
 
   const sortedNrs = [...bookMeta.keys()].sort((a,b) => a - b);
-  const books = sortedNrs.map(nr => ({
-    nr,
-    name: bookMeta.get(nr),
-    abbr: []
-  }));
-
+  const books = sortedNrs.map(nr => ({ nr, name: bookMeta.get(nr), abbr: [] }));
   state.bible = { books, data: dataMap };
 
   initSelectors();
@@ -235,6 +208,9 @@ async function loadBible(){
   await computeVerseOfDay();
   await renderPlan();
   renderLibrary();
+
+  // ── Construire l'index automatiquement en arrière-plan ──
+  buildIndex();
 }
 
 /* ---------- sélecteurs ---------- */
@@ -268,21 +244,17 @@ function initSelectors(){
     if(state.selectedVerse){
       const { bookName, chapter, verse, text } = state.selectedVerse;
       copyText(buildVerseShareText(bookName, chapter, verse, text));
-    } else {
-      copyText(currentRefString());
-    }
+    } else { copyText(currentRefString()); }
   });
   $("#btnShare")?.addEventListener("click", () => {
     if(state.selectedVerse){
       const { bookName, chapter, verse, text } = state.selectedVerse;
       shareVerse(bookName, chapter, verse, text);
-    } else {
-      shareCurrent();
-    }
+    } else { shareCurrent(); }
   });
   $("#btnBookmark")?.addEventListener("click", toggleFavCurrent);
   $("#btnFontMinus")?.addEventListener("click", () => applyFont(state.readFont - 1));
-  $("#btnFontPlus")?.addEventListener("click", () => applyFont(state.readFont + 1));
+  $("#btnFontPlus")?.addEventListener("click",  () => applyFont(state.readFont + 1));
   $("#btnVDD")?.addEventListener("click", async () => {
     await computeVerseOfDay(true);
     if(state.vddRef){ await openReference(state.vddRef); toast("Verset du jour ✅"); }
@@ -298,7 +270,7 @@ function getBookData(bi){
 function refreshChapterSelect(){
   const chapterSelect = $("#chapterSelect");
   const bookMap = getBookData(state.current.book);
-  const total = bookMap ? bookMap.size : 1;
+  const total   = bookMap ? bookMap.size : 1;
 
   chapterSelect.innerHTML = "";
   for(let c = 1; c <= total; c++){
@@ -312,9 +284,9 @@ function refreshChapterSelect(){
 }
 
 async function navChapter(delta){
-  const bi = state.current.book;
+  const bi     = state.current.book;
   const bookMap = getBookData(bi);
-  const total = bookMap ? bookMap.size : 1;
+  const total  = bookMap ? bookMap.size : 1;
   let c = state.current.chapter + delta;
 
   if(c < 1){
@@ -367,9 +339,9 @@ function updateFavButtonState(){
 }
 
 function toggleFavCurrent(){
-  const ref = currentRefString();
+  const ref  = currentRefString();
   const favs = getFavs();
-  const idx = favs.findIndex(f => f.type==="ref" && f.ref===ref);
+  const idx  = favs.findIndex(f => f.type==="ref" && f.ref===ref);
   if(idx >= 0){ favs.splice(idx,1); toast("Favori supprimé."); }
   else { favs.unshift({ type:"ref", ref, at: nowIso() }); toast("Favori ajouté."); }
   setFavs(favs.slice(0, 120));
@@ -378,9 +350,9 @@ function toggleFavCurrent(){
 }
 
 function toggleFavVerse(bookName, chapter, verse, text){
-  const ref = `${bookName} ${chapter}:${verse}`;
+  const ref  = `${bookName} ${chapter}:${verse}`;
   const favs = getFavs();
-  const idx = favs.findIndex(f => f.type==="verse" && f.ref===ref);
+  const idx  = favs.findIndex(f => f.type==="verse" && f.ref===ref);
   if(idx >= 0){ favs.splice(idx,1); toast("Verset retiré."); }
   else { favs.unshift({ type:"verse", ref, text: String(text||""), at: nowIso() }); toast("Verset ajouté ⭐"); }
   setFavs(favs.slice(0, 200));
@@ -390,7 +362,6 @@ function toggleFavVerse(bookName, chapter, verse, text){
 /* ---------- rendu lecture ---------- */
 function renderReading(highlightVerse=null){
   try{
-    // Fermer panel de verset si ouvert
     $("#verseActionBar")?.remove();
     state.selectedVerse = null;
 
@@ -400,13 +371,12 @@ function renderReading(highlightVerse=null){
     const verses  = bookMap?.get(c) || [];
 
     $("#pageHeader").textContent = `${book.name} ${c}`;
-
     const box = $("#verses");
     box.innerHTML = "";
 
     verses.forEach((t, i) => {
       if(t === undefined || t === null) return;
-      const p    = document.createElement("p");
+      const p = document.createElement("p");
       p.className = "verse";
 
       const vnum = document.createElement("span");
@@ -416,12 +386,9 @@ function renderReading(highlightVerse=null){
       const span = document.createElement("span");
       span.textContent = " " + String(t);
 
-      p.appendChild(vnum);
-      p.appendChild(span);
+      p.append(vnum, span);
 
-      // Toque: mostrar menu de acções do versículo
       p.addEventListener("click", () => {
-        // Se já seleccionado, fechar
         if(p.classList.contains("selected")){
           $("#verseActionBar")?.remove();
           p.classList.remove("selected");
@@ -432,9 +399,9 @@ function renderReading(highlightVerse=null){
       });
 
       if(highlightVerse && (i+1) === highlightVerse){
-        p.style.outline = "2px solid rgba(226,197,122,.35)";
+        p.style.outline      = "2px solid rgba(226,197,122,.35)";
         p.style.borderRadius = "12px";
-        p.style.padding = "6px 8px";
+        p.style.padding      = "6px 8px";
         setTimeout(() => p.scrollIntoView({ block:"center", behavior:"smooth" }), 80);
       }
 
@@ -476,7 +443,7 @@ function bindSwipe(){
 
 /* ---------- recherche ---------- */
 function findBookIndex(bookPart){
-  const key = normalize(bookPart);
+  const key   = normalize(bookPart);
   const books = state.bible.books;
   for(let i=0;i<books.length;i++) if(normalize(books[i].name) === key) return i;
   for(let i=0;i<books.length;i++){
@@ -490,8 +457,8 @@ function parseReference(input){
   const s = normalize(input);
   const m = s.match(/(\d+)\s*(?::\s*(\d+))?\s*$/);
   if(!m) return null;
-  const chap = parseInt(m[1],10);
-  const verse = m[2] ? parseInt(m[2],10) : null;
+  const chap    = parseInt(m[1],10);
+  const verse   = m[2] ? parseInt(m[2],10) : null;
   const bookPart = s.slice(0, m.index).trim();
   if(!bookPart) return null;
   const bi = findBookIndex(bookPart);
@@ -511,9 +478,9 @@ function highlightText(text, query){
 }
 
 async function openReference(ref){
-  state.current.book = ref.bi;
+  state.current.book    = ref.bi;
   const bookMap = getBookData(ref.bi);
-  const total = bookMap ? bookMap.size : 1;
+  const total   = bookMap ? bookMap.size : 1;
   state.current.chapter = clamp(ref.c, 1, total);
 
   $("#bookSelect").value = String(ref.bi);
@@ -525,15 +492,15 @@ async function openReference(ref){
   renderReading(ref.v ? clamp(ref.v, 1, verses.length || 1) : null);
 }
 
+// ── Construire l'index (silencieux, en arrière-plan) ──────────
 async function buildIndex(force=false){
   if(state.index && !force) return;
   if(state.indexing) return;
   state.indexing = true;
-  $("#searchMeta").textContent = "Indexation…";
 
   const items = [];
   for(let bi=0; bi<state.bible.books.length; bi++){
-    const book = state.bible.books[bi];
+    const book    = state.bible.books[bi];
     const bookMap = state.bible.data.get(book.nr);
     if(!bookMap) continue;
     for(const [chapNr, verses] of bookMap){
@@ -544,95 +511,51 @@ async function buildIndex(force=false){
     }
   }
 
-  state.index = items;
+  state.index    = items;
   state.indexing = false;
-  $("#searchMeta").textContent = `Index prêt \u2014 ${items.length.toLocaleString("fr-FR")} versets.`;
-  toast("Recherche prête ✅");
 }
 
-async function doSearch(){
-  const qRaw = $("#searchInput")?.value || "";
+// ── API publique pour la barre de recherche globale ───────────
+window.appSearch = function(qRaw){
+  if(!state.bible) return null;        // Bible pas encore chargée
+  if(!state.index) return null;        // Index pas encore prêt
+
   const q = normalize(qRaw);
-  $("#searchResults").innerHTML = "";
-  $("#searchMeta").textContent = "";
+  if(!q) return [];
 
-  if(!q){ toast("Veuillez saisir un mot ou une référence."); return; }
-
+  // Cas 1 : référence directe (Jean 3:16)
   const ref = parseReference(qRaw);
-  if(ref){ await openReference(ref); return; }
-
-  if(!state.index){
-    $("#searchMeta").textContent = "Appuyez sur ⚡ Index (une seule fois).";
-    toast("Index requis ⚡"); return;
+  if(ref){
+    const book    = state.bible.books[ref.bi];
+    const bookMap = getBookData(ref.bi);
+    const verses  = bookMap?.get(ref.c) || [];
+    const text    = ref.v ? String(verses[ref.v - 1] || "") : "";
+    return [{ ref: `${book.name} ${ref.c}${ref.v ? ":"+ref.v : ""}`, text, _parsed: ref }];
   }
 
-  const max = 80;
+  // Cas 2 : recherche plein texte
+  const max     = 80;
   const results = [];
   for(const item of state.index){
-    if(item.norm.includes(q)){ results.push(item); if(results.length >= max) break; }
+    if(item.norm.includes(q)){
+      const bName = state.bible.books[item.bi].name;
+      results.push({
+        ref:      `${bName} ${item.c}:${item.v}`,
+        text:     item.original,
+        textHtml: highlightText(item.original, qRaw),
+        _parsed:  { bi: item.bi, c: item.c, v: item.v }
+      });
+      if(results.length >= max) break;
+    }
   }
+  return results;
+};
 
-  $("#searchMeta").textContent = results.length
-    ? `${results.length}${results.length===max?"+":""} résultat(s)`
-    : "Aucun résultat.";
-
-  const box = $("#searchResults");
-  results.forEach(r => {
-    const bName = state.bible.books[r.bi].name;
-    const refStr = `${bName} ${r.c}:${r.v}`;
-    const div = document.createElement("div");
-    div.className = "result";
-    div.innerHTML = `
-      <div class="resultRef">${escapeHtml(refStr)}</div>
-      <div class="resultText">${highlightText(r.original, qRaw)}</div>
-      <div class="itemBtns">
-        <button class="chip" data-open="${escapeHtml(refStr)}">📖 Ouvrir</button>
-        <button class="chip" data-copy="${escapeHtml(refStr)}">📎 Copier</button>
-        <button class="chip" data-share="${escapeHtml(refStr)}">🔗 Partager</button>
-      </div>`;
-    box.appendChild(div);
-  });
-
-  box.querySelectorAll("[data-open]").forEach(btn =>
-    btn.addEventListener("click", async () => {
-      const r = parseReference(btn.getAttribute("data-open"));
-      if(r) await openReference(r);
-    })
-  );
-  box.querySelectorAll("[data-copy]").forEach(btn =>
-    btn.addEventListener("click", () => {
-      const refStr = btn.getAttribute("data-copy");
-      const parsed = parseReference(refStr);
-      const bookMap = parsed ? getBookData(parsed.bi) : null;
-      const verses = bookMap?.get(parsed?.c) || [];
-      const text = parsed?.v ? String(verses[parsed.v - 1] || "") : "";
-      const bName = parsed ? state.bible.books[parsed.bi].name : "";
-      copyText(buildVerseShareText(bName, parsed?.c, parsed?.v, text));
-    })
-  );
-  box.querySelectorAll("[data-share]").forEach(btn =>
-    btn.addEventListener("click", async () => {
-      const refStr = btn.getAttribute("data-share");
-      const parsed = parseReference(refStr);
-      const bookMap = parsed ? getBookData(parsed.bi) : null;
-      const verses = bookMap?.get(parsed?.c) || [];
-      const text = parsed?.v ? String(verses[parsed.v - 1] || "") : "";
-      const bName = parsed ? state.bible.books[parsed.bi].name : "";
-      await shareVerse(bName, parsed?.c, parsed?.v, text);
-    })
-  );
-}
-
-function bindSearch(){
-  $("#btnSearch")?.addEventListener("click", doSearch);
-  $("#searchInput")?.addEventListener("keydown", e => { if(e.key==="Enter") doSearch(); });
-  $("#btnBuildIndex")?.addEventListener("click", () => buildIndex(false));
-  $("#btnClearSearch")?.addEventListener("click", () => {
-    $("#searchInput").value = "";
-    $("#searchMeta").textContent = "";
-    $("#searchResults").innerHTML = "";
-  });
-}
+// ── Naviguer vers une référence depuis la barre globale ───────
+window.appGoTo = async function(refStr){
+  const ref = parseReference(refStr);
+  if(ref) await openReference(ref);
+};
 
 /* ---------- clipboard / share ---------- */
 async function copyText(t){
@@ -641,12 +564,12 @@ async function copyText(t){
 }
 
 async function shareCurrent(){
-  const book = state.bible.books[state.current.book];
-  const c = state.current.chapter;
+  const book    = state.bible.books[state.current.book];
+  const c       = state.current.chapter;
   const bookMap = getBookData(state.current.book);
-  const verses = bookMap?.get(c) || [];
-  const first = verses[0] ? String(verses[0]).replace(/^¶\s*/, "").slice(0, 100) : "";
-  const url = `https://labible.app/#${book.name}-${c}`;
+  const verses  = bookMap?.get(c) || [];
+  const first   = verses[0] ? String(verses[0]).replace(/^¶\s*/, "").slice(0, 100) : "";
+  const url     = `https://labible.app/#${book.name}-${c}`;
   const shareText = first ? `${book.name} ${c} :\n"${first}…"` : `${book.name} ${c}`;
   if(navigator.share){
     try{ await navigator.share({ title:`${book.name} ${c} \u2014 LaBible.app`, text: shareText, url }); } catch{}
@@ -678,21 +601,22 @@ async function computeVerseOfDay(force=false){
 
   const books = state.bible.books;
   const seed1 = seededRand(Number(k.replace(/-/g,""))||1);
-  const bi = seed1 % books.length;
+  const bi    = seed1 % books.length;
+
   const bookMap = getBookData(bi);
   if(!bookMap) return;
 
   const chapKeys = [...bookMap.keys()];
-  const seed2 = seededRand(seed1);
-  const ci = chapKeys[seed2 % chapKeys.length];
-  const verses = bookMap.get(ci) || [];
-  const seed3 = seededRand(seed2);
-  const vi = verses.length ? (seed3 % verses.length) : 0;
-  const text = String(verses[vi] || "").trim();
+  const seed2    = seededRand(seed1);
+  const ci       = chapKeys[seed2 % chapKeys.length];
+  const verses   = bookMap.get(ci) || [];
+  const seed3    = seededRand(seed2);
+  const vi       = verses.length ? (seed3 % verses.length) : 0;
+  const text     = String(verses[vi] || "").trim();
 
-  state.vddRef = { bi, c: ci, v: vi+1 };
-  const line = `${books[bi].name} ${ci}:${vi+1} \u2014 ${text||"…"}`;
-  const el = $("#vddBox");
+  state.vddRef   = { bi, c: ci, v: vi+1 };
+  const line     = `${books[bi].name} ${ci}:${vi+1} \u2014 ${text||"…"}`;
+  const el       = $("#vddBox");
   if(el) el.textContent = line;
   localStorage.setItem(LS.vdd, JSON.stringify({ key:k, ref:state.vddRef, text:line, at:nowIso() }));
 }
@@ -704,24 +628,24 @@ async function ensurePlan(){
   if(st && Array.isArray(st.plan) && typeof st.doneDay==="number") return st;
 
   const books = state.bible.books;
-  const OT = books.slice(0, 39);
-  const NT = books.slice(39);
+  const OT    = books.slice(0, 39);
+  const NT    = books.slice(39);
 
   const toChaps = (arr) => arr.flatMap(bm => {
     const bMap = state.bible.data.get(bm.nr);
-    const bi = books.findIndex(x=>x.nr===bm.nr);
+    const bi   = books.findIndex(x=>x.nr===bm.nr);
     return bMap ? [...bMap.keys()].map(c => ({ bi, c, label:`${bm.name} ${c}` })) : [];
   });
 
   const otChaps = toChaps(OT);
   const ntChaps = toChaps(NT);
-  const plan = [];
+  const plan    = [];
   let oi=0, ni=0;
 
   for(let d=1; d<=365; d++){
     const refs = [];
     if(ni < ntChaps.length) refs.push(ntChaps[ni++]);
-    const rem = 365-d+1;
+    const rem   = 365-d+1;
     const otDay = ((otChaps.length-oi)/rem > 2.2) ? 3 : 2;
     for(let k=0; k<otDay && oi<otChaps.length; k++) refs.push(otChaps[oi++]);
     plan.push({ day:d, refs });
@@ -738,8 +662,8 @@ function planDayFrom(createdAt){
 }
 
 async function renderPlan(){
-  const st = await ensurePlan();
-  const day = planDayFrom(st.createdAt);
+  const st    = await ensurePlan();
+  const day   = planDayFrom(st.createdAt);
   const entry = st.plan[day-1];
 
   $("#planTodayText").textContent = `Jour ${day} \u2014 ${entry.refs.map(r=>r.label).join(" · ")}`;
@@ -754,7 +678,7 @@ async function renderPlan(){
     await openReference({ bi:r0.bi, c:r0.c, v:null });
   };
   $("#btnMarkDone").onclick = async () => {
-    const st2 = await ensurePlan();
+    const st2  = await ensurePlan();
     const today = planDayFrom(st2.createdAt);
     if(st2.doneDay >= today){ toast("Déjà fait."); return; }
     st2.doneDay = today;
@@ -770,7 +694,7 @@ async function renderPlan(){
   $("#btnJumpDay").onclick = async () => {
     const input = prompt("Aller à quel jour ? (1–365)");
     if(!input) return;
-    const d = clamp(parseInt(input,10)||1,1,365);
+    const d   = clamp(parseInt(input,10)||1,1,365);
     const st2 = await ensurePlan();
     toast(`Jour ${d} : ${st2.plan[d-1].refs.map(r=>r.label).join(" · ")}`);
   };
@@ -800,6 +724,7 @@ function renderLibrary(){
         </div>`;
       box.appendChild(div);
     });
+
     box.querySelectorAll("[data-open]").forEach(btn =>
       btn.addEventListener("click", async () => {
         const r = parseReference(btn.getAttribute("data-open"));
@@ -808,12 +733,12 @@ function renderLibrary(){
     );
     box.querySelectorAll("[data-copy]").forEach(btn =>
       btn.addEventListener("click", () => {
-        const refStr = btn.getAttribute("data-copy");
-        const parsed = parseReference(refStr);
+        const refStr  = btn.getAttribute("data-copy");
+        const parsed  = parseReference(refStr);
         const bookMap = parsed ? getBookData(parsed.bi) : null;
-        const verses = bookMap?.get(parsed?.c) || [];
-        const text = parsed?.v ? String(verses[parsed.v - 1] || "") : "";
-        const bName = parsed ? state.bible.books[parsed.bi].name : "";
+        const verses  = bookMap?.get(parsed?.c) || [];
+        const text    = parsed?.v ? String(verses[parsed.v - 1] || "") : "";
+        const bName   = parsed ? state.bible.books[parsed.bi].name : "";
         if(parsed?.v && text){
           copyText(buildVerseShareText(bName, parsed.c, parsed.v, text));
         } else {
@@ -824,12 +749,12 @@ function renderLibrary(){
     );
     box.querySelectorAll("[data-share]").forEach(btn =>
       btn.addEventListener("click", async () => {
-        const refStr = btn.getAttribute("data-share");
-        const parsed = parseReference(refStr);
+        const refStr  = btn.getAttribute("data-share");
+        const parsed  = parseReference(refStr);
         const bookMap = parsed ? getBookData(parsed.bi) : null;
-        const verses = bookMap?.get(parsed?.c) || [];
-        const text = parsed?.v ? String(verses[parsed.v - 1] || "") : "";
-        const bName = parsed ? state.bible.books[parsed.bi].name : "";
+        const verses  = bookMap?.get(parsed?.c) || [];
+        const text    = parsed?.v ? String(verses[parsed.v - 1] || "") : "";
+        const bName   = parsed ? state.bible.books[parsed.bi].name : "";
         await shareVerse(bName, parsed?.c, parsed?.v, text);
       })
     );
@@ -890,7 +815,6 @@ async function init(){
   loadFont();
   bindTabs();
   bindHeaderActions();
-  bindSearch();
   bindSwipe();
   bindLibraryButtons();
   bindInstall();

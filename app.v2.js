@@ -63,7 +63,7 @@ function buildVerseShareText(bookName, chapter, verse, text){
 }
 
 function buildVerseUrl(bookName, chapter){
-  return `https://labible.app/#${encodeURIComponent(bookName)}-${chapter}`;
+  return `https://labible.app/#${bookName}-${chapter}`;
 }
 
 function showVerseActions(bookName, chapter, verse, text, el){
@@ -415,7 +415,7 @@ function renderReading(highlightVerse=null){
     localStorage.setItem(LS.last, refStr);
     pushHistory(refStr);
     updateFavButtonState();
-    history.replaceState(null, "", `#${book.name}-${c}`.normalize('NFC'));
+    history.replaceState(null, "", `#${book.name}-${c}`);
     document.title = `${book.name} ${c} \u2014 LaBible.app`;
   } catch(err){
     $("#pageHeader").textContent = "Erreur";

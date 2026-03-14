@@ -1,3 +1,10 @@
 User-agent: *
 Allow: /
+
+# Fichiers inutiles pour l'indexation
+Disallow: /icons/
+Disallow: /manifest.webmanifest
+Disallow: /sw.js
+
+# Sitemap
 Sitemap: https://labible.app/sitemap.xml

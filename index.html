@@ -170,6 +170,21 @@
       font-family: inherit;
       cursor: pointer;
     }
+    /* ── Livre + Chapitre lado a lado ── */
+    .controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: flex-end;
+    }
+    .controls .field {
+      flex: 1;
+      min-width: 120px;
+    }
+    .controls .navBtns {
+      width: 100%;
+    }
+
     /* ── Verse — clicável e seleccionado ── */
     .verse {
       cursor: pointer;

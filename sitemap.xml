@@ -1,33 +1,105 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+
+  <!-- Pages principales -->
   <url>
     <loc>https://labible.app/</loc>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
-    <lastmod>2026-03-13</lastmod>
+    <lastmod>2026-03-14</lastmod>
   </url>
   <url>
     <loc>https://labible.app/a-propos</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
-    <lastmod>2026-03-13</lastmod>
+    <lastmod>2026-03-14</lastmod>
   </url>
   <url>
     <loc>https://labible.app/contact</loc>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
-    <lastmod>2026-03-13</lastmod>
+    <lastmod>2026-03-14</lastmod>
   </url>
   <url>
     <loc>https://labible.app/confidentialite</loc>
     <changefreq>yearly</changefreq>
     <priority>0.5</priority>
-    <lastmod>2026-03-13</lastmod>
+    <lastmod>2026-03-14</lastmod>
   </url>
   <url>
     <loc>https://labible.app/legal</loc>
     <changefreq>yearly</changefreq>
     <priority>0.4</priority>
-    <lastmod>2026-03-13</lastmod>
+    <lastmod>2026-03-14</lastmod>
   </url>
+
+  <!-- Ancien Testament -->
+  <url><loc>https://labible.app/#Genèse-1</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://labible.app/#Exode-1</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://labible.app/#Lévitique-1</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://labible.app/#Nombres-1</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://labible.app/#Deutéronome-1</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://labible.app/#Josué-1</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://labible.app/#Juges-1</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://labible.app/#Ruth-1</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://labible.app/#1 Samuel-1</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://labible.app/#2 Samuel-1</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://labible.app/#1 Rois-1</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://labible.app/#2 Rois-1</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://labible.app/#1 Chroniques-1</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://labible.app/#2 Chroniques-1</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://labible.app/#Esdras-1</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://labible.app/#Néhémie-1</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://labible.app/#Esther-1</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://labible.app/#Job-1</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://labible.app/#Psaumes-1</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://labible.app/#Psaumes-23</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://labible.app/#Psaumes-91</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://labible.app/#Proverbes-1</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://labible.app/#Proverbes-3</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://labible.app/#Ecclésiaste-1</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://labible.app/#Cantique des Cantiques-1</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://labible.app/#Ésaïe-1</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://labible.app/#Ésaïe-40</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://labible.app/#Jérémie-1</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://labible.app/#Lamentations-1</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://labible.app/#Ézéchiel-1</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://labible.app/#Daniel-1</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://labible.app/#Osée-1</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
+  <url><loc>https://labible.app/#Joël-1</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
+  <url><loc>https://labible.app/#Amos-1</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
+  <url><loc>https://labible.app/#Jonas-1</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://labible.app/#Michée-1</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
+  <url><loc>https://labible.app/#Zacharie-1</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
+  <url><loc>https://labible.app/#Malachie-1</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
+
+  <!-- Nouveau Testament -->
+  <url><loc>https://labible.app/#Matthieu-1</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://labible.app/#Matthieu-5</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://labible.app/#Marc-1</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://labible.app/#Luc-1</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://labible.app/#Luc-15</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://labible.app/#Jean-1</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://labible.app/#Jean-3</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://labible.app/#Jean-14</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://labible.app/#Actes-1</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://labible.app/#Romains-1</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://labible.app/#Romains-8</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://labible.app/#1 Corinthiens-1</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://labible.app/#1 Corinthiens-13</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://labible.app/#2 Corinthiens-1</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://labible.app/#Galates-1</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://labible.app/#Éphésiens-1</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://labible.app/#Philippiens-1</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://labible.app/#Philippiens-4</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://labible.app/#Colossiens-1</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://labible.app/#1 Thessaloniciens-1</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://labible.app/#1 Timothée-1</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://labible.app/#2 Timothée-1</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://labible.app/#Hébreux-1</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://labible.app/#Jacques-1</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://labible.app/#1 Pierre-1</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://labible.app/#1 Jean-1</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://labible.app/#Apocalypse-1</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+
 </urlset>

@@ -171,18 +171,16 @@
       cursor: pointer;
     }
     /* ── Livre + Chapitre lado a lado ── */
-    .controls {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      align-items: flex-end;
-    }
     .controls .field {
       flex: 1;
-      min-width: 120px;
+      min-width: 100px !important;
+    }
+    .controls .field:first-child {
+      flex: 2;
     }
     .controls .navBtns {
       width: 100%;
+      margin-left: 0;
     }
 
     /* ── Verse — clicável e seleccionado ── */

@@ -59,8 +59,11 @@ function dateKey(d=new Date()){
 function buildVerseShareText(bookName, chapter, verse, text){
   const cleanText = String(text||"").replace(/^¶\s*/,"").trim();
   const ref = `${bookName} ${chapter}:${verse}`;
-  const url = `https://labible.app/#${bookName}-${chapter}`;
-  return `« ${cleanText} »\n— ${ref} (LSG 1910)\n📖 ${url}`;
+  return `« ${cleanText} »\n— ${ref} (LSG 1910)`;
+}
+
+function buildVerseUrl(bookName, chapter){
+  return `https://labible.app/#${encodeURIComponent(bookName)}-${chapter}`;
 }
 
 function showVerseActions(bookName, chapter, verse, text, el){
@@ -87,7 +90,7 @@ function showVerseActions(bookName, chapter, verse, text, el){
   const btnCopy = document.createElement("button");
   btnCopy.className = "chip";
   btnCopy.textContent = "📎 Copier";
-  btnCopy.onclick = async () => { await copyText(buildVerseShareText(bookName, chapter, verse, text)); bar.remove(); el.classList.remove("selected"); state.selectedVerse=null; };
+  btnCopy.onclick = async () => { await copyText(`${buildVerseShareText(bookName, chapter, verse, text)}\n📖 ${buildVerseUrl(bookName, chapter)}`); bar.remove(); el.classList.remove("selected"); state.selectedVerse=null; };
 
   const btnShare = document.createElement("button");
   btnShare.className = "chip";
@@ -106,11 +109,11 @@ function showVerseActions(bookName, chapter, verse, text, el){
 
 async function shareVerse(bookName, chapter, verse, text){
   const shareText = buildVerseShareText(bookName, chapter, verse, text);
-  const url = `https://labible.app/#${bookName}-${chapter}`;
+  const url = buildVerseUrl(bookName, chapter);
   if(navigator.share){
     try{ await navigator.share({ title:`${bookName} ${chapter}:${verse} — LaBible.app`, text: shareText, url }); } catch{}
   } else {
-    await copyText(shareText);
+    await copyText(`${shareText}\n📖 ${url}`);
   }
 }
 

@@ -788,17 +788,51 @@ function bindLibraryButtons(){
 /* ---------- PWA ---------- */
 function bindInstall(){
   const btn = $("#btnInstall");
+
+  // Função para verificar se está instalada
+  function checkInstalled(){
+    return window.matchMedia("(display-mode: standalone)").matches
+      || window.matchMedia("(display-mode: minimal-ui)").matches
+      || window.navigator.standalone === true
+      || document.referrer.includes("android-app://");
+  }
+
+  // Esconder logo se já instalada
+  if(checkInstalled()){
+    if(btn) btn.hidden = true;
+    return;
+  }
+
   window.addEventListener("beforeinstallprompt", e => {
-    e.preventDefault(); state.deferredPrompt = e;
+    e.preventDefault();
+    // Verificar novamente no momento do evento
+    if(checkInstalled()){ return; }
+    state.deferredPrompt = e;
     if(btn) btn.hidden = false;
   });
+
   btn?.addEventListener("click", async () => {
     if(!state.deferredPrompt) return;
     btn.disabled = true;
-    try{ state.deferredPrompt.prompt(); await state.deferredPrompt.userChoice; state.deferredPrompt=null; btn.hidden=true; }
-    finally{ btn.disabled=false; }
+    try{
+      state.deferredPrompt.prompt();
+      const { outcome } = await state.deferredPrompt.userChoice;
+      state.deferredPrompt = null;
+      btn.hidden = true;
+    }
+    finally{ btn.disabled = false; }
   });
-  window.addEventListener("appinstalled", () => { state.deferredPrompt=null; if(btn) btn.hidden=true; toast("Installée ✅"); });
+
+  window.addEventListener("appinstalled", () => {
+    state.deferredPrompt = null;
+    if(btn) btn.hidden = true;
+    toast("Installée ✅");
+  });
+
+  // Verificar também quando a janela ganha foco (volta da instalação)
+  window.addEventListener("focus", () => {
+    if(checkInstalled() && btn) btn.hidden = true;
+  });
 }
 
 function bindHeaderActions(){

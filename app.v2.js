@@ -789,15 +789,14 @@ function bindLibraryButtons(){
 function bindInstall(){
   const btn = $("#btnInstall");
 
-  // Função para verificar se está instalada
   function checkInstalled(){
     return window.matchMedia("(display-mode: standalone)").matches
       || window.matchMedia("(display-mode: minimal-ui)").matches
       || window.navigator.standalone === true
-      || document.referrer.includes("android-app://");
+      || document.referrer.includes("android-app://")
+      || localStorage.getItem("pwa:installed") === "1";
   }
 
-  // Esconder logo se já instalada
   if(checkInstalled()){
     if(btn) btn.hidden = true;
     return;
@@ -805,8 +804,7 @@ function bindInstall(){
 
   window.addEventListener("beforeinstallprompt", e => {
     e.preventDefault();
-    // Verificar novamente no momento do evento
-    if(checkInstalled()){ return; }
+    if(checkInstalled()) return;
     state.deferredPrompt = e;
     if(btn) btn.hidden = false;
   });
@@ -818,6 +816,9 @@ function bindInstall(){
       state.deferredPrompt.prompt();
       const { outcome } = await state.deferredPrompt.userChoice;
       state.deferredPrompt = null;
+      if(outcome === "accepted"){
+        localStorage.setItem("pwa:installed", "1");
+      }
       btn.hidden = true;
     }
     finally{ btn.disabled = false; }
@@ -825,11 +826,11 @@ function bindInstall(){
 
   window.addEventListener("appinstalled", () => {
     state.deferredPrompt = null;
+    localStorage.setItem("pwa:installed", "1");
     if(btn) btn.hidden = true;
     toast("Installée ✅");
   });
 
-  // Verificar também quando a janela ganha foco (volta da instalação)
   window.addEventListener("focus", () => {
     if(checkInstalled() && btn) btn.hidden = true;
   });

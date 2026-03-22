@@ -212,7 +212,6 @@ async function loadBible(){
   await renderPlan();
   renderLibrary();
 
-  // ── Construire l'index automatiquement en arrière-plan ──
   buildIndex();
 }
 
@@ -495,7 +494,6 @@ async function openReference(ref){
   renderReading(ref.v ? clamp(ref.v, 1, verses.length || 1) : null);
 }
 
-// ── Construire l'index (silencieux, en arrière-plan) ──────────
 async function buildIndex(force=false){
   if(state.index && !force) return;
   if(state.indexing) return;
@@ -518,15 +516,13 @@ async function buildIndex(force=false){
   state.indexing = false;
 }
 
-// ── API publique pour la barre de recherche globale ───────────
 window.appSearch = function(qRaw){
-  if(!state.bible) return null;        // Bible pas encore chargée
-  if(!state.index) return null;        // Index pas encore prêt
+  if(!state.bible) return null;
+  if(!state.index) return null;
 
   const q = normalize(qRaw);
   if(!q) return [];
 
-  // Cas 1 : référence directe (Jean 3:16)
   const ref = parseReference(qRaw);
   if(ref){
     const book    = state.bible.books[ref.bi];
@@ -536,7 +532,6 @@ window.appSearch = function(qRaw){
     return [{ ref: `${book.name} ${ref.c}${ref.v ? ":"+ref.v : ""}`, text, _parsed: ref }];
   }
 
-  // Cas 2 : recherche plein texte
   const max     = 80;
   const results = [];
   for(const item of state.index){
@@ -554,7 +549,6 @@ window.appSearch = function(qRaw){
   return results;
 };
 
-// ── Naviguer vers une référence depuis la barre globale ───────
 window.appGoTo = async function(refStr){
   const ref = parseReference(refStr);
   if(ref) await openReference(ref);
@@ -581,7 +575,62 @@ async function shareCurrent(){
   }
 }
 
-/* ---------- verset du jour ---------- */
+/* ---------- verset du jour — liste curada ---------- */
+
+// 120 versículos curados — os mais significativos da Bíblia
+// Formato: [book_name, chapter, verse]
+const VDD_CURATED = [
+  // Jean
+  ["Jean", 3, 16], ["Jean", 3, 17], ["Jean", 14, 6], ["Jean", 14, 27],
+  ["Jean", 11, 25], ["Jean", 8, 12], ["Jean", 10, 10], ["Jean", 15, 13],
+  ["Jean", 1, 1], ["Jean", 16, 33], ["Jean", 13, 34], ["Jean", 4, 24],
+  // Psaumes
+  ["Psaumes", 23, 1], ["Psaumes", 46, 2], ["Psaumes", 91, 1], ["Psaumes", 121, 2],
+  ["Psaumes", 27, 1], ["Psaumes", 34, 9], ["Psaumes", 37, 4], ["Psaumes", 103, 2],
+  ["Psaumes", 119, 105], ["Psaumes", 16, 8], ["Psaumes", 31, 25], ["Psaumes", 55, 23],
+  ["Psaumes", 62, 2], ["Psaumes", 73, 26], ["Psaumes", 90, 2], ["Psaumes", 100, 3],
+  // Proverbes
+  ["Proverbes", 3, 5], ["Proverbes", 3, 6], ["Proverbes", 16, 3], ["Proverbes", 16, 9],
+  ["Proverbes", 19, 21], ["Proverbes", 20, 7], ["Proverbes", 22, 6], ["Proverbes", 4, 23],
+  ["Proverbes", 18, 10], ["Proverbes", 17, 17], ["Proverbes", 11, 2], ["Proverbes", 15, 1],
+  // Jérémie
+  ["Jérémie", 29, 11], ["Jérémie", 29, 12], ["Jérémie", 29, 13], ["Jérémie", 33, 3],
+  ["Jérémie", 31, 3],
+  // Esaïe
+  ["Ésaïe", 40, 31], ["Ésaïe", 41, 10], ["Ésaïe", 43, 2], ["Ésaïe", 53, 5],
+  ["Ésaïe", 55, 8], ["Ésaïe", 26, 3], ["Ésaïe", 40, 29], ["Ésaïe", 43, 1],
+  ["Ésaïe", 58, 11], ["Ésaïe", 60, 1],
+  // Romains
+  ["Romains", 8, 28], ["Romains", 8, 38], ["Romains", 8, 39], ["Romains", 8, 1],
+  ["Romains", 5, 8], ["Romains", 12, 2], ["Romains", 10, 9], ["Romains", 6, 23],
+  // Philippiens
+  ["Philippiens", 4, 13], ["Philippiens", 4, 6], ["Philippiens", 4, 7], ["Philippiens", 4, 19],
+  ["Philippiens", 1, 6],
+  // Matthieu
+  ["Matthieu", 5, 3], ["Matthieu", 6, 33], ["Matthieu", 11, 28], ["Matthieu", 28, 20],
+  ["Matthieu", 5, 16], ["Matthieu", 6, 34], ["Matthieu", 7, 7],
+  // Galates / Ephésiens
+  ["Galates", 2, 20], ["Galates", 5, 22], ["Éphésiens", 2, 8], ["Éphésiens", 2, 10],
+  ["Éphésiens", 3, 20], ["Éphésiens", 6, 10],
+  // 1 Corinthiens / 2 Corinthiens
+  ["1 Corinthiens", 13, 4], ["1 Corinthiens", 13, 13], ["1 Corinthiens", 10, 13],
+  ["2 Corinthiens", 5, 17], ["2 Corinthiens", 12, 9],
+  // Josué / Deutéronome
+  ["Josué", 1, 9], ["Deutéronome", 31, 6], ["Deutéronome", 6, 5],
+  // Genèse
+  ["Genèse", 1, 1], ["Genèse", 1, 27],
+  // Luc / Marc / Actes
+  ["Luc", 1, 37], ["Luc", 6, 31], ["Marc", 10, 27], ["Actes", 1, 8],
+  // 1 Jean / Jacques
+  ["1 Jean", 4, 8], ["1 Jean", 4, 19], ["1 Jean", 1, 9], ["Jacques", 1, 5],
+  // Hébreux / 1 Pierre / Apocalypse
+  ["Hébreux", 11, 1], ["Hébreux", 4, 16], ["1 Pierre", 5, 7], ["Apocalypse", 21, 4],
+  // Nombres / Michée / Sophonie
+  ["Nombres", 6, 24], ["Michée", 6, 8], ["Sophonie", 3, 17],
+  // 2 Timothée / 1 Timothée
+  ["2 Timothée", 1, 7], ["1 Timothée", 6, 6],
+];
+
 function seededRand(seed){
   let x = seed >>> 0;
   x ^= x << 13; x >>>= 0; x ^= x >> 17; x >>>= 0; x ^= x << 5; x >>>= 0;
@@ -602,24 +651,31 @@ async function computeVerseOfDay(force=false){
     } catch{}
   }
 
+  // Escolher da lista curada baseado na data
+  const seed = seededRand(Number(k.replace(/-/g,""))||1);
+  const idx  = seed % VDD_CURATED.length;
+  const [bookName, chapNr, verseNr] = VDD_CURATED[idx];
+
+  // Encontrar o book index
   const books = state.bible.books;
-  const seed1 = seededRand(Number(k.replace(/-/g,""))||1);
-  const bi    = seed1 % books.length;
+  let bi = -1;
+  for(let i=0; i<books.length; i++){
+    if(normalize(books[i].name) === normalize(bookName)){ bi = i; break; }
+  }
+  if(bi < 0){
+    // fallback: primeiro livro
+    bi = 0;
+  }
 
   const bookMap = getBookData(bi);
   if(!bookMap) return;
 
-  const chapKeys = [...bookMap.keys()];
-  const seed2    = seededRand(seed1);
-  const ci       = chapKeys[seed2 % chapKeys.length];
-  const verses   = bookMap.get(ci) || [];
-  const seed3    = seededRand(seed2);
-  const vi       = verses.length ? (seed3 % verses.length) : 0;
-  const text     = String(verses[vi] || "").trim();
+  const verses  = bookMap.get(chapNr) || [];
+  const text    = String(verses[verseNr - 1] || "").replace(/¶\s*/g, "").trim();
 
-  state.vddRef   = { bi, c: ci, v: vi+1 };
-  const line     = `${books[bi].name} ${ci}:${vi+1} \u2014 ${text||"…"}`;
-  const el       = $("#vddBox");
+  state.vddRef = { bi, c: chapNr, v: verseNr };
+  const line   = `${books[bi].name} ${chapNr}:${verseNr} \u2014 ${text||"…"}`;
+  const el     = $("#vddBox");
   if(el) el.textContent = line;
   localStorage.setItem(LS.vdd, JSON.stringify({ key:k, ref:state.vddRef, text:line, at:nowIso() }));
 }

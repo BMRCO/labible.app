@@ -387,7 +387,7 @@ function renderReading(highlightVerse=null){
       vnum.textContent = String(i + 1);
 
       const span = document.createElement("span");
-      span.textContent = " " + String(t);
+      span.textContent = " " + String(t).replace(/¶\s*/g, "").trim();
 
       p.append(vnum, span);
 

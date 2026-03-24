@@ -48,7 +48,7 @@
       right: 0;
       z-index: 90;
     }
-    /* Espaçador para compensar a barra fixa */
+    /* Espaçador para compensar topbar(60px) + globalSearch(54px) */
     .globalSearchSpacer {
       height: 114px;
     }
@@ -132,17 +132,22 @@
     .controls .field:first-child { flex: 2; }
     .controls .navBtns { width: 100%; margin-left: 0; }
 
-    /* ── Barra de controlos fixa — fora do card, sticky abaixo da barra de pesquisa ── */
+    /* ── Barra de controlos fixa — abaixo do topbar e da barra de pesquisa ── */
     #readControls {
-      position: sticky;
-      top: 114px; /* topbar 60px + globalSearch 54px */
+      position: fixed;
+      top: 114px;
+      left: 0;
+      right: 0;
       z-index: 85;
-      background: color-mix(in srgb, var(--bg, #0b0b0b) 95%, transparent);
+      background: color-mix(in srgb, var(--bg, #0b0b0b) 98%, transparent);
       backdrop-filter: blur(12px);
       -webkit-backdrop-filter: blur(12px);
-      padding: 10px 14px;
-      margin: 0 0 8px 0;
+      padding: 8px 14px;
       border-bottom: 1px solid rgba(226,197,122,0.12);
+    }
+    /* Espaçador para compensar o readControls fixo (~80px) */
+    #readControlsSpacer {
+      height: 80px;
     }
     #readControls .controls {
       margin-top: 0;
@@ -230,6 +235,7 @@
           </div>
         </div>
       </div>
+      <div id="readControlsSpacer"></div>
 
       <div class="card">
         <div class="cardHeader">

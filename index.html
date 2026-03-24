@@ -42,15 +42,9 @@
       padding: 10px 16px 8px;
       border-bottom: 1px solid rgba(255,255,255,0.06);
       background: var(--bg, #0b0b0b);
-      position: fixed;
-      top: 60px;
-      left: 0;
-      right: 0;
+      position: sticky;
+      top: 0;           /* fica colada abaixo do header */
       z-index: 90;
-    }
-    /* Espaçador para compensar topbar(60px) + globalSearch(54px) */
-    .globalSearchSpacer {
-      height: 114px;
     }
     .globalSearchInner {
       position: relative;
@@ -79,7 +73,9 @@
       outline: none;
       transition: border-color .2s;
     }
-    #globalSearchInput:focus { border-color: rgba(226,197,122,0.55); }
+    #globalSearchInput:focus {
+      border-color: rgba(226,197,122,0.55);
+    }
     #globalSearchInput::placeholder { color: rgba(255,255,255,0.3); }
     #globalSearchClear {
       position: absolute;
@@ -111,55 +107,112 @@
       flex-shrink: 0;
     }
 
+
+
     /* Overlay de resultados inline */
-    #globalResults { display: none; padding: 12px 16px; border-bottom: 1px solid rgba(255,255,255,0.06); position: fixed; top: 114px; left: 0; right: 0; z-index: 89; background: var(--bg, #0b0b0b); max-height: 60vh; overflow-y: auto; }
+    #globalResults {
+      display: none;
+      padding: 12px 16px;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
     #globalResults.active { display: block; }
-    .gResultsMeta { font-size: 10px; color: rgba(255,255,255,0.3); letter-spacing: .3em; margin-bottom: 10px; text-transform: uppercase; }
-    .gResultItem { border-radius: 10px; border: 1px solid rgba(255,255,255,0.07); background: rgba(255,255,255,0.03); margin-bottom: 7px; overflow: hidden; cursor: pointer; transition: border-color .2s, background .2s; }
+    .gResultsMeta {
+      font-size: 10px;
+      color: rgba(255,255,255,0.3);
+      letter-spacing: .3em;
+      margin-bottom: 10px;
+      text-transform: uppercase;
+    }
+    .gResultItem {
+      border-radius: 10px;
+      border: 1px solid rgba(255,255,255,0.07);
+      background: rgba(255,255,255,0.03);
+      margin-bottom: 7px;
+      overflow: hidden;
+      cursor: pointer;
+      transition: border-color .2s, background .2s;
+    }
     .gResultItem:hover { border-color: rgba(226,197,122,0.3); }
-    .gResultItem.open { border-color: rgba(226,197,122,0.4); background: rgba(226,197,122,0.05); }
-    .gResultHead { padding: 11px 14px; display: flex; justify-content: space-between; align-items: center; }
-    .gResultRef { font-size: 13px; color: #e2c57a; font-weight: 700; }
-    .gResultArrow { color: rgba(226,197,122,.5); font-size: 14px; transition: transform .2s; }
+    .gResultItem.open {
+      border-color: rgba(226,197,122,0.4);
+      background: rgba(226,197,122,0.05);
+    }
+    .gResultHead {
+      padding: 11px 14px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .gResultRef {
+      font-size: 13px;
+      color: #e2c57a;
+      font-weight: 700;
+    }
+    .gResultArrow {
+      color: rgba(226,197,122,.5);
+      font-size: 14px;
+      transition: transform .2s;
+    }
     .gResultItem.open .gResultArrow { transform: rotate(90deg); }
-    .gResultBody { display: none; padding: 0 14px 13px; font-size: 14px; font-style: italic; line-height: 1.7; color: rgba(240,234,216,.85); }
+    .gResultBody {
+      display: none;
+      padding: 0 14px 13px;
+      font-size: 14px;
+      font-style: italic;
+      line-height: 1.7;
+      color: rgba(240,234,216,.85);
+    }
     .gResultItem.open .gResultBody { display: block; }
-    .gResultActions { display: flex; gap: 8px; margin-top: 10px; }
-    .gResultActions button { padding: 5px 12px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.06); color: rgba(240,234,216,.7); font-size: 11px; font-family: inherit; cursor: pointer; }
-
+    .gResultActions {
+      display: flex;
+      gap: 8px;
+      margin-top: 10px;
+    }
+    .gResultActions button {
+      padding: 5px 12px;
+      border-radius: 8px;
+      border: 1px solid rgba(255,255,255,0.1);
+      background: rgba(255,255,255,0.06);
+      color: rgba(240,234,216,.7);
+      font-size: 11px;
+      font-family: inherit;
+      cursor: pointer;
+    }
     /* ── Livre + Chapitre lado a lado ── */
-    .controls .field { flex: 1; min-width: 100px !important; }
-    .controls .field:first-child { flex: 2; }
-    .controls .navBtns { width: 100%; margin-left: 0; }
-
-    /* ── Barra de controlos fixa — abaixo do topbar e da barra de pesquisa ── */
-    #readControls {
-      position: fixed;
-      top: 114px;
-      left: 0;
-      right: 0;
-      z-index: 85;
-      background: color-mix(in srgb, var(--bg, #0b0b0b) 98%, transparent);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-      padding: 8px 14px;
-      border-bottom: 1px solid rgba(226,197,122,0.12);
+    .controls .field {
+      flex: 1;
+      min-width: 100px !important;
     }
-    /* Espaçador para compensar o readControls fixo (~80px) */
-    #readControlsSpacer {
-      height: 80px;
+    .controls .field:first-child {
+      flex: 2;
     }
-    #readControls .controls {
-      margin-top: 0;
+    .controls .navBtns {
+      width: 100%;
+      margin-left: 0;
     }
 
     /* ── Verse — clicável e seleccionado ── */
-    .verse { cursor: pointer; border-radius: 8px; padding: 4px 6px; margin: 0 -6px; transition: background 0.15s; }
-    .verse:hover { background: rgba(226, 197, 122, 0.05); }
-    .verse.selected { background: rgba(226, 197, 122, 0.09); outline: 1px solid rgba(226, 197, 122, 0.2); }
+    .verse {
+      cursor: pointer;
+      border-radius: 8px;
+      padding: 4px 6px;
+      margin: 0 -6px;
+      transition: background 0.15s;
+    }
+    .verse:hover {
+      background: rgba(226, 197, 122, 0.05);
+    }
+    .verse.selected {
+      background: rgba(226, 197, 122, 0.09);
+      outline: 1px solid rgba(226, 197, 122, 0.2);
+    }
 
     /* ── Highlight pesquisa ── */
-    .hl { background: rgba(226, 197, 122, 0.3); border-radius: 3px; padding: 0 2px; }
+    .hl {
+      background: rgba(226, 197, 122, 0.3);
+      border-radius: 3px;
+      padding: 0 2px;
+    }
   </style>
 
   <script src="https://telegram.org/js/telegram-web-app.js" defer></script>
@@ -198,6 +251,10 @@
     </div>
   </header>
 
+  <!-- ═══════════════════════════════
+       BARRA DE PESQUISA GLOBAL
+       Visível em todas as tabs
+  ═══════════════════════════════ -->
   <div class="globalSearch">
     <div class="globalSearchInner">
       <span class="gsIcon">🔍</span>
@@ -205,9 +262,10 @@
       <button id="globalSearchClear">✕</button>
       <button id="globalSearchBtn">Rechercher</button>
     </div>
-  </div>
-  <div class="globalSearchSpacer"></div>
 
+  </div>
+
+  <!-- Resultados inline da pesquisa global -->
   <div id="globalResults">
     <div class="gResultsMeta" id="gResultsMeta"></div>
     <div id="gResultsList"></div>
@@ -223,25 +281,19 @@
 
     <!-- LECTURE -->
     <section class="view active" id="view-read">
-
-      <!-- Barra de controlos FORA do card — sticky funciona corretamente -->
-      <div id="readControls">
+      <div class="card">
+        <div class="cardHeader">
+          <div><h2>Lecture</h2></div>
+          <div class="row gap8">
+            <button class="chip" id="btnVDD">✨ Verset du jour</button>
+          </div>
+        </div>
         <div class="controls">
           <label class="field"><span>Livre</span><select id="bookSelect"></select></label>
           <label class="field"><span>Chapitre</span><select id="chapterSelect"></select></label>
           <div class="navBtns">
             <button class="btn" id="btnPrev">← Précédent</button>
             <button class="btn" id="btnNext">Suivant →</button>
-          </div>
-        </div>
-      </div>
-      <div id="readControlsSpacer"></div>
-
-      <div class="card">
-        <div class="cardHeader">
-          <div><h2>Lecture</h2></div>
-          <div class="row gap8">
-            <button class="chip" id="btnVDD">✨ Verset du jour</button>
           </div>
         </div>
         <div class="page" id="readerPage" aria-live="polite">
@@ -255,6 +307,8 @@
         </div>
       </div>
     </section>
+
+
 
     <!-- PLAN -->
     <section class="view" id="view-plan">
@@ -337,7 +391,7 @@
         <a href="https://instagram.com/labible.app" target="_blank" rel="noopener" title="Instagram">
           <svg viewBox="0 0 24 24"><defs><linearGradient id="ig-grad" x1="0%" y1="100%" x2="100%" y2="0%"><stop offset="0%" stop-color="#f09433"/><stop offset="25%" stop-color="#e6683c"/><stop offset="50%" stop-color="#dc2743"/><stop offset="75%" stop-color="#cc2366"/><stop offset="100%" stop-color="#bc1888"/></linearGradient></defs><path fill="url(#ig-grad)" d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 1 0 0 12.324 6.162 6.162 0 0 0 0-12.324zM12 16a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm6.406-11.845a1.44 1.44 0 1 0 0 2.881 1.44 1.44 0 0 0 0-2.881z"/></svg>
         </a>
-        <a href="https://youtube.com/@LaBible-app" target="_blank" rel="noopener" title="YouTube">
+        <a href="https://youtube.com/@LaBibleAPP" target="_blank" rel="noopener" title="YouTube">
           <svg viewBox="0 0 24 24" fill="#ff0000"><path d="M23.495 6.205a3.007 3.007 0 0 0-2.088-2.088c-1.87-.501-9.396-.501-9.396-.501s-7.507-.01-9.396.501A3.007 3.007 0 0 0 .527 6.205a31.247 31.247 0 0 0-.522 5.805 31.247 31.247 0 0 0 .522 5.783 3.007 3.007 0 0 0 2.088 2.088c1.868.502 9.396.502 9.396.502s7.506 0 9.396-.502a3.007 3.007 0 0 0 2.088-2.088 31.247 31.247 0 0 0 .5-5.783 31.247 31.247 0 0 0-.5-5.805zM9.609 15.601V8.408l6.264 3.602z"/></svg>
         </a>
       </div>
@@ -355,6 +409,12 @@
 
   <script src="/app.v2.js"></script>
 
+  <!-- ═══════════════════════════════════════════════
+       PESQUISA GLOBAL — script autónomo
+       Usa o mesmo índice/função de pesquisa do app.v2.js
+       via window.appSearch() se disponível,
+       senão faz redirect para a tab Recherche.
+  ═══════════════════════════════════════════════ -->
   <script>
   (function () {
     var input   = document.getElementById('globalSearchInput');
@@ -364,44 +424,93 @@
     var resultsMeta= document.getElementById('gResultsMeta');
     var resultsList= document.getElementById('gResultsList');
 
-    function showClear(val) { clearBtn.style.display = val ? 'flex' : 'none'; }
-    input.addEventListener('input', function () { showClear(input.value); if (!input.value) closeResults(); });
-    input.addEventListener('keydown', function (e) { if (e.key === 'Enter') doSearch(); });
-    clearBtn.addEventListener('click', function () { input.value = ''; showClear(false); closeResults(); input.focus(); });
+    function showClear(val) {
+      clearBtn.style.display = val ? 'flex' : 'none';
+    }
+
+    input.addEventListener('input', function () {
+      showClear(input.value);
+      if (!input.value) closeResults();
+    });
+
+    input.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter') doSearch();
+    });
+
+    clearBtn.addEventListener('click', function () {
+      input.value = '';
+      showClear(false);
+      closeResults();
+      input.focus();
+    });
+
     btn.addEventListener('click', doSearch);
 
-    function closeResults() { resultsBox.classList.remove('active'); resultsList.innerHTML = ''; }
+    function closeResults() {
+      resultsBox.classList.remove('active');
+      resultsList.innerHTML = '';
+    }
 
     function doSearch() {
       var q = input.value.trim();
       if (!q) return;
-      if (typeof window.appSearch !== 'function') return;
+
+      if (typeof window.appSearch !== 'function') {
+        // app.v2.js ainda não carregou — não devia acontecer
+        return;
+      }
+
       var hits = window.appSearch(q);
+
+      // índice ainda a construir (Bible não carregada ainda)
       if (hits === null) {
         resultsMeta.textContent = '⏳ Chargement… réessaie dans un instant.';
         resultsBox.classList.add('active');
         resultsList.innerHTML = '';
+        // tentar de novo após 1.5s
         setTimeout(function () { doSearch(); }, 1500);
         return;
       }
+
       renderResults(q, hits);
     }
 
     function renderResults(q, hits) {
       resultsList.innerHTML = '';
-      if (!hits.length) { resultsMeta.textContent = 'Aucun résultat pour « ' + q + ' »'; resultsBox.classList.add('active'); return; }
+      if (!hits.length) {
+        resultsMeta.textContent = 'Aucun résultat pour « ' + q + ' »';
+        resultsBox.classList.add('active');
+        return;
+      }
       resultsMeta.textContent = '✦ ' + hits.length + ' résultat' + (hits.length > 1 ? 's' : '') + ' — « ' + q.toUpperCase() + ' »';
       hits.slice(0, 20).forEach(function (hit) {
         var el = document.createElement('div');
         el.className = 'gResultItem';
+        // usar textHtml (com highlight) se disponível, senão texto simples
         var bodyHtml = hit.textHtml ? '« ' + hit.textHtml + ' »' : '« ' + hit.text + ' »';
         el.innerHTML =
-          '<div class="gResultHead"><span class="gResultRef">' + hit.ref + '</span><span class="gResultArrow">›</span></div>' +
-          '<div class="gResultBody">' + bodyHtml + '<div class="gResultActions"><button class="btnOpen">📖 Ouvrir</button><button class="btnCopy">📎 Copier</button></div></div>';
-        el.querySelector('.gResultHead').addEventListener('click', function () { el.classList.toggle('open'); });
+          '<div class="gResultHead">' +
+            '<span class="gResultRef">' + hit.ref + '</span>' +
+            '<span class="gResultArrow">›</span>' +
+          '</div>' +
+          '<div class="gResultBody">' + bodyHtml +
+            '<div class="gResultActions">' +
+              '<button class="btnOpen">📖 Ouvrir</button>' +
+              '<button class="btnCopy">📎 Copier</button>' +
+            '</div>' +
+          '</div>';
+
+        el.querySelector('.gResultHead').addEventListener('click', function () {
+          el.classList.toggle('open');
+        });
         el.querySelector('.btnOpen').addEventListener('click', function (e) {
           e.stopPropagation();
-          if (typeof window.appGoTo === 'function') { window.appGoTo(hit.ref); closeResults(); input.value = ''; showClear(false); }
+          if (typeof window.appGoTo === 'function') {
+            window.appGoTo(hit.ref);
+            closeResults();          // fecha resultados e limpa barra
+            input.value = '';
+            showClear(false);
+          }
         });
         el.querySelector('.btnCopy').addEventListener('click', function (e) {
           e.stopPropagation();
@@ -450,13 +559,26 @@
       if (installBtn) installBtn.hidden = true;
       function updateBackButton() {
         var activeTab = document.querySelector('.tab.active');
-        if (activeTab && activeTab.dataset.view === 'read') { tg.BackButton.hide(); } else { tg.BackButton.show(); }
+        if (activeTab && activeTab.dataset.view === 'read') {
+          tg.BackButton.hide();
+        } else {
+          tg.BackButton.show();
+        }
       }
       tg.BackButton.onClick(function () {
         var activeTab = document.querySelector('.tab.active');
-        if (activeTab && activeTab.dataset.view === 'read') { tg.close(); } else { var readTab = document.querySelector('[data-view="read"]'); if (readTab) readTab.click(); }
+        if (activeTab && activeTab.dataset.view === 'read') {
+          tg.close();
+        } else {
+          var readTab = document.querySelector('[data-view="read"]');
+          if (readTab) readTab.click();
+        }
       });
-      document.querySelectorAll('.tab').forEach(function (tab) { tab.addEventListener('click', function () { setTimeout(updateBackButton, 50); }); });
+      document.querySelectorAll('.tab').forEach(function (tab) {
+        tab.addEventListener('click', function () {
+          setTimeout(updateBackButton, 50);
+        });
+      });
       updateBackButton();
     })();
   </script>
@@ -475,7 +597,9 @@
               }
             });
           });
-        }).catch(function (err) { console.warn('[SW] Erreur d\'enregistrement:', err); });
+        }).catch(function (err) {
+          console.warn('[SW] Erreur d\'enregistrement:', err);
+        });
       });
     }
   </script>

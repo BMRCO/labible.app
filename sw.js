@@ -1,4 +1,4 @@
-const CACHE_NAME = 'labible-v12';
+const CACHE_NAME = 'labible-v13';
 
 const STATIC_ASSETS = [
   '/',
@@ -16,11 +16,9 @@ const STATIC_ASSETS = [
 
 const BIBLE_DATA = '/data/lsg1910.json';
 
-// Installation — cache individual pour éviter l'échec global
 self.addEventListener('install', event => {
   event.waitUntil(
     caches.open(CACHE_NAME).then(async cache => {
-      // Cache chaque fichier individuellement — un échec n'arrête pas tout
       await Promise.allSettled(
         STATIC_ASSETS.map(url =>
           fetch(url).then(res => {
@@ -28,7 +26,6 @@ self.addEventListener('install', event => {
           }).catch(() => {})
         )
       );
-      // JSON Bible séparé
       try {
         const res = await fetch(BIBLE_DATA);
         if (res.ok) await cache.put(BIBLE_DATA, res);
@@ -41,7 +38,6 @@ self.addEventListener('install', event => {
   self.skipWaiting();
 });
 
-// Activation — suppression des anciens caches
 self.addEventListener('activate', event => {
   event.waitUntil(
     caches.keys().then(keys =>
@@ -58,38 +54,31 @@ self.addEventListener('activate', event => {
   self.clients.claim();
 });
 
-// Fetch — stratégie selon le type de ressource
 self.addEventListener('fetch', event => {
   const { request } = event;
   const url = new URL(request.url);
 
-  // Ignore les requêtes non-GET et les extensions externes
   if (request.method !== 'GET') return;
   if (!url.origin.includes(self.location.origin) && !url.hostname.includes('fonts.googleapis') && !url.hostname.includes('fonts.gstatic')) return;
 
-  // JSON Bible → Cache First (priorité absolue au cache)
   if (url.pathname === BIBLE_DATA) {
     event.respondWith(cacheFirst(request));
     return;
   }
 
-  // Fonts Google → Cache First
   if (url.hostname.includes('fonts.googleapis') || url.hostname.includes('fonts.gstatic')) {
     event.respondWith(cacheFirst(request));
     return;
   }
 
-  // Pages HTML → Network First (toujours la version fraîche si possible)
   if (url.pathname.endsWith('.html') || url.pathname === '/') {
     event.respondWith(networkFirst(request));
     return;
   }
 
-  // Fichiers statiques → Stale While Revalidate
   event.respondWith(staleWhileRevalidate(request));
 });
 
-// Cache First : sert depuis le cache, essaie le réseau si absent
 async function cacheFirst(request) {
   const cached = await caches.match(request);
   if (cached) return cached;
@@ -105,7 +94,6 @@ async function cacheFirst(request) {
   }
 }
 
-// Network First — essaie le réseau, fallback sur le cache puis offline.html
 async function networkFirst(request) {
   try {
     const response = await fetch(request);
@@ -117,12 +105,10 @@ async function networkFirst(request) {
   } catch {
     const cached = await caches.match(request);
     if (cached) return cached;
-    // Fallback vers la page offline
     return caches.match('/offline.html');
   }
 }
 
-// Stale While Revalidate : sert le cache immédiatement, met à jour en arrière-plan
 async function staleWhileRevalidate(request) {
   const cache = await caches.open(CACHE_NAME);
   const cached = await cache.match(request);

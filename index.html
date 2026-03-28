@@ -44,6 +44,10 @@
       z-index: 95;
       background: var(--bg, #0b0b0b);
     }
+    /* topbar dentro do stickyHeader não precisa de ser sticky */
+    .stickyHeader .topbar {
+      position: relative !important;
+    }
     .globalSearch {
       padding: 8px 16px 6px;
       background: var(--bg, #0b0b0b);

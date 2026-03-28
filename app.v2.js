@@ -212,7 +212,6 @@ async function loadBible(){
   await renderPlan();
   renderLibrary();
 
-  // ── Construire l'index automatiquement en arrière-plan ──
   buildIndex();
 }
 
@@ -387,7 +386,8 @@ function renderReading(highlightVerse=null){
       vnum.textContent = String(i + 1);
 
       const span = document.createElement("span");
-      span.textContent = " " + String(t);
+      // ── Fix: supprimer le symbole ¶ en début de verset ──
+      span.textContent = " " + String(t).replace(/^¶\s*/g, "").trim();
 
       p.append(vnum, span);
 
@@ -495,7 +495,6 @@ async function openReference(ref){
   renderReading(ref.v ? clamp(ref.v, 1, verses.length || 1) : null);
 }
 
-// ── Construire l'index (silencieux, en arrière-plan) ──────────
 async function buildIndex(force=false){
   if(state.index && !force) return;
   if(state.indexing) return;
@@ -518,15 +517,13 @@ async function buildIndex(force=false){
   state.indexing = false;
 }
 
-// ── API publique pour la barre de recherche globale ───────────
 window.appSearch = function(qRaw){
-  if(!state.bible) return null;        // Bible pas encore chargée
-  if(!state.index) return null;        // Index pas encore prêt
+  if(!state.bible) return null;
+  if(!state.index) return null;
 
   const q = normalize(qRaw);
   if(!q) return [];
 
-  // Cas 1 : référence directe (Jean 3:16)
   const ref = parseReference(qRaw);
   if(ref){
     const book    = state.bible.books[ref.bi];
@@ -536,7 +533,6 @@ window.appSearch = function(qRaw){
     return [{ ref: `${book.name} ${ref.c}${ref.v ? ":"+ref.v : ""}`, text, _parsed: ref }];
   }
 
-  // Cas 2 : recherche plein texte
   const max     = 80;
   const results = [];
   for(const item of state.index){
@@ -554,7 +550,6 @@ window.appSearch = function(qRaw){
   return results;
 };
 
-// ── Naviguer vers une référence depuis la barre globale ───────
 window.appGoTo = async function(refStr){
   const ref = parseReference(refStr);
   if(ref) await openReference(ref);

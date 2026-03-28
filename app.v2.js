@@ -549,32 +549,73 @@ async function shareCurrent(){
   else { await copyText(`${shareText}\n\n📖 ${url}`); }
 }
 
-/* ---------- verset du jour — curado ── */
+/* ---------- verset du jour ---------- */
+
+// Versículos curados — impactantes e compreensíveis sem contexto
+const VDD_CURATED = [
+  ["Jean", 3, 16], ["Philippiens", 4, 13], ["Jérémie", 29, 11],
+  ["Psaumes", 23, 1], ["Romains", 8, 28], ["Matthieu", 11, 28],
+  ["Proverbes", 3, 5], ["Ésaïe", 40, 31], ["Josué", 1, 9],
+  ["Psaumes", 46, 2], ["Jean", 14, 6], ["Romains", 8, 38],
+  ["Galates", 2, 20], ["Ésaïe", 41, 10], ["Psaumes", 118, 24],
+  ["Matthieu", 6, 33], ["Luc", 1, 37], ["Jean", 10, 10],
+  ["Romains", 5, 8], ["Éphésiens", 2, 8], ["1 Jean", 4, 8],
+  ["Psaumes", 27, 1], ["Proverbes", 18, 10], ["Jean", 8, 32],
+  ["Matthieu", 5, 16], ["Colossiens", 3, 23], ["Psaumes", 34, 9],
+  ["Romains", 12, 2], ["2 Corinthiens", 5, 17], ["Ésaïe", 43, 2],
+  ["Jean", 16, 33], ["Hébreux", 11, 1], ["Psaumes", 37, 4],
+  ["Proverbes", 16, 3], ["Matthieu", 28, 20], ["Apocalypse", 21, 4],
+  ["Psaumes", 139, 14], ["Romains", 15, 13], ["1 Corinthiens", 13, 4],
+  ["Ésaïe", 55, 8], ["Jean", 15, 5], ["Psaumes", 91, 1],
+  ["Proverbes", 31, 25], ["Michée", 6, 8], ["Lamentations", 3, 22],
+  ["Zacharie", 4, 6], ["Psaumes", 19, 2], ["Jean", 11, 25],
+  ["Romains", 8, 1], ["Matthieu", 7, 7], ["Psaumes", 16, 11],
+  ["Proverbes", 4, 23], ["Ésaïe", 26, 3], ["Jean", 14, 27],
+  ["Hébreux", 4, 16], ["Psaumes", 145, 18], ["Galates", 5, 22],
+  ["Romains", 1, 16], ["1 Pierre", 5, 7], ["Psaumes", 32, 8],
+  ["Colossiens", 4, 6], ["Ésaïe", 53, 5], ["Jean", 6, 35],
+];
+
+function seededRand(seed){
+  let x = seed >>> 0;
+  x ^= x << 13; x >>>= 0; x ^= x >> 17; x >>>= 0; x ^= x << 5; x >>>= 0;
+  return x >>> 0;
+}
+
 async function computeVerseOfDay(force=false){
   const k = dateKey();
   if(!force){
     try{
       const cached = JSON.parse(localStorage.getItem(LS.vdd)||"null");
-      if(cached?.key===k && cached?.ref){ state.vddRef = cached.ref; const el = $("#vddBox"); if(el) el.textContent = cached.text || "\u2014"; return; }
+      if(cached?.key===k && cached?.ref){
+        state.vddRef = cached.ref;
+        const el = $("#vddBox");
+        if(el) el.textContent = cached.text || "—";
+        return;
+      }
     } catch{}
   }
 
-  // Seleccionar versículo curado baseado no dia do ano
-  const dayOfYear = Math.floor((Date.now() - new Date(new Date().getFullYear(),0,0)) / 86400000);
-  const refStr = VDD_CURATED[dayOfYear % VDD_CURATED.length];
-  const parsed = parseReference(refStr);
+  const seed  = seededRand(Number(k.replace(/-/g,""))||1);
+  const entry = VDD_CURATED[seed % VDD_CURATED.length];
+  const [bookName, chapNr, verseNr] = entry;
 
-  if(parsed && state.bible){
-    const bookMap = getBookData(parsed.bi);
-    const verses  = bookMap?.get(parsed.c) || [];
-    const text    = parsed.v ? String(verses[parsed.v - 1] || "").replace(/^¶\s*/g,"").trim() : "";
-    const book    = state.bible.books[parsed.bi];
-    state.vddRef  = parsed;
-    const line    = `${book.name} ${parsed.c}:${parsed.v} \u2014 ${text||"…"}`;
-    const el = $("#vddBox");
-    if(el) el.textContent = line;
-    localStorage.setItem(LS.vdd, JSON.stringify({ key:k, ref:state.vddRef, text:line, at:nowIso() }));
-  }
+  const bi = findBookIndex(bookName);
+  if(bi < 0) return;
+
+  const bookMap = getBookData(bi);
+  if(!bookMap) return;
+
+  const verses = bookMap.get(chapNr) || [];
+  const text   = String(verses[verseNr - 1] || "").replace(/^¶\s*/g, "").trim();
+  if(!text) return;
+
+  const books  = state.bible.books;
+  state.vddRef = { bi, c: chapNr, v: verseNr };
+  const line   = `${books[bi].name} ${chapNr}:${verseNr} — ${text}`;
+  const el     = $("#vddBox");
+  if(el) el.textContent = line;
+  localStorage.setItem(LS.vdd, JSON.stringify({ key:k, ref:state.vddRef, text:line, at:nowIso() }));
 }
 
 /* ---------- plan 365 ---------- */

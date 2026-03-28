@@ -37,14 +37,13 @@
   <link rel="stylesheet" href="/styles.css?v=4" />
 
   <style>
-    /* ── Header sticky unificado ── */
+    /* ── stickyHeader — contém topbar + pesquisa + controlos ── */
     .stickyHeader {
       position: sticky;
       top: 0;
       z-index: 95;
       background: var(--bg, #0b0b0b);
     }
-
     .globalSearch {
       padding: 8px 16px 6px;
       background: var(--bg, #0b0b0b);
@@ -58,7 +57,7 @@
     #globalSearchClear { position: absolute; right: 90px; top: 50%; transform: translateY(-50%); background: rgba(255,255,255,0.1); border: none; color: rgba(255,255,255,0.45); border-radius: 50%; width: 20px; height: 20px; font-size: 10px; cursor: pointer; display: none; align-items: center; justify-content: center; }
     #globalSearchBtn { padding: 9px 16px; background: var(--accent, #c9a640); color: var(--accentText, #0b0b0b); border: none; border-radius: 10px; font-size: 13px; font-weight: 700; font-family: inherit; cursor: pointer; white-space: nowrap; flex-shrink: 0; }
 
-    #globalResults { display: none; position: fixed; top: 190px; left: 0; right: 0; z-index: 88; padding: 12px 16px; background: var(--bg, #0b0b0b); border-bottom: 1px solid rgba(255,255,255,0.06); max-height: 55vh; overflow-y: auto; }
+    #globalResults { display: none; padding: 12px 16px; background: var(--bg, #0b0b0b); border-bottom: 1px solid rgba(255,255,255,0.06); max-height: 55vh; overflow-y: auto; }
     #globalResults.active { display: block; }
     .gResultsMeta { font-size: 10px; color: rgba(255,255,255,0.3); letter-spacing: .3em; margin-bottom: 10px; text-transform: uppercase; }
     .gResultItem { border-radius: 10px; border: 1px solid rgba(255,255,255,0.07); background: rgba(255,255,255,0.03); margin-bottom: 7px; overflow: hidden; cursor: pointer; transition: border-color .2s, background .2s; }
@@ -79,9 +78,6 @@
     #readControls select { padding: 6px 10px; font-size: 13px; }
     #readControls .btn { padding: 6px 12px; font-size: 12px; }
 
-    /* Espaçador: topbar(60) + globalSearch(50) + readControls(78) = 188px */
-    #topSpacer { height: 130px; }
-
     .controls .field { flex: 1; min-width: 100px !important; }
     .controls .field:first-child { flex: 2; }
     .controls .navBtns { width: 100%; margin-left: 0; }
@@ -89,16 +85,6 @@
     .verse:hover { background: rgba(226, 197, 122, 0.05); }
     .verse.selected { background: rgba(226, 197, 122, 0.09); outline: 1px solid rgba(226, 197, 122, 0.2); }
     .hl { background: rgba(226, 197, 122, 0.3); border-radius: 3px; padding: 0 2px; }
-
-    /* Forçar topbar a fixed para garantir visibilidade ao scroll */
-    .topbar {
-      position: fixed !important;
-      top: 0 !important;
-      left: 0 !important;
-      right: 0 !important;
-    }
-    /* Espaçador total: topbar(60) + globalSearch(50) + readControls(78) = 188px */
-    #topSpacer { height: 240px; }
   </style>
 
   <script src="https://telegram.org/js/telegram-web-app.js" defer></script>
@@ -153,6 +139,18 @@
     <div id="gResultsList"></div>
   </div>
 
+  <div id="readControls">
+    <div class="controls">
+      <label class="field"><span>Livre</span><select id="bookSelect"></select></label>
+      <label class="field"><span>Chapitre</span><select id="chapterSelect"></select></label>
+      <div class="navBtns">
+        <button class="btn" id="btnPrev">← Précédent</button>
+        <button class="btn" id="btnNext">Suivant →</button>
+      </div>
+    </div>
+  </div>
+  </div><!-- /stickyHeader -->
+
   <main class="container">
 
     <nav class="tabs" aria-label="Navigation">
@@ -163,18 +161,6 @@
 
     <!-- LECTURE -->
     <section class="view active" id="view-read">
-
-      <!-- Barra de controlos FORA do card — sticky funciona corretamente -->
-      <div id="readControls">
-        <div class="controls">
-          <label class="field"><span>Livre</span><select id="bookSelect"></select></label>
-          <label class="field"><span>Chapitre</span><select id="chapterSelect"></select></label>
-          <div class="navBtns">
-            <button class="btn" id="btnPrev">← Précédent</button>
-            <button class="btn" id="btnNext">Suivant →</button>
-          </div>
-        </div>
-      </div>
 
       <div class="card">
         <div class="cardHeader">
@@ -187,7 +173,11 @@
           <div class="pageHeader" id="pageHeader"></div>
           <div class="verses" id="verses"></div>
         </div>
-
+        <div class="pageFooter">
+          <button class="chip" id="btnBookmark">🔖 Favori</button>
+          <button class="chip" id="btnCopyRef">📎 Copier</button>
+          <button class="chip" id="btnShare">📤 Partager</button>
+        </div>
       </div>
     </section>
 
@@ -295,7 +285,6 @@
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
   <script src="/app.v2.js"></script>
-
 
   <script>
   (function () {

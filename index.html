@@ -357,6 +357,26 @@
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
   <script src="/app.v2.js"></script>
+  <script>
+  (function() {
+    function positionReadControls() {
+      var topbar  = document.querySelector('.topbar');
+      var search  = document.querySelector('.globalSearch');
+      var rc      = document.getElementById('readControls');
+      var spacer  = document.getElementById('readControlsSpacer');
+      if (!topbar || !search || !rc) return;
+      var top = topbar.offsetHeight + search.offsetHeight;
+      rc.style.top = top + 'px';
+      if (spacer) spacer.style.height = rc.offsetHeight + 'px';
+    }
+    // Run on load and resize
+    window.addEventListener('load', positionReadControls);
+    window.addEventListener('resize', positionReadControls);
+    // Run after a short delay to ensure styles are applied
+    setTimeout(positionReadControls, 100);
+    setTimeout(positionReadControls, 500);
+  })();
+  </script>
 
   <script>
   (function () {

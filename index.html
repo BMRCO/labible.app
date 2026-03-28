@@ -184,11 +184,7 @@
           <div class="pageHeader" id="pageHeader"></div>
           <div class="verses" id="verses"></div>
         </div>
-        <div class="pageFooter">
-          <button class="chip" id="btnBookmark">🔖 Favori</button>
-          <button class="chip" id="btnCopyRef">📎 Copier</button>
-          <button class="chip" id="btnShare">📤 Partager</button>
-        </div>
+
       </div>
     </section>
 
@@ -296,6 +292,19 @@
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
   <script src="/app.v2.js"></script>
+  <script>
+    function adjustSpacer() {
+      var rc = document.getElementById('readControls');
+      var sp = document.getElementById('topSpacer');
+      if (rc && sp) {
+        var bottom = rc.getBoundingClientRect().bottom + window.scrollY;
+        sp.style.height = (bottom + 16) + 'px';
+      }
+    }
+    window.addEventListener('load', adjustSpacer);
+    window.addEventListener('resize', adjustSpacer);
+    setTimeout(adjustSpacer, 300);
+  </script>
 
   <script>
   (function () {

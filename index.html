@@ -37,82 +37,26 @@
   <link rel="stylesheet" href="/styles.css?v=4" />
 
   <style>
-    /* ── Barra de pesquisa global ── */
+    /* topbar = sticky top:0 height:60px (styles.css, z-index:50) */
+
     .globalSearch {
-      padding: 10px 16px 8px;
-      border-bottom: 1px solid rgba(255,255,255,0.06);
-      background: var(--bg, #0b0b0b);
       position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      z-index: 90;
+      top: 60px;
+      left: 0; right: 0;
+      z-index: 89;
+      padding: 8px 16px 6px;
+      background: var(--bg, #0b0b0b);
+      border-bottom: 1px solid rgba(255,255,255,0.06);
     }
-    /* Espaçador para compensar a barra fixa */
-    .globalSearchSpacer {
-      height: 54px;
-    }
-    .globalSearchInner {
-      position: relative;
-      display: flex;
-      gap: 8px;
-      align-items: center;
-    }
-    .globalSearchInner .gsIcon {
-      position: absolute;
-      left: 12px;
-      top: 50%;
-      transform: translateY(-50%);
-      font-size: 14px;
-      opacity: .35;
-      pointer-events: none;
-    }
-    #globalSearchInput {
-      flex: 1;
-      padding: 11px 36px 11px 36px;
-      background: rgba(255,255,255,0.06);
-      border: 1px solid rgba(226,197,122,0.25);
-      border-radius: 10px;
-      color: var(--text, #f0ead8);
-      font-size: 13px;
-      font-family: inherit;
-      outline: none;
-      transition: border-color .2s;
-    }
+    .globalSearchInner { position: relative; display: flex; gap: 8px; align-items: center; }
+    .globalSearchInner .gsIcon { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); font-size: 14px; opacity: .35; pointer-events: none; }
+    #globalSearchInput { flex: 1; padding: 9px 36px; background: rgba(255,255,255,0.06); border: 1px solid rgba(226,197,122,0.25); border-radius: 10px; color: var(--text, #f0ead8); font-size: 13px; font-family: inherit; outline: none; transition: border-color .2s; }
     #globalSearchInput:focus { border-color: rgba(226,197,122,0.55); }
     #globalSearchInput::placeholder { color: rgba(255,255,255,0.3); }
-    #globalSearchClear {
-      position: absolute;
-      right: 90px;
-      top: 50%;
-      transform: translateY(-50%);
-      background: rgba(255,255,255,0.1);
-      border: none;
-      color: rgba(255,255,255,0.45);
-      border-radius: 50%;
-      width: 20px; height: 20px;
-      font-size: 10px;
-      cursor: pointer;
-      display: none;
-      align-items: center;
-      justify-content: center;
-    }
-    #globalSearchBtn {
-      padding: 10px 16px;
-      background: var(--accent, #c9a640);
-      color: var(--accentText, #0b0b0b);
-      border: none;
-      border-radius: 10px;
-      font-size: 13px;
-      font-weight: 700;
-      font-family: inherit;
-      cursor: pointer;
-      white-space: nowrap;
-      flex-shrink: 0;
-    }
+    #globalSearchClear { position: absolute; right: 90px; top: 50%; transform: translateY(-50%); background: rgba(255,255,255,0.1); border: none; color: rgba(255,255,255,0.45); border-radius: 50%; width: 20px; height: 20px; font-size: 10px; cursor: pointer; display: none; align-items: center; justify-content: center; }
+    #globalSearchBtn { padding: 9px 16px; background: var(--accent, #c9a640); color: var(--accentText, #0b0b0b); border: none; border-radius: 10px; font-size: 13px; font-weight: 700; font-family: inherit; cursor: pointer; white-space: nowrap; flex-shrink: 0; }
 
-    /* Overlay de resultados inline */
-    #globalResults { display: none; padding: 12px 16px; border-bottom: 1px solid rgba(255,255,255,0.06); position: fixed; top: 54px; left: 0; right: 0; z-index: 89; background: var(--bg, #0b0b0b); max-height: 60vh; overflow-y: auto; }
+    #globalResults { display: none; position: fixed; top: 110px; left: 0; right: 0; z-index: 88; padding: 12px 16px; background: var(--bg, #0b0b0b); border-bottom: 1px solid rgba(255,255,255,0.06); max-height: 55vh; overflow-y: auto; }
     #globalResults.active { display: block; }
     .gResultsMeta { font-size: 10px; color: rgba(255,255,255,0.3); letter-spacing: .3em; margin-bottom: 10px; text-transform: uppercase; }
     .gResultItem { border-radius: 10px; border: 1px solid rgba(255,255,255,0.07); background: rgba(255,255,255,0.03); margin-bottom: 7px; overflow: hidden; cursor: pointer; transition: border-color .2s, background .2s; }
@@ -127,33 +71,21 @@
     .gResultActions { display: flex; gap: 8px; margin-top: 10px; }
     .gResultActions button { padding: 5px 12px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.06); color: rgba(240,234,216,.7); font-size: 11px; font-family: inherit; cursor: pointer; }
 
-    /* ── Livre + Chapitre lado a lado ── */
+    #readControls { position: fixed; top: 110px; left: 0; right: 0; z-index: 87; background: var(--bg, #0b0b0b); padding: 6px 14px 4px; border-bottom: 1px solid rgba(226,197,122,0.12); }
+    #readControls .controls { margin: 0; gap: 8px; }
+    #readControls .controls .field span { font-size: 11px; }
+    #readControls select { padding: 6px 10px; font-size: 13px; }
+    #readControls .btn { padding: 6px 12px; font-size: 12px; }
+
+    /* Espaçador: topbar(60) + globalSearch(50) + readControls(78) = 188px */
+    #topSpacer { height: 188px; }
+
     .controls .field { flex: 1; min-width: 100px !important; }
     .controls .field:first-child { flex: 2; }
     .controls .navBtns { width: 100%; margin-left: 0; }
-
-    /* ── Barra de controlos fixa — fora do card, sticky abaixo da barra de pesquisa ── */
-    #readControls {
-      position: sticky;
-      top: 54px; /* altura da globalSearch fixa */
-      z-index: 85;
-      background: color-mix(in srgb, var(--bg, #0b0b0b) 95%, transparent);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-      padding: 10px 14px;
-      margin: 0 0 8px 0;
-      border-bottom: 1px solid rgba(226,197,122,0.12);
-    }
-    #readControls .controls {
-      margin-top: 0;
-    }
-
-    /* ── Verse — clicável e seleccionado ── */
     .verse { cursor: pointer; border-radius: 8px; padding: 4px 6px; margin: 0 -6px; transition: background 0.15s; }
     .verse:hover { background: rgba(226, 197, 122, 0.05); }
     .verse.selected { background: rgba(226, 197, 122, 0.09); outline: 1px solid rgba(226, 197, 122, 0.2); }
-
-    /* ── Highlight pesquisa ── */
     .hl { background: rgba(226, 197, 122, 0.3); border-radius: 3px; padding: 0 2px; }
   </style>
 
@@ -208,19 +140,6 @@
     <div id="gResultsList"></div>
   </div>
 
-  <!-- Controlos fixed — sempre visível ao fazer scroll -->
-  <div id="readControls">
-    <div class="controls">
-      <label class="field"><span>Livre</span><select id="bookSelect"></select></label>
-      <label class="field"><span>Chapitre</span><select id="chapterSelect"></select></label>
-      <div class="navBtns">
-        <button class="btn" id="btnPrev">← Précédent</button>
-        <button class="btn" id="btnNext">Suivant →</button>
-      </div>
-    </div>
-  </div>
-  <div id="readControlsSpacer"></div>
-
   <main class="container">
 
     <nav class="tabs" aria-label="Navigation">
@@ -232,7 +151,17 @@
     <!-- LECTURE -->
     <section class="view active" id="view-read">
 
-
+      <!-- Barra de controlos FORA do card — sticky funciona corretamente -->
+      <div id="readControls">
+        <div class="controls">
+          <label class="field"><span>Livre</span><select id="bookSelect"></select></label>
+          <label class="field"><span>Chapitre</span><select id="chapterSelect"></select></label>
+          <div class="navBtns">
+            <button class="btn" id="btnPrev">← Précédent</button>
+            <button class="btn" id="btnNext">Suivant →</button>
+          </div>
+        </div>
+      </div>
 
       <div class="card">
         <div class="cardHeader">
@@ -341,7 +270,7 @@
           <svg viewBox="0 0 24 24" fill="#e60023"><path d="M12 0C5.373 0 0 5.373 0 12c0 5.084 3.163 9.426 7.627 11.174-.105-.949-.2-2.405.042-3.441.218-.937 1.407-5.965 1.407-5.965s-.359-.719-.359-1.782c0-1.668.967-2.914 2.171-2.914 1.023 0 1.518.769 1.518 1.69 0 1.029-.655 2.568-.994 3.995-.283 1.194.599 2.169 1.777 2.169 2.133 0 3.772-2.249 3.772-5.495 0-2.873-2.064-4.882-5.012-4.882-3.414 0-5.418 2.561-5.418 5.207 0 1.031.397 2.138.893 2.738a.36.36 0 0 1 .083.345l-.333 1.36c-.053.22-.174.267-.402.161-1.499-.698-2.436-2.889-2.436-4.649 0-3.785 2.75-7.262 7.929-7.262 4.163 0 7.398 2.967 7.398 6.931 0 4.136-2.607 7.464-6.227 7.464-1.216 0-2.359-.632-2.75-1.378l-.748 2.853c-.271 1.043-1.002 2.35-1.492 3.146C9.57 23.812 10.763 24 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0z"/></svg>
         </a>
         <a href="https://threads.net/@labible.app" target="_blank" rel="noopener" title="Threads">
-          <svg viewBox="0 0 24 24" fill="#ffffff"><path d="M12.186 24h-.007c-3.581-.024-6.334-1.205-8.184-3.509C2.35 18.44 1.5 15.586 1.472 12.01v-.017c.03-3.579.879-6.43 2.525-8.482C5.845 1.205 8.6.024 12.18 0h.014c2.746.02 5.043.725 6.826 2.098 1.677 1.29 2.858 3.13 3.509 5.467l-2.04.569c-1.104-3.96-3.898-5.984-8.304-6.015-2.91.022-5.11.936-6.54 2.717C4.307 6.504 3.616 8.914 3.589 12c.027 3.086.718 5.496 2.057 7.164 1.43 1.783 3.631 2.698 6.54 2.717 2.623-.02 4.358-.631 5.8-2.045 1.647-1.613 1.618-3.593 1.09-4.798-.31-.71-.873-1.3-1.634-1.75-.192 1.352-.622 2.446-1.284 3.272-.886 1.102-2.14 1.704-3.73 1.79-1.202.065-2.361-.218-3.259-.801-1.063-.689-1.685-1.74-1.752-2.964-.065-1.19.408-2.285 1.33-3.082.88-.76 2.119-1.207 3.583-1.291a13.853 13.853 0 0 1 3.02.142c-.126-.742-.375-1.332-.742-1.757-.438-.505-1.098-.761-1.963-.763h-.056c-.56 0-1.599.153-2.285 1.161l-1.overview-.957C8.502 6.962 9.943 6.467 11.4 6.467h.087c1.377.004 2.514.465 3.282 1.334.754.853 1.154 2.07 1.19 3.616a7.087 7.087 0 0 1 1.657 1.28c1.012 1.077 1.517 2.47 1.517 4.138 0 2.623-1.189 4.662-3.315 5.76C14.6 23.498 13.4 24 12.186 24zm.024-10.87c-.085 0-.172.002-.258.006-1.08.062-1.942.37-2.45.867-.43.418-.634.979-.604 1.622.057 1.099 1.028 1.879 2.44 1.805 1.136-.061 1.975-.513 2.494-1.345.371-.593.583-1.39.629-2.37a11.944 11.944 0 0 0-2.251-.585z"/></svg>
+          <svg viewBox="0 0 24 24" fill="#ffffff"><path d="M12.186 24h-.007c-3.581-.024-6.334-1.205-8.184-3.509C2.35 18.44 1.5 15.586 1.472 12.01v-.017c.03-3.579.879-6.43 2.525-8.482C5.845 1.205 8.6.024 12.18 0h.014c2.746.02 5.043.725 6.826 2.098 1.677 1.29 2.858 3.13 3.509 5.467l-2.04.569c-1.104-3.96-3.898-5.984-8.304-6.015-2.91.022-5.11.936-6.54 2.717C4.307 6.504 3.616 8.914 3.589 12c.027 3.086.718 5.496 2.057 7.164 1.43 1.783 3.631 2.698 6.54 2.717 2.623-.02 4.358-.631 5.8-2.045 1.647-1.613 1.618-3.593 1.09-4.798-.31-.71-.873-1.3-1.634-1.75-.192 1.352-.622 2.446-1.284 3.272-.886 1.102-2.14 1.704-3.73 1.79-1.202.065-2.361-.218-3.259-.801-1.063-.689-1.685-1.74-1.752-2.964-.065-1.19.408-2.285 1.33-3.082.88-.76 2.119-1.207 3.583-1.291a13.853 13.853 0 0 1 3.02.142c-.126-.742-.375-1.332-.742-1.757-.438-.505-1.098-.761-1.963-.763h-.056c-.56 0-1.599.153-2.285 1.161l-1.699-.957C8.502 6.962 9.943 6.467 11.4 6.467h.087c1.377.004 2.514.465 3.282 1.334.754.853 1.154 2.07 1.19 3.616a7.087 7.087 0 0 1 1.657 1.28c1.012 1.077 1.517 2.47 1.517 4.138 0 2.623-1.189 4.662-3.315 5.76C14.6 23.498 13.4 24 12.186 24z"/></svg>
         </a>
       </div>
       <div class="footerLinks">
@@ -357,26 +286,6 @@
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
   <script src="/app.v2.js"></script>
-  <script>
-  (function() {
-    function positionReadControls() {
-      var topbar  = document.querySelector('.topbar');
-      var search  = document.querySelector('.globalSearch');
-      var rc      = document.getElementById('readControls');
-      var spacer  = document.getElementById('readControlsSpacer');
-      if (!topbar || !search || !rc) return;
-      var top = topbar.offsetHeight + search.offsetHeight;
-      rc.style.top = top + 'px';
-      if (spacer) spacer.style.height = rc.offsetHeight + 'px';
-    }
-    // Run on load and resize
-    window.addEventListener('load', positionReadControls);
-    window.addEventListener('resize', positionReadControls);
-    // Run after a short delay to ensure styles are applied
-    setTimeout(positionReadControls, 100);
-    setTimeout(positionReadControls, 500);
-  })();
-  </script>
 
   <script>
   (function () {

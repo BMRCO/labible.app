@@ -295,15 +295,21 @@
   <script>
     function adjustSpacer() {
       var rc = document.getElementById('readControls');
+      var tb = document.querySelector('.topbar');
       var sp = document.getElementById('topSpacer');
       if (rc && sp) {
-        var bottom = rc.getBoundingClientRect().bottom + window.scrollY;
-        sp.style.height = (bottom + 16) + 'px';
+        // readControls.bottom = posição no viewport onde acaba a barra
+        // topbar está no flow normal, já empurra o conteúdo
+        // só precisamos compensar o que está ABAIXO da topbar
+        var tbBottom = tb ? tb.getBoundingClientRect().bottom : 60;
+        var rcBottom = rc.getBoundingClientRect().bottom;
+        sp.style.height = (rcBottom - tbBottom + 16) + 'px';
       }
     }
     window.addEventListener('load', adjustSpacer);
     window.addEventListener('resize', adjustSpacer);
-    setTimeout(adjustSpacer, 300);
+    setTimeout(adjustSpacer, 200);
+    setTimeout(adjustSpacer, 600);
   </script>
 
   <script>

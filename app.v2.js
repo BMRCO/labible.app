@@ -19,41 +19,6 @@ const LS = {
 const DATA_URL     = "/data/lsg1910.json";
 const DATA_URL_CDN = "https://cdn.jsdelivr.net/gh/BMRCO/labible@main/data/lsg1910.json";
 
-/* ── Versiculos chave curados — 1 por dia ── */
-const VDD_CURATED = [
-  "Jean 3:16", "Psaumes 23:1", "Philippiens 4:13", "Romains 8:28",
-  "Jérémie 29:11", "Proverbes 3:5", "Matthieu 6:33", "Esaïe 40:31",
-  "Psaumes 46:1", "Jean 14:6", "Romains 8:38", "Ephésiens 2:8",
-  "Psaumes 119:105", "Matthieu 11:28", "Jean 11:25", "Psaumes 27:1",
-  "Romains 12:2", "Galates 5:22", "1 Corinthiens 13:4", "Hébreux 11:1",
-  "Psaumes 91:1", "Jean 15:5", "Proverbes 22:6", "Esaïe 41:10",
-  "Matthieu 5:3", "Luc 1:37", "Psaumes 34:8", "Romains 5:8",
-  "1 Jean 4:8", "Psaumes 37:4", "Jean 16:33", "Colossiens 3:23",
-  "Proverbes 16:3", "Psaumes 32:8", "Matthieu 28:20", "Jacques 1:17",
-  "Psaumes 121:1", "2 Timothée 1:7", "Psaumes 103:1", "Jean 10:10",
-  "Romains 15:13", "Psaumes 16:8", "Esaïe 26:3", "1 Pierre 5:7",
-  "Psaumes 51:10", "Luc 6:31", "Jean 8:32", "Proverbes 4:23",
-  "Psaumes 139:14", "Romains 10:9", "Matthieu 22:37", "Jean 1:14",
-  "Psaumes 145:18", "Ephésiens 6:10", "Proverbes 11:14", "Psaumes 56:3",
-  "1 Jean 1:9", "Jean 3:36", "Luc 12:31", "Psaumes 62:1",
-  "Romains 8:1", "Hébreux 4:16", "Psaumes 40:1", "Matthieu 5:14",
-  "Jean 6:35", "Proverbes 18:10", "Psaumes 73:26", "2 Corinthiens 5:17",
-  "Esaïe 43:1", "Psaumes 28:7", "Luc 11:9", "Jean 14:27",
-  "Romains 1:16", "Psaumes 84:11", "Proverbes 3:9", "Matthieu 5:8",
-  "1 Corinthiens 10:13", "Jean 17:17", "Psaumes 19:1", "Ephésiens 3:20",
-  "Proverbes 27:1", "Psaumes 130:1", "Romains 6:23", "Jean 5:24",
-  "Matthieu 6:9", "Psaumes 100:4", "Esaïe 55:8", "1 Thessaloniciens 5:16",
-  "Jean 4:24", "Proverbes 31:30", "Psaumes 8:1", "Luc 15:7",
-  "2 Corinthiens 12:9", "Jean 15:13", "Romains 12:12", "Psaumes 23:4",
-  "Matthieu 5:9", "Jérémie 31:33", "Psaumes 46:10", "Jean 14:1",
-  "Proverbes 3:6", "Psaumes 1:1", "1 Jean 5:4", "Esaïe 53:5",
-  "Jean 3:17", "Romains 8:31", "Psaumes 37:23", "Matthieu 7:7",
-  "Hébreux 12:1", "Jean 10:27", "Proverbes 17:17", "Psaumes 63:1",
-  "Ephésiens 4:32", "Luc 9:23", "Jean 15:16", "Psaumes 118:24",
-  "Romains 12:1", "Proverbes 15:1", "1 Pierre 2:9", "Jean 11:35",
-  "Psaumes 55:22", "Matthieu 5:6", "Esaïe 40:28", "Jean 14:13",
-];
-
 const state = {
   bible:         null,
   index:         null,

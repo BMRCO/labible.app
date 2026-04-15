@@ -660,6 +660,9 @@
         '<button id="popupClose" style="padding:7px 10px;border-radius:10px;border:1px solid rgba(255,255,255,0.1);background:transparent;color:rgba(255,255,255,0.4);font-size:12px;cursor:pointer;">✕</button>';
       document.body.appendChild(popup);
 
+      // Impedir que o click no popup seja tratado como click num verset
+      popup.addEventListener('click', function (e) { e.stopPropagation(); });
+
       document.getElementById('popupCopy').onclick = function () {
         navigator.clipboard && navigator.clipboard.writeText('\u00AB ' + verseText + ' \u00BB\n\u2014 ' + fullRef + ' (LSG\u00A01910)\n\uD83D\uDCD6 https://labible.app');
         showToast('Verset copi\u00E9 !');

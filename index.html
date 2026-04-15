@@ -338,7 +338,7 @@
         var bodyHtml = hit.textHtml ? '« ' + hit.textHtml + ' »' : '« ' + hit.text + ' »';
         el.innerHTML =
           '<div class="gResultHead"><span class="gResultRef">' + hit.ref + '</span><span class="gResultArrow">›</span></div>' +
-          '<div class="gResultBody">' + bodyHtml + '<div class="gResultActions"><button class="btnOpen">📖 Ouvrir</button><button class="btnCopy">📎 Copier</button><button class="btnShare">📤 Partager</button></div></div>';
+          '<div class="gResultBody">' + bodyHtml + '<div class="gResultActions"><button class="btnOpen">📖 Ouvrir</button><button class="btnCopy">📋 Copier</button><button class="btnShareText">💬 Texte</button><button class="btnShare">🖼️ Image</button></div></div>';
         el.querySelector('.gResultHead').addEventListener('click', function () { el.classList.toggle('open'); });
         el.querySelector('.btnOpen').addEventListener('click', function (e) {
           e.stopPropagation();
@@ -347,6 +347,10 @@
         el.querySelector('.btnCopy').addEventListener('click', function (e) {
           e.stopPropagation();
           navigator.clipboard && navigator.clipboard.writeText('« ' + hit.text + ' »\n— ' + hit.ref + ' (LSG 1910)\n📖 https://labible.app');
+        });
+        el.querySelector('.btnShareText').addEventListener('click', function (e) {
+          e.stopPropagation();
+          window.shareVerseText && window.shareVerseText(hit.text, hit.ref);
         });
         el.querySelector('.btnShare').addEventListener('click', function (e) {
           e.stopPropagation();
@@ -599,6 +603,16 @@
       }, 'image/png');
     };
 
+    window.shareVerseText = function (text, ref) {
+      var shareText = '\u00AB ' + text + ' \u00BB\n\u2014 ' + ref + ' (LSG\u00A01910)\n\n\uD83D\uDCD6 Lis la Bible compl\u00E8te sur labible.app';
+      if (navigator.share) {
+        navigator.share({ text: shareText }).catch(function () {});
+      } else {
+        navigator.clipboard && navigator.clipboard.writeText(shareText);
+        showToast('Texte copi\u00E9 !');
+      }
+    };
+
     function downloadCanvas(canvas, ref) {
       var a = document.createElement('a');
       a.download = ref.replace(':', '_') + '_LSG1910.png';
@@ -626,17 +640,22 @@
       // Créer popup
       var popup = document.createElement('div');
       popup.id = 'verseSharePopup';
-      popup.style.cssText = 'position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:#1a1830;border:1px solid #c8a84b55;border-radius:14px;padding:10px 16px;display:flex;gap:10px;z-index:999;box-shadow:0 4px 24px rgba(0,0,0,0.5);';
+      popup.style.cssText = 'position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:#1a1830;border:1px solid #c8a84b55;border-radius:14px;padding:10px 16px;display:flex;gap:8px;z-index:999;box-shadow:0 4px 24px rgba(0,0,0,0.5);flex-wrap:wrap;max-width:95vw;align-items:center;';
       popup.innerHTML =
-        '<span style="font-size:13px;color:#a08030;align-self:center;">' + fullRef + '</span>' +
-        '<button id="popupCopy" style="padding:7px 14px;border-radius:10px;border:1px solid #c8a84b44;background:transparent;color:#c8a84b;font-size:13px;cursor:pointer;">📎 Copier</button>' +
-        '<button id="popupShare" style="padding:7px 14px;border-radius:10px;border:none;background:#c8a84b;color:#0a0e1a;font-size:13px;font-weight:700;cursor:pointer;">📤 Partager</button>' +
-        '<button id="popupClose" style="padding:7px 10px;border-radius:10px;border:1px solid rgba(255,255,255,0.1);background:transparent;color:rgba(255,255,255,0.4);font-size:13px;cursor:pointer;">✕</button>';
+        '<span style="font-size:12px;color:#a08030;white-space:nowrap;">' + fullRef + '</span>' +
+        '<button id="popupCopy" style="padding:7px 12px;border-radius:10px;border:1px solid #c8a84b44;background:transparent;color:#c8a84b;font-size:12px;cursor:pointer;">📋 Texte</button>' +
+        '<button id="popupShareText" style="padding:7px 12px;border-radius:10px;border:1px solid #c8a84b44;background:transparent;color:#c8a84b;font-size:12px;cursor:pointer;">💬 Partager texte</button>' +
+        '<button id="popupShare" style="padding:7px 12px;border-radius:10px;border:none;background:#c8a84b;color:#0a0e1a;font-size:12px;font-weight:700;cursor:pointer;">🖼️ Partager image</button>' +
+        '<button id="popupClose" style="padding:7px 10px;border-radius:10px;border:1px solid rgba(255,255,255,0.1);background:transparent;color:rgba(255,255,255,0.4);font-size:12px;cursor:pointer;">✕</button>';
       document.body.appendChild(popup);
 
       document.getElementById('popupCopy').onclick = function () {
         navigator.clipboard && navigator.clipboard.writeText('\u00AB ' + verseText + ' \u00BB\n\u2014 ' + fullRef + ' (LSG\u00A01910)\n\uD83D\uDCD6 https://labible.app');
         showToast('Verset copi\u00E9 !');
+        popup.remove();
+      };
+      document.getElementById('popupShareText').onclick = function () {
+        window.shareVerseText(verseText, fullRef);
         popup.remove();
       };
       document.getElementById('popupShare').onclick = function () {

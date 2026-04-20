@@ -33,6 +33,13 @@
     <lastmod>2026-03-14</lastmod>
   </url>
 
+  <url>
+    <loc>https://labible.app/louis-segond</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <lastmod>2026-04-20</lastmod>
+  </url>
+
   <!-- Ancien Testament -->
   <url><loc>https://labible.app/#Genèse-1</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
   <url><loc>https://labible.app/#Exode-1</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>

@@ -45,12 +45,16 @@
     .section p{color:var(--muted);font-size:.97rem;line-height:1.75}
     .section p+p{margin-top:10px}
     .section strong{color:var(--text)}
-    footer{border-top:1px solid var(--border);padding:20px 24px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;font-size:.82rem;color:var(--muted)}
-    footer a{color:var(--muted);text-decoration:none;transition:color .2s}
-    footer a:hover{color:var(--accent)}
-    .footer__links{display:flex;gap:16px;flex-wrap:wrap}
     @keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
     @media(max-width:600px){.hero__title{font-size:1.7rem}main{padding:32px 16px 48px}.topnav{gap:12px}.footer__links{gap:10px}}
+      footer.footer, .footer{border-top:1px solid var(--border);padding:20px 24px;display:flex;flex-direction:column;align-items:center;gap:8px;font-size:.82rem;color:var(--muted);text-align:center;}
+    footer a{color:var(--muted);text-decoration:none;transition:color .2s}
+    footer a:hover{color:var(--accent)}
+    .socialIcons{display:flex;flex-direction:row;align-items:center;justify-content:center;gap:18px;margin:4px 0;}
+    .socialIcons a{display:flex;align-items:center;justify-content:center;opacity:.65;transition:opacity .2s,transform .2s;text-decoration:none;}
+    .socialIcons a:hover{opacity:1;transform:translateY(-2px);text-decoration:none;}
+    .socialIcons svg{width:24px;height:24px;display:block;}
+    .footerLinks,.footer__links{display:flex;align-items:center;flex-wrap:wrap;justify-content:center;gap:6px 10px;}
   </style>
 </head>
 <body>

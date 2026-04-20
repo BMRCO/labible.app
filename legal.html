@@ -14,8 +14,8 @@
   <meta property="og:url" content="https://labible.app/legal.html" />
   <meta property="og:image" content="https://labible.app/icons/icon-512x512.png" />
   <meta name="theme-color" content="#0b0b0b" />
-  <link rel="icon" href="/icons/icon-192.png">
-  <link rel="apple-touch-icon" href="/icons/icon-192.png">
+  <link rel="icon" href="/favicon.ico" sizes="any">
+  <link rel="apple-touch-icon" href="/icons/icon-192x192.png">
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
   <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet"/>
@@ -27,7 +27,7 @@
     .topbar{display:flex;align-items:center;justify-content:space-between;padding:14px 24px;border-bottom:1px solid var(--border);background:rgba(11,11,11,.95);backdrop-filter:blur(12px);position:sticky;top:0;z-index:100}
     .brand{display:flex;align-items:center;gap:10px;text-decoration:none}
     .brand__text{display:flex;flex-direction:column;line-height:1.2}
-    .brand__name{font-size:1.05rem;font-weight:700;color:var(--accent)}
+    .brand__name{font-size:1.05rem;font-weight:700;color:var(--text)}.brandDot{color:var(--accent);font-weight:600;}
     .brand__sub{font-size:.72rem;color:var(--muted);letter-spacing:.04em}
     .topnav{display:flex;gap:20px}
     .topnav a{color:var(--muted);text-decoration:none;font-size:.88rem;transition:color .2s}
@@ -59,9 +59,7 @@
     .info-value{font-size:.95rem;color:var(--text)}
     .info-value a{color:var(--accent);text-decoration:none}
     .info-value a:hover{text-decoration:underline}
-    @keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
-    @media(max-width:600px){.hero__title{font-size:1.7rem}main{padding:32px 16px 48px}.topnav{gap:12px}.info-row{grid-template-columns:1fr}.info-label{font-size:.8rem;color:var(--accent);margin-bottom:2px}}
-      footer.footer, .footer{border-top:1px solid var(--border);padding:20px 24px;display:flex;flex-direction:column;align-items:center;gap:8px;font-size:.82rem;color:var(--muted);text-align:center;}
+    footer{border-top:1px solid var(--border);padding:20px 24px;display:flex;flex-direction:column;align-items:center;gap:8px;font-size:.82rem;color:var(--muted);text-align:center;}
     footer a{color:var(--muted);text-decoration:none;transition:color .2s}
     footer a:hover{color:var(--accent)}
     .socialIcons{display:flex;flex-direction:row;align-items:center;justify-content:center;gap:18px;margin:4px 0;}
@@ -69,6 +67,8 @@
     .socialIcons a:hover{opacity:1;transform:translateY(-2px);text-decoration:none;}
     .socialIcons svg{width:24px;height:24px;display:block;}
     .footerLinks,.footer__links{display:flex;align-items:center;flex-wrap:wrap;justify-content:center;gap:6px 10px;}
+    @keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+    @media(max-width:600px){.hero__title{font-size:1.7rem}main{padding:32px 16px 48px}.topnav{gap:12px}.info-row{grid-template-columns:1fr}.info-label{font-size:.8rem;color:var(--accent);margin-bottom:2px}}
   </style>
 </head>
 <body>
@@ -77,7 +77,7 @@
     <a class="brand" href="/">
       <img src="/icons/icon-512x512.png" width="28" height="28" alt="LaBible.app" style="border-radius:6px;object-fit:cover;flex-shrink:0;" />
       <div class="brand__text">
-        <div class="brand__name">LaBible.app</div>
+        <div class="brand__name">LaBible<span class="brandDot">.app</span></div>
         <div class="brand__sub">LSG 1910</div>
       </div>
     </a>

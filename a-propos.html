@@ -43,10 +43,10 @@
   footer a { color: var(--muted); }
   footer a:hover { color: var(--accent); }
   
-  .socialIcons { display: flex; gap: 14px; justify-content: center; margin-top: 10px; flex-wrap: wrap; }
-  .socialIcons a { opacity: .7; transition: opacity .2s; }
-  .socialIcons a:hover { opacity: 1; }
-  .socialIcons svg { width: 22px; height: 22px; display: block; }
+  .socialIcons { display: flex; flex-direction: row; align-items: center; justify-content: center; gap: 18px; margin: 4px 0; }
+  .socialIcons a { display: flex; align-items: center; justify-content: center; opacity: 0.65; transition: opacity .2s, transform .2s; text-decoration: none; }
+  .socialIcons a:hover { opacity: 1; transform: translateY(-2px); text-decoration: none; }
+  .socialIcons svg { width: 24px; height: 24px; display: block; }
   .footerLinks { display: flex; gap: 16px; justify-content: center; margin-top: 8px; flex-wrap: wrap; }
   </style>
 </head>

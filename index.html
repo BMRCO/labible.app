@@ -2,10 +2,6 @@
 <html lang="fr">
 <head>
   <meta charset="utf-8" />
-  <!-- Google Analytics -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-FDT2GP8C8F"></script>
-  <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-FDT2GP8C8F');</script>
-
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
   <title>LaBible.app — Lire la Bible Louis Segond 1910 gratuitement en ligne</title>
   <meta name="description" content="Lisez la Bible Louis Segond 1910 gratuitement en ligne. 31 102 versets, recherche instantanée par mot-clé ou référence, plan de lecture 365 jours, verset du jour. Sans publicité, sans inscription." />
@@ -45,6 +41,7 @@
   <link rel="icon" href="/icons/icon-192x192.png">
   <link rel="apple-touch-icon" href="/icons/icon-192x192.png">
   <link rel="icon" href="/favicon.ico" sizes="any">
+  <link rel="preload" href="/icons/icon-512x512.png" as="image" />
   <link rel="stylesheet" href="/styles.css?v=4" />
 
   <style>
@@ -109,7 +106,7 @@
   <div class="stickyHeader">
   <header class="topbar">
     <div class="brand" id="btnHome" title="Accueil" role="button" tabindex="0">
-      <img src="/icons/icon-512x512.png" class="brandIcon" width="30" height="30" alt="LaBible.app" style="border-radius:6px;object-fit:cover;" />
+      <img src="/icons/icon-512x512.png" class="brandIcon" width="30" height="30" alt="LaBible.app" style="border-radius:6px;object-fit:cover;" fetchpriority="high" />
       <div class="brandText">
         <div class="brandTitle">LaBible<span class="brandDot">.app</span></div>
         <div class="brandSub">LSG 1910</div>
@@ -277,7 +274,8 @@
       </div>
       <div class="footerLinks">
         <a href="/a-propos.html">À propos</a>
-      <a href="/louis-segond.html">Louis Segond</a>
+        <span>·</span>
+        <a href="/louis-segond.html">Louis Segond</a>
         <span>·</span>
         <a href="/contact.html">Contact</a>
         <span>·</span>

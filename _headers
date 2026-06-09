@@ -1,0 +1,39 @@
+# LaBible.app — politique de cache (Cloudflare Pages)
+#
+# Les fichiers statiques (icônes, polices, données JSON, CSS, JS versionné) sont
+# mis en cache 1 an + immutable : moins de requêtes à l'origine, site plus rapide.
+#
+# Le HTML et le service worker (sw.js) ne sont PAS listés ici : ils gardent le
+# comportement par défaut de Pages (revalidation, jamais périmé), pour que la PWA
+# se mette à jour immédiatement.
+#
+# IMPORTANT : Cloudflare Pages CUMULE les règles qui se chevauchent pour un même
+# en-tête. On n'utilise donc aucun motif large (ex. /*.js) qui toucherait sw.js,
+# et les extensions ci-dessous ne se recouvrent pas entre elles.
+#
+# Si vous modifiez l'un de ces fichiers, changez sa version/son nom (ex. ?v=5,
+# app.v3.js) ou purgez le cache Cloudflare, sinon l'ancienne version reste servie.
+
+/*.json
+  Cache-Control: public, max-age=31536000, immutable
+
+/*.css
+  Cache-Control: public, max-age=31536000, immutable
+
+/app.v2.js
+  Cache-Control: public, max-age=31536000, immutable
+
+/*.png
+  Cache-Control: public, max-age=31536000, immutable
+
+/*.svg
+  Cache-Control: public, max-age=31536000, immutable
+
+/*.ico
+  Cache-Control: public, max-age=31536000, immutable
+
+/*.woff2
+  Cache-Control: public, max-age=31536000, immutable
+
+/*.woff
+  Cache-Control: public, max-age=31536000, immutable

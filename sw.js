@@ -1,10 +1,10 @@
-const CACHE_NAME = 'labible-v13';
+const CACHE_NAME = 'labible-v14';
 
 const STATIC_ASSETS = [
   '/',
   '/index.html',
   '/offline.html',
-  '/styles.css',
+  '/styles.css?v=4',
   '/app.v2.js',
   '/manifest.webmanifest',
   '/a-propos.html',
@@ -21,13 +21,13 @@ self.addEventListener('install', event => {
     caches.open(CACHE_NAME).then(async cache => {
       await Promise.allSettled(
         STATIC_ASSETS.map(url =>
-          fetch(url).then(res => {
+          fetch(url, { cache: 'reload' }).then(res => {
             if (res.ok) return cache.put(url, res);
           }).catch(() => {})
         )
       );
       try {
-        const res = await fetch(BIBLE_DATA);
+        const res = await fetch(BIBLE_DATA, { cache: 'reload' });
         if (res.ok) await cache.put(BIBLE_DATA, res);
         console.log('[SW] Bible JSON mis en cache ✓');
       } catch (e) {
@@ -96,7 +96,7 @@ async function cacheFirst(request) {
 
 async function networkFirst(request) {
   try {
-    const response = await fetch(request);
+    const response = await fetch(request, { cache: 'reload' });
     if (response.ok) {
       const cache = await caches.open(CACHE_NAME);
       cache.put(request, response.clone());

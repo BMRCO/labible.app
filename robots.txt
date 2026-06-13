@@ -1,10 +1,6 @@
+# LaBible.app — La Parole en accès libre
+# Texte LSG 1910 (domaine public). Aucune restriction : indexation et IA bienvenues.
 User-agent: *
 Allow: /
 
-# Fichiers inutiles pour l'indexation
-Disallow: /icons/
-Disallow: /manifest.webmanifest
-Disallow: /sw.js
-
-# Sitemap
 Sitemap: https://labible.app/sitemap.xml

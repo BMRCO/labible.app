@@ -480,12 +480,13 @@ window.appSearch = function(qRaw){
     const text    = ref.v ? String(verses[ref.v - 1] || "") : "";
     return [{ ref: `${book.name} ${ref.c}${ref.v ? ":"+ref.v : ""}`, text, _parsed: ref }];
   }
-  const max = 80; const results = [];
+  // Sem teto: devolve TODAS as ocorrências, em ordem bíblica (Genèse -> Apocalypse).
+  // A paginação (50 + "Afficher plus") é tratada na UI (index.html).
+  const results = [];
   for(const item of state.index){
     if(item.norm.includes(q)){
       const bName = state.bible.books[item.bi].name;
       results.push({ ref: `${bName} ${item.c}:${item.v}`, text: item.original, textHtml: highlightText(item.original, qRaw), _parsed: { bi: item.bi, c: item.c, v: item.v } });
-      if(results.length >= max) break;
     }
   }
   return results;

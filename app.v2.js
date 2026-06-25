@@ -459,7 +459,8 @@ async function buildIndex(force=false){
     for(const [chapNr, verses] of bookMap){
       verses.forEach((t, vi) => {
         if(!t) return;
-        items.push({ bi, c: chapNr, v: vi+1, norm: normalize(t), original: t });
+        const clean = String(t).replace(/¶/g, "").replace(/\s+/g, " ").trim();
+        items.push({ bi, c: chapNr, v: vi+1, norm: normalize(clean), original: clean });
       });
     }
   }

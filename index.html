@@ -4,7 +4,7 @@
  
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
-  <title>LaBible.app | Lire la Bible Louis Segond 1910 gratuitement en ligne</title>
+  <title>LaBible.app — Lire la Bible Louis Segond 1910 gratuitement en ligne</title>
   <meta name="description" content="Lisez la Bible Louis Segond 1910 gratuitement en ligne. 31 102 versets, recherche instantanée par mot-clé ou référence, plan de lecture 365 jours, verset du jour. Sans publicité, sans inscription." />
   <meta name="keywords" content="Bible Louis Segond 1910, LSG 1910, lire la Bible en ligne, Bible gratuite, verset du jour, plan de lecture Bible 365 jours, Bible française, Bible protestante, Jean 3 16, Psaume 23, Bible en ligne" />
   <meta name="author" content="LaBible.app" />
@@ -84,6 +84,8 @@
     .gResultItem.open .gResultBody { display: block; }
     .gResultActions { display: flex; gap: 8px; margin-top: 10px; }
     .gResultActions button { padding: 5px 12px; border-radius: 8px; border: 1px solid color-mix(in srgb, var(--text) 12%, transparent); background: color-mix(in srgb, var(--text) 6%, transparent); color: var(--muted); font-size: 11px; font-family: inherit; cursor: pointer; }
+    #gMoreBtn { display: block; width: 100%; margin: 8px 0 2px; padding: 10px; border-radius: 10px; border: 1px solid color-mix(in srgb, var(--gold) 35%, transparent); background: color-mix(in srgb, var(--gold) 10%, transparent); color: var(--text); font-size: 13px; font-weight: 700; font-family: inherit; cursor: pointer; }
+    #gMoreBtn:hover { background: color-mix(in srgb, var(--gold) 16%, transparent); }
 
     #readControls { background: var(--bg, #0b0b0b); padding: 6px 14px 4px; border-bottom: 1px solid rgba(226,197,122,0.12); }
     #readControls .controls { margin: 0; gap: 8px; }
@@ -324,28 +326,49 @@
       renderResults(q, hits);
     }
 
+    var PAGE = 50;
+
+    function makeResultItem(hit) {
+      var el = document.createElement('div');
+      el.className = 'gResultItem';
+      var bodyHtml = hit.textHtml ? '« ' + hit.textHtml + ' »' : '« ' + hit.text + ' »';
+      el.innerHTML =
+        '<div class="gResultHead"><span class="gResultRef">' + hit.ref + '</span><span class="gResultArrow">›</span></div>' +
+        '<div class="gResultBody">' + bodyHtml + '<div class="gResultActions"><button class="btnOpen">📖 Ouvrir</button><button class="btnCopy">📎 Copier</button></div></div>';
+      el.querySelector('.gResultHead').addEventListener('click', function () { el.classList.toggle('open'); });
+      el.querySelector('.btnOpen').addEventListener('click', function (e) {
+        e.stopPropagation();
+        if (typeof window.appGoTo === 'function') { window.appGoTo(hit.ref); closeResults(); input.value = ''; showClear(false); }
+      });
+      el.querySelector('.btnCopy').addEventListener('click', function (e) {
+        e.stopPropagation();
+        navigator.clipboard && navigator.clipboard.writeText('« ' + hit.text + ' »\n— ' + hit.ref + ' (LSG 1910)\n📖 https://labible.app');
+      });
+      return el;
+    }
+
     function renderResults(q, hits) {
       resultsList.innerHTML = '';
       if (!hits.length) { resultsMeta.textContent = 'Aucun résultat pour « ' + q + ' »'; resultsBox.classList.add('active'); return; }
       resultsMeta.textContent = '✦ ' + hits.length + ' résultat' + (hits.length > 1 ? 's' : '') + ' — « ' + q.toUpperCase() + ' »';
-      hits.slice(0, 20).forEach(function (hit) {
-        var el = document.createElement('div');
-        el.className = 'gResultItem';
-        var bodyHtml = hit.textHtml ? '« ' + hit.textHtml + ' »' : '« ' + hit.text + ' »';
-        el.innerHTML =
-          '<div class="gResultHead"><span class="gResultRef">' + hit.ref + '</span><span class="gResultArrow">›</span></div>' +
-          '<div class="gResultBody">' + bodyHtml + '<div class="gResultActions"><button class="btnOpen">📖 Ouvrir</button><button class="btnCopy">📎 Copier</button></div></div>';
-        el.querySelector('.gResultHead').addEventListener('click', function () { el.classList.toggle('open'); });
-        el.querySelector('.btnOpen').addEventListener('click', function (e) {
-          e.stopPropagation();
-          if (typeof window.appGoTo === 'function') { window.appGoTo(hit.ref); closeResults(); input.value = ''; showClear(false); }
-        });
-        el.querySelector('.btnCopy').addEventListener('click', function (e) {
-          e.stopPropagation();
-          navigator.clipboard && navigator.clipboard.writeText('« ' + hit.text + ' »\n— ' + hit.ref + ' (LSG 1910)\n📖 https://labible.app');
-        });
-        resultsList.appendChild(el);
-      });
+
+      var shown = 0;
+      var moreBtn = document.createElement('button');
+      moreBtn.id = 'gMoreBtn';
+
+      function renderMore() {
+        if (moreBtn.parentNode) moreBtn.parentNode.removeChild(moreBtn);
+        var slice = hits.slice(shown, shown + PAGE);
+        for (var i = 0; i < slice.length; i++) { resultsList.appendChild(makeResultItem(slice[i])); }
+        shown += slice.length;
+        if (shown < hits.length) {
+          moreBtn.textContent = 'Afficher plus (' + (hits.length - shown) + ' restants)';
+          resultsList.appendChild(moreBtn);
+        }
+      }
+
+      moreBtn.addEventListener('click', renderMore);
+      renderMore();
       resultsBox.classList.add('active');
     }
   })();

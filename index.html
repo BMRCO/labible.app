@@ -57,6 +57,8 @@
     .stickyHeader .topbar {
       position: relative !important;
     }
+    /* ".app" em dourado real (var--gold: dourado escuro no claro, claro no escuro) */
+    .brandDot { color: var(--gold); font-weight: 700; }
     .globalSearch {
       padding: 8px 16px 6px;
       background: var(--bg, #0b0b0b);
@@ -122,7 +124,7 @@
   <div class="stickyHeader">
   <header class="topbar">
     <div class="brand" id="btnHome" title="Accueil" role="button" tabindex="0">
-      <img src="/icons/icon-512x512.png" class="brandIcon" width="30" height="30" alt="LaBible.app" style="border-radius:6px;object-fit:cover;" fetchpriority="high" />
+      <img src="/icons/icon-512x512.png" class="brandIcon" width="40" height="40" alt="LaBible.app" style="border-radius:8px;object-fit:cover;width:40px;height:40px;min-width:40px;max-width:40px;" fetchpriority="high" />
       <div class="brandText">
         <div class="brandTitle">LaBible<span class="brandDot">.app</span></div>
         <div class="brandSub">LSG 1910</div>
@@ -134,9 +136,8 @@
       <div class="topDivider"></div>
       <button id="btnTheme" class="iconBtn" title="Thème">🌙</button>
       <div class="topDivider"></div>
-      <button id="btnInstall" class="chip chipGold" hidden>
-        <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 12l-5-5 1.4-1.4L7 9.2V2h2v7.2l2.6-3.6L13 7l-5 5zM2 14h12v2H2z"/></svg>
-        Installer
+      <button id="btnInstall" class="chip chipGold" title="Installer" aria-label="Installer" hidden style="width:36px;height:36px;padding:0;justify-content:center;">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 12l-5-5 1.4-1.4L7 9.2V2h2v7.2l2.6-3.6L13 7l-5 5zM2 14h12v2H2z"/></svg>
       </button>
     </div>
   </header>

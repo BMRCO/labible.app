@@ -27,7 +27,8 @@ const state = {
   deferredPrompt: null,
   readFont:      16,
   vddRef:        null,
-  selectedVerse: null
+  selectedVerse: null,
+  explications:  null
 };
 
 /* ---------- helpers ---------- */
@@ -100,6 +101,43 @@ function showVerseActions(bookName, chapter, verse, text, el){
 
   bar.append(btnFav, btnCopy, btnShare, btnClose);
   el.insertAdjacentElement("afterend", bar);
+
+  // Explication du verset (si disponible) — bouton + panneau dans la barre
+  attachExplication(bar, `${bookName} ${chapter}:${verse}`);
+}
+
+async function loadExplications(){
+  if(state.explications) return state.explications;
+  try{
+    const res = await fetch("/data/explications.json");
+    state.explications = res.ok ? await res.json() : {};
+  } catch { state.explications = {}; }
+  return state.explications;
+}
+
+function attachExplication(bar, refKey){
+  function inject(map){
+    if(!map || !map[refKey]) return;
+    if(bar.querySelector(".btnExplain")) return;
+    const btnExp = document.createElement("button");
+    btnExp.className = "chip btnExplain";
+    btnExp.style.borderColor = "rgba(226,197,122,.4)";
+    btnExp.textContent = "💡 Expliquer";
+    bar.insertBefore(btnExp, bar.lastChild);
+
+    const panel = document.createElement("div");
+    panel.style.cssText = "display:none;width:100%;margin-top:8px;padding:12px 14px;background:rgba(226,197,122,.07);border:1px solid rgba(226,197,122,.22);border-radius:12px;line-height:1.65;font-size:14.5px;";
+    panel.textContent = map[refKey];
+    bar.appendChild(panel);
+
+    btnExp.addEventListener("click", () => {
+      const open = panel.style.display !== "none";
+      panel.style.display = open ? "none" : "block";
+      btnExp.textContent = open ? "💡 Expliquer" : "🙈 Masquer";
+    });
+  }
+  if(state.explications) inject(state.explications);
+  else loadExplications().then(inject);
 }
 
 async function shareVerse(bookName, chapter, verse, text){
@@ -188,10 +226,16 @@ async function loadBible(){
 
   initSelectors();
 
-  const last = localStorage.getItem(LS.last);
-  if(last){
-    const ref = parseReference(last);
-    if(ref){ state.current.book = ref.bi; state.current.chapter = ref.c; }
+  const hashRef = parseHashRef();
+  if(hashRef){
+    state.current.book = hashRef.bi;
+    state.current.chapter = hashRef.c;
+  } else {
+    const last = localStorage.getItem(LS.last);
+    if(last){
+      const ref = parseReference(last);
+      if(ref){ state.current.book = ref.bi; state.current.chapter = ref.c; }
+    }
   }
 
   $("#bookSelect").value = String(state.current.book);
@@ -202,6 +246,7 @@ async function loadBible(){
   await renderPlan();
   renderLibrary();
   buildIndex();
+  loadExplications();
 }
 
 /* ---------- sélecteurs ---------- */
@@ -421,6 +466,19 @@ function parseReference(input){
   const bi = findBookIndex(bookPart);
   if(bi < 0) return null;
   return { bi, c: chap, v: verse };
+}
+
+// Lit un lien profond du type "#Nom du livre-Chapitre" (ex: #Psaumes-23, #1 Corinthiens-13)
+function parseHashRef(){
+  try{
+    const s = decodeURIComponent((location.hash || "").replace(/^#/, "")).trim();
+    if(!s) return null;
+    const m = s.match(/^(.*)-(\d+)$/);
+    if(!m) return null;
+    const bi = findBookIndex(m[1].trim());
+    if(bi < 0) return null;
+    return { bi, c: parseInt(m[2], 10) };
+  } catch { return null; }
 }
 
 function highlightText(text, query){

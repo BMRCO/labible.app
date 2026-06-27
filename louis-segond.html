@@ -1,269 +1,133 @@
 <!doctype html>
 <html lang="fr">
 <head>
-  <meta charset="utf-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/>
-  <title>Louis Segond — Le traducteur de la Bible LSG 1910 | LaBible.app</title>
-  <meta name="description" content="Découvrez la vie de Louis Segond (1810–1885), théologien protestant suisse qui traduisit la Bible en français. Histoire de la traduction LSG 1910, toujours dans le domaine public." />
-  <meta name="keywords" content="Louis Segond, Bible Louis Segond 1910, LSG 1910, traduction Bible français, théologien protestant, Bible domaine public, histoire Bible française" />
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <title>Louis Segond — LaBible.app</title>
+  <meta name="description" content="Qui était Louis Segond ? Histoire de la traduction de la Bible Louis Segond 1910, aujourd'hui dans le domaine public." />
   <meta name="robots" content="index, follow" />
   <link rel="canonical" href="https://labible.app/louis-segond.html" />
-  <meta property="og:title" content="Louis Segond — Le traducteur de la Bible LSG 1910" />
-  <meta property="og:description" content="Découvrez la vie de Louis Segond (1810–1885), théologien protestant suisse qui traduisit la Bible en français. Histoire de la traduction LSG 1910." />
-  <meta property="og:type" content="article" />
-  <meta property="og:url" content="https://labible.app/louis-segond.html" />
-  <meta property="og:image" content="https://labible.app/icons/icon-512x512.png" />
   <meta name="theme-color" content="#0b0b0b" />
-  <link rel="icon" href="/favicon.ico" sizes="any">
+  <link rel="manifest" href="/manifest.webmanifest">
+  <link rel="icon" href="/icons/icon-192x192.png">
   <link rel="apple-touch-icon" href="/icons/icon-192x192.png">
-  <link rel="preconnect" href="https://fonts.googleapis.com"/>
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
-  <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet"/>
+  <link rel="icon" href="/favicon.ico" sizes="any">
+  <link rel="stylesheet" href="/styles.css?v=4" />
   <style>
-    :root{--bg:#0b0b0b;--card:#141414;--border:#222;--text:#e8e0d0;--muted:#7a7060;--accent:#e2c57a;--accent2:#c8a84b;--radius:14px;--font-body:'EB Garamond',Georgia,serif}
-    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-    html{scroll-behavior:smooth}
-    body{background:var(--bg);color:var(--text);font-family:var(--font-body);font-size:1.08rem;line-height:1.75;min-height:100vh;display:flex;flex-direction:column}
-    a{color:var(--accent);text-decoration:none}
-    a:hover{text-decoration:underline}
-
-    /* Topbar */
-    .topbar{display:flex;align-items:center;justify-content:space-between;padding:14px 24px;border-bottom:1px solid var(--border);background:rgba(11,11,11,.95);backdrop-filter:blur(12px);position:sticky;top:0;z-index:100}
-    .brand{display:flex;align-items:center;gap:10px;text-decoration:none}
-    .brand__text{display:flex;flex-direction:column;line-height:1.2}
-    .brand__name{font-size:1.05rem;font-weight:700;color:var(--text)}.brandDot{color:var(--accent);font-weight:600;}
-    .brand__sub{font-size:.72rem;color:var(--muted);letter-spacing:.04em}
-    .topnav{display:flex;gap:20px}
-    .topnav a{color:var(--muted);text-decoration:none;font-size:.88rem;transition:color .2s}
-    .topnav a:hover{color:var(--accent)}
-
-    /* Main */
-    main{flex:1;max-width:720px;width:100%;margin:0 auto;padding:48px 24px 64px}
-
-    /* Hero */
-    .hero{margin-bottom:48px;animation:fadeUp .5s ease both}
-    .hero__eyebrow{font-size:.78rem;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);margin-bottom:10px}
-    .hero__title{font-size:2.4rem;font-weight:700;line-height:1.2;margin-bottom:16px}
-    .hero__desc{color:var(--muted);font-size:1.05rem;line-height:1.75}
-    .hero__dates{display:inline-block;margin-top:14px;padding:6px 14px;background:rgba(226,197,122,.08);border:1px solid rgba(226,197,122,.2);border-radius:20px;font-size:.85rem;color:var(--accent)}
-
-    /* Timeline */
-    .timeline{margin:32px 0;border-left:2px solid rgba(226,197,122,.2);padding-left:24px;display:flex;flex-direction:column;gap:28px}
-    .timeline-item{position:relative;animation:fadeUp .5s ease both}
-    .timeline-item::before{content:'';position:absolute;left:-31px;top:6px;width:12px;height:12px;border-radius:50%;background:var(--accent);border:2px solid var(--bg)}
-    .timeline-year{font-size:.78rem;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);margin-bottom:4px}
-    .timeline-title{font-size:1rem;font-weight:700;color:var(--text);margin-bottom:6px}
-    .timeline-text{font-size:.95rem;color:var(--muted);line-height:1.7}
-
-    /* Section */
-    .section{margin-bottom:36px;animation:fadeUp .5s ease both}
-    .section__header{display:flex;align-items:center;gap:10px;margin-bottom:14px;padding-bottom:10px;border-bottom:1px solid var(--border)}
-    .section__icon{font-size:1.3rem}
-    .section__title{font-size:1.1rem;font-weight:700;color:var(--accent)}
-    .section p{color:var(--muted);font-size:.97rem;line-height:1.75}
-    .section p+p{margin-top:10px}
-    .section strong{color:var(--text)}
-
-    /* Quote */
-    .quote{margin:28px 0;padding:20px 24px;background:rgba(226,197,122,.05);border-left:3px solid var(--accent);border-radius:0 12px 12px 0;font-style:italic;font-size:1.05rem;color:var(--text);line-height:1.75}
-    .quote cite{display:block;margin-top:10px;font-size:.82rem;font-style:normal;color:var(--accent)}
-
-    /* Stats */
-    .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:24px 0}
-    .stat{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:18px;text-align:center}
-    .stat__num{font-size:1.8rem;font-weight:700;color:var(--accent);line-height:1}
-    .stat__label{font-size:.78rem;color:var(--muted);margin-top:6px}
-
-    /* CTA */
-    .cta{margin-top:40px;padding:28px;background:var(--card);border:1px solid rgba(226,197,122,.2);border-radius:16px;text-align:center}
-    .cta h3{font-size:1.2rem;color:var(--accent);margin-bottom:10px}
-    .cta p{font-size:.95rem;color:var(--muted);margin-bottom:20px}
-    .cta a{display:inline-block;padding:12px 28px;background:var(--accent);color:#0b0b0b;border-radius:10px;font-weight:700;font-size:1rem;text-decoration:none;transition:opacity .2s}
-    .cta a:hover{opacity:.85;text-decoration:none}
-
-    /* Footer */
-    footer{border-top:1px solid var(--border);padding:20px 24px;display:flex;flex-direction:column;align-items:center;gap:8px;font-size:.82rem;color:var(--muted);text-align:center;}
-    footer a{color:var(--muted);text-decoration:none;transition:color .2s}
-    footer a:hover{color:var(--accent)}
-    .socialIcons{display:flex;flex-direction:row;align-items:center;justify-content:center;gap:18px;margin:4px 0;}
-    .socialIcons a{display:flex;align-items:center;justify-content:center;opacity:.65;transition:opacity .2s,transform .2s;text-decoration:none;}
-    .socialIcons a:hover{opacity:1;transform:translateY(-2px);text-decoration:none;}
-    .socialIcons svg{width:24px;height:24px;display:block;}
-    .footerLinks,.footer__links{display:flex;align-items:center;flex-wrap:wrap;justify-content:center;gap:6px 10px;}
-
-    @keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
-    @media(max-width:600px){.hero__title{font-size:1.8rem}main{padding:32px 16px 48px}.topnav{gap:12px}.stats{grid-template-columns:1fr 1fr}.footer__links{gap:10px}}
+    .stickyHeader { position: sticky; top: 0; z-index: 95; background: var(--bg, #0b0b0b); }
+    .stickyHeader .topbar { position: relative !important; }
+    .brandDot { color: var(--gold); font-weight: 700; }
+    .pageContent { font-family: ui-serif, Georgia, "Times New Roman", serif; line-height: 1.75; }
+    .pageContent h1 { font-size: 26px; margin: 6px 0 4px; letter-spacing:.2px; }
+    .pageContent h2 { font-size: 19px; margin: 24px 0 8px; }
+    .pageContent p, .pageContent li { color: var(--text); }
+    .pageContent p { margin: 0 0 12px; }
+    .pageContent a { color: var(--gold); text-decoration: underline; }
+    .pageContent ul { margin: 0 0 14px; padding-left: 20px; }
+    .pageContent li { margin: 0 0 7px; }
+    .pageLead { color: var(--muted); font-size: 15px; margin: 0 0 18px; }
+    .backLink { display:inline-block; font-size: 13px; margin-bottom: 6px; text-decoration:none; }
+    .topActions .chip { padding: 7px 12px; font-size: 12.5px; border-radius: 10px; }
   </style>
+  <!-- Google Analytics (GA4) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-FDT2GP8C8F"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-FDT2GP8C8F');
+  </script>
+  <script>
+    (function(){ try { var t = localStorage.getItem('labible:theme') === 'light' ? 'light' : 'dark'; document.documentElement.setAttribute('data-theme', t); } catch(e){} })();
+  </script>
 </head>
 <body>
 
-  <header class="topbar">
-    <a class="brand" href="/">
-      <img src="/icons/icon-512x512.png" width="28" height="28" alt="LaBible.app" style="border-radius:6px;object-fit:cover;flex-shrink:0;" />
-      <div class="brand__text">
-        <div class="brand__name">LaBible<span class="brandDot">.app</span></div>
-        <div class="brand__sub">LSG 1910</div>
+  <div class="stickyHeader">
+    <header class="topbar">
+      <a class="brand" href="/" title="Accueil">
+        <img src="/icons/icon-512x512.png" class="brandIcon" width="40" height="40" alt="LaBible.app" style="border-radius:8px;object-fit:cover;width:40px;height:40px;min-width:40px;max-width:40px;" />
+        <div class="brandText">
+          <div class="brandTitle">LaBible<span class="brandDot">.app</span></div>
+          <div class="brandSub">LSG 1910</div>
+        </div>
+      </a>
+      <div class="topActions">
+        <a class="chip" href="/" title="Lecture">📖 Lire</a>
+        <button id="btnTheme" class="iconBtn" title="Thème">🌙</button>
       </div>
-    </a>
-    <nav class="topnav">
-      <a href="/">Bible</a>
-      <a href="/a-propos.html">À propos</a>
-      <a href="/contact.html">Contact</a>
-    </nav>
-  </header>
+    </header>
+  </div>
 
-  <main>
+  <main class="container">
+    <article class="card pageContent">
+      <a class="backLink muted" href="/">← Retour à la lecture</a>
+      <h1>La Bible Louis Segond 1910</h1>
+      <p class="pageLead">Une des traductions protestantes de la Bible les plus répandues dans le monde francophone.</p>
 
-    <div class="hero">
-      <div class="hero__eyebrow">Traducteur de la Bible</div>
-      <h1 class="hero__title">Louis Segond</h1>
-      <p class="hero__desc">Théologien protestant suisse, Louis Segond a consacré sa vie à offrir au monde francophone une traduction fidèle et accessible de la Parole de Dieu. Sa version, publiée en 1910, reste aujourd'hui l'une des plus lues dans le monde.</p>
-      <span class="hero__dates">1810 — 1885</span>
-    </div>
+      <h2>Louis Segond (1810–1885)</h2>
+      <p>Louis Segond fut un pasteur et théologien protestant suisse, né à Genève. Reconnu pour sa maîtrise des langues bibliques, il fut chargé par la Compagnie des pasteurs de Genève de réaliser une nouvelle traduction française, fidèle aux textes originaux.</p>
 
-    <div class="stats">
-      <div class="stat">
-        <div class="stat__num">1910</div>
-        <div class="stat__label">Révision finale LSG</div>
+      <h2>La traduction</h2>
+      <p>Il traduisit l'Ancien Testament depuis l'hébreu et le Nouveau Testament depuis le grec. L'Ancien Testament parut en 1874, et le Nouveau Testament en 1880. Son travail se distingue par sa clarté et sa rigueur.</p>
+
+      <h2>L'édition de 1910</h2>
+      <p>La version dite « Louis Segond 1910 » est une révision publiée en 1910, après la mort de Segond. Elle s'est imposée comme une référence durable de la Bible protestante en français.</p>
+
+      <h2>Domaine public</h2>
+      <p>Le texte de la Louis Segond 1910 appartient aujourd'hui au domaine public. C'est ce qui permet à LaBible.app de le proposer intégralement, gratuitement et sans restriction.</p>
+
+      <p><a href="/">Lire la Bible Louis Segond 1910 →</a></p>
+    </article>
+
+<!-- ── FOOTER STANDARD — identique sur toutes les pages ── -->
+    <footer class="footer">
+      <div>© <span id="year"></span> · <b>LaBible.app</b> · LSG1910 - Domaine public</div>
+      <div class="socialIcons">
+        <a href="/telegram" target="_blank" rel="noopener" title="Telegram"><svg viewBox="0 0 24 24" fill="#2aabee"><path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg></a>
+        <a href="/whatsapp" target="_blank" rel="noopener" title="WhatsApp"><svg viewBox="0 0 24 24" fill="#25d366"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413"/></svg></a>
+        <a href="/facebook" target="_blank" rel="noopener" title="Facebook"><svg viewBox="0 0 24 24" fill="#1877f2"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg></a>
+        <a href="/instagram" target="_blank" rel="noopener" title="Instagram"><svg viewBox="0 0 24 24"><defs><linearGradient id="ig-grad" x1="0%" y1="100%" x2="100%" y2="0%"><stop offset="0%" stop-color="#f09433"/><stop offset="25%" stop-color="#e6683c"/><stop offset="50%" stop-color="#dc2743"/><stop offset="75%" stop-color="#cc2366"/><stop offset="100%" stop-color="#bc1888"/></linearGradient></defs><path fill="url(#ig-grad)" d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 1 0 0 12.324 6.162 6.162 0 0 0 0-12.324zM12 16a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm6.406-11.845a1.44 1.44 0 1 0 0 2.881 1.44 1.44 0 0 0 0-2.881z"/></svg></a>
+        <a href="/youtube" target="_blank" rel="noopener" title="YouTube"><svg viewBox="0 0 24 24" fill="#ff0000"><path d="M23.495 6.205a3.007 3.007 0 0 0-2.088-2.088c-1.87-.501-9.396-.501-9.396-.501s-7.507-.01-9.396.501A3.007 3.007 0 0 0 .527 6.205a31.247 31.247 0 0 0-.522 5.805 31.247 31.247 0 0 0 .522 5.783 3.007 3.007 0 0 0 2.088 2.088c1.868.502 9.396.502 9.396.502s7.506 0 9.396-.502a3.007 3.007 0 0 0 2.088-2.088 31.247 31.247 0 0 0 .5-5.783 31.247 31.247 0 0 0-.5-5.805zM9.609 15.601V8.408l6.264 3.602z"/></svg></a>
+        <a href="/pinterest" target="_blank" rel="noopener" title="Pinterest"><svg viewBox="0 0 24 24" fill="#e60023"><path d="M12 0C5.373 0 0 5.373 0 12c0 5.084 3.163 9.426 7.627 11.174-.105-.949-.2-2.405.042-3.441.218-.937 1.407-5.965 1.407-5.965s-.359-.719-.359-1.782c0-1.668.967-2.914 2.171-2.914 1.023 0 1.518.769 1.518 1.69 0 1.029-.655 2.568-.994 3.995-.283 1.194.599 2.169 1.777 2.169 2.133 0 3.772-2.249 3.772-5.495 0-2.873-2.064-4.882-5.012-4.882-3.414 0-5.418 2.561-5.418 5.207 0 1.031.397 2.138.893 2.738a.36.36 0 0 1 .083.345l-.333 1.36c-.053.22-.174.267-.402.161-1.499-.698-2.436-2.889-2.436-4.649 0-3.785 2.75-7.262 7.929-7.262 4.163 0 7.398 2.967 7.398 6.931 0 4.136-2.607 7.464-6.227 7.464-1.216 0-2.359-.632-2.75-1.378l-.748 2.853c-.271 1.043-1.002 2.35-1.492 3.146C9.57 23.812 10.763 24 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0z"/></svg></a>
+        <a href="/tiktok" target="_blank" rel="noopener" title="TikTok"><svg viewBox="0 0 24 24" fill="#ee1d52"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-2.88 2.5 2.89 2.89 0 0 1-2.89-2.89 2.89 2.89 0 0 1 2.89-2.89c.28 0 .54.04.79.1V9.01a6.33 6.33 0 0 0-.79-.05 6.34 6.34 0 0 0-6.34 6.34 6.34 6.34 0 0 0 6.34 6.34 6.34 6.34 0 0 0 6.33-6.34V8.69a8.18 8.18 0 0 0 4.78 1.52V6.75a4.85 4.85 0 0 1-1.01-.06z"/></svg></a>
+        <a href="/threads" target="_blank" rel="noopener" title="Threads"><svg viewBox="0 0 192 192" fill="#888888"><path d="M141.537 88.988a66.667 66.667 0 0 0-2.518-1.143c-1.482-27.307-16.403-42.94-41.457-43.1h-.34c-14.986 0-27.449 6.396-35.12 18.05l13.561 9.325c5.729-8.677 14.715-10.527 21.559-10.527h.229c8.323.053 14.607 2.472 18.667 7.19 2.959 3.438 4.935 8.208 5.894 14.227a107.66 107.66 0 0 0-18.194-.283c-18.175 1.022-29.853 11.389-29.105 25.773.378 7.279 4.008 13.542 10.222 17.626 5.261 3.443 12.045 5.131 19.097 4.727 9.305-.526 16.608-4.134 21.706-10.724 3.826-4.895 6.244-11.229 7.292-19.148 4.371 2.638 7.605 6.103 9.434 10.258 3.311 7.485 3.503 19.782-6.871 30.102-9.049 9.003-19.92 12.903-36.386 13.023-18.23-.132-32.006-5.987-40.933-17.401-8.326-10.655-12.628-26.126-12.786-46.01.158-19.884 4.46-35.355 12.786-46.01 8.927-11.414 22.703-17.269 40.933-17.401 18.27.133 32.2 6.013 41.414 17.479 4.505 5.637 7.898 12.716 10.096 20.963l15.931-4.249c-2.698-10.06-7.04-18.735-13.02-26.015-12.044-15.077-29.678-22.835-52.423-23.038h-.426c-22.695.203-40.154 7.986-52.083 23.12C33.522 55.19 28.534 74.23 28.343 96c.191 21.77 5.179 40.81 14.848 56.54 11.929 15.134 29.388 22.917 52.083 23.12h.426c20.391-.182 34.688-5.476 46.479-17.232 15.505-15.454 15.008-34.717 9.92-46.554-3.619-8.188-10.527-14.805-20.562-19.886z"/></svg></a>
       </div>
-      <div class="stat">
-        <div class="stat__num">31 102</div>
-        <div class="stat__label">Versets traduits</div>
+            <div class="footerLinks">
+        <a href="/a-propos.html">À propos</a>
+        <span>·</span>
+        <a href="/louis-segond.html">Louis Segond</a>
+        <span>·</span>
+        <a href="/contact.html">Contact</a>
+        <span>·</span>
+        <a href="/legal.html">Mentions légales</a>
+        <span>·</span>
+        <a href="/confidentialite.html">Confidentialité</a>
+        <span>·</span>
+        <a href="/conditions.html">Conditions</a>
+        <span>·</span>
+        <a href="/installer.html">Installer</a>
       </div>
-      <div class="stat">
-        <div class="stat__num">+100</div>
-        <div class="stat__label">Ans dans le domaine public</div>
-      </div>
-    </div>
-
-    <div class="section" style="animation-delay:.07s">
-      <div class="section__header"><span class="section__icon">✝️</span><div class="section__title">Qui était Louis Segond ?</div></div>
-      <p>Louis Segond est né le <strong>3 novembre 1810 à Orbe</strong>, dans le canton de Vaud en Suisse. Issu d'une famille protestante, il fit ses études de théologie à Genève et à Strasbourg, avant de se consacrer entièrement à l'étude des Écritures.</p>
-      <p>Pasteur, professeur et bibliste reconnu, il fut nommé professeur d'Ancien Testament à la <strong>Faculté de théologie de Genève</strong>, poste qu'il occupa pendant de nombreuses années. Sa rigueur académique et sa foi profonde en firent l'homme idéal pour entreprendre l'œuvre de sa vie : traduire la Bible en français à partir des textes originaux.</p>
-    </div>
-
-    <div class="quote">
-      « Ta parole est une lampe à mes pieds, et une lumière sur mon sentier. »
-      <cite>— Psaumes 119:105 (LSG 1910)</cite>
-    </div>
-
-    <div class="section" style="animation-delay:.14s">
-      <div class="section__header"><span class="section__icon">📜</span><div class="section__title">Une vie consacrée à la traduction</div></div>
-      <p>À une époque où les traductions françaises existantes étaient jugées soit trop archaïques, soit trop littérales, Louis Segond entreprit un travail colossal : produire une traduction <strong>fidèle aux textes hébreux et grecs originaux</strong>, tout en étant accessible au lecteur francophone.</p>
-      <p>Il travailla seul pendant de nombreuses années, consultant les meilleurs manuscrits disponibles et s'appuyant sur les avancées de la philologie biblique de son époque. Son objectif n'était pas d'adapter la Bible, mais de la faire entendre dans toute sa profondeur.</p>
-    </div>
-
-    <div class="timeline">
-      <div class="timeline-item">
-        <div class="timeline-year">1810</div>
-        <div class="timeline-title">Naissance à Orbe, Suisse</div>
-        <div class="timeline-text">Louis Segond naît dans une famille protestante du canton de Vaud. Il grandit dans la foi réformée.</div>
-      </div>
-      <div class="timeline-item" style="animation-delay:.05s">
-        <div class="timeline-year">1831–1839</div>
-        <div class="timeline-title">Études de théologie</div>
-        <div class="timeline-text">Il étudie à Genève puis à Strasbourg, se spécialisant dans les langues bibliques — hébreu, grec et araméen.</div>
-      </div>
-      <div class="timeline-item" style="animation-delay:.1s">
-        <div class="timeline-year">1855</div>
-        <div class="timeline-title">Nommé professeur à Genève</div>
-        <div class="timeline-text">Professeur d'Ancien Testament à la Faculté de théologie de Genève, il commence à travailler sur sa traduction.</div>
-      </div>
-      <div class="timeline-item" style="animation-delay:.15s">
-        <div class="timeline-year">1874</div>
-        <div class="timeline-title">Publication du Nouveau Testament</div>
-        <div class="timeline-text">Sa traduction du Nouveau Testament est publiée à Genève, saluée pour sa clarté et sa fidélité aux textes grecs.</div>
-      </div>
-      <div class="timeline-item" style="animation-delay:.2s">
-        <div class="timeline-year">1880</div>
-        <div class="timeline-title">Bible complète — première édition</div>
-        <div class="timeline-text">La Bible complète — Ancien et Nouveau Testament — est publiée. C'est l'aboutissement de plusieurs décennies de travail.</div>
-      </div>
-      <div class="timeline-item" style="animation-delay:.25s">
-        <div class="timeline-year">1885</div>
-        <div class="timeline-title">Décès à Genève</div>
-        <div class="timeline-text">Louis Segond s'éteint le 18 juin 1885 à Genève, à l'âge de 74 ans, laissant derrière lui une œuvre qui traversera les siècles.</div>
-      </div>
-      <div class="timeline-item" style="animation-delay:.3s">
-        <div class="timeline-year">1910</div>
-        <div class="timeline-title">Révision finale — la LSG 1910</div>
-        <div class="timeline-text">La Société biblique britannique et étrangère publie une révision de la traduction de Segond. Cette version, dite <strong>LSG 1910</strong>, devient la référence du protestantisme francophone.</div>
-      </div>
-    </div>
-
-    <div class="section" style="animation-delay:.21s">
-      <div class="section__header"><span class="section__icon">🌍</span><div class="section__title">Un héritage mondial</div></div>
-      <p>La traduction de Louis Segond a traversé les frontières et les siècles. Adoptée par les Églises protestantes francophones du monde entier — en France, en Suisse, en Belgique, en Afrique et au Canada — elle a accompagné des générations de croyants dans leur lecture quotidienne de la Bible.</p>
-      <p>Aujourd'hui dans le <strong>domaine public</strong>, la Bible Louis Segond 1910 est librement accessible à tous. C'est cette version que vous lisez sur <strong>LaBible.app</strong> — 31 102 versets, sans publicité, sans inscription, gratuitement.</p>
-    </div>
-
-    <div class="quote">
-      « Car c'est par la grâce que vous êtes sauvés, par le moyen de la foi. Et cela ne vient pas de vous, c'est le don de Dieu. »
-      <cite>— Éphésiens 2:8 (LSG 1910)</cite>
-    </div>
-
-    <div class="section" style="animation-delay:.28s">
-      <div class="section__header"><span class="section__icon">📖</span><div class="section__title">Pourquoi la LSG 1910 ?</div></div>
-      <p>La version 1910 se distingue par son équilibre entre <strong>fidélité au texte original</strong> et <strong>beauté de la langue française</strong>. Elle n'est ni trop littérale ni trop paraphrasée — elle cherche à rendre le sens profond des Écritures dans un français élégant et sobre.</p>
-      <p>C'est pour cette raison qu'elle reste la traduction de référence pour de nombreuses communautés protestantes et évangéliques francophones, plus de 100 ans après sa publication.</p>
-    </div>
-
-    <div class="cta">
-      <h3>Lire la Bible Louis Segond 1910</h3>
-      <p>31 102 versets disponibles gratuitement, sans publicité, sans inscription. Installez l'application sur votre téléphone et lisez la Bible même hors ligne.</p>
-      <a href="/">📖 Lire la Bible gratuitement</a>
-    </div>
-
+    </footer>
   </main>
 
-  <footer>
-    <div>© <span id="yr"></span> · <b>LaBible.app</b> · LSG1910 - Domaine public</div>
-    <div class="socialIcons">
-      <a href="https://t.me/appbible" target="_blank" rel="noopener" title="Telegram"><svg viewBox="0 0 24 24" fill="#2aabee"><path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg></a>
-      <a href="https://facebook.com/LaBibleApp" target="_blank" rel="noopener" title="Facebook"><svg viewBox="0 0 24 24" fill="#1877f2"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg></a>
-      <a href="https://instagram.com/labible.app" target="_blank" rel="noopener" title="Instagram"><svg viewBox="0 0 24 24"><defs><linearGradient id="ig-grad" x1="0%" y1="100%" x2="100%" y2="0%"><stop offset="0%" stop-color="#f09433"/><stop offset="25%" stop-color="#e6683c"/><stop offset="50%" stop-color="#dc2743"/><stop offset="75%" stop-color="#cc2366"/><stop offset="100%" stop-color="#bc1888"/></linearGradient></defs><path fill="url(#ig-grad)" d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 1 0 0 12.324 6.162 6.162 0 0 0 0-12.324zM12 16a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm6.406-11.845a1.44 1.44 0 1 0 0 2.881 1.44 1.44 0 0 0 0-2.881z"/></svg></a>
-      <a href="https://youtube.com/@LaBible-app" target="_blank" rel="noopener" title="YouTube"><svg viewBox="0 0 24 24" fill="#ff0000"><path d="M23.495 6.205a3.007 3.007 0 0 0-2.088-2.088c-1.87-.501-9.396-.501-9.396-.501s-7.507-.01-9.396.501A3.007 3.007 0 0 0 .527 6.205a31.247 31.247 0 0 0-.522 5.805 31.247 31.247 0 0 0 .522 5.783 3.007 3.007 0 0 0 2.088 2.088c1.868.502 9.396.502 9.396.502s7.506 0 9.396-.502a3.007 3.007 0 0 0 2.088-2.088 31.247 31.247 0 0 0 .5-5.783 31.247 31.247 0 0 0-.5-5.805zM9.609 15.601V8.408l6.264 3.602z"/></svg></a>
-      <a href="https://pinterest.com/labibleapp" target="_blank" rel="noopener" title="Pinterest"><svg viewBox="0 0 24 24" fill="#e60023"><path d="M12 0C5.373 0 0 5.373 0 12c0 5.084 3.163 9.426 7.627 11.174-.105-.949-.2-2.405.042-3.441.218-.937 1.407-5.965 1.407-5.965s-.359-.719-.359-1.782c0-1.668.967-2.914 2.171-2.914 1.023 0 1.518.769 1.518 1.69 0 1.029-.655 2.568-.994 3.995-.283 1.194.599 2.169 1.777 2.169 2.133 0 3.772-2.249 3.772-5.495 0-2.873-2.064-4.882-5.012-4.882-3.414 0-5.418 2.561-5.418 5.207 0 1.031.397 2.138.893 2.738a.36.36 0 0 1 .083.345l-.333 1.36c-.053.22-.174.267-.402.161-1.499-.698-2.436-2.889-2.436-4.649 0-3.785 2.75-7.262 7.929-7.262 4.163 0 7.398 2.967 7.398 6.931 0 4.136-2.607 7.464-6.227 7.464-1.216 0-2.359-.632-2.75-1.378l-.748 2.853c-.271 1.043-1.002 2.35-1.492 3.146C9.57 23.812 10.763 24 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0z"/></svg></a>
-      <a href="https://www.tiktok.com/@labible.app" target="_blank" rel="noopener" title="TikTok"><svg viewBox="0 0 24 24" fill="#ee1d52"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-2.88 2.5 2.89 2.89 0 0 1-2.89-2.89 2.89 2.89 0 0 1 2.89-2.89c.28 0 .54.04.79.1V9.01a6.33 6.33 0 0 0-.79-.05 6.34 6.34 0 0 0-6.34 6.34 6.34 6.34 0 0 0 6.34 6.34 6.34 6.34 0 0 0 6.33-6.34V8.69a8.18 8.18 0 0 0 4.78 1.52V6.75a4.85 4.85 0 0 1-1.01-.06z"/></svg></a>
-      <a href="https://threads.net/@labible.app" target="_blank" rel="noopener" title="Threads"><svg viewBox="0 0 192 192" fill="#888888"><path d="M141.537 88.988a66.667 66.667 0 0 0-2.518-1.143c-1.482-27.307-16.403-42.94-41.457-43.1h-.34c-14.986 0-27.449 6.396-35.12 18.05l13.561 9.325c5.729-8.677 14.715-10.527 21.559-10.527h.229c8.323.053 14.607 2.472 18.667 7.19 2.959 3.438 4.935 8.208 5.894 14.227a107.66 107.66 0 0 0-18.194-.283c-18.175 1.022-29.853 11.389-29.105 25.773.378 7.279 4.008 13.542 10.222 17.626 5.261 3.443 12.045 5.131 19.097 4.727 9.305-.526 16.608-4.134 21.706-10.724 3.826-4.895 6.244-11.229 7.292-19.148 4.371 2.638 7.605 6.103 9.434 10.258 3.311 7.485 3.503 19.782-6.871 30.102-9.049 9.003-19.92 12.903-36.386 13.023-18.23-.132-32.006-5.987-40.933-17.401-8.326-10.655-12.628-26.126-12.786-46.01.158-19.884 4.46-35.355 12.786-46.01 8.927-11.414 22.703-17.269 40.933-17.401 18.27.133 32.2 6.013 41.414 17.479 4.505 5.637 7.898 12.716 10.096 20.963l15.931-4.249c-2.698-10.06-7.04-18.735-13.02-26.015-12.044-15.077-29.678-22.835-52.423-23.038h-.426c-22.695.203-40.154 7.986-52.083 23.12C33.522 55.19 28.534 74.23 28.343 96c.191 21.77 5.179 40.81 14.848 56.54 11.929 15.134 29.388 22.917 52.083 23.12h.426c20.391-.182 34.688-5.476 46.479-17.232 15.505-15.454 15.008-34.717 9.92-46.554-3.619-8.188-10.527-14.805-20.562-19.886z"/></svg></a>
-    </div>
-    <div class="footerLinks">
-      <a href="/a-propos.html">À propos</a>
-      <span>·</span>
-      <a href="/louis-segond.html">Louis Segond</a>
-      <span>·</span>
-      <a href="/contact.html">Contact</a>
-      <span>·</span>
-      <a href="/legal.html">Légal</a>
-    </div>
-  </footer>
-  <script>document.getElementById('yr').textContent = new Date().getFullYear();</script>
-
-  <script type="application/ld+json">
-  {
-    "@context": "https://schema.org",
-    "@type": "Article",
-    "headline": "Louis Segond — Le traducteur de la Bible LSG 1910",
-    "description": "Découvrez la vie de Louis Segond (1810–1885), théologien protestant suisse qui traduisit la Bible en français. Histoire de la traduction LSG 1910.",
-    "url": "https://labible.app/louis-segond.html",
-    "publisher": {
-      "@type": "Organization",
-      "name": "LaBible.app",
-      "url": "https://labible.app",
-      "logo": "https://labible.app/icons/icon-512x512.png"
-    },
-    "about": {
-      "@type": "Person",
-      "name": "Louis Segond",
-      "birthDate": "1810-11-03",
-      "deathDate": "1885-06-18",
-      "birthPlace": "Orbe, Suisse",
-      "jobTitle": "Théologien, traducteur de la Bible",
-      "nationality": "Suisse"
-    },
-    "inLanguage": "fr"
-  }
+  <script>
+    (function(){
+      var y = document.getElementById('year'); if (y) y.textContent = new Date().getFullYear();
+      var btn = document.getElementById('btnTheme');
+      function sync(){ var t = document.documentElement.getAttribute('data-theme') || 'dark'; if (btn) btn.textContent = t === 'light' ? '☀️' : '🌙'; }
+      sync();
+      if (btn) btn.addEventListener('click', function(){
+        var cur = document.documentElement.getAttribute('data-theme') || 'dark';
+        var nxt = cur === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', nxt);
+        try { localStorage.setItem('labible:theme', nxt); } catch(e){}
+        sync();
+      });
+    })();
   </script>
-
+  <script>
+    if ('serviceWorker' in navigator) { window.addEventListener('load', function () { navigator.serviceWorker.register('/sw.js').catch(function(){}); }); }
+  </script>
 </body>
 </html>

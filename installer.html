@@ -1,109 +1,34 @@
 <!doctype html>
 <html lang="fr">
 <head>
- 
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
-  <title>LaBible.app — Lire la Bible Louis Segond 1910 gratuitement en ligne</title>
-  <meta name="description" content="Lisez la Bible Louis Segond 1910 gratuitement en ligne. 31 102 versets, recherche instantanée par mot-clé ou référence, plan de lecture 365 jours, verset du jour. Sans publicité, sans inscription." />
-  <meta name="keywords" content="Bible Louis Segond 1910, LSG 1910, lire la Bible en ligne, Bible gratuite, verset du jour, plan de lecture Bible 365 jours, Bible française, Bible protestante, Jean 3 16, Psaume 23, Bible en ligne" />
-  <meta name="author" content="LaBible.app" />
-  <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
-  <link rel="canonical" href="https://labible.app/" />
-  <link rel="alternate" hreflang="fr" href="https://labible.app/" />
-  <link rel="alternate" hreflang="x-default" href="https://labible.app/" />
-
-  <!-- ── Preconnect (améliore le temps de chargement) ── -->
-  <link rel="preconnect" href="https://telegram.org" />
-  <link rel="dns-prefetch" href="https://telegram.org" />
-
-  <!-- Open Graph -->
-  <meta property="og:title" content="LaBible.app — Bible Louis Segond 1910 gratuite en ligne" />
-  <meta property="og:description" content="Lisez la Bible Louis Segond 1910 gratuitement. 31 102 versets, recherche instantanée, plan 365 jours, verset du jour. Sans publicité." />
-  <meta property="og:type" content="website" />
-  <meta property="og:url" content="https://labible.app/" />
-  <meta property="og:image" content="https://labible.app/icons/icon-512x512.png" />
-  <meta property="og:image:width" content="512" />
-  <meta property="og:image:height" content="512" />
-  <meta property="og:image:alt" content="LaBible.app — Bible Louis Segond 1910" />
-  <meta property="og:locale" content="fr_FR" />
-  <meta property="og:site_name" content="LaBible.app" />
-
-  <!-- Twitter — summary (image carrée 512x512) -->
-  <meta name="twitter:card" content="summary" />
-  <meta name="twitter:site" content="@appbible" />
-  <meta name="twitter:title" content="LaBible.app — Bible Louis Segond 1910 gratuite" />
-  <meta name="twitter:description" content="Lisez la Bible Louis Segond 1910 gratuitement. 31 102 versets, recherche, plan 365 jours. Sans pub." />
-  <meta name="twitter:image" content="https://labible.app/icons/icon-512x512.png" />
-  <meta name="twitter:image:alt" content="LaBible.app" />
-
+  <title>Installer — LaBible.app</title>
+  <meta name="description" content="Installer LaBible.app sur Android, iPhone ou ordinateur : un accès rapide, plein écran et hors ligne." />
+  <meta name="robots" content="index, follow" />
+  <link rel="canonical" href="https://labible.app/installer.html" />
   <meta name="theme-color" content="#0b0b0b" />
   <link rel="manifest" href="/manifest.webmanifest">
   <link rel="icon" href="/icons/icon-192x192.png">
   <link rel="apple-touch-icon" href="/icons/icon-192x192.png">
   <link rel="icon" href="/favicon.ico" sizes="any">
-  <link rel="preload" href="/icons/icon-512x512.png" as="image" />
   <link rel="stylesheet" href="/styles.css?v=4" />
-
   <style>
-    /* ── stickyHeader — contient topbar + recherche + contrôles ── */
-    .stickyHeader {
-      position: sticky;
-      top: 0;
-      z-index: 95;
-      background: var(--bg, #0b0b0b);
-    }
-    /* topbar dans stickyHeader n'a pas besoin d'être sticky */
-    .stickyHeader .topbar {
-      position: relative !important;
-    }
-    .globalSearch {
-      padding: 8px 16px 6px;
-      background: var(--bg, #0b0b0b);
-      border-bottom: 1px solid color-mix(in srgb, var(--text) 8%, transparent);
-    }
-    .globalSearchInner { position: relative; display: flex; gap: 8px; align-items: center; }
-    .globalSearchInner .gsIcon { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); font-size: 14px; opacity: .35; pointer-events: none; }
-    #globalSearchInput { flex: 1; padding: 9px 36px; background: color-mix(in srgb, var(--text) 6%, transparent); border: 1px solid color-mix(in srgb, var(--gold) 30%, transparent); border-radius: 10px; color: var(--text); font-size: 13px; font-family: inherit; outline: none; transition: border-color .2s; }
-    #globalSearchInput:focus { border-color: color-mix(in srgb, var(--gold) 55%, transparent); }
-    #globalSearchInput::placeholder { color: var(--muted2); }
-    #globalSearchClear { position: absolute; right: 90px; top: 50%; transform: translateY(-50%); background: color-mix(in srgb, var(--text) 10%, transparent); border: none; color: var(--muted2); border-radius: 50%; width: 20px; height: 20px; font-size: 10px; cursor: pointer; display: none; align-items: center; justify-content: center; }
-    #globalSearchBtn { padding: 9px 16px; background: var(--accent, #c9a640); color: var(--accentText, #0b0b0b); border: none; border-radius: 10px; font-size: 13px; font-weight: 700; font-family: inherit; cursor: pointer; white-space: nowrap; flex-shrink: 0; }
-
-    #globalResults { display: none; padding: 12px 16px; background: var(--bg, #0b0b0b); border-bottom: 1px solid color-mix(in srgb, var(--text) 8%, transparent); max-height: 55vh; overflow-y: auto; }
-    #globalResults.active { display: block; }
-    .gResultsMeta { font-size: 10px; color: var(--muted2); letter-spacing: .3em; margin-bottom: 10px; text-transform: uppercase; }
-    .gResultItem { border-radius: 10px; border: 1px solid color-mix(in srgb, var(--text) 8%, transparent); background: color-mix(in srgb, var(--text) 3%, transparent); margin-bottom: 7px; overflow: hidden; cursor: pointer; transition: border-color .2s, background .2s; }
-    .gResultItem:hover { border-color: color-mix(in srgb, var(--gold) 35%, transparent); }
-    .gResultItem.open { border-color: color-mix(in srgb, var(--gold) 45%, transparent); background: color-mix(in srgb, var(--gold) 8%, transparent); }
-    .gResultHead { padding: 11px 14px; display: flex; justify-content: space-between; align-items: center; }
-    .gResultRef { font-size: 13px; color: var(--gold); font-weight: 700; }
-    .gResultArrow { color: color-mix(in srgb, var(--gold) 60%, transparent); font-size: 14px; transition: transform .2s; }
-    .gResultBody { display: none; padding: 0 14px 13px; font-size: 14px; font-style: italic; line-height: 1.7; color: var(--text); }
-    .gResultItem.open .gResultBody { display: block; }
-    .gResultActions { display: flex; gap: 8px; margin-top: 10px; }
-    .gResultActions button { padding: 5px 12px; border-radius: 8px; border: 1px solid color-mix(in srgb, var(--text) 12%, transparent); background: color-mix(in srgb, var(--text) 6%, transparent); color: var(--muted); font-size: 11px; font-family: inherit; cursor: pointer; }
-
-    #readControls { background: var(--bg, #0b0b0b); padding: 6px 14px 4px; border-bottom: 1px solid rgba(226,197,122,0.12); }
-    #readControls .controls { margin: 0; gap: 8px; }
-    #readControls .controls .field span { font-size: 11px; }
-    #readControls select { padding: 6px 10px; font-size: 13px; }
-    #readControls .btn { padding: 6px 12px; font-size: 12px; }
-
-    .controls .field { flex: 1; min-width: 100px !important; }
-    .controls .field:first-child { flex: 2; }
-    .controls .navBtns { width: 100%; margin-left: 0; }
-    .verse { cursor: pointer; border-radius: 8px; padding: 4px 6px; margin: 0 -6px; transition: background 0.15s; }
-    .verse:hover { background: rgba(226, 197, 122, 0.05); }
-    .verse.selected { background: rgba(226, 197, 122, 0.09); outline: 1px solid rgba(226, 197, 122, 0.2); }
-    .hl { background: rgba(226, 197, 122, 0.3); border-radius: 3px; padding: 0 2px; }
+    .stickyHeader { position: sticky; top: 0; z-index: 95; background: var(--bg, #0b0b0b); }
+    .stickyHeader .topbar { position: relative !important; }
+    .brandDot { color: var(--gold); font-weight: 700; }
+    .pageContent { font-family: ui-serif, Georgia, "Times New Roman", serif; line-height: 1.75; }
+    .pageContent h1 { font-size: 26px; margin: 6px 0 4px; letter-spacing:.2px; }
+    .pageContent h2 { font-size: 19px; margin: 24px 0 8px; }
+    .pageContent p, .pageContent li { color: var(--text); }
+    .pageContent p { margin: 0 0 12px; }
+    .pageContent a { color: var(--gold); text-decoration: underline; }
+    .pageContent ul { margin: 0 0 14px; padding-left: 20px; }
+    .pageContent li { margin: 0 0 7px; }
+    .pageLead { color: var(--muted); font-size: 15px; margin: 0 0 18px; }
+    .backLink { display:inline-block; font-size: 13px; margin-bottom: 6px; text-decoration:none; }
+    .topActions .chip { padding: 7px 12px; font-size: 12.5px; border-radius: 10px; }
   </style>
-
-  <script src="https://telegram.org/js/telegram-web-app.js" defer></script>
-
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7582269047785688"
-     crossorigin="anonymous"></script>
-
   <!-- Google Analytics (GA4) -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-FDT2GP8C8F"></script>
   <script>
@@ -112,155 +37,58 @@
     gtag('js', new Date());
     gtag('config', 'G-FDT2GP8C8F');
   </script>
-
+  <script>
+    (function(){ try { var t = localStorage.getItem('labible:theme') === 'light' ? 'light' : 'dark'; document.documentElement.setAttribute('data-theme', t); } catch(e){} })();
+  </script>
 </head>
 <body>
 
   <div class="stickyHeader">
-  <header class="topbar">
-    <div class="brand" id="btnHome" title="Accueil" role="button" tabindex="0">
-      <img src="/icons/icon-512x512.png" class="brandIcon" width="30" height="30" alt="LaBible.app" style="border-radius:6px;object-fit:cover;" fetchpriority="high" />
-      <div class="brandText">
-        <div class="brandTitle">LaBible<span class="brandDot">.app</span></div>
-        <div class="brandSub">LSG 1910</div>
+    <header class="topbar">
+      <a class="brand" href="/" title="Accueil">
+        <img src="/icons/icon-512x512.png" class="brandIcon" width="40" height="40" alt="LaBible.app" style="border-radius:8px;object-fit:cover;width:40px;height:40px;min-width:40px;max-width:40px;" />
+        <div class="brandText">
+          <div class="brandTitle">LaBible<span class="brandDot">.app</span></div>
+          <div class="brandSub">LSG 1910</div>
+        </div>
+      </a>
+      <div class="topActions">
+        <a class="chip" href="/" title="Lecture">📖 Lire</a>
+        <button id="btnTheme" class="iconBtn" title="Thème">🌙</button>
       </div>
-    </div>
-    <div class="topActions">
-      <button id="btnFontMinus" class="iconBtn" title="Diminuer la police" style="font-size:11px;font-weight:900;letter-spacing:-0.5px;min-width:36px;">A−</button>
-      <button id="btnFontPlus"  class="iconBtn" title="Augmenter la police" style="font-size:11px;font-weight:900;letter-spacing:-0.5px;min-width:36px;">A+</button>
-      <div class="topDivider"></div>
-      <button id="btnTheme" class="iconBtn" title="Thème">🌙</button>
-      <div class="topDivider"></div>
-      <button id="btnInstall" class="chip chipGold" hidden>
-        <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 12l-5-5 1.4-1.4L7 9.2V2h2v7.2l2.6-3.6L13 7l-5 5zM2 14h12v2H2z"/></svg>
-        Installer
-      </button>
-    </div>
-  </header>
-
-  <div class="globalSearch">
-    <div class="globalSearchInner">
-      <span class="gsIcon">🔍</span>
-      <input id="globalSearchInput" type="text" placeholder="Rechercher un verset, mot clé… (ex : Jean 3:16)" autocomplete="off" />
-      <button id="globalSearchClear">✕</button>
-      <button id="globalSearchBtn">Rechercher</button>
-    </div>
+    </header>
   </div>
-  <div class="globalSearchSpacer"></div>
-
-  <div id="globalResults">
-    <div class="gResultsMeta" id="gResultsMeta"></div>
-    <div id="gResultsList"></div>
-  </div>
-
-  <div id="readControls">
-    <div class="controls">
-      <label class="field"><span>Livre</span><select id="bookSelect"></select></label>
-      <label class="field"><span>Chapitre</span><select id="chapterSelect"></select></label>
-      <div class="navBtns">
-        <button class="btn" id="btnPrev">← Précédent</button>
-        <button class="btn" id="btnNext">Suivant →</button>
-      </div>
-    </div>
-  </div>
-  </div><!-- /stickyHeader -->
 
   <main class="container">
+    <article class="card pageContent">
+      <a class="backLink muted" href="/">← Retour à la lecture</a>
+      <h1>Installer LaBible.app</h1>
+      <p class="pageLead">Installez l'application pour un accès rapide, en plein écran et même hors ligne — sans passer par un magasin d'applications.</p>
 
-    <nav class="tabs" aria-label="Navigation">
-      <button class="tab active" data-view="read">Lecture</button>
-      <button class="tab" data-view="plan">Plan</button>
-      <button class="tab" data-view="library">Bibliothèque</button>
-    </nav>
+      <h2>Sur Android (Chrome)</h2>
+      <ul>
+        <li>Ouvrez labible.app dans Chrome.</li>
+        <li>Touchez le menu ⋮ en haut à droite.</li>
+        <li>Choisissez « Installer l'application » ou « Ajouter à l'écran d'accueil ».</li>
+      </ul>
 
-    <!-- LECTURE -->
-    <section class="view active" id="view-read">
+      <h2>Sur iPhone et iPad (Safari)</h2>
+      <ul>
+        <li>Ouvrez labible.app dans Safari.</li>
+        <li>Touchez le bouton Partager (le carré avec une flèche).</li>
+        <li>Choisissez « Sur l'écran d'accueil ».</li>
+      </ul>
 
-      <div class="card">
-        <div class="cardHeader">
-          <div><h2>Lecture</h2></div>
-          <div class="row gap8">
-            <button class="chip" id="btnVDD">✨ Verset du jour</button>
-          </div>
-        </div>
-        <div class="page" id="readerPage" aria-live="polite">
-          <div class="pageHeader" id="pageHeader"></div>
-          <div class="verses" id="verses"></div>
-        </div>
+      <h2>Sur ordinateur (Chrome ou Edge)</h2>
+      <ul>
+        <li>Ouvrez labible.app.</li>
+        <li>Cliquez sur l'icône d'installation dans la barre d'adresse, puis sur « Installer ».</li>
+      </ul>
 
-      </div>
-    </section>
+      <p><a href="/">Revenir à la lecture →</a></p>
+    </article>
 
-    <!-- PLAN -->
-    <section class="view" id="view-plan">
-      <div class="card">
-        <div class="cardHeader">
-          <div>
-            <h2>Plan de lecture</h2>
-            <div class="muted">365 jours — progression enregistrée sur l'appareil.</div>
-          </div>
-          <div class="row gap8">
-            <button class="chip" id="btnResetPlan">↺ Reset</button>
-            <button class="chip" id="btnJumpDay">📌 Jour…</button>
-          </div>
-        </div>
-        <div class="planGrid">
-          <div class="planBox">
-            <div class="planTitle">Aujourd'hui</div>
-            <div class="planToday" id="planTodayText">—</div>
-            <div class="planActions">
-              <button class="btnPrimary" id="btnOpenToday">📖 Ouvrir</button>
-              <button class="btn" id="btnMarkDone">✅ Marquer lu</button>
-            </div>
-            <div class="muted small" id="planTodayMeta"></div>
-          </div>
-          <div class="planBox">
-            <div class="planTitle">Progression</div>
-            <div class="progressWrap">
-              <div class="progressBar"><div class="progressFill" id="progressFill"></div></div>
-              <div class="progressText" id="progressText">0%</div>
-            </div>
-            <div class="muted small">Conseil: utilise "Index" pour accélérer la recherche.</div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- BIBLIOTHÈQUE -->
-    <section class="view" id="view-library">
-      <div class="card">
-        <div class="cardHeader">
-          <div>
-            <h2>Bibliothèque</h2>
-            <div class="muted">Favoris + historique.</div>
-          </div>
-          <div class="row gap8">
-            <button class="chip" id="btnClearFav">🧹 Favoris</button>
-            <button class="chip" id="btnClearHistory">🧹 Historique</button>
-          </div>
-        </div>
-        <div class="libraryGrid">
-          <div class="libBox">
-            <div class="planTitle">✨ Verset du jour</div>
-            <div class="vdd" id="vddBox">—</div>
-            <div class="row gap8 wrap">
-              <button class="btn" id="btnOpenVDD">📖 Ouvrir</button>
-              <button class="btn" id="btnCopyVDD">📎 Copier</button>
-            </div>
-          </div>
-          <div class="libBox">
-            <div class="planTitle">🔖 Favoris</div>
-            <div class="list" id="favList"></div>
-          </div>
-          <div class="libBox">
-            <div class="planTitle">🕘 Historique</div>
-            <div class="list" id="historyList"></div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- ── FOOTER STANDARD — identique sur toutes les pages ── -->
+<!-- ── FOOTER STANDARD — identique sur toutes les pages ── -->
     <footer class="footer">
       <div>© <span id="year"></span> · <b>LaBible.app</b> · LSG1910 - Domaine public</div>
       <div class="socialIcons">
@@ -273,183 +101,41 @@
         <a href="/tiktok" target="_blank" rel="noopener" title="TikTok"><svg viewBox="0 0 24 24" fill="#ee1d52"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-2.88 2.5 2.89 2.89 0 0 1-2.89-2.89 2.89 2.89 0 0 1 2.89-2.89c.28 0 .54.04.79.1V9.01a6.33 6.33 0 0 0-.79-.05 6.34 6.34 0 0 0-6.34 6.34 6.34 6.34 0 0 0 6.34 6.34 6.34 6.34 0 0 0 6.33-6.34V8.69a8.18 8.18 0 0 0 4.78 1.52V6.75a4.85 4.85 0 0 1-1.01-.06z"/></svg></a>
         <a href="/threads" target="_blank" rel="noopener" title="Threads"><svg viewBox="0 0 192 192" fill="#888888"><path d="M141.537 88.988a66.667 66.667 0 0 0-2.518-1.143c-1.482-27.307-16.403-42.94-41.457-43.1h-.34c-14.986 0-27.449 6.396-35.12 18.05l13.561 9.325c5.729-8.677 14.715-10.527 21.559-10.527h.229c8.323.053 14.607 2.472 18.667 7.19 2.959 3.438 4.935 8.208 5.894 14.227a107.66 107.66 0 0 0-18.194-.283c-18.175 1.022-29.853 11.389-29.105 25.773.378 7.279 4.008 13.542 10.222 17.626 5.261 3.443 12.045 5.131 19.097 4.727 9.305-.526 16.608-4.134 21.706-10.724 3.826-4.895 6.244-11.229 7.292-19.148 4.371 2.638 7.605 6.103 9.434 10.258 3.311 7.485 3.503 19.782-6.871 30.102-9.049 9.003-19.92 12.903-36.386 13.023-18.23-.132-32.006-5.987-40.933-17.401-8.326-10.655-12.628-26.126-12.786-46.01.158-19.884 4.46-35.355 12.786-46.01 8.927-11.414 22.703-17.269 40.933-17.401 18.27.133 32.2 6.013 41.414 17.479 4.505 5.637 7.898 12.716 10.096 20.963l15.931-4.249c-2.698-10.06-7.04-18.735-13.02-26.015-12.044-15.077-29.678-22.835-52.423-23.038h-.426c-22.695.203-40.154 7.986-52.083 23.12C33.522 55.19 28.534 74.23 28.343 96c.191 21.77 5.179 40.81 14.848 56.54 11.929 15.134 29.388 22.917 52.083 23.12h.426c20.391-.182 34.688-5.476 46.479-17.232 15.505-15.454 15.008-34.717 9.92-46.554-3.619-8.188-10.527-14.805-20.562-19.886z"/></svg></a>
       </div>
-      <div class="footerLinks">
+            <div class="footerLinks">
         <a href="/a-propos.html">À propos</a>
         <span>·</span>
         <a href="/louis-segond.html">Louis Segond</a>
         <span>·</span>
         <a href="/contact.html">Contact</a>
         <span>·</span>
-        <a href="/legal.html">Légal</a>
+        <a href="/legal.html">Mentions légales</a>
+        <span>·</span>
+        <a href="/confidentialite.html">Confidentialité</a>
+        <span>·</span>
+        <a href="/conditions.html">Conditions</a>
         <span>·</span>
         <a href="/installer.html">Installer</a>
       </div>
     </footer>
   </main>
 
-  <div class="toast" id="toast" role="status" aria-live="polite"></div>
-
-  <script src="/app.v2.js"></script>
-
   <script>
-  (function () {
-    var input   = document.getElementById('globalSearchInput');
-    var btn     = document.getElementById('globalSearchBtn');
-    var clearBtn= document.getElementById('globalSearchClear');
-    var resultsBox = document.getElementById('globalResults');
-    var resultsMeta= document.getElementById('gResultsMeta');
-    var resultsList= document.getElementById('gResultsList');
-
-    function showClear(val) { clearBtn.style.display = val ? 'flex' : 'none'; }
-    input.addEventListener('input', function () { showClear(input.value); if (!input.value) closeResults(); });
-    input.addEventListener('keydown', function (e) { if (e.key === 'Enter') doSearch(); });
-    clearBtn.addEventListener('click', function () { input.value = ''; showClear(false); closeResults(); input.focus(); });
-    btn.addEventListener('click', doSearch);
-
-    function closeResults() { resultsBox.classList.remove('active'); resultsList.innerHTML = ''; }
-
-    function doSearch() {
-      var q = input.value.trim();
-      if (!q) return;
-      if (typeof window.appSearch !== 'function') return;
-      var hits = window.appSearch(q);
-      if (hits === null) {
-        resultsMeta.textContent = '⏳ Chargement… réessaie dans un instant.';
-        resultsBox.classList.add('active');
-        resultsList.innerHTML = '';
-        setTimeout(function () { doSearch(); }, 1500);
-        return;
-      }
-      renderResults(q, hits);
-    }
-
-    function renderResults(q, hits) {
-      resultsList.innerHTML = '';
-      if (!hits.length) { resultsMeta.textContent = 'Aucun résultat pour « ' + q + ' »'; resultsBox.classList.add('active'); return; }
-      resultsMeta.textContent = '✦ ' + hits.length + ' résultat' + (hits.length > 1 ? 's' : '') + ' — « ' + q.toUpperCase() + ' »';
-      hits.slice(0, 20).forEach(function (hit) {
-        var el = document.createElement('div');
-        el.className = 'gResultItem';
-        var bodyHtml = hit.textHtml ? '« ' + hit.textHtml + ' »' : '« ' + hit.text + ' »';
-        el.innerHTML =
-          '<div class="gResultHead"><span class="gResultRef">' + hit.ref + '</span><span class="gResultArrow">›</span></div>' +
-          '<div class="gResultBody">' + bodyHtml + '<div class="gResultActions"><button class="btnOpen">📖 Ouvrir</button><button class="btnCopy">📎 Copier</button></div></div>';
-        el.querySelector('.gResultHead').addEventListener('click', function () { el.classList.toggle('open'); });
-        el.querySelector('.btnOpen').addEventListener('click', function (e) {
-          e.stopPropagation();
-          if (typeof window.appGoTo === 'function') { window.appGoTo(hit.ref); closeResults(); input.value = ''; showClear(false); }
-        });
-        el.querySelector('.btnCopy').addEventListener('click', function (e) {
-          e.stopPropagation();
-          navigator.clipboard && navigator.clipboard.writeText('« ' + hit.text + ' »\n— ' + hit.ref + ' (LSG 1910)\n📖 https://labible.app');
-        });
-        resultsList.appendChild(el);
+    (function(){
+      var y = document.getElementById('year'); if (y) y.textContent = new Date().getFullYear();
+      var btn = document.getElementById('btnTheme');
+      function sync(){ var t = document.documentElement.getAttribute('data-theme') || 'dark'; if (btn) btn.textContent = t === 'light' ? '☀️' : '🌙'; }
+      sync();
+      if (btn) btn.addEventListener('click', function(){
+        var cur = document.documentElement.getAttribute('data-theme') || 'dark';
+        var nxt = cur === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', nxt);
+        try { localStorage.setItem('labible:theme', nxt); } catch(e){}
+        sync();
       });
-      resultsBox.classList.add('active');
-    }
-  })();
-  </script>
-
-  <!-- ── Schema.org JSON-LD ── -->
-  <script type="application/ld+json">
-  [
-    {
-      "@context": "https://schema.org",
-      "@type": "WebSite",
-      "name": "LaBible.app",
-      "url": "https://labible.app/",
-      "description": "Lisez toute la Bible Louis Segond 1910 gratuitement en ligne.",
-      "inLanguage": "fr",
-      "potentialAction": {
-        "@type": "SearchAction",
-        "target": "https://labible.app/?q={search_term_string}",
-        "query-input": "required name=search_term_string"
-      }
-    },
-    {
-      "@context": "https://schema.org",
-      "@type": "WebApplication",
-      "name": "LaBible.app",
-      "url": "https://labible.app/",
-      "description": "Application web progressive pour lire la Bible Louis Segond 1910 gratuitement. 31 102 versets, recherche instantanée, plan de lecture 365 jours, verset du jour. Sans publicité, sans inscription.",
-      "applicationCategory": "ReferenceApplication",
-      "operatingSystem": "All",
-      "inLanguage": "fr",
-      "isAccessibleForFree": true,
-      "offers": {
-        "@type": "Offer",
-        "price": "0",
-        "priceCurrency": "EUR"
-      }
-    },
-    {
-      "@context": "https://schema.org",
-      "@type": "Organization",
-      "name": "LaBible.app",
-      "url": "https://labible.app/",
-      "logo": "https://labible.app/icons/icon-512x512.png",
-      "sameAs": [
-        "https://t.me/appbible",
-        "https://facebook.com/LaBibleApp",
-        "https://instagram.com/labible.app",
-        "https://youtube.com/@LaBible-app",
-        "https://www.tiktok.com/@labible.app",
-        "https://threads.net/@labible.app",
-        "https://pinterest.com/labibleapp"
-      ]
-    }
-  ]
-  </script>
-
-  <script>
-    (function () {
-      var tg = window.Telegram && window.Telegram.WebApp;
-      if (!tg || !tg.initData) return;
-      tg.ready();
-      tg.expand();
-      var p = tg.themeParams || {};
-      var r = document.documentElement;
-      if (p.bg_color)            r.style.setProperty('--bg',          p.bg_color);
-      if (p.secondary_bg_color)  r.style.setProperty('--card',        p.secondary_bg_color);
-      if (p.text_color)          r.style.setProperty('--text',         p.text_color);
-      if (p.hint_color)          r.style.setProperty('--muted',        p.hint_color);
-      if (p.button_color)        r.style.setProperty('--accent',       p.button_color);
-      if (p.button_text_color)   r.style.setProperty('--accentText',   p.button_text_color);
-      var tgChip = document.querySelector('a.chip.telegram');
-      if (tgChip) tgChip.style.display = 'none';
-      var installBtn = document.getElementById('btnInstall');
-      if (installBtn) installBtn.hidden = true;
-      function updateBackButton() {
-        var activeTab = document.querySelector('.tab.active');
-        if (activeTab && activeTab.dataset.view === 'read') { tg.BackButton.hide(); } else { tg.BackButton.show(); }
-      }
-      tg.BackButton.onClick(function () {
-        var activeTab = document.querySelector('.tab.active');
-        if (activeTab && activeTab.dataset.view === 'read') { tg.close(); } else { var readTab = document.querySelector('[data-view="read"]'); if (readTab) readTab.click(); }
-      });
-      document.querySelectorAll('.tab').forEach(function (tab) { tab.addEventListener('click', function () { setTimeout(updateBackButton, 50); }); });
-      updateBackButton();
     })();
   </script>
-
   <script>
-    if ('serviceWorker' in navigator) {
-      window.addEventListener('load', function () {
-        navigator.serviceWorker.register('/sw.js').then(function (reg) {
-          console.log('[SW] Enregistré:', reg.scope);
-          reg.addEventListener('updatefound', function () {
-            const newWorker = reg.installing;
-            newWorker.addEventListener('statechange', function () {
-              if (newWorker.state === 'activated' && navigator.serviceWorker.controller) {
-                console.log('[SW] Nouvelle version active — rechargement');
-                window.location.reload();
-              }
-            });
-          });
-        }).catch(function (err) { console.warn('[SW] Erreur d\'enregistrement:', err); });
-      });
-    }
+    if ('serviceWorker' in navigator) { window.addEventListener('load', function () { navigator.serviceWorker.register('/sw.js').catch(function(){}); }); }
   </script>
-
 </body>
 </html>

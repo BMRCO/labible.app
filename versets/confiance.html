@@ -51,23 +51,10 @@
     (function(){ try { var t = localStorage.getItem('labible:theme') === 'light' ? 'light' : 'dark'; document.documentElement.setAttribute('data-theme', t); } catch(e){} })();
   </script>
   <script src="/footer.js" defer></script>
+  <script src="/header.js" defer></script>
 </head>
 <body>
-  <div class="stickyHeader">
-    <header class="topbar">
-      <a class="brand" href="/" title="Accueil">
-        <img src="/icons/icon-512x512.png" class="brandIcon" width="40" height="40" alt="LaBible.app" style="border-radius:8px;object-fit:cover;width:40px;height:40px;min-width:40px;max-width:40px;" />
-        <div class="brandText">
-          <div class="brandTitle">LaBible<span class="brandDot">.app</span></div>
-          <div class="brandSub">LSG 1910</div>
-        </div>
-      </a>
-      <div class="topActions">
-        <a class="chip" href="/" title="Lecture">📖 Lire</a>
-        <button id="btnTheme" class="iconBtn" title="Thème">🌙</button>
-      </div>
-    </header>
-  </div>
+  <div id="lb-topbar"></div>
   <main class="container">
     <article class="card pageContent">
       <a class="backLink muted" href="/versets/">← Tous les thèmes</a>

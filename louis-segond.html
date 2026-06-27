@@ -7,6 +7,12 @@
   <meta name="description" content="Qui était Louis Segond ? Histoire de la traduction de la Bible Louis Segond 1910, aujourd'hui dans le domaine public." />
   <meta name="robots" content="index, follow" />
   <link rel="canonical" href="https://labible.app/louis-segond.html" />
+  <meta property="og:title" content="Louis Segond — LaBible.app" />
+  <meta property="og:description" content="Qui était Louis Segond ? Histoire de la Bible Louis Segond 1910, dans le domaine public." />
+  <meta property="og:type" content="article" />
+  <meta property="og:url" content="https://labible.app/louis-segond.html" />
+  <meta property="og:image" content="https://labible.app/icons/icon-512x512.png" />
+  <meta property="og:locale" content="fr_FR" />
   <meta name="theme-color" content="#0b0b0b" />
   <link rel="manifest" href="/manifest.webmanifest">
   <link rel="icon" href="/icons/icon-192x192.png">
@@ -17,17 +23,31 @@
     .stickyHeader { position: sticky; top: 0; z-index: 95; background: var(--bg, #0b0b0b); }
     .stickyHeader .topbar { position: relative !important; }
     .brandDot { color: var(--gold); font-weight: 700; }
-    .pageContent { font-family: ui-serif, Georgia, "Times New Roman", serif; line-height: 1.75; }
-    .pageContent h1 { font-size: 26px; margin: 6px 0 4px; letter-spacing:.2px; }
-    .pageContent h2 { font-size: 19px; margin: 24px 0 8px; }
-    .pageContent p, .pageContent li { color: var(--text); }
-    .pageContent p { margin: 0 0 12px; }
-    .pageContent a { color: var(--gold); text-decoration: underline; }
-    .pageContent ul { margin: 0 0 14px; padding-left: 20px; }
-    .pageContent li { margin: 0 0 7px; }
-    .pageLead { color: var(--muted); font-size: 15px; margin: 0 0 18px; }
-    .backLink { display:inline-block; font-size: 13px; margin-bottom: 6px; text-decoration:none; }
     .topActions .chip { padding: 7px 12px; font-size: 12.5px; border-radius: 10px; }
+
+    .pageContent { font-family: ui-serif, Georgia, "Times New Roman", serif; line-height: 1.75; }
+    .backLink { display:inline-block; font-size: 13px; margin-bottom: 14px; text-decoration:none; }
+
+    .kicker { font-family: ui-sans-serif, system-ui, sans-serif; text-transform: uppercase; letter-spacing: .22em; font-size: 12px; font-weight: 700; color: var(--gold); margin: 0 0 6px; }
+    .hero h1 { font-size: 40px; line-height: 1.08; margin: 0 0 14px; letter-spacing: .3px; }
+    .heroLead { color: var(--muted); font-size: 17px; line-height: 1.6; margin: 0 0 18px; max-width: 60ch; }
+    .dateBadge { display:inline-block; padding: 9px 18px; border-radius: 999px; border: 1px solid color-mix(in srgb, var(--gold) 45%, transparent); background: color-mix(in srgb, var(--gold) 9%, transparent); color: var(--gold); font-weight: 700; font-size: 15px; }
+
+    .statGrid { display:grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 26px 0 6px; }
+    .statCard { padding: 22px 18px; border-radius: 16px; border: 1px solid color-mix(in srgb, var(--text) 9%, transparent); background: color-mix(in srgb, var(--text) 3%, transparent); text-align: center; }
+    .statCard .num { font-size: 34px; font-weight: 800; color: var(--gold); line-height: 1; letter-spacing: .5px; }
+    .statCard .lbl { font-size: 13.5px; color: var(--muted); margin-top: 8px; }
+    .statWide { grid-column: 1 / -1; }
+
+    .sectionTitle { display:flex; align-items:center; gap:10px; font-size: 21px; margin: 30px 0 4px; }
+    .sectionTitle .em { font-size: 22px; }
+    .pageContent hr { border: none; border-top: 1px solid color-mix(in srgb, var(--text) 10%, transparent); margin: 10px 0 16px; }
+    .pageContent p { margin: 0 0 13px; color: var(--text); }
+    .pageContent a { color: var(--gold); }
+    .ctaRead { display:inline-block; margin: 8px 0 2px; padding: 12px 18px; border-radius: 12px; border: 1px solid color-mix(in srgb, var(--gold) 40%, transparent); background: color-mix(in srgb, var(--gold) 12%, transparent); color: var(--text); font-weight: 700; text-decoration: none; }
+    .ctaRead:hover { background: color-mix(in srgb, var(--gold) 18%, transparent); }
+
+    @media (max-width: 520px){ .hero h1 { font-size: 32px; } .statCard .num { font-size: 30px; } }
   </style>
   <!-- Google Analytics (GA4) -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-FDT2GP8C8F"></script>
@@ -63,31 +83,45 @@
   <main class="container">
     <article class="card pageContent">
       <a class="backLink muted" href="/">← Retour à la lecture</a>
-      <h1>La Bible Louis Segond 1910</h1>
-      <p class="pageLead">Une des traductions protestantes de la Bible les plus répandues dans le monde francophone.</p>
 
-      <h2>Louis Segond (1810–1885)</h2>
-      <p>Louis Segond fut un pasteur et théologien protestant suisse, né à Genève. Reconnu pour sa maîtrise des langues bibliques, il fut chargé par la Compagnie des pasteurs de Genève de réaliser une nouvelle traduction française, fidèle aux textes originaux.</p>
+      <div class="hero">
+        <p class="kicker">Traducteur de la Bible</p>
+        <h1>Louis Segond</h1>
+        <p class="heroLead">Théologien protestant suisse, Louis Segond a consacré sa vie à offrir au monde francophone une traduction fidèle et accessible de la Parole de Dieu. Sa version, publiée en 1910, reste aujourd'hui l'une des plus lues dans le monde.</p>
+        <span class="dateBadge">1810 — 1885</span>
+      </div>
 
-      <h2>La traduction</h2>
-      <p>Il traduisit l'Ancien Testament depuis l'hébreu et le Nouveau Testament depuis le grec. L'Ancien Testament parut en 1874, et le Nouveau Testament en 1880. Son travail se distingue par sa clarté et sa rigueur.</p>
+      <div class="statGrid">
+        <div class="statCard"><div class="num">1910</div><div class="lbl">Révision finale LSG</div></div>
+        <div class="statCard"><div class="num">31 102</div><div class="lbl">Versets traduits</div></div>
+        <div class="statCard statWide"><div class="num">+100</div><div class="lbl">Ans dans le domaine public</div></div>
+      </div>
 
-      <h2>L'édition de 1910</h2>
-      <p>La version dite « Louis Segond 1910 » est une révision publiée en 1910, après la mort de Segond. Elle s'est imposée comme une référence durable de la Bible protestante en français.</p>
+      <h2 class="sectionTitle"><span class="em">✝️</span> Qui était Louis Segond ?</h2>
+      <hr />
+      <p>Louis Segond est né le <strong>3 novembre 1810 à Orbe</strong>, dans le canton de Vaud en Suisse. Issu d'une famille protestante, il fit ses études de théologie à Genève et à Strasbourg, avant de se consacrer entièrement à l'étude des Écritures.</p>
+      <p>Pasteur, professeur et bibliste reconnu, il fut nommé professeur d'Ancien Testament à la <strong>Faculté de théologie de Genève</strong>, poste qu'il occupa pendant de nombreuses années. Sa rigueur académique et sa maîtrise de l'hébreu et du grec firent autorité.</p>
 
-      <h2>Domaine public</h2>
-      <p>Le texte de la Louis Segond 1910 appartient aujourd'hui au domaine public. C'est ce qui permet à LaBible.app de le proposer intégralement, gratuitement et sans restriction.</p>
+      <h2 class="sectionTitle"><span class="em">📖</span> La traduction</h2>
+      <hr />
+      <p>À la demande de la Compagnie des pasteurs de Genève, Louis Segond entreprit une nouvelle traduction française à partir des textes originaux. Il traduisit l'<strong>Ancien Testament depuis l'hébreu</strong> (publié en 1874) et le <strong>Nouveau Testament depuis le grec</strong> (publié en 1880). Son travail se distingue par sa clarté, sa fidélité et son élégance.</p>
 
-      <p><a href="/">Lire la Bible Louis Segond 1910 →</a></p>
+      <h2 class="sectionTitle"><span class="em">🕊️</span> L'édition de 1910</h2>
+      <hr />
+      <p>La version dite « <strong>Louis Segond 1910</strong> » est une révision publiée en 1910, après la mort de Segond. Elle s'est imposée comme une référence durable de la Bible protestante de langue française, lue et citée jusqu'à aujourd'hui.</p>
+
+      <h2 class="sectionTitle"><span class="em">🔓</span> Domaine public</h2>
+      <hr />
+      <p>Le texte de la Louis Segond 1910 appartient désormais au <strong>domaine public</strong>. C'est ce qui permet à LaBible.app de le proposer intégralement, gratuitement et sans aucune restriction.</p>
+
+      <p style="margin-top:18px"><a class="ctaRead" href="/">📖 Lire la Bible Louis Segond 1910</a></p>
     </article>
 
-<!-- ── FOOTER STANDARD — identique sur toutes les pages ── -->
     <div id="lb-footer"></div>
   </main>
 
   <script>
     (function(){
-      var y = document.getElementById('year'); if (y) y.textContent = new Date().getFullYear();
       var btn = document.getElementById('btnTheme');
       function sync(){ var t = document.documentElement.getAttribute('data-theme') || 'dark'; if (btn) btn.textContent = t === 'light' ? '☀️' : '🌙'; }
       sync();

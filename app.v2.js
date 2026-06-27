@@ -133,7 +133,7 @@ function attachExplication(bar, refKey){
     btnExp.addEventListener("click", () => {
       const open = panel.style.display !== "none";
       panel.style.display = open ? "none" : "block";
-      btnExp.textContent = open ? "💡 Expliquer" : "🙈 Masquer";
+      btnExp.textContent = open ? "💡 Expliquer" : "▲ Masquer";
     });
   }
   if(state.explications) inject(state.explications);

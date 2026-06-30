@@ -1,4 +1,4 @@
-const CACHE_NAME = 'labible-v23';
+const CACHE_NAME = 'labible-v24';
 
 const STATIC_ASSETS = [
   '/',
@@ -13,6 +13,8 @@ const STATIC_ASSETS = [
   '/a-propos.html',
   '/contact.html',
   '/legal.html',
+  '/installer.html',
+  '/liens.html',
   '/icons/icon-192x192.png',
   '/icons/icon-512x512.png',
 ];

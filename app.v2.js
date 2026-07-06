@@ -678,12 +678,23 @@ async function renderPlan(){
   const st = await ensurePlan();
   const day = planDayFrom(st.createdAt);
   const entry = st.plan[day-1];
-  $("#planTodayText").textContent = `Jour ${day} \u2014 ${entry.refs.map(r=>r.label).join(" · ")}`;
+  const pt = $("#planTodayText");
+  pt.innerHTML = "";
+  pt.appendChild(document.createTextNode(`Jour ${day} \u2014 `));
+  entry.refs.forEach((r, i) => {
+    const a = document.createElement("a");
+    a.href = "#";
+    a.textContent = r.label;
+    a.style.cssText = "color:inherit;text-decoration:underline;text-underline-offset:3px;cursor:pointer;font-weight:600";
+    a.addEventListener("click", async (e) => { e.preventDefault(); await openReference({ bi:r.bi, c:r.c, v:null }); });
+    pt.appendChild(a);
+    if(i < entry.refs.length - 1) pt.appendChild(document.createTextNode(" \u00b7 "));
+  });
   $("#planTodayMeta").textContent = st.doneDay >= day ? "✅ Déjà marqué." : `Progression : jour ${st.doneDay} terminé.`;
   const pct = Math.round((st.doneDay/365)*100);
   $("#progressFill").style.width = `${pct}%`;
   $("#progressText").textContent = `${pct}%`;
-  $("#btnOpenToday").onclick = async () => { const r0 = entry.refs[0]; await openReference({ bi:r0.bi, c:r0.c, v:null }); };
+  $("#btnOpenToday").onclick = async () => { const r0 = entry.refs[0]; if(!r0) return; await openReference({ bi:r0.bi, c:r0.c, v:null }); };
   $("#btnMarkDone").onclick = async () => {
     const st2 = await ensurePlan(); const today = planDayFrom(st2.createdAt);
     if(st2.doneDay >= today){ toast("Déjà fait."); return; }

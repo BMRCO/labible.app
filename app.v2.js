@@ -160,8 +160,10 @@ async function shareVerseImage(bookName, chapter, verse, text){
     if(!blob){ toast("Impossible de générer l'image."); return; }
     const fname = `labible-${bookName}-${chapter}-${verse}.png`.replace(/[^\w.-]+/g, "_");
     const file = new File([blob], fname, { type:"image/png" });
+    const url = buildVerseUrl(bookName, chapter);
+    const caption = `${bookName} ${chapter}:${verse} — LaBible.app\n📖 ${url}`;
     if(navigator.canShare && navigator.canShare({ files:[file] })){
-      try{ await navigator.share({ files:[file], title:`${bookName} ${chapter}:${verse} — LaBible.app` }); return; }
+      try{ await navigator.share({ files:[file], title:`${bookName} ${chapter}:${verse} — LaBible.app`, text: caption }); return; }
       catch(e){ if(e && e.name === "AbortError") return; }
     }
     const a = document.createElement("a");
@@ -186,6 +188,26 @@ function _wrapCanvas(ctx, text, maxW){
   return lines;
 }
 
+const IMG_PALETTES = {
+  psaume:    { top:[8,16,40],  bot:[4,9,24],   accent:[150,185,220], wm:[100,130,165] },
+  proverbe:  { top:[26,18,8],  bot:[15,10,4],  accent:[214,170,90],  wm:[150,120,70] },
+  jesus:     { top:[12,12,12], bot:[4,4,4],    accent:[205,180,120], wm:[125,112,72] },
+  prophetie: { top:[22,10,38], bot:[13,5,24],  accent:[190,160,210], wm:[140,120,165] },
+  default:   { top:[10,14,30], bot:[6,10,22],  accent:[201,166,64],  wm:[130,120,80] },
+};
+function _norm(s){ return String(s||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase().trim(); }
+const _WISDOM = ["proverbes","ecclesiaste","job"];
+const _GOSPELS = ["matthieu","marc","luc","jean"];
+const _PROPHETS = ["esaie","jeremie","lamentations","ezechiel","daniel","osee","joel","amos","abdias","jonas","michee","nahum","habacuc","sophonie","aggee","zacharie","malachie","apocalypse"];
+function paletteForBook(bookName){
+  const b = _norm(bookName);
+  if(b.indexOf("psaume") === 0) return IMG_PALETTES.psaume;
+  if(_WISDOM.includes(b)) return IMG_PALETTES.proverbe;
+  if(_GOSPELS.includes(b)) return IMG_PALETTES.jesus;
+  if(_PROPHETS.includes(b)) return IMG_PALETTES.prophetie;
+  return IMG_PALETTES.default;
+}
+
 async function renderVerseImage(bookName, chapter, verse, text){
   const W = 1080, H = 1080;
   const cv = document.createElement("canvas"); cv.width = W; cv.height = H;
@@ -197,13 +219,15 @@ async function renderVerseImage(bookName, chapter, verse, text){
     await document.fonts.ready;
   } catch {}
   // fond dégradé + halo doré + cadre
+  const P = paletteForBook(bookName);
+  const rgb = (c,a) => (a==null ? `rgb(${c[0]},${c[1]},${c[2]})` : `rgba(${c[0]},${c[1]},${c[2]},${a})`);
   const g = ctx.createLinearGradient(0,0,0,H);
-  g.addColorStop(0,"#101010"); g.addColorStop(1,"#080808");
+  g.addColorStop(0, rgb(P.top)); g.addColorStop(1, rgb(P.bot));
   ctx.fillStyle = g; ctx.fillRect(0,0,W,H);
   const rg = ctx.createRadialGradient(W/2,-140,40,W/2,-140,760);
-  rg.addColorStop(0,"rgba(226,197,122,0.10)"); rg.addColorStop(1,"rgba(226,197,122,0)");
+  rg.addColorStop(0, rgb(P.accent,0.12)); rg.addColorStop(1, rgb(P.accent,0));
   ctx.fillStyle = rg; ctx.fillRect(0,0,W,H);
-  ctx.strokeStyle = "rgba(226,197,122,0.20)"; ctx.lineWidth = 2;
+  ctx.strokeStyle = rgb(P.accent,0.22); ctx.lineWidth = 2;
   _roundRect(ctx,40,40,W-80,H-80,26); ctx.stroke();
 
   // texte — typographie FR : espace insécable avant ; : ! ? et guillemets liés
@@ -227,10 +251,10 @@ async function renderVerseImage(bookName, chapter, verse, text){
   ctx.font = `400 ${size}px "EB Garamond", Georgia, serif`;
   for(const ln of lines){ ctx.fillText(ln, W/2, y); y += lh; }
   y += 4;
-  ctx.strokeStyle = "rgba(226,197,122,0.5)"; ctx.lineWidth = 2;
+  ctx.strokeStyle = rgb(P.accent,0.5); ctx.lineWidth = 2;
   ctx.beginPath(); ctx.moveTo(W/2-60, y); ctx.lineTo(W/2+60, y); ctx.stroke();
   y += 56;
-  ctx.fillStyle = "#e2c57a";
+  ctx.fillStyle = rgb(P.accent);
   ctx.font = `600 46px "EB Garamond", Georgia, serif`;
   ctx.fillText(`${bookName} ${chapter}:${verse}`, W/2, y);
 
@@ -239,8 +263,8 @@ async function renderVerseImage(bookName, chapter, verse, text){
   ctx.textAlign = "left";
   const wa = ctx.measureText("LaBible.app").width, wb = ctx.measureText("  ·  LSG 1910").width;
   const x0 = (W - (wa + wb))/2;
-  ctx.fillStyle = "#e2c57a"; ctx.fillText("LaBible.app", x0, H-64);
-  ctx.fillStyle = "rgba(150,145,130,1)"; ctx.fillText("  ·  LSG 1910", x0 + wa, H-64);
+  ctx.fillStyle = rgb(P.accent); ctx.fillText("LaBible.app", x0, H-64);
+  ctx.fillStyle = rgb(P.wm); ctx.fillText("  ·  LSG 1910", x0 + wa, H-64);
 
   return cv;
 }

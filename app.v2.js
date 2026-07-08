@@ -93,13 +93,18 @@ function showVerseActions(bookName, chapter, verse, text, el){
   btnShare.textContent = "🔗 Partager";
   btnShare.onclick = async () => { await shareVerse(bookName, chapter, verse, text); bar.remove(); el.classList.remove("selected"); state.selectedVerse=null; };
 
+  const btnImg = document.createElement("button");
+  btnImg.className = "chip";
+  btnImg.textContent = "🖼️ Image";
+  btnImg.onclick = async () => { await shareVerseImage(bookName, chapter, verse, text); bar.remove(); el.classList.remove("selected"); state.selectedVerse=null; };
+
   const btnClose = document.createElement("button");
   btnClose.className = "chip";
   btnClose.textContent = "✕";
   btnClose.style.marginLeft = "auto";
   btnClose.onclick = () => { bar.remove(); el.classList.remove("selected"); state.selectedVerse=null; };
 
-  bar.append(btnFav, btnCopy, btnShare, btnClose);
+  bar.append(btnFav, btnCopy, btnShare, btnImg, btnClose);
   el.insertAdjacentElement("afterend", bar);
 
   // Explication du verset (si disponible) — bouton + panneau dans la barre
@@ -146,6 +151,98 @@ async function shareVerse(bookName, chapter, verse, text){
   if(navigator.share){
     try{ await navigator.share({ title:`${bookName} ${chapter}:${verse} — LaBible.app`, text: shareText, url }); } catch{}
   } else { await copyText(`${shareText}\n📖 ${url}`); }
+}
+
+async function shareVerseImage(bookName, chapter, verse, text){
+  try{
+    const cv = await renderVerseImage(bookName, chapter, verse, text);
+    const blob = await new Promise(r => cv.toBlob(r, "image/png"));
+    if(!blob){ toast("Impossible de générer l'image."); return; }
+    const fname = `labible-${bookName}-${chapter}-${verse}.png`.replace(/[^\w.-]+/g, "_");
+    const file = new File([blob], fname, { type:"image/png" });
+    if(navigator.canShare && navigator.canShare({ files:[file] })){
+      try{ await navigator.share({ files:[file], title:`${bookName} ${chapter}:${verse} — LaBible.app` }); return; }
+      catch(e){ if(e && e.name === "AbortError") return; }
+    }
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob); a.download = fname;
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(a.href), 4000);
+    toast("Image enregistrée.");
+  } catch(e){ toast("Erreur lors de la création de l'image."); }
+}
+
+function _roundRect(ctx,x,y,w,h,r){ ctx.beginPath(); ctx.moveTo(x+r,y); ctx.arcTo(x+w,y,x+w,y+h,r); ctx.arcTo(x+w,y+h,x,y+h,r); ctx.arcTo(x,y+h,x,y,r); ctx.arcTo(x,y,x+w,y,r); ctx.closePath(); }
+
+function _wrapCanvas(ctx, text, maxW){
+  const words = text.split(" ").filter(Boolean);
+  const lines = []; let cur = words[0] || "";
+  for(let i=1;i<words.length;i++){
+    const w = words[i];
+    if(ctx.measureText(cur + " " + w).width <= maxW) cur += " " + w;
+    else { lines.push(cur); cur = w; }
+  }
+  if(cur) lines.push(cur);
+  return lines;
+}
+
+async function renderVerseImage(bookName, chapter, verse, text){
+  const W = 1080, H = 1080;
+  const cv = document.createElement("canvas"); cv.width = W; cv.height = H;
+  const ctx = cv.getContext("2d");
+  try{
+    await document.fonts.load('400 60px "EB Garamond"');
+    await document.fonts.load('600 46px "EB Garamond"');
+    await document.fonts.load('600 30px "DM Sans"');
+    await document.fonts.ready;
+  } catch {}
+  // fond dégradé + halo doré + cadre
+  const g = ctx.createLinearGradient(0,0,0,H);
+  g.addColorStop(0,"#101010"); g.addColorStop(1,"#080808");
+  ctx.fillStyle = g; ctx.fillRect(0,0,W,H);
+  const rg = ctx.createRadialGradient(W/2,-140,40,W/2,-140,760);
+  rg.addColorStop(0,"rgba(226,197,122,0.10)"); rg.addColorStop(1,"rgba(226,197,122,0)");
+  ctx.fillStyle = rg; ctx.fillRect(0,0,W,H);
+  ctx.strokeStyle = "rgba(226,197,122,0.20)"; ctx.lineWidth = 2;
+  _roundRect(ctx,40,40,W-80,H-80,26); ctx.stroke();
+
+  // texte — typographie FR : espace insécable avant ; : ! ? et guillemets liés
+  let t = String(text).replace(/¶/g,"").replace(/\s+/g," ").trim();
+  t = t.replace(/\s*([;:!?])/g, "\u00a0$1");
+  const quoted = "«\u00a0" + t + "\u00a0»";
+
+  const PAD = 110, maxW = W - 2*PAD;
+  const topLimit = 160, bottomLimit = H - 150;
+  ctx.textAlign = "center"; ctx.textBaseline = "alphabetic";
+  let size = 60, lines = [];
+  for(; size >= 28; size -= 2){
+    ctx.font = `400 ${size}px "EB Garamond", Georgia, serif`;
+    lines = _wrapCanvas(ctx, quoted, maxW);
+    if(lines.length * (size*1.34) + 130 <= (bottomLimit - topLimit)) break;
+  }
+  const lh = size*1.34;
+  const blockH = lines.length*lh + 130;
+  let y = topLimit + ((bottomLimit - topLimit) - blockH)/2 + size;
+  ctx.fillStyle = "#f0ead8";
+  ctx.font = `400 ${size}px "EB Garamond", Georgia, serif`;
+  for(const ln of lines){ ctx.fillText(ln, W/2, y); y += lh; }
+  y += 4;
+  ctx.strokeStyle = "rgba(226,197,122,0.5)"; ctx.lineWidth = 2;
+  ctx.beginPath(); ctx.moveTo(W/2-60, y); ctx.lineTo(W/2+60, y); ctx.stroke();
+  y += 56;
+  ctx.fillStyle = "#e2c57a";
+  ctx.font = `600 46px "EB Garamond", Georgia, serif`;
+  ctx.fillText(`${bookName} ${chapter}:${verse}`, W/2, y);
+
+  // filigrane
+  ctx.font = `600 30px "DM Sans", system-ui, sans-serif`;
+  ctx.textAlign = "left";
+  const wa = ctx.measureText("LaBible.app").width, wb = ctx.measureText("  ·  LSG 1910").width;
+  const x0 = (W - (wa + wb))/2;
+  ctx.fillStyle = "#e2c57a"; ctx.fillText("LaBible.app", x0, H-64);
+  ctx.fillStyle = "rgba(150,145,130,1)"; ctx.fillText("  ·  LSG 1910", x0 + wa, H-64);
+
+  return cv;
 }
 
 /* ---------- views ---------- */

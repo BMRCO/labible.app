@@ -287,7 +287,7 @@ function applyTheme(theme){
   document.documentElement.setAttribute("data-theme", theme);
   localStorage.setItem(LS.theme, theme);
   const btn = $("#btnTheme");
-  if(btn) btn.textContent = theme === "light" ? "☀️" : "🌙";
+  if(btn) btn.textContent = theme === "light" ? "🌙" : "☀️";
 }
 function loadTheme(){ applyTheme(localStorage.getItem(LS.theme) === "light" ? "light" : "dark"); }
 function applyFont(px){
@@ -874,21 +874,9 @@ function bindInstall(){
   function checkInstalled(){ return window.matchMedia("(display-mode: standalone)").matches || window.matchMedia("(display-mode: minimal-ui)").matches || window.navigator.standalone === true || document.referrer.includes("android-app://") || localStorage.getItem("pwa:installed") === "1"; }
   if(checkInstalled()){ btn.hidden = true; return; }
   btn.hidden = false; // toujours visible si l'app n'est pas installée
-  window.addEventListener("beforeinstallprompt", e => { e.preventDefault(); state.deferredPrompt = e; });
-  btn.addEventListener("click", async () => {
-    if(state.deferredPrompt){
-      btn.disabled = true;
-      try{
-        state.deferredPrompt.prompt();
-        const { outcome } = await state.deferredPrompt.userChoice;
-        state.deferredPrompt = null;
-        if(outcome === "accepted") localStorage.setItem("pwa:installed","1");
-      } finally { btn.disabled = false; }
-    } else {
-      // pas d'invite native (iPhone, navigateur non compatible…) -> instructions
-      window.location.href = "/installer.html";
-    }
-  });
+  // On laisse le navigateur proposer l'installation automatiquement (bannière native).
+  // Le bouton mène aux instructions (utile sur iPhone et si la bannière a été fermée).
+  btn.addEventListener("click", () => { window.location.href = "/installer.html"; });
   window.addEventListener("appinstalled", () => { state.deferredPrompt = null; localStorage.setItem("pwa:installed","1"); btn.hidden = true; toast("Installée ✅"); });
   window.addEventListener("focus", () => { if(checkInstalled()) btn.hidden = true; });
 }

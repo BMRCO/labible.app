@@ -1,59 +1,47 @@
-/* =========================================================
-   LaBible.app — topbar partilhada das páginas de conteúdo
-   Cada página de conteúdo tem apenas: <div id="lb-topbar"></div>
-   Editar este ficheiro = atualizar a topbar (logo, etc.) em
-   TODAS as páginas de conteúdo ao mesmo tempo.
-   (A homepage tem a sua própria topbar — não usa este ficheiro.)
-   ========================================================= */
-(function () {
-  var CSS =
-    '.stickyHeader{position:sticky;top:0;z-index:95;background:var(--bg,#0b0b0b);}' +
-    '.stickyHeader .topbar{position:relative !important;}' +
-    '.brandDot{color:var(--gold);font-weight:700;}' +
-    '.topActions .chip{padding:7px 12px;font-size:12.5px;border-radius:10px;}';
+# LaBible.app — politique de cache (Cloudflare Pages)
+#
+# Les fichiers statiques VERSIONNÉS (icônes, polices, données JSON, CSS, app.v2.js)
+# sont mis en cache 1 an + immutable : moins de requêtes à l'origine, site plus rapide.
+#
+# Le HTML et le service worker (sw.js) ne sont PAS listés ici : ils gardent le
+# comportement par défaut de Pages (revalidation, jamais périmé), pour que la PWA
+# se mette à jour immédiatement.
+#
+# footer.js / header.js sont des composants partagés NON versionnés, faits pour être
+# édités (mise à jour de toutes les pages d'un coup). On leur donne donc un cache
+# MODÉRÉ (1 jour + revalidation en arrière-plan) au lieu d'immutable.
+#
+# IMPORTANT : n'utiliser aucun motif large (ex. /*.js) qui toucherait sw.js.
 
-  var HTML = '' +
-  '<div class="stickyHeader">' +
-    '<header class="topbar">' +
-      '<a class="brand" href="/" title="Accueil">' +
-        '<img src="/icons/icon-512x512.png" class="brandIcon" width="44" height="44" alt="LaBible.app" style="border-radius:9px;object-fit:cover;width:44px;height:44px;min-width:44px;max-width:44px;" />' +
-        '<div class="brandText">' +
-          '<div class="brandTitle">LaBible<span class="brandDot">.app</span></div>' +
-          '<div class="brandSub">LSG 1910</div>' +
-        '</div>' +
-      '</a>' +
-      '<div class="topActions">' +
-        '<a class="chip" href="/" title="Lecture">📖 Lire</a>' +
-        '<button id="btnTheme" class="iconBtn" title="Thème">☀️</button>' +
-      '</div>' +
-    '</header>' +
-  '</div>';
+/*.json
+  Cache-Control: public, max-age=31536000, immutable
 
-  function mount() {
-    if (!document.getElementById('lb-topbar-css')) {
-      var st = document.createElement('style');
-      st.id = 'lb-topbar-css';
-      st.textContent = CSS;
-      document.head.appendChild(st);
-    }
-    var slot = document.getElementById('lb-topbar');
-    if (slot) slot.innerHTML = HTML;
+/*.css
+  Cache-Control: public, max-age=31536000, immutable
 
-    var btn = document.getElementById('btnTheme');
-    function sync(){ var t = document.documentElement.getAttribute('data-theme') || 'dark'; if (btn) btn.textContent = t === 'light' ? '🌙' : '☀️'; }
-    sync();
-    if (btn) btn.addEventListener('click', function () {
-      var cur = document.documentElement.getAttribute('data-theme') || 'dark';
-      var nxt = cur === 'dark' ? 'light' : 'dark';
-      document.documentElement.setAttribute('data-theme', nxt);
-      try { localStorage.setItem('labible:theme', nxt); } catch (e) {}
-      sync();
-    });
-  }
+/app.v2.js
+  Cache-Control: public, max-age=31536000, immutable
 
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', mount);
-  } else {
-    mount();
-  }
-})();
+/*.png
+  Cache-Control: public, max-age=31536000, immutable
+
+/*.svg
+  Cache-Control: public, max-age=31536000, immutable
+
+/*.ico
+  Cache-Control: public, max-age=31536000, immutable
+
+/*.woff2
+  Cache-Control: public, max-age=31536000, immutable
+
+/*.woff
+  Cache-Control: public, max-age=31536000, immutable
+
+/footer.js
+  Cache-Control: public, max-age=86400, stale-while-revalidate=604800
+
+/header.js
+  Cache-Control: public, max-age=86400, stale-while-revalidate=604800
+
+/manifest.webmanifest
+  Cache-Control: public, max-age=86400

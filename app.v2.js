@@ -109,6 +109,8 @@ function showVerseActions(bookName, chapter, verse, text, el){
 
   // Explication du verset (si disponible) — bouton + panneau dans la barre
   attachExplication(bar, `${bookName} ${chapter}:${verse}`);
+  const _cb = state.bible.books[state.current.book];
+  if(_cb) attachReferences(bar, _cb.nr, chapter, verse);
 }
 
 async function loadExplications(){
@@ -143,6 +145,76 @@ function attachExplication(bar, refKey){
   }
   if(state.explications) inject(state.explications);
   else loadExplications().then(inject);
+}
+
+async function loadCrossRefs(){
+  if(state.crossrefs) return state.crossrefs;
+  try{
+    const res = await fetch("/data/crossrefs.json");
+    state.crossrefs = res.ok ? await res.json() : {};
+  } catch { state.crossrefs = {}; }
+  return state.crossrefs;
+}
+
+function _biFromNr(nr){
+  const b = state.bible.books;
+  for(let i=0;i<b.length;i++) if(b[i].nr === nr) return i;
+  return -1;
+}
+function _refVerseText(nr, c, v){
+  const bm = state.bible.data.get(nr);
+  const arr = bm && bm.get(c);
+  const t = arr && arr[v-1];
+  return t ? String(t).replace(/¶/g,"").replace(/\s+/g," ").trim() : "";
+}
+
+function attachReferences(bar, bookNr, chapter, verse){
+  loadCrossRefs().then(map => {
+    const byBook = map && map[String(bookNr)];
+    const list = byBook && byBook[`${chapter}:${verse}`];
+    if(!list || !list.length) return;
+    if(bar.querySelector(".btnRefs")) return;
+
+    const btn = document.createElement("button");
+    btn.className = "chip btnRefs";
+    btn.style.borderColor = "rgba(226,197,122,.4)";
+    btn.textContent = "🔗 Références";
+    bar.insertBefore(btn, bar.lastChild);
+
+    const panel = document.createElement("div");
+    panel.style.cssText = "display:none;width:100%;margin-top:8px;padding:6px;background:rgba(226,197,122,.05);border:1px solid rgba(226,197,122,.22);border-radius:12px;";
+
+    for(const [tb,tc,tv] of list){
+      const bi = _biFromNr(tb);
+      if(bi < 0) continue;
+      const name = state.bible.books[bi].name;
+      const row = document.createElement("a");
+      row.href = `#${name}-${tc}`;
+      row.style.cssText = "display:block;padding:9px 10px;border-radius:9px;text-decoration:none;color:inherit;";
+      const rref = document.createElement("div");
+      rref.style.cssText = "font-family:'EB Garamond',serif;font-weight:600;font-size:15px;color:#c9a640;";
+      rref.textContent = `${name} ${tc}:${tv}`;
+      const rtxt = document.createElement("div");
+      rtxt.style.cssText = "font-family:'EB Garamond',serif;font-size:13.5px;opacity:.6;margin-top:2px;line-height:1.4;";
+      const t = _refVerseText(tb, tc, tv);
+      rtxt.textContent = t.length > 120 ? t.slice(0,118).trim()+"…" : t;
+      row.append(rref, rtxt);
+      row.addEventListener("click", async (e) => { e.preventDefault(); await openReference({ bi, c:tc, v:tv }); });
+      panel.appendChild(row);
+    }
+
+    const credit = document.createElement("div");
+    credit.style.cssText = "font-size:10.5px;opacity:.4;text-align:center;padding:7px 4px 3px;";
+    credit.textContent = "Références croisées · OpenBible.info · CC BY";
+    panel.appendChild(credit);
+
+    bar.appendChild(panel);
+    btn.addEventListener("click", () => {
+      const open = panel.style.display !== "none";
+      panel.style.display = open ? "none" : "block";
+      btn.textContent = open ? "🔗 Références" : "▲ Masquer";
+    });
+  });
 }
 
 async function shareVerse(bookName, chapter, verse, text){
@@ -368,6 +440,7 @@ async function loadBible(){
   renderLibrary();
   buildIndex();
   loadExplications();
+  loadCrossRefs();
 }
 
 /* ---------- sélecteurs ---------- */

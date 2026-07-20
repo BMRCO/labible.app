@@ -11,7 +11,11 @@
   "orientation": "portrait-primary",
   "lang": "fr",
   "dir": "ltr",
-  "categories": ["books", "education", "lifestyle"],
+  "categories": [
+    "books",
+    "education",
+    "lifestyle"
+  ],
   "icons": [
     {
       "src": "/icons/icon-192x192.png",
@@ -50,14 +54,59 @@
       "short_name": "Verset",
       "description": "Ouvrir le verset du jour",
       "url": "/?vdd=1",
-      "icons": [{ "src": "/icons/icon-192x192.png", "sizes": "192x192" }]
+      "icons": [
+        {
+          "src": "/icons/icon-192x192.png",
+          "sizes": "192x192"
+        }
+      ]
     },
     {
       "name": "Recherche",
       "short_name": "Recherche",
       "description": "Rechercher dans la Bible",
       "url": "/?tab=search",
-      "icons": [{ "src": "/icons/icon-192x192.png", "sizes": "192x192" }]
+      "icons": [
+        {
+          "src": "/icons/icon-192x192.png",
+          "sizes": "192x192"
+        }
+      ]
+    }
+  ],
+  "display_override": [
+    "standalone",
+    "minimal-ui",
+    "browser"
+  ],
+  "screenshots": [
+    {
+      "src": "/screenshots/lecture.jpg",
+      "sizes": "620x1240",
+      "type": "image/jpeg",
+      "form_factor": "narrow",
+      "label": "Lecture de la Bible LSG 1910"
+    },
+    {
+      "src": "/screenshots/theme-clair.jpg",
+      "sizes": "620x1240",
+      "type": "image/jpeg",
+      "form_factor": "narrow",
+      "label": "Mode clair"
+    },
+    {
+      "src": "/screenshots/expliquer.jpg",
+      "sizes": "620x1240",
+      "type": "image/jpeg",
+      "form_factor": "narrow",
+      "label": "Comprendre les versets clés"
+    },
+    {
+      "src": "/screenshots/plan.jpg",
+      "sizes": "620x1240",
+      "type": "image/jpeg",
+      "form_factor": "narrow",
+      "label": "Plan de lecture 365 jours"
     }
   ]
 }

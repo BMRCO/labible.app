@@ -1,7 +1,7 @@
 {
   "name": "LaBible.app",
   "short_name": "LaBible.app",
-  "description": "Lisez toute la Bible Louis Segond 1910 gratuitement. 31 102 versets, recherche instantanee, plan de lecture 365 jours, favoris et verset du jour. Sans publicite.",
+  "description": "Lisez toute la Bible Louis Segond 1910 gratuitement. 31 102 versets, recherche instantanée, plan de lecture 365 jours, favoris et verset du jour. Sans publicité.",
   "id": "/",
   "start_url": "/",
   "scope": "/",
@@ -26,16 +26,22 @@
       "purpose": "any"
     },
     {
-      "src": "/icons/icon-512x512.png",
+      "src": "/icons/icon-1024x1024.png",
+      "sizes": "1024x1024",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-512x512-maskable.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "maskable"
     },
     {
-      "src": "/icons/icon-1024x1024.png",
+      "src": "/icons/icon-1024x1024-maskable.png",
       "sizes": "1024x1024",
       "type": "image/png",
-      "purpose": "any"
+      "purpose": "maskable"
     }
   ],
   "shortcuts": [

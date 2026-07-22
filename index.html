@@ -107,6 +107,16 @@
   <script src="https://telegram.org/js/telegram-web-app.js" defer></script>
 
   <script src="/footer.js" defer></script>
+  <style>
+    /* Barre d'onglets avec 4 onglets : défilement horizontal si l'écran est étroit,
+       plutôt que du texte qui se coupe sur deux lignes. */
+    .tabs{ overflow-x:auto; scrollbar-width:none; -ms-overflow-style:none; }
+    .tabs::-webkit-scrollbar{ display:none; }
+    .tab{ flex:1 0 auto; white-space:nowrap; text-align:center; }
+    .tabLink{ display:flex; align-items:center; justify-content:center; }
+    /* 3e sélecteur (Verset) : plus étroit pour tenir sur mobile */
+    #readControls .controls .field:nth-child(3){ min-width:70px !important; flex:1; }
+  </style>
 </head>
 <body>
 
@@ -150,6 +160,7 @@
     <div class="controls">
       <label class="field"><span>Livre</span><select id="bookSelect"></select></label>
       <label class="field"><span>Chapitre</span><select id="chapterSelect"></select></label>
+      <label class="field"><span>Verset</span><select id="verseSelect"></select></label>
       <div class="navBtns">
         <button class="btn" id="btnPrev">← Précédent</button>
         <button class="btn" id="btnNext">Suivant →</button>
@@ -164,6 +175,7 @@
       <button class="tab active" data-view="read">Lecture</button>
       <button class="tab" data-view="plan">Plan</button>
       <button class="tab" data-view="library">Bibliothèque</button>
+      <a class="tab tabLink" href="/versets" style="text-decoration:none">Versets</a>
     </nav>
 
     <!-- LECTURE -->

@@ -351,7 +351,7 @@ function setView(view){
   state.selectedVerse = null;
 }
 function bindTabs(){
-  $$(".tab").forEach(tab => tab.addEventListener("click", () => setView(tab.dataset.view)));
+  $$(".tab[data-view]").forEach(tab => tab.addEventListener("click", () => setView(tab.dataset.view)));
 }
 
 /* ---------- theme / font ---------- */
@@ -466,6 +466,9 @@ function initSelectors(){
     state.current.chapter = parseInt(chapterSelect.value, 10);
     renderReading();
   });
+  $("#verseSelect")?.addEventListener("change", (e) => {
+    renderReading(parseInt(e.target.value, 10));
+  });
 
   $("#btnPrev")?.addEventListener("click", () => navChapter(-1));
   $("#btnNext")?.addEventListener("click", () => navChapter(+1));
@@ -505,6 +508,20 @@ function refreshChapterSelect(){
   }
   state.current.chapter = clamp(state.current.chapter, 1, total);
   chapterSelect.value = String(state.current.chapter);
+}
+
+function refreshVerseSelect(total, selected){
+  const vs = $("#verseSelect");
+  if(!vs) return;
+  total = total || 1;
+  vs.innerHTML = "";
+  for(let v = 1; v <= total; v++){
+    const opt = document.createElement("option");
+    opt.value = String(v);
+    opt.textContent = String(v);
+    vs.appendChild(opt);
+  }
+  vs.value = String(clamp(selected || 1, 1, total));
 }
 
 async function navChapter(delta){
@@ -619,6 +636,7 @@ function renderReading(highlightVerse=null){
     updateFavButtonState();
     history.replaceState(null, "", `#${book.name}-${c}`);
     document.title = `${book.name} ${c} \u2014 LaBible.app`;
+    refreshVerseSelect(verses.length, highlightVerse);
   } catch(err){
     $("#pageHeader").textContent = "Erreur";
     $("#verses").innerHTML = `<p class="verse"><span class="vnum">!</span><span>${escapeHtml(err.message)}</span></p>`;

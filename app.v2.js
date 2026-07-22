@@ -355,11 +355,13 @@ function bindTabs(){
 }
 
 /* ---------- theme / font ---------- */
+const ICON_SUN  = '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2.8v2.4M12 18.8v2.4M4.9 4.9l1.7 1.7M17.4 17.4l1.7 1.7M2.8 12h2.4M18.8 12h2.4M4.9 19.1l1.7-1.7M17.4 6.6l1.7-1.7"/></svg>';
+const ICON_MOON = '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>';
 function applyTheme(theme){
   document.documentElement.setAttribute("data-theme", theme);
   localStorage.setItem(LS.theme, theme);
   const btn = $("#btnTheme");
-  if(btn) btn.textContent = theme === "light" ? "🌙" : "☀️";
+  if(btn){ btn.innerHTML = theme === "light" ? ICON_MOON : ICON_SUN; btn.setAttribute("aria-label", theme === "light" ? "Passer en mode sombre" : "Passer en mode clair"); }
 }
 function loadTheme(){ applyTheme(localStorage.getItem(LS.theme) === "light" ? "light" : "dark"); }
 function applyFont(px){

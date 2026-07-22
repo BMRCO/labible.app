@@ -505,7 +505,7 @@ function refreshChapterSelect(){
   for(let c = 1; c <= total; c++){
     const opt = document.createElement("option");
     opt.value = String(c);
-    opt.textContent = `Ch. ${c}`;
+    opt.textContent = String(c);
     chapterSelect.appendChild(opt);
   }
   state.current.chapter = clamp(state.current.chapter, 1, total);

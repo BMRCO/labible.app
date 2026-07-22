@@ -1,4 +1,4 @@
-const CACHE_NAME = 'labible-v33';
+const CACHE_NAME = 'labible-v34';
 
 const STATIC_ASSETS = [
   '/',
@@ -76,7 +76,7 @@ self.addEventListener('fetch', event => {
     return;
   }
 
-  if (url.pathname.endsWith('.html') || url.pathname === '/') {
+  if (request.mode === 'navigate' || request.destination === 'document' || url.pathname.endsWith('.html') || url.pathname === '/') {
     event.respondWith(networkFirst(request));
     return;
   }

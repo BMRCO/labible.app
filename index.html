@@ -313,9 +313,9 @@
       var bodyHtml = hit.textHtml ? '« ' + hit.textHtml + ' »' : '« ' + hit.text + ' »';
       el.innerHTML =
         '<div class="gResultHead"><span class="gResultRef">' + hit.ref + '</span><span class="gResultArrow">›</span></div>' +
-        '<div class="gResultBody">' + bodyHtml + '<div class="gResultActions"><button class="btnOpen">📖 Ouvrir</button><button class="btnCopy">📎 Copier</button></div></div>';
+        '<div class="gResultBody"><div class="gResultText" style="cursor:pointer">' + bodyHtml + '</div><div class="gResultActions"><button class="btnCopy">📎 Copier</button></div></div>';
       el.querySelector('.gResultHead').addEventListener('click', function () { el.classList.toggle('open'); });
-      el.querySelector('.btnOpen').addEventListener('click', function (e) {
+      el.querySelector('.gResultText').addEventListener('click', function (e) {
         e.stopPropagation();
         if (typeof window.appGoTo === 'function') { window.appGoTo(hit.ref); closeResults(); input.value = ''; showClear(false); }
       });

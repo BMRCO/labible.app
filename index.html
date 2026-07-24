@@ -476,9 +476,13 @@
           var input = document.getElementById('globalSearchInput');
           var btn = document.getElementById('globalSearchBtn');
           if (q && input && btn) {
-            input.value = q;
-            history.replaceState(null, '', location.pathname);
-            btn.click();
+            if (typeof window.appSearch === 'function') {
+              input.value = q;
+              history.replaceState(null, '', location.pathname);
+              btn.click();
+            } else if (tries < 40) {
+              setTimeout(function () { run(tries + 1); }, 200);
+            }
           }
         }
       }

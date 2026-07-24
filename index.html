@@ -454,20 +454,20 @@
     }
   </script>
   <script>
-    /* Navigation depuis les pages de contenu (barre partagée) :
-       /#plan  /#bibliotheque  /#q=motclé  */
+    /* Navigation depuis les pages de contenu (barre partagée) : /#plan /#bibliotheque /#q=motclé
+       On capture le hash TOUT DE SUITE (avant que l'app ne le remplace par #Livre-Chapitre). */
     (function () {
-      function run(tries) {
+      var captured = '';
+      try { captured = decodeURIComponent((location.hash || '').replace(/^#/, '')).trim(); } catch (e) {}
+
+      function act(h, tries) {
         tries = tries || 0;
-        var h = '';
-        try { h = decodeURIComponent((location.hash || '').replace(/^#/, '')).trim(); } catch (e) { return; }
         if (!h) return;
         if (h === 'plan' || h === 'bibliotheque' || h === 'library') {
           if (typeof setView === 'function') {
             setView(h === 'plan' ? 'plan' : 'library');
-            history.replaceState(null, '', location.pathname);
-          } else if (tries < 25) {
-            setTimeout(function () { run(tries + 1); }, 200);
+          } else if (tries < 40) {
+            setTimeout(function () { act(h, tries + 1); }, 200);
           }
           return;
         }
@@ -478,16 +478,25 @@
           if (q && input && btn) {
             if (typeof window.appSearch === 'function') {
               input.value = q;
-              history.replaceState(null, '', location.pathname);
               btn.click();
             } else if (tries < 40) {
-              setTimeout(function () { run(tries + 1); }, 200);
+              setTimeout(function () { act(h, tries + 1); }, 200);
             }
           }
         }
       }
-      window.addEventListener('load', function () { setTimeout(run, 200); });
-      window.addEventListener('hashchange', function () { run(0); });
+
+      // au chargement : agir sur le hash capté (plan/biblio après un court délai pour laisser l'app démarrer)
+      window.addEventListener('load', function () {
+        if (captured.indexOf('q=') === 0) { setTimeout(function () { act(captured, 0); }, 120); }
+        else if (captured) { setTimeout(function () { act(captured, 0); }, 400); }
+      });
+      // navigation ultérieure (clic sur un onglet) : utiliser le hash courant
+      window.addEventListener('hashchange', function () {
+        var h = '';
+        try { h = decodeURIComponent((location.hash || '').replace(/^#/, '')).trim(); } catch (e) {}
+        act(h, 0);
+      });
     })();
   </script>
 

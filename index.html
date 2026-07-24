@@ -453,6 +453,39 @@
       });
     }
   </script>
+  <script>
+    /* Navigation depuis les pages de contenu (barre partagée) :
+       /#plan  /#bibliotheque  /#q=motclé  */
+    (function () {
+      function run(tries) {
+        tries = tries || 0;
+        var h = '';
+        try { h = decodeURIComponent((location.hash || '').replace(/^#/, '')).trim(); } catch (e) { return; }
+        if (!h) return;
+        if (h === 'plan' || h === 'bibliotheque' || h === 'library') {
+          if (typeof setView === 'function') {
+            setView(h === 'plan' ? 'plan' : 'library');
+            history.replaceState(null, '', location.pathname);
+          } else if (tries < 25) {
+            setTimeout(function () { run(tries + 1); }, 200);
+          }
+          return;
+        }
+        if (h.indexOf('q=') === 0) {
+          var q = h.slice(2).trim();
+          var input = document.getElementById('globalSearchInput');
+          var btn = document.getElementById('globalSearchBtn');
+          if (q && input && btn) {
+            input.value = q;
+            history.replaceState(null, '', location.pathname);
+            btn.click();
+          }
+        }
+      }
+      window.addEventListener('load', function () { setTimeout(run, 200); });
+      window.addEventListener('hashchange', function () { run(0); });
+    })();
+  </script>
 
 </body>
 </html>

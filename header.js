@@ -10,7 +10,22 @@
     '.stickyHeader{position:sticky;top:0;z-index:95;background:var(--bg,#0b0b0b);}' +
     '.stickyHeader .topbar{position:relative !important;}' +
     '.brandDot{color:var(--gold);font-weight:700;}' +
-    '.topActions .chip{padding:7px 12px;font-size:12.5px;border-radius:10px;}';
+    '.topActions .chip{padding:7px 12px;font-size:12.5px;border-radius:10px;}' +
+    /* barre de recherche partagée */
+    '.lbSearch{padding:8px 0 4px;}' +
+    '.lbSearchInner{display:flex;gap:8px;align-items:center;position:relative;}' +
+    '.lbSearchInner .gsIcon{position:absolute;left:11px;font-size:13px;opacity:.75;pointer-events:none;}' +
+    '.lbSearchInner input{flex:1;padding:9px 12px 9px 34px;background:color-mix(in srgb,var(--text) 6%,transparent);' +
+      'border:1px solid color-mix(in srgb,var(--gold) 30%,transparent);border-radius:10px;color:var(--text);' +
+      'font-size:13px;font-family:inherit;outline:none;}' +
+    '.lbSearchInner input::placeholder{color:var(--muted2);}' +
+    '.lbSearchInner button{padding:9px 14px;border-radius:10px;border:none;cursor:pointer;font-family:inherit;' +
+      'font-weight:700;font-size:13px;background:var(--gold);color:#1a1505;}' +
+    /* onglets partagés (mêmes classes que la page principale) */
+    '.stickyHeader .tabs{overflow-x:auto;scrollbar-width:none;-ms-overflow-style:none;margin-bottom:8px;}' +
+    '.stickyHeader .tabs::-webkit-scrollbar{display:none;}' +
+    '.stickyHeader .tab{flex:1 0 auto;white-space:nowrap;text-align:center;text-decoration:none;' +
+      'display:flex;align-items:center;justify-content:center;}';
 
   var HTML = '' +
   '<div class="stickyHeader">' +
@@ -23,10 +38,20 @@
         '</div>' +
       '</a>' +
       '<div class="topActions">' +
-        '<a class="chip" href="/" title="Lecture">📖 Lire</a>' +
         '<button id="btnTheme" class="iconBtn" title="Thème" aria-label="Changer de thème"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2.8v2.4M12 18.8v2.4M4.9 4.9l1.7 1.7M17.4 17.4l1.7 1.7M2.8 12h2.4M18.8 12h2.4M4.9 19.1l1.7-1.7M17.4 6.6l1.7-1.7"/></svg></button>' +
       '</div>' +
     '</header>' +
+    '<div class="lbSearch"><div class="lbSearchInner">' +
+      '<span class="gsIcon">\uD83D\uDD0D</span>' +
+      '<input id="lbSearchInput" type="text" placeholder="Rechercher un verset, mot clé\u2026" autocomplete="off" />' +
+      '<button id="lbSearchBtn" type="button">Rechercher</button>' +
+    '</div></div>' +
+    '<nav class="tabs" aria-label="Navigation">' +
+      '<a class="tab" href="/">Lecture</a>' +
+      '<a class="tab" href="/#plan">Plan</a>' +
+      '<a class="tab" href="/#bibliotheque">Biblioth\u00e8que</a>' +
+      '<a class="tab" id="lbTabVersets" href="/versets">Versets</a>' +
+    '</nav>' +
   '</div>';
 
   function mount() {
@@ -38,6 +63,23 @@
     }
     var slot = document.getElementById('lb-topbar');
     if (slot) slot.innerHTML = HTML;
+
+    /* recherche : renvoie vers la page de lecture qui exécute la requête */
+    var sInput = document.getElementById('lbSearchInput');
+    var sBtn = document.getElementById('lbSearchBtn');
+    function go() {
+      var q = (sInput && sInput.value || '').trim();
+      if (!q) return;
+      window.location.href = '/#q=' + encodeURIComponent(q);
+    }
+    if (sBtn) sBtn.addEventListener('click', go);
+    if (sInput) sInput.addEventListener('keydown', function (e) { if (e.key === 'Enter') go(); });
+
+    /* onglet actif selon la page */
+    if (location.pathname.indexOf('/versets') === 0) {
+      var tv = document.getElementById('lbTabVersets');
+      if (tv) tv.classList.add('active');
+    }
 
     var btn = document.getElementById('btnTheme');
     function sync(){ var t = document.documentElement.getAttribute('data-theme') || 'dark'; if (btn) btn.innerHTML = t === 'light' ? '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>' : '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2.8v2.4M12 18.8v2.4M4.9 4.9l1.7 1.7M17.4 17.4l1.7 1.7M2.8 12h2.4M18.8 12h2.4M4.9 19.1l1.7-1.7M17.4 6.6l1.7-1.7"/></svg>'; }

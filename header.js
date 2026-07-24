@@ -11,8 +11,8 @@
     '.stickyHeader .topbar{position:relative !important;}' +
     '.brandDot{color:var(--gold);font-weight:700;}' +
     '.topActions .chip{padding:7px 12px;font-size:12.5px;border-radius:10px;}' +
-    /* barre de recherche partagée */
-    '.lbSearch{padding:8px 0 4px;}' +
+    /* barre de recherche partagée — identique à la page principale */
+    '.lbSearch{padding:8px 16px 6px;border-bottom:1px solid color-mix(in srgb,var(--text) 8%,transparent);}' +
     '.lbSearchInner{position:relative;display:flex;gap:8px;align-items:center;}' +
     '.lbSearchInner .gsIcon{position:absolute;left:12px;top:50%;transform:translateY(-50%);font-size:14px;opacity:.35;pointer-events:none;}' +
     '.lbSearchInner input{flex:1;padding:9px 36px;background:color-mix(in srgb,var(--text) 6%,transparent);' +
@@ -22,8 +22,10 @@
     '.lbSearchInner input::placeholder{color:var(--muted2);}' +
     '.lbSearchInner button{padding:9px 16px;border-radius:10px;border:none;cursor:pointer;font-family:inherit;' +
       'font-weight:700;font-size:13px;background:var(--accent,#c9a640);color:var(--accentText,#0b0b0b);white-space:nowrap;flex-shrink:0;}' +
-    /* onglets partagés (mêmes classes que la page principale) */
-    '.stickyHeader .tabs{overflow-x:auto;scrollbar-width:none;-ms-overflow-style:none;margin-bottom:8px;}' +
+    /* onglets partagés — même enveloppe que la page principale (.tabsWrap) */
+    '.tabsWrap{padding:8px 14px;background:var(--bg,#0b0b0b);border-bottom:1px solid rgba(226,197,122,0.12);}' +
+    '.tabsWrap .tabs{max-width:980px;margin:6px auto 0;box-shadow:none;}' +
+    '.stickyHeader .tabs{overflow-x:auto;scrollbar-width:none;-ms-overflow-style:none;}' +
     '.stickyHeader .tabs::-webkit-scrollbar{display:none;}' +
     '.stickyHeader .tab{flex:1 0 auto;white-space:nowrap;text-align:center;text-decoration:none;' +
       'display:flex;align-items:center;justify-content:center;}';
@@ -47,12 +49,14 @@
       '<input id="lbSearchInput" type="text" placeholder="Rechercher un verset, mot clé\u2026 (ex : Jean 3:16)" autocomplete="off" />' +
       '<button id="lbSearchBtn" type="button">Rechercher</button>' +
     '</div></div>' +
+    '<div class="tabsWrap">' +
     '<nav class="tabs" aria-label="Navigation">' +
       '<a class="tab" href="/">Lecture</a>' +
       '<a class="tab" href="/#plan">Plan</a>' +
       '<a class="tab" href="/#bibliotheque">Biblioth\u00e8que</a>' +
       '<a class="tab" id="lbTabVersets" href="/versets">Versets</a>' +
     '</nav>' +
+    '</div>' +
   '</div>';
 
   function mount() {

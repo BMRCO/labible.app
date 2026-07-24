@@ -13,14 +13,15 @@
     '.topActions .chip{padding:7px 12px;font-size:12.5px;border-radius:10px;}' +
     /* barre de recherche partagée */
     '.lbSearch{padding:8px 0 4px;}' +
-    '.lbSearchInner{display:flex;gap:8px;align-items:center;position:relative;}' +
-    '.lbSearchInner .gsIcon{position:absolute;left:11px;font-size:13px;opacity:.75;pointer-events:none;}' +
-    '.lbSearchInner input{flex:1;padding:9px 12px 9px 34px;background:color-mix(in srgb,var(--text) 6%,transparent);' +
+    '.lbSearchInner{position:relative;display:flex;gap:8px;align-items:center;}' +
+    '.lbSearchInner .gsIcon{position:absolute;left:12px;top:50%;transform:translateY(-50%);font-size:14px;opacity:.35;pointer-events:none;}' +
+    '.lbSearchInner input{flex:1;padding:9px 36px;background:color-mix(in srgb,var(--text) 6%,transparent);' +
       'border:1px solid color-mix(in srgb,var(--gold) 30%,transparent);border-radius:10px;color:var(--text);' +
-      'font-size:13px;font-family:inherit;outline:none;}' +
+      'font-size:13px;font-family:inherit;outline:none;transition:border-color .2s;}' +
+    '.lbSearchInner input:focus{border-color:color-mix(in srgb,var(--gold) 55%,transparent);}' +
     '.lbSearchInner input::placeholder{color:var(--muted2);}' +
-    '.lbSearchInner button{padding:9px 14px;border-radius:10px;border:none;cursor:pointer;font-family:inherit;' +
-      'font-weight:700;font-size:13px;background:var(--gold);color:#1a1505;}' +
+    '.lbSearchInner button{padding:9px 16px;border-radius:10px;border:none;cursor:pointer;font-family:inherit;' +
+      'font-weight:700;font-size:13px;background:var(--accent,#c9a640);color:var(--accentText,#0b0b0b);white-space:nowrap;flex-shrink:0;}' +
     /* onglets partagés (mêmes classes que la page principale) */
     '.stickyHeader .tabs{overflow-x:auto;scrollbar-width:none;-ms-overflow-style:none;margin-bottom:8px;}' +
     '.stickyHeader .tabs::-webkit-scrollbar{display:none;}' +
@@ -43,7 +44,7 @@
     '</header>' +
     '<div class="lbSearch"><div class="lbSearchInner">' +
       '<span class="gsIcon">\uD83D\uDD0D</span>' +
-      '<input id="lbSearchInput" type="text" placeholder="Rechercher un verset, mot clé\u2026" autocomplete="off" />' +
+      '<input id="lbSearchInput" type="text" placeholder="Rechercher un verset, mot clé\u2026 (ex : Jean 3:16)" autocomplete="off" />' +
       '<button id="lbSearchBtn" type="button">Rechercher</button>' +
     '</div></div>' +
     '<nav class="tabs" aria-label="Navigation">' +

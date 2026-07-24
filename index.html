@@ -116,9 +116,17 @@
     .tabLink{ display:flex; align-items:center; justify-content:center; }
     /* 3e sélecteur (Verset) : plus étroit pour tenir sur mobile */
     #readControls .controls .field:nth-child(3){ min-width:70px !important; flex:1; }
+
+    /* ── Onglets dans la barre fixe (au-dessus des sélecteurs) ── */
+    .tabsWrap{ padding: 8px 14px; background: var(--bg, #0b0b0b); }
+    .tabsWrap .tabs{ max-width: 980px; margin: 0 auto; box-shadow: none; }
+    /* Sélecteurs Livre/Chapitre/Verset : visibles uniquement en Lecture */
+    #readControls{ display: none; }
+    body.viewRead #readControls{ display: block; }
+    body:not(.viewRead) .tabsWrap{ border-bottom: 1px solid rgba(226,197,122,0.12); }
   </style>
 </head>
-<body>
+<body class="viewRead">
 
   <div class="stickyHeader">
   <header class="topbar">
@@ -156,6 +164,15 @@
     <div id="gResultsList"></div>
   </div>
 
+  <div class="tabsWrap">
+    <nav class="tabs" aria-label="Navigation">
+      <button class="tab active" data-view="read">Lecture</button>
+      <button class="tab" data-view="plan">Plan</button>
+      <button class="tab" data-view="library">Bibliothèque</button>
+      <a class="tab tabLink" href="/versets" style="text-decoration:none">Versets</a>
+    </nav>
+  </div>
+
   <div id="readControls">
     <div class="controls">
       <label class="field"><span>Livre</span><select id="bookSelect"></select></label>
@@ -170,13 +187,6 @@
   </div><!-- /stickyHeader -->
 
   <main class="container">
-
-    <nav class="tabs" aria-label="Navigation">
-      <button class="tab active" data-view="read">Lecture</button>
-      <button class="tab" data-view="plan">Plan</button>
-      <button class="tab" data-view="library">Bibliothèque</button>
-      <a class="tab tabLink" href="/versets" style="text-decoration:none">Versets</a>
-    </nav>
 
     <!-- LECTURE -->
     <section class="view active" id="view-read">
@@ -500,5 +510,18 @@
     })();
   </script>
 
+  <script>
+    /* Sélecteurs Livre/Chapitre/Verset visibles uniquement dans l'onglet Lecture.
+       On observe la classe "active" de l'onglet Lecture (mise à jour par setView). */
+    (function () {
+      var readTab = document.querySelector('.tab[data-view="read"]');
+      if (!readTab) return;
+      function upd() {
+        document.body.classList.toggle('viewRead', readTab.classList.contains('active'));
+      }
+      new MutationObserver(upd).observe(readTab, { attributes: true, attributeFilter: ['class'] });
+      upd();
+    })();
+  </script>
 </body>
 </html>

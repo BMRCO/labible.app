@@ -435,7 +435,7 @@ async function loadBible(){
 
   $("#bookSelect").value = String(state.current.book);
   refreshChapterSelect();
-  renderReading();
+  renderReading(hashRef && hashRef.v ? hashRef.v : null);
 
   await computeVerseOfDay();
   await renderPlan();
@@ -682,16 +682,18 @@ function parseReference(input){
   return { bi, c: chap, v: verse };
 }
 
-// Lit un lien profond du type "#Nom du livre-Chapitre" (ex: #Psaumes-23, #1 Corinthiens-13)
+// Lit un lien profond "#Livre-Chapitre" ou "#Livre-Chapitre:Verset"
 function parseHashRef(){
   try{
     const s = decodeURIComponent((location.hash || "").replace(/^#/, "")).trim();
     if(!s) return null;
-    const m = s.match(/^(.*)-(\d+)$/);
+    const m = s.match(/^(.+)-(\d+)(?::(\d+))?$/);
     if(!m) return null;
     const bi = findBookIndex(m[1].trim());
     if(bi < 0) return null;
-    return { bi, c: parseInt(m[2], 10) };
+    const ref = { bi, c: parseInt(m[2], 10) };
+    if(m[3]) ref.v = parseInt(m[3], 10);
+    return ref;
   } catch { return null; }
 }
 

@@ -771,7 +771,16 @@ function parseHashRef(){
   } catch { return null; }
 }
 
-function highlightText(text, query){
+function highlightText(text, query, exact){
+  if(exact){
+    // Recherche exacte : ne surligne que le mot/l'expression entière, pas les mots qui la contiennent
+    // (ex: "destin" ne surligne pas "destinés"). Les bornes tolèrent les lettres accentuées.
+    const w = String(query || "").trim();
+    if(!w) return escapeHtml(text);
+    const esc = escapeRegExp(w);
+    const re = new RegExp(`(?<![\\p{L}\\p{N}])(${esc})(?![\\p{L}\\p{N}])`, "giu");
+    return escapeHtml(text).replace(re, m => `<span class="hl">${m}</span>`);
+  }
   const q = normalize(query);
   if(q.length < 2) return escapeHtml(text);
   let out = escapeHtml(text);
@@ -819,23 +828,47 @@ async function buildIndex(force=false){
 window.appSearch = function(qRaw){
   if(!state.bible) return null;
   if(!state.index) return null;
-  const q = normalize(qRaw);
-  if(!q) return [];
-  const ref = parseReference(qRaw);
-  if(ref){
-    const book = state.bible.books[ref.bi];
-    const bookMap = getBookData(ref.bi);
-    const verses  = bookMap?.get(ref.c) || [];
-    const text    = ref.v ? String(verses[ref.v - 1] || "") : "";
-    return [{ ref: `${book.name} ${ref.c}${ref.v ? ":"+ref.v : ""}`, text, _parsed: ref }];
+
+  // Recherche exacte : "mot" ou «mot» → le mot (ou l'expression) entier uniquement,
+  // pas les mots qui le contiennent (ex: "destin" ne renvoie pas "destinés", "prédestinés").
+  const trimmed = String(qRaw || "").trim();
+  let exactWord = null;
+  let m;
+  if((m = trimmed.match(/^["“](.+)["”]$/)) || (m = trimmed.match(/^«\s*(.+?)\s*»$/))){
+    exactWord = m[1].trim();
   }
+  const isExact = exactWord !== null;
+
+  const q = normalize(isExact ? exactWord : trimmed);
+  if(!q) return [];
+
+  if(!isExact){
+    const ref = parseReference(qRaw);
+    if(ref){
+      const book = state.bible.books[ref.bi];
+      const bookMap = getBookData(ref.bi);
+      const verses  = bookMap?.get(ref.c) || [];
+      const text    = ref.v ? String(verses[ref.v - 1] || "") : "";
+      return [{ ref: `${book.name} ${ref.c}${ref.v ? ":"+ref.v : ""}`, text, _parsed: ref }];
+    }
+  }
+
+  let matchFn;
+  if(isExact){
+    const esc = q.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    const re = new RegExp(`(^|[^a-z0-9])${esc}($|[^a-z0-9])`, "i");
+    matchFn = norm => re.test(norm);
+  } else {
+    matchFn = norm => norm.includes(q);
+  }
+
   // Sem teto: devolve TODAS as ocorrências, em ordem bíblica (Genèse -> Apocalypse).
   // A paginação (50 + "Afficher plus") é tratada na UI (index.html).
   const results = [];
   for(const item of state.index){
-    if(item.norm.includes(q)){
+    if(matchFn(item.norm)){
       const bName = state.bible.books[item.bi].name;
-      results.push({ ref: `${bName} ${item.c}:${item.v}`, text: item.original, textHtml: highlightText(item.original, qRaw), _parsed: { bi: item.bi, c: item.c, v: item.v } });
+      results.push({ ref: `${bName} ${item.c}:${item.v}`, text: item.original, textHtml: highlightText(item.original, isExact ? exactWord : qRaw, isExact), _parsed: { bi: item.bi, c: item.c, v: item.v } });
     }
   }
   return results;

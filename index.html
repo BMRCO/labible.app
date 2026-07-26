@@ -125,6 +125,39 @@
     body.viewRead #readControls{ display: block; }
     body:not(.viewRead) .tabsWrap{ border-bottom: 1px solid rgba(226,197,122,0.12); }
   </style>
+
+  <style>
+    /* ── Vue "Versets" (thèmes) — intégrée à l'app, mêmes styles que les pages /versets/* ── */
+    #view-versets .backLink{ display:inline-block; font-size:13px; margin-bottom:6px; text-decoration:none; }
+    #view-versets h1{ font-family: ui-serif, Georgia, serif; font-size:24px; margin:6px 0 4px; }
+    #view-versets h1 .h1Icon{ display:inline-flex; vertical-align:-3px; color:var(--gold); margin-right:6px; }
+    #view-versets .pageLead{ color:var(--muted); font-size:14px; margin:0 0 16px; line-height:1.6; }
+    #themeGrid{ display:grid; grid-template-columns:1fr; gap:10px; margin-top:6px; }
+    @media (min-width:560px){ #themeGrid{ grid-template-columns:1fr 1fr; } }
+    .themeCard{ display:flex; align-items:center; gap:10px; padding:14px; border-radius:14px;
+      border:1px solid color-mix(in srgb, var(--text) 10%, transparent);
+      background: color-mix(in srgb, var(--text) 3%, transparent);
+      text-decoration:none; color:var(--text); font-weight:700; cursor:pointer;
+      transition:border-color .15s, background .15s; }
+    .themeCard:hover{ border-color: color-mix(in srgb, var(--gold) 40%, transparent);
+      background: color-mix(in srgb, var(--gold) 7%, transparent); }
+    .themeCard .em{ display:inline-flex; color:var(--gold); flex-shrink:0; }
+    #view-versets .versetList{ display:flex; flex-direction:column; gap:10px; margin:6px 0 18px; }
+    #view-versets .versetItem{ display:block; padding:12px 14px; border-radius:14px;
+      border:1px solid color-mix(in srgb, var(--text) 10%, transparent);
+      background: color-mix(in srgb, var(--text) 3%, transparent);
+      text-decoration:none; cursor:pointer; transition:border-color .15s, background .15s; }
+    #view-versets .versetItem:hover{ border-color: color-mix(in srgb, var(--gold) 40%, transparent);
+      background: color-mix(in srgb, var(--gold) 7%, transparent); }
+    #view-versets .versetRef{ display:block; color:var(--gold); font-weight:800; font-size:13px; margin-bottom:5px; }
+    #view-versets .versetText{ display:block; color:var(--text); font-family: ui-serif, Georgia, serif;
+      font-style:italic; line-height:1.65; }
+    #view-versets .ctaRead{ display:inline-block; margin:6px 0 4px; padding:11px 16px; border-radius:12px;
+      border:1px solid color-mix(in srgb, var(--gold) 40%, transparent);
+      background: color-mix(in srgb, var(--gold) 12%, transparent); color:var(--text);
+      font-weight:700; text-decoration:none; }
+    #view-versets .ctaRead:hover{ background: color-mix(in srgb, var(--gold) 18%, transparent); }
+  </style>
 </head>
 <body class="viewRead">
 
@@ -169,7 +202,7 @@
       <button class="tab active" data-view="read">Lecture</button>
       <button class="tab" data-view="plan">Plan</button>
       <button class="tab" data-view="library">Bibliothèque</button>
-      <a class="tab tabLink" href="/versets" style="text-decoration:none">Versets</a>
+      <button class="tab" data-view="versets">Versets</button>
     </nav>
   </div>
 
@@ -272,6 +305,26 @@
             <div class="list" id="historyList"></div>
           </div>
         </div>
+      </div>
+    </section>
+
+    <section class="view" id="view-versets">
+      <div class="card" id="versetsHub">
+        <div class="cardHeader">
+          <div>
+            <h2>Versets par thème</h2>
+            <div class="muted">16 thèmes, 350 versets — Bible Louis Segond 1910.</div>
+          </div>
+        </div>
+        <div class="themeGrid" id="themeGrid"></div>
+      </div>
+
+      <div class="card" id="versetsTheme" style="display:none">
+        <a class="backLink muted" href="#" id="btnBackThemes">← Tous les thèmes</a>
+        <h1 id="themeTitle"><span class="h1Icon" id="themeIcon"></span> <span id="themeLabel"></span></h1>
+        <p class="pageLead" id="themeLead"></p>
+        <div class="versetList" id="themeVerseList"></div>
+        <a class="ctaRead" href="#" id="btnThemeReadAll">📖 Lisez la Bible complète</a>
       </div>
     </section>
 

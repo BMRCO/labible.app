@@ -28,7 +28,8 @@ const state = {
   readFont:      16,
   vddRef:        null,
   selectedVerse: null,
-  explications:  null
+  explications:  null,
+  versetsThemes: null
 };
 
 /* ---------- helpers ---------- */
@@ -120,6 +121,75 @@ async function loadExplications(){
     state.explications = res.ok ? await res.json() : {};
   } catch { state.explications = {}; }
   return state.explications;
+}
+
+/* ---------- vue "Versets" (thèmes) — intégrée à l'app ---------- */
+async function loadVersetsThemes(){
+  if(state.versetsThemes) return state.versetsThemes;
+  try{
+    const res = await fetch("/data/versets_themes.json");
+    state.versetsThemes = res.ok ? await res.json() : {};
+  } catch { state.versetsThemes = {}; }
+  return state.versetsThemes;
+}
+
+function versetsShowHub(){
+  $("#versetsTheme").style.display = "none";
+  $("#versetsHub").style.display = "";
+}
+
+function versetsShowTheme(key){
+  const themes = state.versetsThemes || {};
+  const t = themes[key];
+  if(!t) return;
+
+  $("#themeIcon").innerHTML = t.icon;
+  $("#themeLabel").textContent = t.label;
+  $("#themeLead").innerHTML = `${escapeHtml(t.lead)} <strong>${t.refs.length} versets</strong> — Bible Louis Segond 1910.`;
+
+  const list = $("#themeVerseList");
+  list.innerHTML = "";
+  t.refs.forEach(([bookName, c, v]) => {
+    const bi = findBookIndex(bookName);
+    if(bi < 0) return;
+    const bookMap = getBookData(bi);
+    const verses  = bookMap?.get(c) || [];
+    const text    = verses[v - 1];
+    if(text === undefined) return;
+
+    const a = document.createElement("a");
+    a.className = "versetItem";
+    a.href = "#";
+    const refSpan = document.createElement("span");
+    refSpan.className = "versetRef";
+    refSpan.textContent = `${bookName} ${c}:${v}`;
+    const textSpan = document.createElement("span");
+    textSpan.className = "versetText";
+    textSpan.textContent = `« ${String(text).replace(/^¶\s*/g, "").trim()} »`;
+    a.append(refSpan, textSpan);
+    a.addEventListener("click", async (e) => { e.preventDefault(); await openReference({ bi, c, v }); });
+    list.appendChild(a);
+  });
+
+  $("#versetsHub").style.display = "none";
+  $("#versetsTheme").style.display = "";
+  $("#versetsTheme").scrollIntoView({ block: "start", behavior: "instant" });
+}
+
+async function renderVersetsHub(){
+  const themes = await loadVersetsThemes();
+  const grid = $("#themeGrid");
+  if(grid.dataset.built === "1") return;
+  grid.innerHTML = "";
+  Object.entries(themes).forEach(([key, t]) => {
+    const card = document.createElement("a");
+    card.className = "themeCard";
+    card.href = "#";
+    card.innerHTML = `<span class="em">${t.icon}</span> ${escapeHtml(t.label)}`;
+    card.addEventListener("click", (e) => { e.preventDefault(); versetsShowTheme(key); });
+    grid.appendChild(card);
+  });
+  grid.dataset.built = "1";
 }
 
 function attachExplication(bar, refKey){
@@ -346,12 +416,15 @@ function setView(view){
   $$(".tab").forEach(t => t.classList.toggle("active", t.dataset.view === view));
   $$(".view").forEach(v => v.classList.toggle("active", v.id === `view-${view}`));
   if(view === "library") renderLibrary();
+  if(view === "versets"){ versetsShowHub(); renderVersetsHub(); }
   $("#verseActionBar")?.remove();
   $$(".verse.selected").forEach(p => p.classList.remove("selected"));
   state.selectedVerse = null;
 }
 function bindTabs(){
   $$(".tab[data-view]").forEach(tab => tab.addEventListener("click", () => setView(tab.dataset.view)));
+  $("#btnBackThemes")?.addEventListener("click", (e) => { e.preventDefault(); versetsShowHub(); });
+  $("#btnThemeReadAll")?.addEventListener("click", (e) => { e.preventDefault(); setView("read"); });
 }
 
 /* ---------- theme / font ---------- */
@@ -443,6 +516,7 @@ async function loadBible(){
   buildIndex();
   loadExplications();
   loadCrossRefs();
+  loadVersetsThemes();
 }
 
 /* ---------- sélecteurs ---------- */

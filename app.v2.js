@@ -834,7 +834,7 @@ window.appSearch = function(qRaw){
   const trimmed = String(qRaw || "").trim();
   let exactWord = null;
   let m;
-  if((m = trimmed.match(/^["“](.+)["”]$/)) || (m = trimmed.match(/^«\s*(.+?)\s*»$/))){
+  if((m = trimmed.match(/^["“](.*)["”]$/)) || (m = trimmed.match(/^«\s*(.*?)\s*»$/))){
     exactWord = m[1].trim();
   }
   const isExact = exactWord !== null;

@@ -335,7 +335,7 @@
 
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
-  <script src="/app.v2.js?v=40"></script>
+  <script src="/app.v2.js?v=41"></script>
 
   <script>
   (function () {
@@ -357,6 +357,8 @@
     function doSearch() {
       var q = input.value.trim();
       if (!q) return;
+      // Guillemets vides ("" ou «») : équivalent à une recherche vide, on ignore.
+      if (/^["“”]{2}$/.test(q) || /^«\s*»$/.test(q)) return;
       if (typeof window.appSearch !== 'function') return;
       var hits = window.appSearch(q);
       if (hits === null) {

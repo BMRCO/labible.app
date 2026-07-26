@@ -11,8 +11,14 @@
 # en-tête. On n'utilise donc aucun motif large (ex. /*.js) qui toucherait sw.js,
 # et les extensions ci-dessous ne se recouvrent pas entre elles.
 #
-# Si vous modifiez l'un de ces fichiers, changez sa version/son nom (ex. ?v=5,
-# app.v3.js) ou purgez le cache Cloudflare, sinon l'ancienne version reste servie.
+# ⚠️ « immutable » veut dire que le NAVIGATEUR de chaque visiteur garde le fichier
+# jusqu'à 1 an SANS JAMAIS revérifier — y compris après un "Purge Everything" sur
+# Cloudflare, qui ne vide que le cache de bord, pas celui des appareils déjà passés
+# sur le site. Le seul moyen fiable de forcer une mise à jour est de CHANGER L'URL
+# du fichier : incrémenter son paramètre de version (`?v=39`, comme app.v2.js et
+# styles.css) ou renommer le fichier (`app.v3.js`). Après une édition de app.v2.js,
+# incrémenter à la fois `sw.js` (CACHE_NAME) ET le `?v=` dans le tag <script> de
+# index.html — l'un sans l'autre laisse d'anciennes copies en circulation.
 
 /*.json
   Cache-Control: public, max-age=31536000, immutable

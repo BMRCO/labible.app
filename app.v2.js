@@ -1084,7 +1084,7 @@ function bindInstall(){
 }
 
 function bindHeaderActions(){
-  $("#btnHome")?.addEventListener("click", () => window.scrollTo({top:0, behavior:"smooth"}));
+  $("#btnHome")?.addEventListener("click", () => { setView("read"); window.scrollTo({top:0, behavior:"smooth"}); });
   $("#btnTheme")?.addEventListener("click", () => { const cur = document.documentElement.getAttribute("data-theme")||"dark"; applyTheme(cur==="dark" ? "light" : "dark"); });
 }
 

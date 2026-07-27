@@ -176,6 +176,17 @@ function versetsShowTheme(key){
   $("#versetsTheme").scrollIntoView({ block: "start", behavior: "instant" });
 }
 
+// Libellés courts pour les cartes du hub (l'entête "Versets par thème" donne déjà
+// le contexte ; le titre complet — "Versets sur…" — reste utilisé dans la vue détail).
+const VERSETS_SHORT_LABEL = {
+  protection: "Protection", guerison: "Guérison", paix: "Paix",
+  amour: "Amour de Dieu", esperance: "Espérance", priere: "Prière",
+  promesses: "Promesses de Dieu", deuil: "Réconfort dans le deuil", pardon: "Pardon",
+  peur: "Peur et angoisse", confiance: "Confiance en Dieu", force: "Force et courage",
+  famille: "Famille", gratitude: "Gratitude et louange", combat: "Combat spirituel",
+  solitude: "Présence de Dieu"
+};
+
 async function renderVersetsHub(){
   const themes = await loadVersetsThemes();
   const grid = $("#themeGrid");
@@ -185,7 +196,8 @@ async function renderVersetsHub(){
     const card = document.createElement("a");
     card.className = "themeCard";
     card.href = "#";
-    card.innerHTML = `<span class="em">${t.icon}</span> ${escapeHtml(t.label)}`;
+    const short = VERSETS_SHORT_LABEL[key] || t.label;
+    card.innerHTML = `<span class="em">${t.icon}</span> ${escapeHtml(short)}`;
     card.addEventListener("click", (e) => { e.preventDefault(); versetsShowTheme(key); });
     grid.appendChild(card);
   });

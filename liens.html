@@ -16,6 +16,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:wght@400;500;600&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="/footer.js" defer></script>
 <style>
 :root{
   --bg:#0b0b0b; --gold:#e2c57a; --gold-deep:#c9a640; --cream:#f0ead8;
@@ -60,6 +61,16 @@ body{
 .foot{margin-top:34px;text-align:center;font-size:12px;color:var(--muted);line-height:1.8}
 .foot .sep{color:var(--gold-deep)}
 .foot a{color:var(--muted);text-decoration:none;border-bottom:1px solid var(--line)}
+
+/* Rodapé partagé (footer.js) — regles reprises de styles.css, adaptees aux variables de cette page */
+.footer{margin-top:30px;color:var(--muted);font-size:12px;display:flex;flex-direction:column;align-items:center;gap:8px;padding:0 6px;text-align:center;width:100%}
+.footer a{color:var(--muted);text-decoration:none}
+.footer a:hover{text-decoration:underline}
+.footerLinks{display:flex;align-items:center;flex-wrap:wrap;justify-content:center;gap:6px 10px}
+.socialIcons{display:flex;flex-direction:row;align-items:center;justify-content:center;gap:18px;margin:4px 0}
+.socialIcons a{display:flex;align-items:center;justify-content:center;opacity:.65;transition:opacity .2s,transform .2s;text-decoration:none;border-bottom:none}
+.socialIcons a:hover{opacity:1;transform:translateY(-2px);text-decoration:none}
+.socialIcons svg{width:22px;height:22px;display:block}
 </style>
 </head>
 <body>
@@ -127,11 +138,10 @@ body{
   </nav>
 
   <p class="foot">
-    Gratuit <span class="sep">·</span> Sans publicité <span class="sep">·</span> Sans compte<br>
-    © <span id="y"></span> <a href="/">labible.app</a>
+    Gratuit <span class="sep">·</span> Sans publicité <span class="sep">·</span> Sans compte
   </p>
-</main>
 
-<script>document.getElementById('y').textContent=new Date().getFullYear();</script>
+  <div id="lb-footer"></div>
+</main>
 </body>
 </html>

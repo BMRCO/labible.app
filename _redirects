@@ -7,3 +7,7 @@
 /pinterest   https://pinterest.com/labibleapp    301
 /tiktok      https://www.tiktok.com/@labible.app    301
 /threads     https://threads.net/@labible.app    301
+
+# Page orpheline (ancienne version, jamais liee depuis le site) -> page canonique
+/mentions-legales.html   /legal.html   301
+/mentions-legales        /legal.html   301

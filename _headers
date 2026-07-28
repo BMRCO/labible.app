@@ -43,3 +43,9 @@
 
 /*.woff
   Cache-Control: public, max-age=31536000, immutable
+
+# Pages SEO par chapitre (labible.app/lsg/*) : texte biblique, ne change quasiment
+# jamais. Cache modere (1 jour a la marge Cloudflare), SANS immutable — reste
+# actualisable si le modele de page change, contrairement a app.v2.js.
+/lsg/*
+  Cache-Control: public, max-age=86400, stale-while-revalidate=604800

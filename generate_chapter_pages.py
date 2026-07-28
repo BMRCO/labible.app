@@ -232,8 +232,109 @@ def build_page(entry, prev_entry, next_entry):
     )
 
 
+INDEX_TEMPLATE = """<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <title>Lire la Bible par livre et par chapitre — LSG 1910 | LaBible.app</title>
+  <meta name="description" content="Tous les livres de la Bible Louis Segond 1910, classes par chapitre. Lisez gratuitement Genese, Psaumes, Jean, Romains et les 66 livres de la Bible en ligne." />
+  <meta name="robots" content="index, follow" />
+  <link rel="canonical" href="{base_url}/lsg/" />
+  <meta property="og:title" content="Lire la Bible par livre et par chapitre — LaBible.app" />
+  <meta property="og:description" content="Tous les livres de la Bible Louis Segond 1910, classes par chapitre." />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="{base_url}/lsg/" />
+  <meta property="og:image" content="https://labible.app/icons/icon-512x512.png" />
+  <meta property="og:locale" content="fr_FR" />
+  <meta name="theme-color" content="#0b0b0b" />
+  <link rel="manifest" href="/manifest.webmanifest">
+  <link rel="icon" href="/icons/icon-192x192.png">
+  <link rel="apple-touch-icon" href="/icons/icon-192x192.png">
+  <link rel="icon" href="/favicon.ico" sizes="any">
+  <link rel="stylesheet" href="/styles.css?v=4" />
+  <style>
+    .stickyHeader {{ position: sticky; top: 0; z-index: 95; background: var(--bg, #0b0b0b); }}
+    .stickyHeader .topbar {{ position: relative !important; }}
+    .brandDot {{ color: var(--gold); font-weight: 700; }}
+    .pageContent {{ font-family: ui-serif, Georgia, "Times New Roman", serif; line-height: 1.78; }}
+    .bookGrid {{ display:grid; grid-template-columns: 1fr 1fr; gap: 8px; margin: 6px 0 4px; }}
+    @media (min-width:560px){{ .bookGrid {{ grid-template-columns: 1fr 1fr 1fr; }} }}
+    .bookGrid a {{ display:block; padding: 11px 13px; border-radius: 12px; border: 1px solid color-mix(in srgb, var(--text) 10%, transparent); background: color-mix(in srgb, var(--text) 3%, transparent); color: var(--text); text-decoration:none; font-family: ui-sans-serif, system-ui, sans-serif; font-size: 14px; font-weight: 600; }}
+    .bookGrid a:hover {{ border-color: color-mix(in srgb, var(--gold) 40%, transparent); background: color-mix(in srgb, var(--gold) 7%, transparent); }}
+    .testGroup {{ font-family: ui-sans-serif, system-ui, sans-serif; text-transform: uppercase; letter-spacing: .18em; font-size: 12px; font-weight: 700; color: var(--gold); margin: 26px 0 8px; }}
+  </style>
+  <script>
+    (function(){{ try {{ var t = localStorage.getItem('labible:theme') === 'light' ? 'light' : 'dark'; document.documentElement.setAttribute('data-theme', t); }} catch(e){{}} }})();
+  </script>
+  <script src="/footer.js" defer></script>
+  <script src="/header.js" defer></script>
+</head>
+<body>
+
+  <div id="lb-topbar"></div>
+
+  <main class="container">
+    <article class="card pageContent">
+      <a class="backLink muted" href="/" style="display:inline-block;font-size:13px;margin-bottom:14px;text-decoration:none;">← Retour à la lecture</a>
+
+      <h1 style="font-size:30px;margin:0 0 8px;">Lire la Bible par chapitre</h1>
+      <p style="color:var(--muted);font-size:15px;margin:0 0 6px;">Les 66 livres de la Bible Louis Segond 1910, chapitre par chapitre. Choisissez un livre pour commencer au chapitre 1.</p>
+
+      <p class="testGroup">Ancien Testament</p>
+      <div class="bookGrid">
+{ot_links}
+      </div>
+
+      <p class="testGroup">Nouveau Testament</p>
+      <div class="bookGrid">
+{nt_links}
+      </div>
+    </article>
+
+    <div id="lb-footer"></div>
+  </main>
+
+  <script>
+    (function(){{
+      var btn = document.getElementById('btnTheme');
+      function sync(){{ var t = document.documentElement.getAttribute('data-theme') || 'dark'; if (btn) btn.textContent = t === 'light' ? '☀️' : '🌙'; }}
+      sync();
+      if (btn) btn.addEventListener('click', function(){{
+        var cur = document.documentElement.getAttribute('data-theme') || 'dark';
+        var nxt = cur === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', nxt);
+        try {{ localStorage.setItem('labible:theme', nxt); }} catch(e){{}}
+        sync();
+      }});
+    }})();
+  </script>
+  <script>
+    if ('serviceWorker' in navigator) {{ window.addEventListener('load', function () {{ navigator.serviceWorker.register('/sw.js').catch(function(){{}}); }}); }}
+  </script>
+</body>
+</html>
+"""
+
+# Les 39 premiers livres de la Bible (dans l'ordre) sont l'Ancien Testament,
+# les 27 suivants le Nouveau Testament.
+OT_COUNT = 39
+
+
+def build_index_page(books_order, book_slugs):
+    ot = books_order[:OT_COUNT]
+    nt = books_order[OT_COUNT:]
+    ot_links = "\n".join(
+        f'        <a href="/lsg/{book_slugs[b]}/1">{_esc(b)}</a>' for b in ot
+    )
+    nt_links = "\n".join(
+        f'        <a href="/lsg/{book_slugs[b]}/1">{_esc(b)}</a>' for b in nt
+    )
+    return INDEX_TEMPLATE.format(base_url=BASE_URL, ot_links=ot_links, nt_links=nt_links)
+
+
 def build_sitemap_entries(chapters):
-    urls = []
+    urls = [f"  <url><loc>{BASE_URL}/lsg/</loc><changefreq>monthly</changefreq></url>"]
     for e in chapters:
         urls.append(f"  <url><loc>{BASE_URL}/lsg/{e['book_slug']}/{e['chapter']}</loc><changefreq>monthly</changefreq></url>")
     return urls
@@ -257,6 +358,13 @@ def main():
         written += 1
 
     print(f"{written} pages ecrites dans {OUT_DIR}/")
+
+    # --- page d'index /lsg/ : liste des 66 livres, un lien vers le site ---
+    book_slugs = {b: slugify(b) for b in books_order}
+    index_html = build_index_page(books_order, book_slugs)
+    with open(os.path.join(OUT_DIR, "index.html"), "w", encoding="utf-8") as f:
+        f.write(index_html)
+    print("page d'index lsg/index.html ecrite (liens vers les 66 livres)")
 
     # --- sitemap.xml : garde les URLs existantes, ajoute les nouvelles ---
     if os.path.exists(SITEMAP_PATH):

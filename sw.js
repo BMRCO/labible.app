@@ -1,4 +1,4 @@
-const CACHE_NAME = 'labible-v43';
+const CACHE_NAME = 'labible-v44';
 
 const STATIC_ASSETS = [
   '/',

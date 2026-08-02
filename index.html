@@ -376,7 +376,7 @@
     function makeResultItem(hit) {
       var el = document.createElement('div');
       el.className = 'gResultItem';
-      var bodyHtml = hit.textHtml ? '« ' + hit.textHtml + ' »' : '« ' + hit.text + ' »';
+      var bodyHtml = hit.textHtml ? '« ' + hit.textHtml + ' »' : '« ' + hit.text + ' »';
       el.innerHTML =
         '<div class="gResultHead"><span class="gResultRef">' + hit.ref + '</span><span class="gResultArrow">›</span></div>' +
         '<div class="gResultBody"><div class="gResultText" style="cursor:pointer">' + bodyHtml + '</div><div class="gResultActions"><button class="btnCopy">📎 Copier</button></div></div>';
@@ -387,7 +387,7 @@
       });
       el.querySelector('.btnCopy').addEventListener('click', function (e) {
         e.stopPropagation();
-        navigator.clipboard && navigator.clipboard.writeText('« ' + hit.text + ' »\n— ' + hit.ref + ' (LSG 1910)\n📖 https://labible.app');
+        navigator.clipboard && navigator.clipboard.writeText('« ' + hit.text + ' »\n— ' + hit.ref + ' (LSG 1910)\n📖 https://labible.app');
       });
       return el;
     }
@@ -401,11 +401,11 @@
       resultsList.innerHTML = '';
       var exact = isExactQuery(q);
       if (!hits.length) {
-        resultsMeta.textContent = 'Aucun résultat pour « ' + q + ' »' + (exact ? ' (recherche exacte)' : '');
+        resultsMeta.textContent = 'Aucun résultat pour « ' + q + ' »' + (exact ? ' (recherche exacte)' : '');
         resultsBox.classList.add('active');
         return;
       }
-      resultsMeta.textContent = '✦ ' + hits.length + ' résultat' + (hits.length > 1 ? 's' : '') + ' — « ' + q.toUpperCase() + ' »';
+      resultsMeta.textContent = '✦ ' + hits.length + ' résultat' + (hits.length > 1 ? 's' : '') + ' — « ' + q.toUpperCase() + ' »';
       if (!exact && hits.length >= 20) {
         var hint = document.createElement('div');
         hint.className = 'gResultsHint';

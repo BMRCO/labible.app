@@ -20,6 +20,7 @@
     .pageContent { font-family: ui-serif, Georgia, "Times New Roman", serif; line-height: 1.75; }
     .pageContent h1 { font-size: 26px; margin: 6px 0 4px; letter-spacing:.2px; }
     .pageContent h2 { font-size: 19px; margin: 24px 0 8px; }
+    .pageContent h3 { font-size: 16px; margin: 18px 0 6px; color: var(--gold); }
     .pageContent p, .pageContent li { color: var(--text); }
     .pageContent p { margin: 0 0 12px; }
     .pageContent a { color: var(--gold); text-decoration: underline; }
@@ -32,6 +33,39 @@
   <script>
     (function(){ try { var t = localStorage.getItem('labible:theme') === 'light' ? 'light' : 'dark'; document.documentElement.setAttribute('data-theme', t); } catch(e){} })();
   </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "SoftwareApplication",
+        "name": "LaBible.app",
+        "alternateName": "Bible Louis Segond 1910",
+        "applicationCategory": "BrowserApplication",
+        "operatingSystem": "Android, iOS, Windows, macOS, Linux",
+        "url": "https://labible.app/",
+        "installUrl": "https://labible.app/installer.html",
+        "inLanguage": "fr",
+        "description": "Application web gratuite pour lire la Bible Louis Segond 1910 en fran\u00e7ais, hors ligne, sans publicit\u00e9 ni inscription.",
+        "isAccessibleForFree": true,
+        "offers": { "@type": "Offer", "price": "0", "priceCurrency": "EUR" }
+      },
+      {
+        "@type": "FAQPage",
+        "mainEntity": [
+          { "@type": "Question", "name": "Faut-il cr\u00e9er un compte pour utiliser LaBible.app ?",
+            "acceptedAnswer": { "@type": "Answer", "text": "Non. LaBible.app s\u2019ouvre et s\u2019installe sans inscription, sans mot de passe et sans collecte de donn\u00e9es personnelles." } },
+          { "@type": "Question", "name": "L\u2019application fonctionne-t-elle sans connexion Internet ?",
+            "acceptedAnswer": { "@type": "Answer", "text": "Oui. Une fois install\u00e9e, la Bible Louis Segond 1910 reste accessible hors ligne : le texte des 31 102 versets est conserv\u00e9 sur l\u2019appareil." } },
+          { "@type": "Question", "name": "L\u2019installation passe-t-elle par un magasin d\u2019applications ?",
+            "acceptedAnswer": { "@type": "Answer", "text": "Non. L\u2019installation se fait directement depuis le navigateur, en quelques secondes, sans Play Store ni App Store." } },
+          { "@type": "Question", "name": "LaBible.app est-elle vraiment gratuite ?",
+            "acceptedAnswer": { "@type": "Answer", "text": "Oui, enti\u00e8rement. Aucune publicit\u00e9, aucun abonnement, aucune fonctionnalit\u00e9 payante. Le texte Louis Segond 1910 appartient au domaine public." } }
+        ]
+      }
+    ]
+  }
+  </script>
   <script src="/footer.js" defer></script>
   <script src="/header.js" defer></script>
 </head>
@@ -43,27 +77,49 @@
     <article class="card pageContent">
       <a class="backLink muted" href="/">← Retour à la lecture</a>
       <h1>Télécharger et installer LaBible.app</h1>
-      <p class="pageLead">Installez l'application pour un accès rapide, en plein écran et même hors ligne — sans passer par un magasin d'applications.</p>
+      <p class="pageLead">Téléchargez gratuitement la Bible Louis Segond 1910 sur votre téléphone, votre tablette ou votre ordinateur. L'installation prend quelques secondes depuis votre navigateur : accès rapide, plein écran et lecture hors ligne, sans compte et sans publicité.</p>
 
       <h2>Sur Android (Chrome)</h2>
       <ul>
         <li>Ouvrez labible.app dans Chrome.</li>
         <li>Touchez le menu ⋮ en haut à droite.</li>
         <li>Choisissez « Installer l'application » ou « Ajouter à l'écran d'accueil ».</li>
+        <li>Confirmez en touchant « Installer ». L'icône apparaît sur votre écran d'accueil.</li>
       </ul>
+      <p class="pageLead">Sur Samsung Internet, Firefox ou Opera, la marche à suivre est identique : ouvrez le menu du navigateur, puis choisissez « Ajouter à l'écran d'accueil ».</p>
 
       <h2>Sur iPhone et iPad (Safari)</h2>
       <ul>
         <li>Ouvrez labible.app dans Safari.</li>
         <li>Touchez le bouton Partager (le carré avec une flèche).</li>
-        <li>Choisissez « Sur l'écran d'accueil ».</li>
+        <li>Faites défiler, puis choisissez « Sur l'écran d'accueil ».</li>
+        <li>Touchez « Ajouter » en haut à droite.</li>
       </ul>
+      <p class="pageLead">Sur iPhone et iPad, l'installation n'est possible que depuis Safari : Chrome et Firefox ne proposent pas cette option sur iOS.</p>
 
       <h2>Sur ordinateur (Chrome ou Edge)</h2>
       <ul>
         <li>Ouvrez labible.app.</li>
         <li>Cliquez sur l'icône d'installation dans la barre d'adresse, puis sur « Installer ».</li>
+        <li>Si l'icône n'apparaît pas, ouvrez le menu ⋮ et choisissez « Installer LaBible.app ».</li>
       </ul>
+
+      <h2>Questions fréquentes</h2>
+
+      <h3>Faut-il créer un compte ?</h3>
+      <p>Non. LaBible.app s'ouvre et s'installe sans inscription, sans mot de passe et sans collecte de données personnelles.</p>
+
+      <h3>L'application fonctionne-t-elle sans connexion Internet ?</h3>
+      <p>Oui. Une fois installée, la Bible Louis Segond 1910 reste accessible hors ligne : le texte des 31 102 versets est conservé sur l'appareil.</p>
+
+      <h3>L'installation passe-t-elle par un magasin d'applications ?</h3>
+      <p>Non. L'installation se fait directement depuis le navigateur, en quelques secondes, sans Play Store ni App Store.</p>
+
+      <h3>LaBible.app est-elle vraiment gratuite ?</h3>
+      <p>Oui, entièrement. Aucune publicité, aucun abonnement, aucune fonctionnalité payante. Le texte Louis Segond 1910 appartient au domaine public.</p>
+
+      <h2>Ce que vous trouverez dans l'application</h2>
+      <p>La Bible Louis Segond 1910 complète — 66 livres, 1 189 chapitres, 31 102 versets — avec la recherche par mot ou par référence, les favoris, l'historique de lecture, un plan de lecture de 365 jours, le verset du jour, les références croisées et des pages de versets par thème.</p>
 
       <p><a href="/">Revenir à la lecture →</a></p>
     </article>

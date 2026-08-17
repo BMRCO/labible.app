@@ -12,9 +12,13 @@ name: Soumettre les URLs a IndexNow
 on:
   workflow_dispatch:
 
+# Le workflow ne modifie pas le depot.
+permissions: {}
+
 jobs:
   submit:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
       - name: Checkout
         uses: actions/checkout@v4

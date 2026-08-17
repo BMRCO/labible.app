@@ -3,9 +3,14 @@ name: Gerar dados da Biblia LSG1910
 on:
   workflow_dispatch:
 
+# Le workflow ecrit dans le depot.
+permissions:
+  contents: write
+
 jobs:
   generate:
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     permissions:
       contents: write
     steps:

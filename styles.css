@@ -523,3 +523,16 @@ select:focus{
   transition: opacity .18s ease, transform .18s ease;
 }
 .toast.show{ opacity: 1; transform: translateX(-50%) translateY(-2px); }
+
+/* ── Reserve d'espace pour les blocs injectes en JavaScript ──────────
+   header.js et footer.js sont charges en `defer` : le contenu est
+   insere apres le premier rendu, ce qui decale la page (CLS).
+   En reservant la hauteur des le depart, plus rien ne saute.
+   Mesure Cloudflare avant correction : #lb-footer 0,106 —
+   main.container jusqu'a 0,318. */
+#lb-footer { min-height: 232px; }
+#lb-topbar { min-height: 68px; }
+
+@media (max-width: 520px) {
+  #lb-footer { min-height: 300px; }
+}

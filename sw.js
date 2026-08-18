@@ -1,10 +1,10 @@
-const CACHE_NAME = 'labible-v44';
+const CACHE_NAME = 'labible-v45';
 
 const STATIC_ASSETS = [
   '/',
   '/index.html',
   '/offline.html',
-  '/styles.css?v=4',
+  '/styles.css?v=5',
   '/app.v2.js',
   '/footer.js',
   '/header.js',

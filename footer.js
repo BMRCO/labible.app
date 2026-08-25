@@ -20,6 +20,7 @@
     '<div class="footerLinks">' +
       '<a href="/a-propos.html">À propos</a><span>·</span>' +
       '<a href="/lsg/">Bible par chapitre</a><span>·</span>' +
+      '<a href="/quiz">Quiz biblique</a><span>·</span>' +
       '<a href="/installer.html">Installer</a><span>·</span>' +
       '<a href="/contact.html">Contact</a>' +
     '</div>' +

@@ -49,8 +49,16 @@
       color:var(--text); font:inherit; font-family: ui-serif, Georgia, serif; line-height:1.55; cursor:pointer; }
     .optBtn:hover:not(:disabled) { border-color: color-mix(in srgb, var(--gold) 40%, transparent); background: color-mix(in srgb, var(--gold) 7%, transparent); }
     .optBtn:disabled { cursor:default; }
-    .optBtn.good { border-color:#2b7a4b; background: color-mix(in srgb, #2b7a4b 16%, transparent); }
-    .optBtn.bad  { border-color:#8c3b3b; background: color-mix(in srgb, #8c3b3b 16%, transparent); }
+    .optBtn.good { border-color:#3d9c63; border-width:2px; background: color-mix(in srgb, #3d9c63 20%, transparent); }
+    .optBtn.bad  { border-color:#b04a4a; border-width:2px; background: color-mix(in srgb, #b04a4a 18%, transparent); }
+    .optBtn.dim  { opacity:.5; }
+    .optMark { float:right; margin-left:10px; font-family: system-ui, sans-serif; font-size:15px; font-weight:800; }
+    .optBtn.good .optMark { color:#3d9c63; }
+    .optBtn.bad  .optMark { color:#b04a4a; }
+    .verdict { font-family: system-ui, sans-serif; font-size:15px; font-weight:800; margin:0 0 8px; }
+    .verdict.good { color:#3d9c63; }
+    .verdict.bad  { color:#b04a4a; }
+    .verdictSub { font-size:13px; color:var(--muted); margin:0 0 10px; line-height:1.55; }
     .optKey { color:var(--gold); font-weight:800; margin-right:10px; font-family: system-ui, sans-serif; font-size:13px; }
 
     .afterBox { margin-top:16px; padding-top:14px; border-top:1px solid color-mix(in srgb, var(--text) 10%, transparent); }
@@ -92,9 +100,11 @@
         <p class="qProgress" id="qProgress"></p>
         <div class="qCard">
           <p class="qText" id="qText"></p>
-          <p class="qHint">Choisissez la suite du verset.</p>
+          <p class="qHint" id="qHint"></p>
           <div class="optList" id="optList"></div>
           <div class="afterBox hidden" id="afterBox">
+            <p class="verdict" id="verdict"></p>
+            <p class="verdictSub" id="verdictSub"></p>
             <a class="afterRef" id="afterRef" href="#"></a>
             <div class="btnRow">
               <button class="ctaRead" id="nextBtn">Question suivante</button>
@@ -178,7 +188,8 @@
     answered = false;
     var q = queue[idx];
     el('qProgress').textContent = 'Question ' + (idx+1) + ' sur ' + queue.length;
-    el('qText').textContent = '« ' + q.q + ' …';
+    el('qText').textContent = q.q;
+    el('qHint').textContent = q.p || 'Choisissez la suite du verset.';
     el('afterBox').classList.add('hidden');
     var html = '';
     q.o.forEach(function(o,i){
@@ -200,12 +211,26 @@
     answered = true;
     var q = queue[idx];
     if(i === q.a) score++;
+    var correct = (i === q.a);
     Array.prototype.forEach.call(document.querySelectorAll('.optBtn'), function(b){
       var bi = parseInt(b.getAttribute('data-i'),10);
       b.disabled = true;
-      if(bi === q.a) b.classList.add('good');
-      else if(bi === i) b.classList.add('bad');
+      if(bi === q.a){
+        b.classList.add('good');
+        b.insertAdjacentHTML('afterbegin', '<span class="optMark">\u2713</span>');
+      } else if(bi === i){
+        b.classList.add('bad');
+        b.insertAdjacentHTML('afterbegin', '<span class="optMark">\u2717</span>');
+      } else {
+        b.classList.add('dim');
+      }
     });
+    var vd = el('verdict'), vs = el('verdictSub');
+    vd.className = 'verdict ' + (correct ? 'good' : 'bad');
+    vd.textContent = correct ? '\u2713 Bonne réponse' : '\u2717 Réponse incorrecte';
+    vs.textContent = correct
+      ? 'Le verset est bien celui-ci.'
+      : 'La bonne réponse est signalée ci-dessus.';
     var a = el('afterRef');
     a.textContent = q.r + ' — lire le chapitre';
     a.href = refToHash(q.r);

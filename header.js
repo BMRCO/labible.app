@@ -67,7 +67,12 @@
       document.head.appendChild(st);
     }
     var slot = document.getElementById('lb-topbar');
-    if (slot) slot.innerHTML = HTML;
+    if (slot) {
+      slot.innerHTML = HTML;
+      /* hauteur reservee en CSS pour eviter le CLS : liberee une fois
+         la barre injectee, pour ne pas laisser d'espace superflu. */
+      slot.style.minHeight = '0';
+    }
 
     /* recherche : renvoie vers la page de lecture qui exécute la requête */
     var sInput = document.getElementById('lbSearchInput');

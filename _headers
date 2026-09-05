@@ -44,8 +44,24 @@
 /*.woff
   Cache-Control: public, max-age=31536000, immutable
 
-# Pages SEO par chapitre (labible.app/lsg/*) : texte biblique, ne change quasiment
-# jamais. Cache modere (1 jour a la marge Cloudflare), SANS immutable — reste
-# actualisable si le modele de page change, contrairement a app.v2.js.
+# Pages SEO par chapitre (labible.app/lsg/*) : texte biblique, ne change jamais.
+# 1.190 pages pour un trafic surtout de robots, reparti sur des dizaines de POP
+# Cloudflare : avec 1 jour de TTL, chaque page etait presque toujours expiree
+# quand elle etait redemandee — d'ou un taux de cache global autour de 55 %.
+#
+# Deux durees differentes, volontairement :
+#   max-age=3600     -> le NAVIGATEUR du lecteur ne garde la page qu'une heure.
+#                       Indispensable : le HTML de ces pages contient les URL
+#                       versionnees (`styles.css?v=5`). Un max-age long y
+#                       figerait une ancienne version chez les lecteurs
+#                       reguliers, sans moyen de la purger a distance.
+#   s-maxage=2592000 -> le cache de bord Cloudflare, lui, garde 30 jours.
+#                       C'est LA valeur qui fait monter le taux de cache, et
+#                       elle se vide instantanement avec un purge — donc une
+#                       erreur reste toujours rattrapable.
+#   stale-while-revalidate=604800 -> sert la version en cache pendant qu'elle
+#                       se rafraichit en arriere-plan (jamais d'attente).
+#
+# Toujours SANS immutable : voir l'avertissement en haut de ce fichier.
 /lsg/*
-  Cache-Control: public, max-age=86400, stale-while-revalidate=604800
+  Cache-Control: public, max-age=3600, s-maxage=2592000, stale-while-revalidate=604800

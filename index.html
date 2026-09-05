@@ -335,6 +335,35 @@
 
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
+  <script>
+    /* Lien profond depuis une publication du canal Telegram.
+       Le bouton des posts pointe vers ?startapp=psaumes-91_1 ; Telegram lance
+       la Mini App avec ce parametre dans le fragment (#tgWebAppStartParam=...).
+       On le reecrit ici dans le format que l'application lit deja
+       (#psaumes-91:1, voir parseHashRef), AVANT le chargement de app.v2.js :
+       la lecture s'ouvre donc directement sur le passage publie.
+       Sans Telegram, ou si le parametre est absent ou mal forme, ce bloc ne
+       fait rien et l'application demarre normalement. */
+    (function () {
+      try {
+        var h = location.hash || '';
+        if (h.indexOf('tgWebApp') < 0) return;
+        var m = h.match(/[#&]tgWebAppStartParam=([^&]+)/);
+        var sp = m ? decodeURIComponent(m[1]) : '';
+        // <livre-en-slug>-<chapitre>[_<verset>]
+        var p = sp.match(/^([a-z0-9-]+)-(\d+)(?:_(\d+))?$/i);
+        if (!p) return;
+        // parseHashRef attend le NOM du livre, pas son slug : les tirets du
+        // slug redeviennent des espaces ("1-corinthiens" -> "1 Corinthiens",
+        // "cantique-des-cantiques" -> "cantique des cantiques"). La comparaison
+        // cote application ignore la casse et les accents.
+        var hash = '#' + encodeURIComponent(p[1].replace(/-/g, ' '))
+                 + '-' + p[2] + (p[3] ? ':' + p[3] : '');
+        history.replaceState(null, '', location.pathname + location.search + hash);
+      } catch (e) {}
+    })();
+  </script>
+
   <script src="/app.v2.js?v=42"></script>
 
   <script>
@@ -482,7 +511,11 @@
   </script>
 
   <script>
-    (function () {
+    /* telegram-web-app.js est charge en "defer" : il ne s'execute qu'apres
+       l'analyse du document. Ce bloc doit donc attendre DOMContentLoaded,
+       sinon window.Telegram n'existe pas encore au moment ou il tourne et
+       RIEN ne s'applique — ni le theme, ni tg.expand(), ni le bouton Retour. */
+    function initTelegramUI() {
       var tg = window.Telegram && window.Telegram.WebApp;
       if (!tg || !tg.initData) return;
       tg.ready();
@@ -509,7 +542,12 @@
       });
       document.querySelectorAll('.tab').forEach(function (tab) { tab.addEventListener('click', function () { setTimeout(updateBackButton, 50); }); });
       updateBackButton();
-    })();
+    }
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', initTelegramUI);
+    } else {
+      initTelegramUI();
+    }
   </script>
 
   <script>

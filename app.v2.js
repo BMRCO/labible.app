@@ -13,11 +13,12 @@ const LS = {
   fav:   "labible:favs",
   hist:  "labible:history",
   plan:  "labible:plan365",
-  vdd:   "labible:vddCache"
+  vdd:   "labible:vddCache",
+  wake:  "labible:wakeLock"
 };
 
 const DATA_URL     = "/data/lsg1910.json";
-const DATA_URL_CDN = "https://cdn.jsdelivr.net/gh/BMRCO/labible@main/data/lsg1910.json";
+const DATA_URL_CDN = "https://cdn.jsdelivr.net/gh/BMRCO/labible.app@main/data/lsg1910.json";
 
 const state = {
   bible:         null,
@@ -29,7 +30,8 @@ const state = {
   vddRef:        null,
   selectedVerse: null,
   explications:  null,
-  versetsThemes: null
+  versetsThemes: null,
+  crossrefs:     null
 };
 
 /* ---------- helpers ---------- */
@@ -116,20 +118,30 @@ function showVerseActions(bookName, chapter, verse, text, el){
 
 async function loadExplications(){
   if(state.explications) return state.explications;
+  // En cas d'echec (hors ligne, 404), on NE met rien en cache : un objet
+  // vide est "truthy" et desactiverait la fonctionnalite pour toute la
+  // session, meme apres le retour du reseau. On renvoie {} sans le stocker,
+  // pour que la prochaine tentative refasse la requete.
   try{
     const res = await fetch("/data/explications.json");
-    state.explications = res.ok ? await res.json() : {};
-  } catch { state.explications = {}; }
+    if(!res.ok) return {};
+    state.explications = await res.json();
+  } catch { return {}; }
   return state.explications;
 }
 
 /* ---------- vue "Versets" (thèmes) — intégrée à l'app ---------- */
 async function loadVersetsThemes(){
   if(state.versetsThemes) return state.versetsThemes;
+  // En cas d'echec (hors ligne, 404), on NE met rien en cache : un objet
+  // vide est "truthy" et desactiverait la fonctionnalite pour toute la
+  // session, meme apres le retour du reseau. On renvoie {} sans le stocker,
+  // pour que la prochaine tentative refasse la requete.
   try{
     const res = await fetch("/data/versets_themes.json");
-    state.versetsThemes = res.ok ? await res.json() : {};
-  } catch { state.versetsThemes = {}; }
+    if(!res.ok) return {};
+    state.versetsThemes = await res.json();
+  } catch { return {}; }
   return state.versetsThemes;
 }
 
@@ -231,10 +243,15 @@ function attachExplication(bar, refKey){
 
 async function loadCrossRefs(){
   if(state.crossrefs) return state.crossrefs;
+  // En cas d'echec (hors ligne, 404), on NE met rien en cache : un objet
+  // vide est "truthy" et desactiverait la fonctionnalite pour toute la
+  // session, meme apres le retour du reseau. On renvoie {} sans le stocker,
+  // pour que la prochaine tentative refasse la requete.
   try{
     const res = await fetch("/data/crossrefs.json");
-    state.crossrefs = res.ok ? await res.json() : {};
-  } catch { state.crossrefs = {}; }
+    if(!res.ok) return {};
+    state.crossrefs = await res.json();
+  } catch { return {}; }
   return state.crossrefs;
 }
 
@@ -655,13 +672,18 @@ function updateFavButtonState(){
   if(btn) btn.textContent = getFavs().some(f => f.type==="ref" && f.ref===ref) ? "✅ Favori" : "🔖 Favori";
 }
 
+// Limite unique pour la liste de favoris. Deux valeurs differentes (120 et 200)
+// coexistaient sur la MEME liste : ajouter un chapitre en favori tronquait a 120
+// et supprimait silencieusement des versets deja enregistres.
+const FAV_MAX = 200;
+
 function toggleFavCurrent(){
   const ref  = currentRefString();
   const favs = getFavs();
   const idx  = favs.findIndex(f => f.type==="ref" && f.ref===ref);
   if(idx >= 0){ favs.splice(idx,1); toast("Favori supprimé."); }
   else { favs.unshift({ type:"ref", ref, at: nowIso() }); toast("Favori ajouté."); }
-  setFavs(favs.slice(0, 120));
+  setFavs(favs.slice(0, FAV_MAX));
   updateFavButtonState();
   renderLibrary();
 }
@@ -672,8 +694,66 @@ function toggleFavVerse(bookName, chapter, verse, text){
   const idx  = favs.findIndex(f => f.type==="verse" && f.ref===ref);
   if(idx >= 0){ favs.splice(idx,1); toast("Verset retiré."); }
   else { favs.unshift({ type:"verse", ref, text: String(text||""), at: nowIso() }); toast("Verset ajouté ⭐"); }
-  setFavs(favs.slice(0, 200));
+  setFavs(favs.slice(0, FAV_MAX));
   renderLibrary();
+}
+
+/* ---------- ecran maintenu allume pendant la lecture ---------- */
+/* L'ecran d'un telephone s'eteint apres 30 s a 2 min : genant quand on lit un
+   chapitre, le telephone pose. L'API Screen Wake Lock l'empeche.
+
+   Active par defaut, desactivable par le bouton du bandeau (preference gardee).
+   Le systeme LIBERE le verrou des que la page est masquee : il faut donc le
+   redemander a chaque retour, d'ou l'ecoute de 'visibilitychange'. */
+
+let _wakeLock = null;
+
+function wakeSupported(){ return "wakeLock" in navigator; }
+function wakeWanted(){ return localStorage.getItem(LS.wake) !== "0"; }  // defaut : actif
+
+async function wakeAcquire(){
+  if(!wakeSupported() || _wakeLock) return;
+  try{
+    _wakeLock = await navigator.wakeLock.request("screen");
+    _wakeLock.addEventListener("release", () => { _wakeLock = null; wakeRefreshButton(); });
+  } catch { _wakeLock = null; }   // refus du navigateur, batterie faible, onglet masque
+}
+
+async function wakeRelease(){
+  const l = _wakeLock;
+  _wakeLock = null;
+  try{ await l?.release(); } catch {}
+}
+
+async function wakeApply(){
+  if(wakeWanted() && document.visibilityState === "visible") await wakeAcquire();
+  else await wakeRelease();
+  wakeRefreshButton();
+}
+
+function wakeRefreshButton(){
+  const btn = $("#btnWake");
+  if(!btn) return;
+  if(!wakeSupported()){ btn.hidden = true; return; }
+  btn.hidden = false;
+  const on = wakeWanted();
+  btn.setAttribute("aria-pressed", on ? "true" : "false");
+  btn.style.color   = on ? "#e2c57a" : "";
+  btn.style.opacity = on ? "1" : ".55";
+  btn.title = on ? "Écran maintenu allumé — appuyez pour désactiver"
+                 : "Garder l'écran allumé pendant la lecture";
+}
+
+function bindWakeLock(){
+  const btn = $("#btnWake");
+  if(!wakeSupported()){ if(btn) btn.hidden = true; return; }
+  btn?.addEventListener("click", async () => {
+    localStorage.setItem(LS.wake, wakeWanted() ? "0" : "1");
+    await wakeApply();
+    toast(wakeWanted() ? "Écran maintenu allumé." : "L'écran peut s'éteindre.");
+  });
+  document.addEventListener("visibilitychange", wakeApply);
+  wakeApply();
 }
 
 /* ---------- rendu lecture ---------- */
@@ -1103,7 +1183,7 @@ function bindHeaderActions(){
 /* ---------- init ---------- */
 async function init(){
   const y = $("#year"); if(y) y.textContent = String(new Date().getFullYear());
-  loadTheme(); loadFont(); bindTabs(); bindHeaderActions(); bindSwipe(); bindLibraryButtons(); bindInstall();
+  loadTheme(); loadFont(); bindTabs(); bindHeaderActions(); bindSwipe(); bindLibraryButtons(); bindInstall(); bindWakeLock();
   try{ await loadBible(); toast("Bible chargée ✅"); }
   catch(err){ console.error(err); $("#pageHeader").textContent = "Erreur"; $("#verses").innerHTML = `<p class="verse"><span class="vnum">!</span><span>${escapeHtml(err.message||String(err))}</span></p>`; toast(String(err.message||err)); }
 }

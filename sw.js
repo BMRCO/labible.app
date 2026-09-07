@@ -5,7 +5,7 @@ const STATIC_ASSETS = [
   '/index.html',
   '/offline.html',
   '/styles.css?v=5',
-  '/app.v2.js?v=43',
+  '/app.v2.js?v=44',
   '/footer.js',
   '/header.js',
   '/data/explications.json',
@@ -47,15 +47,23 @@ self.addEventListener('install', event => {
           }).catch(() => {})
         )
       );
+      // Une donnee deja en cache n'est PAS retelechargee. Sans ce test, la
+      // moindre modification de sw.js relancait l'installation et refaisait
+      // descendre ~11 Mo a chaque utilisateur deja installe. Ces fichiers ne
+      // changent quasiment jamais ; pour en forcer un, changer son ?v= (comme
+      // pour quiz.json) ou monter CACHE_NAME.
+      //
       // allSettled : une donnee qui echoue (reseau instable) ne fait PAS
       // echouer l'installation. Ce qui manque sera recupere par
       // staleWhileRevalidate a la premiere utilisation.
       await Promise.allSettled(
-        DATA_ASSETS.map(url =>
-          fetch(url, { cache: 'reload' }).then(res => {
-            if (res.ok) return cache.put(url, res);
-          }).catch(() => {})
-        )
+        DATA_ASSETS.map(async url => {
+          try {
+            if (await cache.match(url)) return;
+            const res = await fetch(url, { cache: 'reload' });
+            if (res.ok) await cache.put(url, res);
+          } catch {}
+        })
       );
       console.log('[SW] Donnees hors ligne mises en cache ✓');
     })

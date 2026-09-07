@@ -235,6 +235,19 @@
         </div>
         <div class="page" id="readerPage" aria-live="polite">
           <div class="pageHeader" id="pageHeader"></div>
+
+          <!-- Astuce affichee une seule fois : le geste "toucher un verset"
+               ouvre six fonctions (image, explication, references, favori,
+               copier, partager) et rien ne le laissait deviner. Elle disparait
+               des que l'utilisateur touche un verset, ou via la croix. -->
+          <div id="verseHint" hidden
+               style="display:flex;gap:9px;align-items:flex-start;background:var(--goldSoft);border:1px solid var(--gold);border-radius:12px;padding:9px 10px;margin:0 0 13px;font-size:12.5px;line-height:1.5;color:var(--muted);">
+            <span aria-hidden="true">&#128161;</span>
+            <span>Touchez un verset pour le <b style="color:var(--gold);font-weight:700">partager</b> ou en <b style="color:var(--gold);font-weight:700">cr&eacute;er une image</b>.</span>
+            <button id="verseHintClose" aria-label="Masquer l'astuce"
+                    style="margin-left:auto;background:none;border:none;color:var(--muted);font-size:16px;line-height:1;cursor:pointer;padding:0 2px;">&times;</button>
+          </div>
+
           <div class="verses" id="verses"></div>
         </div>
 
@@ -296,6 +309,7 @@
             <div class="row gap8 wrap">
               <button class="btn" id="btnOpenVDD">📖 Ouvrir</button>
               <button class="btn" id="btnCopyVDD">📎 Copier</button>
+              <button class="btn" id="btnImgVDD">🖼️ Image</button>
             </div>
           </div>
           <div class="libBox">
@@ -365,7 +379,7 @@
     })();
   </script>
 
-  <script src="/app.v2.js?v=43"></script>
+  <script src="/app.v2.js?v=44"></script>
 
   <script>
   (function () {

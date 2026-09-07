@@ -1,11 +1,11 @@
-const CACHE_NAME = 'labible-v45';
+const CACHE_NAME = 'labible-v46';
 
 const STATIC_ASSETS = [
   '/',
   '/index.html',
   '/offline.html',
   '/styles.css?v=5',
-  '/app.v2.js',
+  '/app.v2.js?v=43',
   '/footer.js',
   '/header.js',
   '/data/explications.json',
@@ -15,11 +15,27 @@ const STATIC_ASSETS = [
   '/legal.html',
   '/installer.html',
   '/liens.html',
+  '/louis-segond.html',
+  '/conditions.html',
+  '/confidentialite.html',
+  '/quiz.html',
   '/icons/icon-192x192.png',
   '/icons/icon-512x512.png',
 ];
 
-const BIBLE_DATA = '/data/lsg1910.json';
+// Donnees volumineuses : tout ce qu'il faut pour que l'application soit
+// ENTIEREMENT utilisable hors ligne des la premiere installation.
+//
+// ATTENTION AUX PARAMETRES DE VERSION : la cle de cache est l'URL complete.
+// quiz.html demande '/data/quiz.json?v=1' — precharger '/data/quiz.json'
+// (sans le ?v=1) ne servirait a rien. Toujours copier l'URL exacte demandee
+// par la page.
+const DATA_ASSETS = [
+  '/data/lsg1910.json',        // 7,7 Mo — la Bible entiere
+  '/data/crossrefs.json',      // 2,4 Mo — 225 053 references croisees
+  '/data/quiz.json?v=1',       // 0,8 Mo — les 2 032 questions du quiz
+  '/data/versets_themes.json', // 0,02 Mo — les themes
+];
 
 self.addEventListener('install', event => {
   event.waitUntil(
@@ -31,16 +47,25 @@ self.addEventListener('install', event => {
           }).catch(() => {})
         )
       );
-      try {
-        const res = await fetch(BIBLE_DATA, { cache: 'reload' });
-        if (res.ok) await cache.put(BIBLE_DATA, res);
-        console.log('[SW] Bible JSON mis en cache ✓');
-      } catch (e) {
-        console.warn('[SW] Bible JSON non disponible:', e);
-      }
+      // allSettled : une donnee qui echoue (reseau instable) ne fait PAS
+      // echouer l'installation. Ce qui manque sera recupere par
+      // staleWhileRevalidate a la premiere utilisation.
+      await Promise.allSettled(
+        DATA_ASSETS.map(url =>
+          fetch(url, { cache: 'reload' }).then(res => {
+            if (res.ok) return cache.put(url, res);
+          }).catch(() => {})
+        )
+      );
+      console.log('[SW] Donnees hors ligne mises en cache ✓');
     })
   );
   self.skipWaiting();
+});
+
+// Permet a la page de forcer l'activation immediate d'une nouvelle version.
+self.addEventListener('message', event => {
+  if (event.data === 'SKIP_WAITING') self.skipWaiting();
 });
 
 self.addEventListener('activate', event => {
@@ -66,7 +91,8 @@ self.addEventListener('fetch', event => {
   if (request.method !== 'GET') return;
   if (!url.origin.includes(self.location.origin) && !url.hostname.includes('fonts.googleapis') && !url.hostname.includes('fonts.gstatic')) return;
 
-  if (url.pathname === BIBLE_DATA) {
+  // Les donnees volumineuses : cache d'abord, elles ne changent pas souvent.
+  if (url.pathname.startsWith('/data/')) {
     event.respondWith(cacheFirst(request));
     return;
   }

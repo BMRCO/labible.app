@@ -711,10 +711,20 @@ function hintSeen(){
   try{ return localStorage.getItem(LS.hint) === "0"; } catch { return false; }
 }
 
+/* L'astuce flotte au-dessus du texte. Pour qu'elle ne recouvre AUCUN verset,
+   on ajoute au <body> une marge basse de sa hauteur tant qu'elle est affichee :
+   le dernier verset remonte au-dessus d'elle au lieu de disparaitre dessous. */
+function hintReserveSpace(){
+  const box = $("#verseHint");
+  const visible = box && !box.hidden;
+  document.body.style.paddingBottom = visible ? "78px" : "";
+}
+
 function hintDismiss(persist){
   const box = $("#verseHint");
   if(box) box.hidden = true;
   if(persist) { try{ localStorage.setItem(LS.hint, "0"); } catch {} }
+  hintReserveSpace();
 }
 
 /* L'astuce est en position:fixed : elle flotterait au-dessus du Plan, de la
@@ -723,6 +733,7 @@ function hintSyncView(view){
   const box = $("#verseHint");
   if(!box || hintSeen()) return;
   box.hidden = (view !== "read");
+  hintReserveSpace();
 }
 
 function bindVerseHint(){
@@ -731,6 +742,7 @@ function bindVerseHint(){
   if(hintSeen()) return;               // deja vue : on ne la remontre jamais
   const vueActive = document.querySelector(".tab.active")?.dataset.view || "read";
   box.hidden = (vueActive !== "read");
+  hintReserveSpace();
   $("#verseHintClose")?.addEventListener("click", () => hintDismiss(true));
 }
 

@@ -14,7 +14,8 @@ const LS = {
   hist:  "labible:history",
   plan:  "labible:plan365",
   vdd:   "labible:vddCache",
-  wake:  "labible:wakeLock"
+  wake:  "labible:wakeLock",
+  hint:  "labible:hintVerse"
 };
 
 const DATA_URL     = "/data/lsg1910.json";
@@ -70,6 +71,7 @@ function buildVerseUrl(bookName, chapter){
 }
 
 function showVerseActions(bookName, chapter, verse, text, el){
+  hintDismiss(true);   // le geste est acquis : l'astuce n'a plus lieu d'etre
   $$(".verse.selected").forEach(p => p.classList.remove("selected"));
   el.classList.add("selected");
   state.selectedVerse = { bookName, chapter, verse, text };
@@ -698,6 +700,28 @@ function toggleFavVerse(bookName, chapter, verse, text){
   renderLibrary();
 }
 
+/* ---------- astuce "touchez un verset" ---------- */
+/* Le geste qui ouvre la barre d'actions (image, explication, references,
+   favori, copier, partager) n'etait signale nulle part. Cette ligne l'indique
+   une seule fois, puis disparait definitivement : des que l'utilisateur touche
+   un verset, elle a fait son travail. */
+
+function hintDismiss(persist){
+  const box = $("#verseHint");
+  if(box) box.hidden = true;
+  if(persist) { try{ localStorage.setItem(LS.hint, "0"); } catch {} }
+}
+
+function bindVerseHint(){
+  const box = $("#verseHint");
+  if(!box) return;
+  let vu = null;
+  try{ vu = localStorage.getItem(LS.hint); } catch {}
+  if(vu === "0") return;               // deja vue : on ne la remontre jamais
+  box.hidden = false;
+  $("#verseHintClose")?.addEventListener("click", () => hintDismiss(true));
+}
+
 /* ---------- ecran maintenu allume pendant la lecture ---------- */
 /* L'ecran d'un telephone s'eteint apres 30 s a 2 min : genant quand on lit un
    chapitre, le telephone pose. L'API Screen Wake Lock l'empeche.
@@ -1159,6 +1183,19 @@ function bindLibraryButtons(){
   $("#btnClearHistory")?.addEventListener("click", () => { if(confirm("Supprimer l'historique ?")){ localStorage.removeItem(LS.hist); renderLibrary(); toast("Historique supprimé."); } });
   $("#btnOpenVDD")?.addEventListener("click", async () => { if(!state.vddRef) await computeVerseOfDay(true); if(state.vddRef) await openReference(state.vddRef); });
   $("#btnCopyVDD")?.addEventListener("click", () => copyText($("#vddBox")?.textContent||""));
+  /* Meme image que depuis la barre d'actions : on retrouve le texte exact du
+     verset a partir de state.vddRef, plutot que de decouper #vddBox (qui
+     contient aussi la reference et un tiret). */
+  $("#btnImgVDD")?.addEventListener("click", async () => {
+    if(!state.vddRef) await computeVerseOfDay(true);
+    const r = state.vddRef;
+    if(!r || !state.bible) { toast("Verset du jour indisponible."); return; }
+    const book   = state.bible.books[r.bi];
+    const verses = getBookData(r.bi)?.get(r.c) || [];
+    const text   = String(verses[r.v - 1] || "").replace(/^¶\s*/g, "").trim();
+    if(!book || !text) { toast("Verset du jour indisponible."); return; }
+    await shareVerseImage(book.name, r.c, r.v, text);
+  });
 }
 
 /* ---------- PWA ---------- */
@@ -1183,7 +1220,7 @@ function bindHeaderActions(){
 /* ---------- init ---------- */
 async function init(){
   const y = $("#year"); if(y) y.textContent = String(new Date().getFullYear());
-  loadTheme(); loadFont(); bindTabs(); bindHeaderActions(); bindSwipe(); bindLibraryButtons(); bindInstall(); bindWakeLock();
+  loadTheme(); loadFont(); bindTabs(); bindHeaderActions(); bindSwipe(); bindLibraryButtons(); bindInstall(); bindWakeLock(); bindVerseHint();
   try{ await loadBible(); toast("Bible chargée ✅"); }
   catch(err){ console.error(err); $("#pageHeader").textContent = "Erreur"; $("#verses").innerHTML = `<p class="verse"><span class="vnum">!</span><span>${escapeHtml(err.message||String(err))}</span></p>`; toast(String(err.message||err)); }
 }

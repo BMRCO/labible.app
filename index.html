@@ -239,14 +239,21 @@
           <!-- Astuce affichee une seule fois : le geste "toucher un verset"
                ouvre six fonctions (image, explication, references, favori,
                copier, partager) et rien ne le laissait deviner.
-               FLOTTANTE (position:fixed) sous le bandeau colle de 60 px : elle
-               reste lisible pendant le defilement, sinon elle disparaissait
-               avant d'avoir ete lue. Meme traitement translucide + flou que
-               .topbar et .toast, pour qu'elle appartienne visuellement a
-               l'interface. Elle s'efface des que l'utilisateur touche un
-               verset, ou via la croix. -->
+
+               ANCREE EN BAS, pas en haut. Toute barre qui reste visible pendant
+               le defilement RECOUVRE le texte : ancree sous le bandeau, elle
+               masquait un verset en pleine lecture. En bas, combinee au
+               padding ajoute au <body> tant qu'elle est affichee, elle ne
+               cache pas un seul mot.
+
+               position:sticky aurait pousse le contenu au lieu de le couvrir,
+               mais .page porte overflow:hidden, ce qui annule sticky.
+
+               Elle s'efface des que l'utilisateur touche un verset, ou via la
+               croix. Etant fixed, elle flotterait sur toutes les vues :
+               hintSyncView() la masque hors de la lecture. -->
           <div id="verseHint" hidden
-               style="position:fixed;top:68px;left:50%;transform:translateX(-50%);z-index:45;width:calc(100% - 28px);max-width:620px;display:flex;gap:9px;align-items:flex-start;background:color-mix(in srgb, var(--bg) 82%, transparent);backdrop-filter:blur(18px) saturate(1.4);-webkit-backdrop-filter:blur(18px) saturate(1.4);border:1px solid var(--gold);border-radius:14px;padding:10px 12px;font-size:12.5px;line-height:1.5;color:var(--muted);box-shadow:0 14px 38px color-mix(in srgb, #000 40%, transparent);">
+               style="position:fixed;bottom:14px;left:50%;transform:translateX(-50%);z-index:45;width:calc(100% - 28px);max-width:620px;display:flex;gap:9px;align-items:flex-start;background:color-mix(in srgb, var(--bg) 92%, transparent);backdrop-filter:blur(18px) saturate(1.4);-webkit-backdrop-filter:blur(18px) saturate(1.4);border:1px solid var(--gold);border-radius:14px;padding:10px 12px;font-size:12.5px;line-height:1.5;color:var(--muted);box-shadow:0 14px 38px color-mix(in srgb, #000 45%, transparent);">
             <span aria-hidden="true">&#128161;</span>
             <span>Touchez un verset pour le <b style="color:var(--gold);font-weight:700">partager</b> ou en <b style="color:var(--gold);font-weight:700">cr&eacute;er une image</b>.</span>
             <button id="verseHintClose" aria-label="Masquer l'astuce"
@@ -384,7 +391,7 @@
     })();
   </script>
 
-  <script src="/app.v2.js?v=45"></script>
+  <script src="/app.v2.js?v=46"></script>
 
   <script>
   (function () {

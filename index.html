@@ -238,14 +238,19 @@
 
           <!-- Astuce affichee une seule fois : le geste "toucher un verset"
                ouvre six fonctions (image, explication, references, favori,
-               copier, partager) et rien ne le laissait deviner. Elle disparait
-               des que l'utilisateur touche un verset, ou via la croix. -->
+               copier, partager) et rien ne le laissait deviner.
+               FLOTTANTE (position:fixed) sous le bandeau colle de 60 px : elle
+               reste lisible pendant le defilement, sinon elle disparaissait
+               avant d'avoir ete lue. Meme traitement translucide + flou que
+               .topbar et .toast, pour qu'elle appartienne visuellement a
+               l'interface. Elle s'efface des que l'utilisateur touche un
+               verset, ou via la croix. -->
           <div id="verseHint" hidden
-               style="display:flex;gap:9px;align-items:flex-start;background:var(--goldSoft);border:1px solid var(--gold);border-radius:12px;padding:9px 10px;margin:0 0 13px;font-size:12.5px;line-height:1.5;color:var(--muted);">
+               style="position:fixed;top:68px;left:50%;transform:translateX(-50%);z-index:45;width:calc(100% - 28px);max-width:620px;display:flex;gap:9px;align-items:flex-start;background:color-mix(in srgb, var(--bg) 82%, transparent);backdrop-filter:blur(18px) saturate(1.4);-webkit-backdrop-filter:blur(18px) saturate(1.4);border:1px solid var(--gold);border-radius:14px;padding:10px 12px;font-size:12.5px;line-height:1.5;color:var(--muted);box-shadow:0 14px 38px color-mix(in srgb, #000 40%, transparent);">
             <span aria-hidden="true">&#128161;</span>
             <span>Touchez un verset pour le <b style="color:var(--gold);font-weight:700">partager</b> ou en <b style="color:var(--gold);font-weight:700">cr&eacute;er une image</b>.</span>
             <button id="verseHintClose" aria-label="Masquer l'astuce"
-                    style="margin-left:auto;background:none;border:none;color:var(--muted);font-size:16px;line-height:1;cursor:pointer;padding:0 2px;">&times;</button>
+                    style="margin-left:auto;background:none;border:none;color:var(--muted);font-size:17px;line-height:1;cursor:pointer;padding:0 2px;">&times;</button>
           </div>
 
           <div class="verses" id="verses"></div>
@@ -379,7 +384,7 @@
     })();
   </script>
 
-  <script src="/app.v2.js?v=44"></script>
+  <script src="/app.v2.js?v=45"></script>
 
   <script>
   (function () {

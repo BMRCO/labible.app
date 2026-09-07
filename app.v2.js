@@ -451,6 +451,7 @@ function setView(view){
   $("#verseActionBar")?.remove();
   $$(".verse.selected").forEach(p => p.classList.remove("selected"));
   state.selectedVerse = null;
+  hintSyncView(view);
 }
 function bindTabs(){
   $$(".tab[data-view]").forEach(tab => tab.addEventListener("click", () => setView(tab.dataset.view)));
@@ -706,19 +707,30 @@ function toggleFavVerse(bookName, chapter, verse, text){
    une seule fois, puis disparait definitivement : des que l'utilisateur touche
    un verset, elle a fait son travail. */
 
+function hintSeen(){
+  try{ return localStorage.getItem(LS.hint) === "0"; } catch { return false; }
+}
+
 function hintDismiss(persist){
   const box = $("#verseHint");
   if(box) box.hidden = true;
   if(persist) { try{ localStorage.setItem(LS.hint, "0"); } catch {} }
 }
 
+/* L'astuce est en position:fixed : elle flotterait au-dessus du Plan, de la
+   Bibliotheque et des Versets. On ne l'affiche que dans la vue de lecture. */
+function hintSyncView(view){
+  const box = $("#verseHint");
+  if(!box || hintSeen()) return;
+  box.hidden = (view !== "read");
+}
+
 function bindVerseHint(){
   const box = $("#verseHint");
   if(!box) return;
-  let vu = null;
-  try{ vu = localStorage.getItem(LS.hint); } catch {}
-  if(vu === "0") return;               // deja vue : on ne la remontre jamais
-  box.hidden = false;
+  if(hintSeen()) return;               // deja vue : on ne la remontre jamais
+  const vueActive = document.querySelector(".tab.active")?.dataset.view || "read";
+  box.hidden = (vueActive !== "read");
   $("#verseHintClose")?.addEventListener("click", () => hintDismiss(true));
 }
 

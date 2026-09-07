@@ -521,14 +521,57 @@
       if (!tg || !tg.initData) return;
       tg.ready();
       tg.expand();
-      var p = tg.themeParams || {};
+      /* Theme dans la Mini App.
+
+         ANCIEN COMPORTEMENT, CORRIGE : on injectait les couleurs de Telegram
+         une par une (--text, --muted, --bg...) SANS jamais synchroniser
+         data-theme. Les deux palettes se melangeaient : --text venait de
+         Telegram (utilise 35 fois dans la CSS) tandis que --panel, --gold,
+         --muted2 et --bg2 restaient ceux du theme de l'application.
+         Application en clair + Telegram en sombre = texte blanc sur carte
+         blanche, donc illisible. Trois des six variables injectees
+         (--card, --accent, --accentText) n'etaient meme lues nulle part.
+
+         MAINTENANT : on aligne data-theme sur le theme de Telegram et on
+         laisse la palette de l'application, coherente par construction,
+         faire le reste. Seul le fond suit Telegram, pour se fondre dans
+         l'interface du client. */
       var r = document.documentElement;
-      if (p.bg_color)            r.style.setProperty('--bg',          p.bg_color);
-      if (p.secondary_bg_color)  r.style.setProperty('--card',        p.secondary_bg_color);
-      if (p.text_color)          r.style.setProperty('--text',         p.text_color);
-      if (p.hint_color)          r.style.setProperty('--muted',        p.hint_color);
-      if (p.button_color)        r.style.setProperty('--accent',       p.button_color);
-      if (p.button_text_color)   r.style.setProperty('--accentText',   p.button_text_color);
+
+      function luminance(hex) {
+        var m = /^#?([0-9a-f]{6})$/i.exec(String(hex || ''));
+        if (!m) return null;
+        var n = parseInt(m[1], 16);
+        var c = [(n >> 16) & 255, (n >> 8) & 255, n & 255].map(function (v) {
+          v /= 255;
+          return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4);
+        });
+        return 0.2126 * c[0] + 0.7152 * c[1] + 0.0722 * c[2];
+      }
+
+      function appliquerTheme() {
+        var p = tg.themeParams || {};
+        var scheme = tg.colorScheme;
+        if (scheme !== 'light' && scheme !== 'dark') {
+          var l = luminance(p.bg_color);
+          scheme = (l === null) ? 'dark' : (l > 0.5 ? 'light' : 'dark');
+        }
+        /* applyTheme() vient de app.v2.js, deja charge (ligne 368) : il pose
+           data-theme, met a jour l'icone du bouton et garde la preference. */
+        if (typeof window.applyTheme === 'function') window.applyTheme(scheme);
+        else r.setAttribute('data-theme', scheme);
+
+        /* Le fond suit Telegram pour que l'application se fonde dans le client.
+           Le texte, lui, reste celui de la palette de l'application. */
+        if (p.bg_color) {
+          r.style.setProperty('--bg', p.bg_color);
+          r.style.setProperty('--bg2', p.secondary_bg_color || p.bg_color);
+        }
+      }
+
+      appliquerTheme();
+      /* L'utilisateur peut changer le theme de Telegram pendant la lecture. */
+      if (tg.onEvent) tg.onEvent('themeChanged', appliquerTheme);
       var tgChip = document.querySelector('a.chip.telegram');
       if (tgChip) tgChip.style.display = 'none';
       var installBtn = document.getElementById('btnInstall');

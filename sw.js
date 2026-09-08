@@ -5,7 +5,7 @@ const STATIC_ASSETS = [
   '/index.html',
   '/offline.html',
   '/styles.css?v=5',
-  '/app.v2.js?v=46',
+  '/app.v2.js?v=47',
   '/footer.js',
   '/header.js',
   '/data/explications.json',

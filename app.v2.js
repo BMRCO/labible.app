@@ -711,38 +711,51 @@ function hintSeen(){
   try{ return localStorage.getItem(LS.hint) === "0"; } catch { return false; }
 }
 
-/* L'astuce flotte au-dessus du texte. Pour qu'elle ne recouvre AUCUN verset,
-   on ajoute au <body> une marge basse de sa hauteur tant qu'elle est affichee :
-   le dernier verset remonte au-dessus d'elle au lieu de disparaitre dessous. */
-function hintReserveSpace(){
+/* On pilote l'affichage par style.display, PAS par l'attribut hidden.
+   [hidden]{display:none} est une regle du navigateur (specificite 0,1,0) : le
+   style inline de l'element (display:flex) la battait, et box.hidden = true
+   n'avait aucun effet visible. La croix ne fermait donc rien. */
+function hintVisible(){
   const box = $("#verseHint");
-  const visible = box && !box.hidden;
-  document.body.style.paddingBottom = visible ? "78px" : "";
+  return !!box && box.style.display !== "none";
+}
+
+function hintShow(visible){
+  const box = $("#verseHint");
+  if(!box) return;
+  box.style.display = visible ? "flex" : "none";
+  hintReserveSpace();
+}
+
+/* L'astuce flotte au-dessus du texte. Deux ajustements tant qu'elle est la :
+   - une marge basse au <body>, pour qu'elle ne recouvre AUCUN verset ;
+   - le toast (« Bible chargee ✅ ») remonte : il occupe exactement la meme
+     place (bottom:18px, centre) et les deux se superposaient. */
+function hintReserveSpace(){
+  const on = hintVisible();
+  document.body.style.paddingBottom = on ? "78px" : "";
+  const toast = $("#toast");
+  if(toast) toast.style.bottom = on ? "86px" : "";
 }
 
 function hintDismiss(persist){
-  const box = $("#verseHint");
-  if(box) box.hidden = true;
   if(persist) { try{ localStorage.setItem(LS.hint, "0"); } catch {} }
-  hintReserveSpace();
+  hintShow(false);
 }
 
-/* L'astuce est en position:fixed : elle flotterait au-dessus du Plan, de la
-   Bibliotheque et des Versets. On ne l'affiche que dans la vue de lecture. */
+/* Etant en position:fixed, elle flotterait au-dessus du Plan, de la
+   Bibliotheque et des Versets : on ne l'affiche que dans la vue de lecture. */
 function hintSyncView(view){
-  const box = $("#verseHint");
-  if(!box || hintSeen()) return;
-  box.hidden = (view !== "read");
-  hintReserveSpace();
+  if(hintSeen()) return;
+  hintShow(view === "read");
 }
 
 function bindVerseHint(){
   const box = $("#verseHint");
   if(!box) return;
-  if(hintSeen()) return;               // deja vue : on ne la remontre jamais
+  if(hintSeen()){ hintShow(false); return; }   // deja vue : plus jamais
   const vueActive = document.querySelector(".tab.active")?.dataset.view || "read";
-  box.hidden = (vueActive !== "read");
-  hintReserveSpace();
+  hintShow(vueActive === "read");
   $("#verseHintClose")?.addEventListener("click", () => hintDismiss(true));
 }
 

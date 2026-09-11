@@ -125,7 +125,13 @@ async function loadExplications(){
   // session, meme apres le retour du reseau. On renvoie {} sans le stocker,
   // pour que la prochaine tentative refasse la requete.
   try{
-    const res = await fetch("/data/explications.json");
+    // ?v=2 (11 sept. 2026) — 53 explications reecrites. Sans ce parametre,
+    // _headers sert ce fichier en « immutable, max-age=1 an » et le
+    // navigateur d'un lecteur non installe garderait l'ancien jusqu'en 2027.
+    // A INCREMENTER a chaque modification du CONTENU de explications.json,
+    // en meme temps que la ligne correspondante de STATIC_ASSETS dans sw.js :
+    // la cle de cache du service worker est l'URL COMPLETE, ?v= compris.
+    const res = await fetch("/data/explications.json?v=2");
     if(!res.ok) return {};
     state.explications = await res.json();
   } catch { return {}; }

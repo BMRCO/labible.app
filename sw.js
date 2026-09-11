@@ -1,5 +1,32 @@
 const CACHE_NAME = 'labible-v46';
 
+// ---------------------------------------------------------------------------
+// 11 septembre 2026 — POURQUOI CE FICHIER A ETE TOUCHE SANS RIEN CHANGER D'AUTRE
+//
+// 53 explications de data/explications.json ont ete reecrites (les passages de
+// l'Ancien Testament que le Nouveau rapporte au Christ). Sans cette ligne, la
+// correction n'atteignait personne :
+//
+//   1. _headers sert /*.json en « max-age=31536000, immutable » : le NAVIGATEUR
+//      de chaque lecteur garde l'ancien fichier pendant un an.
+//   2. app.v2.js demande /data/explications.json SANS ?v= : rien a incrementer.
+//   3. Purger Cloudflare ne vide que la bordure, jamais les appareils.
+//
+// La seule chose qui refait descendre ce fichier est une NOUVELLE INSTALLATION
+// du service worker : explications.json est dans STATIC_ASSETS, donc refetche
+// avec { cache: 'reload' }, qui ignore le cache HTTP. Or l'installation ne
+// rejoue que si sw.js change d'un octet. D'ou ce commentaire : il EST le
+// correctif.
+//
+// ⚠️ NE PAS monter CACHE_NAME pour cela. Le cache reste 'labible-v46', donc :
+//    - les STATIC_ASSETS (petits) redescendent : ~200 Ko ;
+//    - les DATA_ASSETS sont sautes par « if (await cache.match(url)) return » :
+//      les ~11 Mo de la Bible ne bougent pas ;
+//    - activate ne supprime rien, puisque aucun cache ne devient orphelin.
+//
+// A REFAIRE a chaque modification du contenu de data/explications.json.
+// ---------------------------------------------------------------------------
+
 const STATIC_ASSETS = [
   '/',
   '/index.html',

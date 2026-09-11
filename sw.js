@@ -1,30 +1,41 @@
 const CACHE_NAME = 'labible-v46';
 
 // ---------------------------------------------------------------------------
-// 11 septembre 2026 — POURQUOI CE FICHIER A ETE TOUCHE SANS RIEN CHANGER D'AUTRE
+// 11 septembre 2026 — FAIRE PARVENIR UNE CORRECTION DE data/explications.json
 //
-// 53 explications de data/explications.json ont ete reecrites (les passages de
-// l'Ancien Testament que le Nouveau rapporte au Christ). Sans cette ligne, la
-// correction n'atteignait personne :
+// 53 explications ont ete reecrites (les passages de l'Ancien Testament que le
+// Nouveau rapporte au Christ). Trois obstacles se cumulaient :
 //
 //   1. _headers sert /*.json en « max-age=31536000, immutable » : le NAVIGATEUR
-//      de chaque lecteur garde l'ancien fichier pendant un an.
-//   2. app.v2.js demande /data/explications.json SANS ?v= : rien a incrementer.
-//   3. Purger Cloudflare ne vide que la bordure, jamais les appareils.
+//      de chaque lecteur garde l'ancien fichier pendant UN AN.
+//   2. app.v2.js demandait /data/explications.json SANS ?v= : rien a changer
+//      dans l'URL, donc aucun moyen de percer ce cache.
+//   3. Purger Cloudflare ne vide que la bordure, JAMAIS les appareils.
 //
-// La seule chose qui refait descendre ce fichier est une NOUVELLE INSTALLATION
-// du service worker : explications.json est dans STATIC_ASSETS, donc refetche
-// avec { cache: 'reload' }, qui ignore le cache HTTP. Or l'installation ne
-// rejoue que si sw.js change d'un octet. D'ou ce commentaire : il EST le
-// correctif.
+// Deux mecanismes distincts, parce qu'il y a deux publics :
 //
-// ⚠️ NE PAS monter CACHE_NAME pour cela. Le cache reste 'labible-v46', donc :
-//    - les STATIC_ASSETS (petits) redescendent : ~200 Ko ;
+//   LECTEURS INSTALLES — le service worker se reinstalle des que ce fichier
+//   change d'un octet, et les STATIC_ASSETS sont refetches avec
+//   { cache: 'reload' }, qui ignore le cache HTTP.
+//
+//   LECTEURS NON INSTALLES — rien ne se reinstalle chez eux : seul un
+//   changement d'URL perce l'« immutable ». D'ou le ?v=2 sur explications.json
+//   dans app.v2.js, et le ?v=48 sur app.v2.js lui-meme (sinon ils garderaient
+//   l'ancien script, qui demande l'ancienne URL).
+//
+// ⚠️ LA CLE DE CACHE EST L'URL COMPLETE. Les deux lignes de STATIC_ASSETS
+// ci-dessous doivent porter EXACTEMENT les URLs demandees par les pages :
+// '/data/explications.json?v=2' et '/app.v2.js?v=48'. Une seule des deux
+// oubliee, et le fichier est precache sous une cle que personne ne demande.
+//
+// ⚠️ NE PAS monter CACHE_NAME pour cela. Il reste 'labible-v46', donc :
+//    - les STATIC_ASSETS (petits) redescendent : ~250 Ko ;
 //    - les DATA_ASSETS sont sautes par « if (await cache.match(url)) return » :
 //      les ~11 Mo de la Bible ne bougent pas ;
-//    - activate ne supprime rien, puisque aucun cache ne devient orphelin.
+//    - aucun cache ne devient orphelin, donc activate n'en supprime aucun.
 //
-// A REFAIRE a chaque modification du contenu de data/explications.json.
+// A REFAIRE a chaque modification du CONTENU de data/explications.json :
+// incrementer son ?v= ici ET dans app.v2.js, les deux ensemble.
 // ---------------------------------------------------------------------------
 
 const STATIC_ASSETS = [
@@ -32,10 +43,10 @@ const STATIC_ASSETS = [
   '/index.html',
   '/offline.html',
   '/styles.css?v=5',
-  '/app.v2.js?v=47',
+  '/app.v2.js?v=48',
   '/footer.js',
   '/header.js',
-  '/data/explications.json',
+  '/data/explications.json?v=2',
   '/manifest.webmanifest',
   '/a-propos.html',
   '/contact.html',
@@ -62,6 +73,18 @@ const DATA_ASSETS = [
   '/data/crossrefs.json',      // 2,4 Mo — 225 053 references croisees
   '/data/quiz.json?v=1',       // 0,8 Mo — les 2 032 questions du quiz
   '/data/versets_themes.json', // 0,02 Mo — les themes
+];
+
+// Cles devenues obsoletes par un changement de ?v=. `activate` ne supprime que
+// des CACHES ENTIERS, par leur nom : ces entrees-la resteraient indefiniment
+// dans 'labible-v46', jamais demandees et jamais liberees.
+//
+// ⚠️ Liste EXPLICITE, jamais un balayage large du type « supprimer ce qui n'est
+// pas dans STATIC_ASSETS » : cela effacerait les pages /lsg/* mises en cache a
+// la lecture, et le mode hors ligne avec elles.
+const CLES_OBSOLETES = [
+  '/app.v2.js?v=47',            // remplace par ?v=48
+  '/data/explications.json',    // remplace par ?v=2
 ];
 
 self.addEventListener('install', event => {
@@ -104,18 +127,20 @@ self.addEventListener('message', event => {
 });
 
 self.addEventListener('activate', event => {
-  event.waitUntil(
-    caches.keys().then(keys =>
-      Promise.all(
-        keys
-          .filter(key => key !== CACHE_NAME)
-          .map(key => {
-            console.log('[SW] Suppression ancien cache:', key);
-            return caches.delete(key);
-          })
-      )
-    )
-  );
+  event.waitUntil((async () => {
+    const keys = await caches.keys();
+    await Promise.all(
+      keys
+        .filter(key => key !== CACHE_NAME)
+        .map(key => {
+          console.log('[SW] Suppression ancien cache:', key);
+          return caches.delete(key);
+        })
+    );
+    // Puis les entrees perimees A L'INTERIEUR du cache courant.
+    const cache = await caches.open(CACHE_NAME);
+    await Promise.all(CLES_OBSOLETES.map(url => cache.delete(url)));
+  })());
   self.clients.claim();
 });
 

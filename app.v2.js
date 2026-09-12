@@ -66,8 +66,28 @@ function buildVerseShareText(bookName, chapter, verse, text){
   const ref = `${bookName} ${chapter}:${verse}`;
   return `« ${cleanText} »\n— ${ref} (LSG 1910)`;
 }
+/* Lien de PARTAGE — la page statique du chapitre, jamais le hash du SPA.
+   Meme algorithme que slugify() de generate_chapter_pages.py et que
+   slugify_book() de bot.py : les trois doivent rester identiques, sinon le
+   lien partage pointe vers une page qui n'existe pas.
+     « Ésaïe » -> esaie · « Cantique des Cantiques » -> cantique-des-cantiques
+     « 1 Samuel » -> 1-samuel                                                */
+function slugifyBook(name){
+  return String(name || "")
+    .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase().replace(/ /g, "-")
+    .replace(/[^a-z0-9-]/g, "");
+}
+function chapterUrl(bookName, chapter){
+  return `https://labible.app/lsg/${slugifyBook(bookName)}/${chapter}`;
+}
+/* Le hash reste l'URL INTERNE de l'application (history.replaceState, liens
+   de la liste) : il ouvre le passage dans l'app deja chargee. Il ne doit
+   jamais sortir dans un partage — le robot d'un reseau social n'y voit que la
+   coquille du SPA, sans titre ni description de chapitre, et le lecteur qui
+   le suit telecharge les 7,7 Mo de la Bible au lieu d'une page legere. */
 function buildVerseUrl(bookName, chapter){
-  return `https://labible.app/#${bookName}-${chapter}`;
+  return chapterUrl(bookName, chapter);
 }
 
 function showVerseActions(bookName, chapter, verse, text, el){
@@ -1050,7 +1070,7 @@ async function shareCurrent(){
   const bookMap = getBookData(state.current.book);
   const verses  = bookMap?.get(c) || [];
   const first   = verses[0] ? String(verses[0]).replace(/^¶\s*/, "").slice(0, 100) : "";
-  const url     = `https://labible.app/#${book.name}-${c}`;
+  const url     = chapterUrl(book.name, c);
   const shareText = first ? `${book.name} ${c} :\n"${first}…"` : `${book.name} ${c}`;
   if(navigator.share){ try{ await navigator.share({ title:`${book.name} ${c} \u2014 LaBible.app`, text: shareText, url }); } catch{} }
   else { await copyText(`${shareText}\n\n📖 ${url}`); }
@@ -1208,7 +1228,7 @@ function renderLibrary(){
       const bookMap = parsed ? getBookData(parsed.bi) : null; const verses = bookMap?.get(parsed?.c) || [];
       const text = parsed?.v ? String(verses[parsed.v-1]||"") : ""; const bName = parsed ? state.bible.books[parsed.bi].name : "";
       if(parsed?.v && text){ copyText(buildVerseShareText(bName, parsed.c, parsed.v, text)); }
-      else { copyText(parsed ? `https://labible.app/#${bName}-${parsed.c}` : refStr); }
+      else { copyText(parsed ? chapterUrl(bName, parsed.c) : refStr); }
     }));
     box.querySelectorAll("[data-share]").forEach(btn => btn.addEventListener("click", async () => {
       const refStr = btn.getAttribute("data-share"); const parsed = parseReference(refStr);

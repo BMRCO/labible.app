@@ -19,13 +19,18 @@ const CACHE_NAME = 'labible-v46';
 //   { cache: 'reload' }, qui ignore le cache HTTP.
 //
 //   LECTEURS NON INSTALLES — rien ne se reinstalle chez eux : seul un
-//   changement d'URL perce l'« immutable ». D'ou le ?v=2 sur explications.json
-//   dans app.v2.js, et le ?v=48 sur app.v2.js lui-meme (sinon ils garderaient
+//   changement d'URL perce l'« immutable ». D'ou le ?v= sur explications.json
+//   dans app.v2.js, et le ?v= sur app.v2.js lui-meme (sinon ils garderaient
 //   l'ancien script, qui demande l'ancienne URL).
+//
+// 12 septembre : app.v2.js passe a ?v=49 — le bouton Partager envoyait le
+// hash du SPA (labible.app/#Actes-16) au lieu de la page du chapitre
+// (labible.app/lsg/actes/16). Aucun apercu de lien sur les reseaux, aucun
+// benefice de referencement, et 7,7 Mo telecharges par qui suit le lien.
 //
 // ⚠️ LA CLE DE CACHE EST L'URL COMPLETE. Les deux lignes de STATIC_ASSETS
 // ci-dessous doivent porter EXACTEMENT les URLs demandees par les pages :
-// '/data/explications.json?v=2' et '/app.v2.js?v=48'. Une seule des deux
+// '/data/explications.json?v=2' et '/app.v2.js?v=49'. Une seule des deux
 // oubliee, et le fichier est precache sous une cle que personne ne demande.
 //
 // ⚠️ NE PAS monter CACHE_NAME pour cela. Il reste 'labible-v46', donc :
@@ -43,7 +48,7 @@ const STATIC_ASSETS = [
   '/index.html',
   '/offline.html',
   '/styles.css?v=5',
-  '/app.v2.js?v=48',
+  '/app.v2.js?v=49',
   '/footer.js',
   '/header.js',
   '/data/explications.json?v=2',
@@ -84,6 +89,7 @@ const DATA_ASSETS = [
 // la lecture, et le mode hors ligne avec elles.
 const CLES_OBSOLETES = [
   '/app.v2.js?v=47',            // remplace par ?v=48
+  '/app.v2.js?v=48',            // remplace par ?v=49 (lien de partage)
   '/data/explications.json',    // remplace par ?v=2
 ];
 

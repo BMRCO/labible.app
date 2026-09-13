@@ -23,6 +23,11 @@ const CACHE_NAME = 'labible-v46';
 //   dans app.v2.js, et le ?v= sur app.v2.js lui-meme (sinon ils garderaient
 //   l'ancien script, qui demande l'ancienne URL).
 //
+// 13 septembre : explications.json passe a ?v=3 (neuf citations rendues
+// litterales) et app.v2.js a ?v=50, PARCE QUE c'est lui qui demande l'URL.
+// Versionner la donnee sans versionner le script qui la demande ne sert a
+// rien : le lecteur non installe garde l'ancien script, donc l'ancienne URL.
+//
 // 12 septembre : app.v2.js passe a ?v=49 — le bouton Partager envoyait le
 // hash du SPA (labible.app/#Actes-16) au lieu de la page du chapitre
 // (labible.app/lsg/actes/16). Aucun apercu de lien sur les reseaux, aucun
@@ -30,7 +35,7 @@ const CACHE_NAME = 'labible-v46';
 //
 // ⚠️ LA CLE DE CACHE EST L'URL COMPLETE. Les deux lignes de STATIC_ASSETS
 // ci-dessous doivent porter EXACTEMENT les URLs demandees par les pages :
-// '/data/explications.json?v=2' et '/app.v2.js?v=49'. Une seule des deux
+// '/data/explications.json?v=3' et '/app.v2.js?v=50'. Une seule des deux
 // oubliee, et le fichier est precache sous une cle que personne ne demande.
 //
 // ⚠️ NE PAS monter CACHE_NAME pour cela. Il reste 'labible-v46', donc :
@@ -48,10 +53,10 @@ const STATIC_ASSETS = [
   '/index.html',
   '/offline.html',
   '/styles.css?v=5',
-  '/app.v2.js?v=49',
+  '/app.v2.js?v=50',
   '/footer.js',
   '/header.js',
-  '/data/explications.json?v=2',
+  '/data/explications.json?v=3',
   '/manifest.webmanifest',
   '/a-propos.html',
   '/contact.html',
@@ -90,7 +95,9 @@ const DATA_ASSETS = [
 const CLES_OBSOLETES = [
   '/app.v2.js?v=47',            // remplace par ?v=48
   '/app.v2.js?v=48',            // remplace par ?v=49 (lien de partage)
+  '/app.v2.js?v=49',            // remplace par ?v=50 (13 sept.)
   '/data/explications.json',    // remplace par ?v=2
+  '/data/explications.json?v=2',// remplace par ?v=3 (citations litterales)
 ];
 
 self.addEventListener('install', event => {

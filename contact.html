@@ -28,6 +28,47 @@
     .pageLead { color: var(--muted); font-size: 15px; margin: 0 0 18px; }
     .backLink { display:inline-block; font-size: 13px; margin-bottom: 6px; text-decoration:none; }
     .topActions .chip { padding: 7px 12px; font-size: 12.5px; border-radius: 10px; }
+
+    /* ── Formulaire ─────────────────────────────────────────────────────── */
+    .cForm { margin: 4px 0 6px; font-family: system-ui, -apple-system, "Segoe UI", sans-serif; }
+    .cField { margin: 0 0 14px; }
+    .cField label {
+      display: block; font-size: 13px; letter-spacing: .2px;
+      color: var(--muted); margin: 0 0 6px;
+    }
+    .cForm input[type="text"],
+    .cForm input[type="email"],
+    .cForm textarea {
+      width: 100%; box-sizing: border-box;
+      background: rgba(127,127,127,.08);
+      color: var(--text);
+      border: 1px solid rgba(127,127,127,.28);
+      border-radius: 10px;
+      padding: 11px 12px;
+      font: inherit; font-size: 15px; line-height: 1.5;
+    }
+    .cForm textarea { min-height: 150px; resize: vertical; }
+    .cForm input:focus, .cForm textarea:focus {
+      outline: none; border-color: var(--gold);
+      box-shadow: 0 0 0 3px rgba(190,160,90,.15);
+    }
+    /* Piège à robots : jamais affiché, jamais rempli par un humain. */
+    .cTrap { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
+    .cSend {
+      appearance: none; cursor: pointer;
+      background: var(--gold); color: #10100c;
+      border: 0; border-radius: 10px;
+      padding: 12px 22px; font: inherit; font-size: 15px; font-weight: 600;
+      letter-spacing: .2px;
+    }
+    .cSend[disabled] { opacity: .55; cursor: default; }
+    .cNote { color: var(--muted); font-size: 13px; margin: 10px 0 0; }
+    .cMsg {
+      margin: 16px 0 0; padding: 12px 14px; border-radius: 10px;
+      font-size: 14.5px; line-height: 1.6; display: none;
+    }
+    .cMsg.ok   { display:block; background: rgba(120,190,120,.10); border: 1px solid rgba(120,190,120,.35); }
+    .cMsg.err  { display:block; background: rgba(210,120,110,.10); border: 1px solid rgba(210,120,110,.35); }
   </style>
   <script>
     (function(){ try { var t = localStorage.getItem('labible:theme') === 'light' ? 'light' : 'dark'; document.documentElement.setAttribute('data-theme', t); } catch(e){} })();
@@ -45,8 +86,36 @@
       <h1>Contact</h1>
       <p class="pageLead">Une question, une suggestion, ou une erreur à signaler ? Nous lisons tous les messages.</p>
 
-      <h2>Par e-mail</h2>
-      <p><a href="mailto:contact@labible.app">contact@labible.app</a></p>
+      <form class="cForm" id="cForm" novalidate>
+        <div class="cField">
+          <label for="cNom">Votre nom <span class="muted">(facultatif)</span></label>
+          <input type="text" id="cNom" name="nom" maxlength="80" autocomplete="name" />
+        </div>
+
+        <div class="cField">
+          <label for="cMail">Votre adresse e-mail</label>
+          <input type="email" id="cMail" name="email" maxlength="160" required autocomplete="email" />
+        </div>
+
+        <div class="cField">
+          <label for="cTexte">Votre message</label>
+          <textarea id="cTexte" name="message" maxlength="4000" required></textarea>
+        </div>
+
+        <!-- Piège à robots. Un humain ne le voit pas et ne le remplit jamais ;
+             un robot remplit tous les champs qu'il trouve. Rempli = rejeté. -->
+        <div class="cTrap" aria-hidden="true">
+          <label for="cSite">Ne remplissez pas ce champ</label>
+          <input type="text" id="cSite" name="site" tabindex="-1" autocomplete="off" />
+        </div>
+
+        <input type="hidden" name="t0" id="cT0" value="0" />
+
+        <button class="cSend" type="submit" id="cSend">Envoyer</button>
+        <p class="cNote">Votre adresse ne sert qu'à vous répondre. Elle n'est ni conservée, ni transmise, ni utilisée pour autre chose — voir notre <a href="/confidentialite">politique de confidentialité</a>.</p>
+      </form>
+
+      <div class="cMsg" id="cMsg" role="status" aria-live="polite"></div>
 
       <h2>Sur les réseaux</h2>
       <p>Vous pouvez aussi nous écrire via nos pages : Telegram, Facebook, Instagram, YouTube, Threads et Pinterest (icônes en bas de page).</p>
@@ -73,6 +142,85 @@
       });
     })();
   </script>
+
+  <script>
+    // ── Envoi du formulaire ───────────────────────────────────────────────
+    //
+    // Le message part vers /api/contact (un Worker Cloudflare) qui le
+    // transmet par e-mail. AUCUNE adresse n'est ecrite dans cette page :
+    // c'est tout l'interet du formulaire — le robot qui aspire les pages
+    // n'y trouve rien a recolter.
+    //
+    // Deux garde-fous cote client, doubles cote Worker :
+    //   - le champ piege « site », invisible ;
+    //   - t0, l'instant d'ouverture de la page. Un envoi en moins de trois
+    //     secondes n'est pas un humain qui a lu et redige.
+    (function(){
+      var form = document.getElementById('cForm');
+      var btn  = document.getElementById('cSend');
+      var msg  = document.getElementById('cMsg');
+      var t0   = document.getElementById('cT0');
+      if (!form) return;
+
+      t0.value = String(Date.now());
+
+      function dire(texte, ok){
+        msg.textContent = texte;
+        msg.className = 'cMsg ' + (ok ? 'ok' : 'err');
+      }
+
+      form.addEventListener('submit', function(ev){
+        ev.preventDefault();
+        msg.className = 'cMsg';
+
+        var email = form.email.value.trim();
+        var texte = form.message.value.trim();
+
+        if (!email || email.indexOf('@') < 1 || email.indexOf('.') < 0) {
+          dire("Merci d'indiquer une adresse e-mail valide, pour que nous puissions vous répondre.", false);
+          form.email.focus();
+          return;
+        }
+        if (texte.length < 10) {
+          dire("Votre message est trop court. Écrivez-nous quelques mots de plus.", false);
+          form.message.focus();
+          return;
+        }
+
+        btn.disabled = true;
+        btn.textContent = 'Envoi…';
+
+        fetch('/api/contact', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            nom:     form.nom.value.trim(),
+            email:   email,
+            message: texte,
+            site:    form.site.value,
+            t0:      Number(t0.value) || 0
+          })
+        })
+        .then(function(r){ return r.json().catch(function(){ return {}; }).then(function(j){ return { ok: r.ok, j: j }; }); })
+        .then(function(res){
+          if (res.ok) {
+            form.style.display = 'none';
+            dire("Message envoyé. Merci — nous vous répondrons dès que possible.", true);
+          } else {
+            dire((res.j && res.j.erreur) || "L'envoi a échoué. Réessayez dans un instant.", false);
+            btn.disabled = false;
+            btn.textContent = 'Envoyer';
+          }
+        })
+        .catch(function(){
+          dire("L'envoi a échoué — vérifiez votre connexion et réessayez.", false);
+          btn.disabled = false;
+          btn.textContent = 'Envoyer';
+        });
+      });
+    })();
+  </script>
+
   <script>
     if ('serviceWorker' in navigator) { window.addEventListener('load', function () { navigator.serviceWorker.register('/sw.js').catch(function(){}); }); }
   </script>

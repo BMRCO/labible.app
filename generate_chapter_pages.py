@@ -84,13 +84,24 @@ PAGE_TEMPLATE = """<!doctype html>
   <meta property="og:type" content="article" />
   <meta property="og:url" content="{canonical}" />
   <meta property="og:image" content="https://labible.app/icons/icon-512x512.png" />
+  <meta property="og:image:width" content="512" />
+  <meta property="og:image:height" content="512" />
+  <meta property="og:image:type" content="image/png" />
+  <meta property="og:image:alt" content="LaBible.app — Bible Louis Segond 1910" />
+  <meta property="og:site_name" content="LaBible.app" />
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:site" content="@LaBibleapp" />
+  <meta name="twitter:title" content="{title}" />
+  <meta name="twitter:description" content="{description}" />
+  <meta name="twitter:image" content="https://labible.app/icons/icon-512x512.png" />
+  <meta name="twitter:image:alt" content="LaBible.app — Bible Louis Segond 1910" />
   <meta property="og:locale" content="fr_FR" />
   <meta name="theme-color" content="#0b0b0b" />
   <link rel="manifest" href="/manifest.webmanifest">
   <link rel="icon" href="/icons/icon-192x192.png">
   <link rel="apple-touch-icon" href="/icons/icon-192x192.png">
   <link rel="icon" href="/favicon.ico" sizes="any">
-  <link rel="stylesheet" href="/styles.css?v=4" />
+  <link rel="stylesheet" href="/styles.css?v=5" />
   <style>
     .stickyHeader {{ position: sticky; top: 0; z-index: 95; background: var(--bg, #0b0b0b); }}
     .stickyHeader .topbar {{ position: relative !important; }}
@@ -246,13 +257,24 @@ INDEX_TEMPLATE = """<!doctype html>
   <meta property="og:type" content="website" />
   <meta property="og:url" content="{base_url}/lsg/" />
   <meta property="og:image" content="https://labible.app/icons/icon-512x512.png" />
+  <meta property="og:image:width" content="512" />
+  <meta property="og:image:height" content="512" />
+  <meta property="og:image:type" content="image/png" />
+  <meta property="og:image:alt" content="LaBible.app — Bible Louis Segond 1910" />
+  <meta property="og:site_name" content="LaBible.app" />
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:site" content="@LaBibleapp" />
+  <meta name="twitter:title" content="Lire la Bible par livre et par chapitre — LaBible.app" />
+  <meta name="twitter:description" content="Tous les livres de la Bible Louis Segond 1910, classes par chapitre." />
+  <meta name="twitter:image" content="https://labible.app/icons/icon-512x512.png" />
+  <meta name="twitter:image:alt" content="LaBible.app — Bible Louis Segond 1910" />
   <meta property="og:locale" content="fr_FR" />
   <meta name="theme-color" content="#0b0b0b" />
   <link rel="manifest" href="/manifest.webmanifest">
   <link rel="icon" href="/icons/icon-192x192.png">
   <link rel="apple-touch-icon" href="/icons/icon-192x192.png">
   <link rel="icon" href="/favicon.ico" sizes="any">
-  <link rel="stylesheet" href="/styles.css?v=4" />
+  <link rel="stylesheet" href="/styles.css?v=5" />
   <style>
     .stickyHeader {{ position: sticky; top: 0; z-index: 95; background: var(--bg, #0b0b0b); }}
     .stickyHeader .topbar {{ position: relative !important; }}
@@ -378,7 +400,13 @@ def main():
     new_locs_added = [u for u in new_urls if re.search(r"<loc>(.*?)</loc>", u).group(1) not in existing_locs]
 
     if existing and "</urlset>" in existing:
-        merged = existing.replace("</urlset>", "\n".join(new_locs_added) + "\n</urlset>")
+        # Sans ce test, chaque execution sans nouvelle URL ajoutait une ligne
+        # vide de plus avant </urlset>.
+        if new_locs_added:
+            merged = existing.replace(
+                "</urlset>", "\n".join(new_locs_added) + "\n</urlset>")
+        else:
+            merged = existing
     else:
         header = '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
         merged = header + "\n".join(new_urls) + "\n</urlset>\n"

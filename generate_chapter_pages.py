@@ -83,7 +83,7 @@ PAGE_TEMPLATE = """<!doctype html>
   <meta property="og:description" content="{description}" />
   <meta property="og:type" content="article" />
   <meta property="og:url" content="{canonical}" />
-  <meta property="og:image" content="https://labible.app/icons/icon-512x512.png" />
+  <meta property="og:image" content="https://labible.app/icons/icon-512x512.png?v=2" />
   <meta property="og:image:width" content="512" />
   <meta property="og:image:height" content="512" />
   <meta property="og:image:type" content="image/png" />
@@ -93,7 +93,7 @@ PAGE_TEMPLATE = """<!doctype html>
   <meta name="twitter:site" content="@LaBibleapp" />
   <meta name="twitter:title" content="{title}" />
   <meta name="twitter:description" content="{description}" />
-  <meta name="twitter:image" content="https://labible.app/icons/icon-512x512.png" />
+  <meta name="twitter:image" content="https://labible.app/icons/icon-512x512.png?v=2" />
   <meta name="twitter:image:alt" content="LaBible.app — Bible Louis Segond 1910" />
   <meta property="og:locale" content="fr_FR" />
   <meta name="theme-color" content="#0b0b0b" />
@@ -256,7 +256,7 @@ INDEX_TEMPLATE = """<!doctype html>
   <meta property="og:description" content="Tous les livres de la Bible Louis Segond 1910, classes par chapitre." />
   <meta property="og:type" content="website" />
   <meta property="og:url" content="{base_url}/lsg/" />
-  <meta property="og:image" content="https://labible.app/icons/icon-512x512.png" />
+  <meta property="og:image" content="https://labible.app/icons/icon-512x512.png?v=2" />
   <meta property="og:image:width" content="512" />
   <meta property="og:image:height" content="512" />
   <meta property="og:image:type" content="image/png" />
@@ -266,7 +266,7 @@ INDEX_TEMPLATE = """<!doctype html>
   <meta name="twitter:site" content="@LaBibleapp" />
   <meta name="twitter:title" content="Lire la Bible par livre et par chapitre — LaBible.app" />
   <meta name="twitter:description" content="Tous les livres de la Bible Louis Segond 1910, classes par chapitre." />
-  <meta name="twitter:image" content="https://labible.app/icons/icon-512x512.png" />
+  <meta name="twitter:image" content="https://labible.app/icons/icon-512x512.png?v=2" />
   <meta name="twitter:image:alt" content="LaBible.app — Bible Louis Segond 1910" />
   <meta property="og:locale" content="fr_FR" />
   <meta name="theme-color" content="#0b0b0b" />

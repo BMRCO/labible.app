@@ -183,8 +183,25 @@ def build_page(entry, prev_entry, next_entry):
 
     clean_verses = [clean_verse(t) for t in verses]
     n_verses = sum(1 for t in clean_verses if t)
-    first_words = " ".join(clean_verses[0].split()[:16]) if clean_verses and clean_verses[0] else ""
-    description = f"Lisez {book} chapitre {chapter} ({n_verses} versets) de la Bible Louis Segond 1910, gratuitement et sans publicité. « {first_words}… »"
+    # La description porte ce que le titre ne porte pas. Le titre dit deja
+    # « {book} {chapter} — Bible Louis Segond 1910 » : le repeter mange les
+    # 90 premiers caracteres et repousse le verset hors du cadre visible.
+    # On mene donc par le texte, seul element propre a cette page-ci.
+    premier = clean_verses[0] if clean_verses and clean_verses[0] else ""
+    extrait = ""
+    for mot in premier.split():
+        essai = (extrait + " " + mot).strip()
+        if extrait and len(essai) > 100:
+            break
+        extrait = essai
+    if extrait == premier:
+        # Le verset tient en entier : pas de points de suspension, et on
+        # garde sa ponctuation finale (« ... et la terre. » et non « .… »).
+        citation = extrait
+    else:
+        citation = extrait.rstrip(" ,;:.!?") + "…"
+    compte = "1 verset" if n_verses == 1 else f"{n_verses} versets"
+    description = f"« {citation} » {compte}, à lire gratuitement et sans publicité."
     title = f"{book} {chapter} — Bible Louis Segond 1910 | LaBible.app"
 
     verses_lines = []
@@ -249,11 +266,11 @@ INDEX_TEMPLATE = """<!doctype html>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
   <title>Lire la Bible par livre et par chapitre — LSG 1910 | LaBible.app</title>
-  <meta name="description" content="Tous les livres de la Bible Louis Segond 1910, classes par chapitre. Lisez gratuitement Genese, Psaumes, Jean, Romains et les 66 livres de la Bible en ligne." />
+  <meta name="description" content="Les 66 livres, 1 189 chapitres, 31 102 versets. Genèse, Psaumes, Jean, Romains : choisissez un livre pour commencer au chapitre 1." />
   <meta name="robots" content="index, follow" />
   <link rel="canonical" href="{base_url}/lsg/" />
   <meta property="og:title" content="Lire la Bible par livre et par chapitre — LaBible.app" />
-  <meta property="og:description" content="Tous les livres de la Bible Louis Segond 1910, classes par chapitre." />
+  <meta property="og:description" content="Les 66 livres, 1 189 chapitres, 31 102 versets. Genèse, Psaumes, Jean, Romains : choisissez un livre pour commencer au chapitre 1." />
   <meta property="og:type" content="website" />
   <meta property="og:url" content="{base_url}/lsg/" />
   <meta property="og:image" content="https://labible.app/icons/icon-512x512.png?v=2" />
@@ -265,7 +282,7 @@ INDEX_TEMPLATE = """<!doctype html>
   <meta name="twitter:card" content="summary" />
   <meta name="twitter:site" content="@LaBibleapp" />
   <meta name="twitter:title" content="Lire la Bible par livre et par chapitre — LaBible.app" />
-  <meta name="twitter:description" content="Tous les livres de la Bible Louis Segond 1910, classes par chapitre." />
+  <meta name="twitter:description" content="Les 66 livres, 1 189 chapitres, 31 102 versets. Genèse, Psaumes, Jean, Romains : choisissez un livre pour commencer au chapitre 1." />
   <meta name="twitter:image" content="https://labible.app/icons/icon-512x512.png?v=2" />
   <meta name="twitter:image:alt" content="LaBible.app — Bible Louis Segond 1910" />
   <meta property="og:locale" content="fr_FR" />

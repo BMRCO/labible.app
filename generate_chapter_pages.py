@@ -6,11 +6,12 @@ Génère les pages SEO par chapitre : labible.app/lsg/{livre}/{chapitre}
 Usage : python generate_chapter_pages.py
 Lit   : data/lsg1910.json
 Écrit : lsg/{livre-slug}/{chapitre}.html  (1 189 fichiers)
-        sitemap.xml (mis à jour avec les nouvelles URLs)
+        sitemap.xml (URLs nouvelles + <lastmod> des pages modifiées)
 
 Conçu pour tourner via GitHub Actions (workflow_dispatch), mais fonctionne
 aussi en local. Ne modifie aucun autre fichier du site.
 """
+import datetime
 import json
 import os
 import re
@@ -372,16 +373,87 @@ def build_index_page(books_order, book_slugs):
     return INDEX_TEMPLATE.format(base_url=BASE_URL, ot_links=ot_links, nt_links=nt_links)
 
 
-def build_sitemap_entries(chapters):
-    urls = [f"  <url><loc>{BASE_URL}/lsg/</loc><changefreq>monthly</changefreq></url>"]
+def urls_generees(chapters):
+    """Les URLs dont CE script est proprietaire, dans l'ordre du sitemap."""
+    urls = [f"{BASE_URL}/lsg/"]
     for e in chapters:
-        urls.append(f"  <url><loc>{BASE_URL}/lsg/{e['book_slug']}/{e['chapter']}</loc><changefreq>monthly</changefreq></url>")
+        urls.append(f"{BASE_URL}/lsg/{e['book_slug']}/{e['chapter']}")
     return urls
+
+
+def lire_sitemap(chemin):
+    """[(loc, lastmod|None, contenu brut du <url>)] dans l'ordre du fichier."""
+    if not os.path.exists(chemin):
+        return []
+    xml = open(chemin, encoding="utf-8").read()
+    entrees = []
+    for brut in re.findall(r"<url>(.*?)</url>", xml, re.S):
+        loc = re.search(r"<loc>(.*?)</loc>", brut)
+        if not loc:
+            continue
+        lastmod = re.search(r"<lastmod>(.*?)</lastmod>", brut)
+        entrees.append((loc.group(1).strip(),
+                        lastmod.group(1).strip() if lastmod else None,
+                        brut.strip()))
+    return entrees
+
+
+def construire_sitemap(chapters, modifiees, aujourdhui):
+    """Reecrit le sitemap en place.
+
+    `modifiees` : les URLs dont le fichier a change pendant cette execution.
+    Une URL generee absente de cet ensemble garde sa date precedente — c'est
+    toute la difference entre un <lastmod> utile et un <lastmod> ignore.
+    """
+    a_moi = urls_generees(chapters)
+    a_moi_set = set(a_moi)
+    precedentes = lire_sitemap(SITEMAP_PATH)
+
+    lignes, vues, datees = [], set(), 0
+    for loc, lastmod, brut in precedentes:
+        if loc in vues:
+            continue                       # doublon dans l'ancien fichier
+        vues.add(loc)
+        if loc in a_moi_set:
+            date = aujourdhui if (loc in modifiees or not lastmod) else lastmod
+            if date == aujourdhui:
+                datees += 1
+            lignes.append(f"  <url><loc>{loc}</loc><lastmod>{date}</lastmod></url>")
+        else:
+            # Pas a moi : recopie a l'identique, <lastmod> compris s'il existe.
+            lignes.append(f"  <url>{brut}</url>")
+
+    nouvelles = [u for u in a_moi if u not in vues]
+    for loc in nouvelles:
+        datees += 1
+        lignes.append(f"  <url><loc>{loc}</loc><lastmod>{aujourdhui}</lastmod></url>")
+
+    xml = ('<?xml version="1.0" encoding="UTF-8"?>\n'
+           '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
+           + "\n".join(lignes) + "\n</urlset>\n")
+    with open(SITEMAP_PATH, "w", encoding="utf-8") as f:
+        f.write(xml)
+    return len(lignes), len(nouvelles), datees
+
+
+def ecrire_si_different(chemin, contenu):
+    """Ecrit le fichier et dit s'il a change. C'est ce booleen qui decide
+    du <lastmod> : sans lui, la date serait remise a aujourd'hui a chaque
+    execution et le signal perdrait toute valeur."""
+    if os.path.exists(chemin):
+        if open(chemin, encoding="utf-8").read() == contenu:
+            return False
+    with open(chemin, "w", encoding="utf-8") as f:
+        f.write(contenu)
+    return True
 
 
 def main():
     books_order, chapters = load_bible()
     print(f"{len(books_order)} livres, {len(chapters)} chapitres a generer")
+
+    aujourdhui = datetime.date.today().isoformat()
+    modifiees = set()
 
     os.makedirs(OUT_DIR, exist_ok=True)
     written = 0
@@ -392,47 +464,25 @@ def main():
         book_dir = os.path.join(OUT_DIR, entry["book_slug"])
         os.makedirs(book_dir, exist_ok=True)
         path = os.path.join(book_dir, f"{entry['chapter']}.html")
-        with open(path, "w", encoding="utf-8") as f:
-            f.write(html)
+        if ecrire_si_different(path, html):
+            modifiees.add(f"{BASE_URL}/lsg/{entry['book_slug']}/{entry['chapter']}")
         written += 1
 
-    print(f"{written} pages ecrites dans {OUT_DIR}/")
+    print(f"{written} pages ecrites dans {OUT_DIR}/ ({len(modifiees)} modifiees)")
 
     # --- page d'index /lsg/ : liste des 66 livres, un lien vers le site ---
     book_slugs = {b: slugify(b) for b in books_order}
     index_html = build_index_page(books_order, book_slugs)
-    with open(os.path.join(OUT_DIR, "index.html"), "w", encoding="utf-8") as f:
-        f.write(index_html)
+    if ecrire_si_different(os.path.join(OUT_DIR, "index.html"), index_html):
+        modifiees.add(f"{BASE_URL}/lsg/")
     print("page d'index lsg/index.html ecrite (liens vers les 66 livres)")
 
-    # --- sitemap.xml : garde les URLs existantes, ajoute les nouvelles ---
-    if os.path.exists(SITEMAP_PATH):
-        existing = open(SITEMAP_PATH, encoding="utf-8").read()
-        existing_locs = set(re.findall(r"<loc>(.*?)</loc>", existing))
-    else:
-        existing = None
-        existing_locs = set()
-
-    new_urls = build_sitemap_entries(chapters)
-    new_locs_added = [u for u in new_urls if re.search(r"<loc>(.*?)</loc>", u).group(1) not in existing_locs]
-
-    if existing and "</urlset>" in existing:
-        # Sans ce test, chaque execution sans nouvelle URL ajoutait une ligne
-        # vide de plus avant </urlset>.
-        if new_locs_added:
-            merged = existing.replace(
-                "</urlset>", "\n".join(new_locs_added) + "\n</urlset>")
-        else:
-            merged = existing
-    else:
-        header = '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
-        merged = header + "\n".join(new_urls) + "\n</urlset>\n"
-
-    with open(SITEMAP_PATH, "w", encoding="utf-8") as f:
-        f.write(merged)
-
-    total_urls = len(re.findall(r"<loc>", merged))
-    print(f"sitemap.xml atualizado: {total_urls} URLs no total ({len(new_locs_added)} novas)")
+    # --- sitemap.xml ---------------------------------------------------
+    # Les URLs etrangeres a ce script sont recopiees telles quelles ; celles
+    # de /lsg/ recoivent un <lastmod> qui ne bouge que si la page a change.
+    total, nouvelles, datees = construire_sitemap(chapters, modifiees, aujourdhui)
+    print(f"sitemap.xml atualizado: {total} URLs no total "
+          f"({nouvelles} novas, {datees} com lastmod de hoje)")
 
 
 if __name__ == "__main__":

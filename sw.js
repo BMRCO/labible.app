@@ -44,6 +44,13 @@ const CACHE_NAME = 'labible-v46';
 //      les ~11 Mo de la Bible ne bougent pas ;
 //    - aucun cache ne devient orphelin, donc activate n'en supprime aucun.
 //
+// 21 septembre : les explications sont RETIREES DE L'AFFICHAGE, le temps de
+// les reecrire. app.v2.js passe a ?v=51 et porte la constante
+// EXPLICATIONS_ACTIVES = false ; la ligne '/data/explications.json?v=3' sort
+// des STATIC_ASSETS, puisque plus personne ne demande ce fichier. Il reste
+// dans le depot : rien n'est supprime. Pour les remettre, remettre la ligne
+// ici ET repasser la constante a true dans app.v2.js.
+//
 // A REFAIRE a chaque modification du CONTENU de data/explications.json :
 // incrementer son ?v= ici ET dans app.v2.js, les deux ensemble.
 // ---------------------------------------------------------------------------
@@ -53,10 +60,9 @@ const STATIC_ASSETS = [
   '/index.html',
   '/offline.html',
   '/styles.css?v=5',
-  '/app.v2.js?v=50',
+  '/app.v2.js?v=51',
   '/footer.js',
   '/header.js',
-  '/data/explications.json?v=3',
   '/manifest.webmanifest',
   '/a-propos.html',
   '/contact.html',
@@ -98,6 +104,8 @@ const CLES_OBSOLETES = [
   '/app.v2.js?v=49',            // remplace par ?v=50 (13 sept.)
   '/data/explications.json',    // remplace par ?v=2
   '/data/explications.json?v=2',// remplace par ?v=3 (citations litterales)
+  '/data/explications.json?v=3',// retiree : explications hors affichage
+  '/app.v2.js?v=50',            // remplace par ?v=51 (21 sept.)
 ];
 
 self.addEventListener('install', event => {

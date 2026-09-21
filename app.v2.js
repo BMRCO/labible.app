@@ -138,6 +138,19 @@ function showVerseActions(bookName, chapter, verse, text, el){
   if(_cb) attachReferences(bar, _cb.nr, chapter, verse);
 }
 
+/* ── Explications : RETIREES DE L'AFFICHAGE le 21 septembre 2026 ──────────
+   Les 893 explications du fichier sont en cours de reecriture : le registre
+   d'origine decrivait le verset de l'exterieur au lieu de parler a qui lit.
+   Tant que l'ensemble n'est pas homogene, le bouton « Expliquer » ne
+   s'affiche sur aucun verset.
+
+   RIEN N'EST SUPPRIME. data/explications.json reste dans le depot, intact.
+   Pour les remettre : passer cette constante a true. C'est la SEULE ligne a
+   changer ici — mais il faut alors remettre aussi la ligne
+   '/data/explications.json?v=N' dans les STATIC_ASSETS de sw.js, sinon le
+   fichier n'est plus prechargé et la fonction ne marche pas hors ligne. */
+const EXPLICATIONS_ACTIVES = false;
+
 async function loadExplications(){
   if(state.explications) return state.explications;
   // En cas d'echec (hors ligne, 404), on NE met rien en cache : un objet
@@ -248,6 +261,7 @@ async function renderVersetsHub(){
 }
 
 function attachExplication(bar, refKey){
+  if(!EXPLICATIONS_ACTIVES) return;   // voir la constante, plus haut
   function inject(map){
     if(!map || !map[refKey]) return;
     if(bar.querySelector(".btnExplain")) return;
@@ -575,7 +589,7 @@ async function loadBible(){
   await renderPlan();
   renderLibrary();
   buildIndex();
-  loadExplications();
+  if(EXPLICATIONS_ACTIVES) loadExplications();
   loadCrossRefs();
   loadVersetsThemes();
 }

@@ -90,12 +90,6 @@ PAGE_TEMPLATE = """<!doctype html>
   <meta property="og:image:type" content="image/png" />
   <meta property="og:image:alt" content="LaBible.app — Bible Louis Segond 1910" />
   <meta property="og:site_name" content="LaBible.app" />
-  <meta name="twitter:card" content="summary" />
-  <meta name="twitter:site" content="@LaBibleapp" />
-  <meta name="twitter:title" content="{title}" />
-  <meta name="twitter:description" content="{description}" />
-  <meta name="twitter:image" content="https://labible.app/icons/icon-512x512.png?v=2" />
-  <meta name="twitter:image:alt" content="LaBible.app — Bible Louis Segond 1910" />
   <meta property="og:locale" content="fr_FR" />
   <meta name="theme-color" content="#0b0b0b" />
   <link rel="manifest" href="/manifest.webmanifest">
@@ -280,12 +274,6 @@ INDEX_TEMPLATE = """<!doctype html>
   <meta property="og:image:type" content="image/png" />
   <meta property="og:image:alt" content="LaBible.app — Bible Louis Segond 1910" />
   <meta property="og:site_name" content="LaBible.app" />
-  <meta name="twitter:card" content="summary" />
-  <meta name="twitter:site" content="@LaBibleapp" />
-  <meta name="twitter:title" content="Lire la Bible par livre et par chapitre — LaBible.app" />
-  <meta name="twitter:description" content="Les 66 livres, 1 189 chapitres, 31 102 versets. Genèse, Psaumes, Jean, Romains : choisissez un livre pour commencer au chapitre 1." />
-  <meta name="twitter:image" content="https://labible.app/icons/icon-512x512.png?v=2" />
-  <meta name="twitter:image:alt" content="LaBible.app — Bible Louis Segond 1910" />
   <meta property="og:locale" content="fr_FR" />
   <meta name="theme-color" content="#0b0b0b" />
   <link rel="manifest" href="/manifest.webmanifest">

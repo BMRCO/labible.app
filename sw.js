@@ -35,7 +35,7 @@ const CACHE_NAME = 'labible-v46';
 //
 // ⚠️ LA CLE DE CACHE EST L'URL COMPLETE. Les deux lignes de STATIC_ASSETS
 // ci-dessous doivent porter EXACTEMENT les URLs demandees par les pages :
-// '/data/explications.json?v=3' et '/app.v2.js?v=50'. Une seule des deux
+// '/data/explications.json?v=3' et '/app.v2.js?v=52'. Une seule des deux
 // oubliee, et le fichier est precache sous une cle que personne ne demande.
 //
 // ⚠️ NE PAS monter CACHE_NAME pour cela. Il reste 'labible-v46', donc :
@@ -60,7 +60,7 @@ const STATIC_ASSETS = [
   '/index.html',
   '/offline.html',
   '/styles.css?v=5',
-  '/app.v2.js?v=51',
+  '/app.v2.js?v=52',
   '/footer.js',
   '/header.js',
   '/manifest.webmanifest',
@@ -106,6 +106,7 @@ const CLES_OBSOLETES = [
   '/data/explications.json?v=2',// remplace par ?v=3 (citations litterales)
   '/data/explications.json?v=3',// retiree : explications hors affichage
   '/app.v2.js?v=50',            // remplace par ?v=51 (21 sept.)
+  '/app.v2.js?v=51',            // remplace par ?v=52 (selection de plusieurs versets)
 ];
 
 self.addEventListener('install', event => {

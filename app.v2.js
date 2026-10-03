@@ -61,9 +61,9 @@ function dateKey(d=new Date()){
 }
 
 /* ---------- verse action bar ---------- */
-function buildVerseShareText(bookName, chapter, verse, text){
+function buildVerseShareText(bookName, chapter, verse, text, verseEnd){
   const cleanText = String(text||"").replace(/^¶\s*/,"").trim();
-  const ref = `${bookName} ${chapter}:${verse}`;
+  const ref = refLabel(bookName, chapter, verse, verseEnd);
   return `« ${cleanText} »\n— ${ref} (LSG 1910)`;
 }
 /* Lien de PARTAGE — la page statique du chapitre, jamais le hash du SPA.
@@ -90,49 +90,124 @@ function buildVerseUrl(bookName, chapter){
   return chapterUrl(bookName, chapter);
 }
 
-function showVerseActions(bookName, chapter, verse, text, el){
+/* ---------- selection de PLUSIEURS versets ----------
+   Parfois le sens tient dans deux versets : Jude 18 ne se comprend qu'avec le
+   19. La barre d'actions porte donc un « + Verset » qui etend la selection vers
+   le BAS, un verset a la fois. Vers le haut n'existe pas : il suffit de partir
+   du verset precedent. Un bouton de moins, c'est une barre qui reste lisible a
+   une main.
+
+   Plafond a 5 versets : au-dela le texte ne tient plus dans le carre 1080x1080
+   a une taille lisible. */
+const MAX_VERSETS = 5;
+
+function refLabel(bookName, chapter, v1, v2){
+  return `${bookName} ${chapter}:${v1}` + (v2 && v2 > v1 ? `-${v2}` : "");
+}
+
+/* Versets du chapitre affiche, tels quels (index 0 = verset 1). */
+function chapterVerses(){
+  return getBookData(state.current.book)?.get(state.current.chapter) || [];
+}
+
+/* Texte continu de v1 a v2. Les versets se suivent sans numero : l'image est
+   une citation, pas une page de Bible. Meme choix que le bot pour « 8:38-39 ». */
+function joinVerses(v1, v2){
+  const arr = chapterVerses(), out = [];
+  for(let i = v1; i <= v2; i++){
+    const t = arr[i-1];
+    if(t == null) continue;
+    out.push(String(t).replace(/^\u00b6\s*/, "").trim());
+  }
+  return out.join(" ");
+}
+
+function verseEl(n){ return $(`#verses .verse[data-v="${n}"]`); }
+
+function showVerseActions(bookName, chapter, verse, text, el, verseEnd){
   hintDismiss(true);   // le geste est acquis : l'astuce n'a plus lieu d'etre
+  const vEnd = Math.max(verse, verseEnd || verse);
+  const arr  = chapterVerses();
+
+  // Tout ce qui est dans la plage est surligne, pas seulement le premier.
   $$(".verse.selected").forEach(p => p.classList.remove("selected"));
-  el.classList.add("selected");
-  state.selectedVerse = { bookName, chapter, verse, text };
+  let dernier = el;
+  for(let n = verse; n <= vEnd; n++){
+    const p = verseEl(n) || (n === verse ? el : null);
+    if(p){ p.classList.add("selected"); dernier = p; }
+  }
+
+  const texte = vEnd > verse ? joinVerses(verse, vEnd) : text;
+  state.selectedVerse = { bookName, chapter, verse, verseEnd: vEnd, text: texte };
   $("#verseActionBar")?.remove();
 
   const bar = document.createElement("div");
   bar.id = "verseActionBar";
   bar.style.cssText = `display:flex;gap:8px;padding:8px 12px;margin-top:4px;background:rgba(226,197,122,.1);border-radius:12px;border:1px solid rgba(226,197,122,.25);flex-wrap:wrap;`;
-  const ref = `${bookName} ${chapter}:${verse}`;
+  const ref = refLabel(bookName, chapter, verse, vEnd);
+
+  // Refaire la barre avec une autre plage, sans toucher au reste.
+  const refaire = (v2) => showVerseActions(bookName, chapter, verse, text, el, v2);
+
+  const fermer = () => {
+    bar.remove();
+    $$(".verse.selected").forEach(p => p.classList.remove("selected"));
+    state.selectedVerse = null;
+  };
 
   const btnFav = document.createElement("button");
   btnFav.className = "chip";
   const isFav = getFavs().some(f => f.type==="verse" && f.ref===ref);
   btnFav.textContent = isFav ? "✅ Favori" : "🔖 Favori";
-  btnFav.onclick = () => { toggleFavVerse(bookName, chapter, verse, text); bar.remove(); el.classList.remove("selected"); state.selectedVerse=null; };
+  btnFav.onclick = () => { toggleFavVerse(bookName, chapter, verse, texte, vEnd); fermer(); };
 
   const btnCopy = document.createElement("button");
   btnCopy.className = "chip";
   btnCopy.textContent = "📎 Copier";
-  btnCopy.onclick = async () => { await copyText(`${buildVerseShareText(bookName, chapter, verse, text)}\n📖 ${buildVerseUrl(bookName, chapter)}`); bar.remove(); el.classList.remove("selected"); state.selectedVerse=null; };
+  btnCopy.onclick = async () => { await copyText(`${buildVerseShareText(bookName, chapter, verse, texte, vEnd)}\n📖 ${buildVerseUrl(bookName, chapter)}`); fermer(); };
 
   const btnShare = document.createElement("button");
   btnShare.className = "chip";
   btnShare.textContent = "🔗 Partager";
-  btnShare.onclick = async () => { await shareVerse(bookName, chapter, verse, text); bar.remove(); el.classList.remove("selected"); state.selectedVerse=null; };
+  btnShare.onclick = async () => { await shareVerse(bookName, chapter, verse, texte, vEnd); fermer(); };
 
   const btnImg = document.createElement("button");
   btnImg.className = "chip";
   btnImg.textContent = "🖼️ Image";
-  btnImg.onclick = async () => { await shareVerseImage(bookName, chapter, verse, text); bar.remove(); el.classList.remove("selected"); state.selectedVerse=null; };
+  btnImg.onclick = async () => { await shareVerseImage(bookName, chapter, verse, texte, vEnd); fermer(); };
 
   const btnClose = document.createElement("button");
   btnClose.className = "chip";
   btnClose.textContent = "✕";
   btnClose.style.marginLeft = "auto";
-  btnClose.onclick = () => { bar.remove(); el.classList.remove("selected"); state.selectedVerse=null; };
+  btnClose.onclick = () => { fermer(); };
 
-  bar.append(btnFav, btnCopy, btnShare, btnImg, btnClose);
-  el.insertAdjacentElement("afterend", bar);
+  // « + Verset » : etendre vers le bas. Absent au dernier verset du chapitre
+  // et une fois le plafond atteint — un bouton qui ne fait rien est pire que
+  // pas de bouton.
+  const plus = document.createElement("button");
+  plus.className = "chip";
+  plus.textContent = "\u2795 Verset";
+  plus.onclick = () => refaire(vEnd + 1);
+
+  const moins = document.createElement("button");
+  moins.className = "chip";
+  moins.textContent = "\u2796 Verset";
+  moins.onclick = () => refaire(vEnd - 1);
+
+  bar.append(btnFav, btnCopy, btnShare, btnImg);
+  if(vEnd < arr.length && (vEnd - verse + 1) < MAX_VERSETS) bar.append(plus);
+  if(vEnd > verse) bar.append(moins);
+  bar.append(btnClose);
+
+  // La barre va sous le DERNIER verset de la plage, pas sous le premier :
+  // sinon elle couperait la citation en deux.
+  dernier.insertAdjacentElement("afterend", bar);
 
   // Explication du verset (si disponible) — bouton + panneau dans la barre
+  // Explication et references croisees restent sur le PREMIER verset de la
+  // plage : les deux sont indexees par verset simple. C'est voulu, ne pas
+  // « corriger » en y mettant la plage — la cle n'existerait pas.
   attachExplication(bar, `${bookName} ${chapter}:${verse}`);
   const _cb = state.bible.books[state.current.book];
   if(_cb) attachReferences(bar, _cb.nr, chapter, verse);
@@ -361,25 +436,26 @@ function attachReferences(bar, bookNr, chapter, verse){
   });
 }
 
-async function shareVerse(bookName, chapter, verse, text){
-  const shareText = buildVerseShareText(bookName, chapter, verse, text);
+async function shareVerse(bookName, chapter, verse, text, verseEnd){
+  const shareText = buildVerseShareText(bookName, chapter, verse, text, verseEnd);
   const url = buildVerseUrl(bookName, chapter);
   if(navigator.share){
-    try{ await navigator.share({ title:`${bookName} ${chapter}:${verse} — LaBible.app`, text: shareText, url }); } catch{}
+    try{ await navigator.share({ title:`${refLabel(bookName, chapter, verse, verseEnd)} — LaBible.app`, text: shareText, url }); } catch{}
   } else { await copyText(`${shareText}\n📖 ${url}`); }
 }
 
-async function shareVerseImage(bookName, chapter, verse, text){
+async function shareVerseImage(bookName, chapter, verse, text, verseEnd){
   try{
-    const cv = await renderVerseImage(bookName, chapter, verse, text);
+    const ref = refLabel(bookName, chapter, verse, verseEnd);
+    const cv = await renderVerseImage(bookName, chapter, verse, text, verseEnd);
     const blob = await new Promise(r => cv.toBlob(r, "image/png"));
     if(!blob){ toast("Impossible de générer l'image."); return; }
-    const fname = `labible-${bookName}-${chapter}-${verse}.png`.replace(/[^\w.-]+/g, "_");
+    const fname = `labible-${bookName}-${chapter}-${verse}${verseEnd && verseEnd > verse ? "-" + verseEnd : ""}.png`.replace(/[^\w.-]+/g, "_");
     const file = new File([blob], fname, { type:"image/png" });
     const url = buildVerseUrl(bookName, chapter);
-    const caption = `${bookName} ${chapter}:${verse} — LaBible.app\n📖 ${url}`;
+    const caption = `${ref} — LaBible.app\n📖 ${url}`;
     if(navigator.canShare && navigator.canShare({ files:[file] })){
-      try{ await navigator.share({ files:[file], title:`${bookName} ${chapter}:${verse} — LaBible.app`, text: caption }); return; }
+      try{ await navigator.share({ files:[file], title:`${ref} — LaBible.app`, text: caption }); return; }
       catch(e){ if(e && e.name === "AbortError") return; }
     }
     const a = document.createElement("a");
@@ -424,7 +500,7 @@ function paletteForBook(bookName){
   return IMG_PALETTES.default;
 }
 
-async function renderVerseImage(bookName, chapter, verse, text){
+async function renderVerseImage(bookName, chapter, verse, text, verseEnd){
   const W = 1080, H = 1080;
   const cv = document.createElement("canvas"); cv.width = W; cv.height = H;
   const ctx = cv.getContext("2d");
@@ -454,8 +530,11 @@ async function renderVerseImage(bookName, chapter, verse, text){
   const PAD = 110, maxW = W - 2*PAD;
   const topLimit = 160, bottomLimit = H - 150;
   ctx.textAlign = "center"; ctx.textBaseline = "alphabetic";
+  // Plancher descendu de 28 a 22 px : une plage de plusieurs versets est
+  // bien plus longue qu'un verset seul, et a 28 px le texte debordait du
+  // cadre au lieu de retrecir.
   let size = 60, lines = [];
-  for(; size >= 28; size -= 2){
+  for(; size >= 22; size -= 2){
     ctx.font = `400 ${size}px "EB Garamond", Georgia, serif`;
     lines = _wrapCanvas(ctx, quoted, maxW);
     if(lines.length * (size*1.34) + 130 <= (bottomLimit - topLimit)) break;
@@ -472,7 +551,7 @@ async function renderVerseImage(bookName, chapter, verse, text){
   y += 56;
   ctx.fillStyle = rgb(P.accent);
   ctx.font = `600 46px "EB Garamond", Georgia, serif`;
-  ctx.fillText(`${bookName} ${chapter}:${verse}`, W/2, y);
+  ctx.fillText(refLabel(bookName, chapter, verse, verseEnd), W/2, y);
 
   // filigrane
   ctx.font = `600 30px "DM Sans", system-ui, sans-serif`;
@@ -624,11 +703,11 @@ function initSelectors(){
   $("#btnPrev")?.addEventListener("click", () => navChapter(-1));
   $("#btnNext")?.addEventListener("click", () => navChapter(+1));
   $("#btnCopyRef")?.addEventListener("click", () => {
-    if(state.selectedVerse){ const { bookName, chapter, verse, text } = state.selectedVerse; copyText(buildVerseShareText(bookName, chapter, verse, text)); }
+    if(state.selectedVerse){ const { bookName, chapter, verse, verseEnd, text } = state.selectedVerse; copyText(buildVerseShareText(bookName, chapter, verse, text, verseEnd)); }
     else { copyText(currentRefString()); }
   });
   $("#btnShare")?.addEventListener("click", () => {
-    if(state.selectedVerse){ const { bookName, chapter, verse, text } = state.selectedVerse; shareVerse(bookName, chapter, verse, text); }
+    if(state.selectedVerse){ const { bookName, chapter, verse, verseEnd, text } = state.selectedVerse; shareVerse(bookName, chapter, verse, text, verseEnd); }
     else { shareCurrent(); }
   });
   $("#btnBookmark")?.addEventListener("click", toggleFavCurrent);
@@ -734,8 +813,8 @@ function toggleFavCurrent(){
   renderLibrary();
 }
 
-function toggleFavVerse(bookName, chapter, verse, text){
-  const ref  = `${bookName} ${chapter}:${verse}`;
+function toggleFavVerse(bookName, chapter, verse, text, verseEnd){
+  const ref  = refLabel(bookName, chapter, verse, verseEnd);
   const favs = getFavs();
   const idx  = favs.findIndex(f => f.type==="verse" && f.ref===ref);
   if(idx >= 0){ favs.splice(idx,1); toast("Verset retiré."); }
@@ -888,8 +967,16 @@ function renderReading(highlightVerse=null){
       span.textContent = " " + String(t).replace(/^¶\s*/g, "").trim();
 
       p.append(vnum, span);
+      // Le numero sur l'element : la selection de plage doit retrouver les
+      // versets voisins dans le DOM, et l'index des enfants ne suffit pas —
+      // un verset absent du fichier est saute au rendu.
+      p.dataset.v = String(i + 1);
       p.addEventListener("click", () => {
-        if(p.classList.contains("selected")){ $("#verseActionBar")?.remove(); p.classList.remove("selected"); state.selectedVerse = null; }
+        if(p.classList.contains("selected")){
+          $("#verseActionBar")?.remove();
+          $$(".verse.selected").forEach(q => q.classList.remove("selected"));
+          state.selectedVerse = null;
+        }
         else { showVerseActions(book.name, c, i+1, t, p); }
       });
 

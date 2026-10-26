@@ -132,7 +132,7 @@ PAGE_TEMPLATE = """<!doctype html>
       <p class="breadcrumb"><a href="/">Accueil</a> › <a href="/lsg/{book_slug}/1">{book}</a> › {chapter}</p>
       <a class="backLink muted" href="/#{book_anchor}-{chapter}">← Ouvrir dans l'application</a>
 
-      <h1 class="chapterH1">{book} {chapter}</h1>
+      <h1 class="chapterH1">{label}</h1>
 
       <div class="verses">
 {verses_html}
@@ -171,6 +171,20 @@ PAGE_TEMPLATE = """<!doctype html>
 """
 
 
+def libelle_chapitre(book, chapter):
+    """Nom du chapitre tel que les gens le cherchent.
+
+    On cherche « psaume 91 », jamais « psaumes 91 » : un psaume est un seul
+    texte, et le francais dit « le Psaume 23 ». Mesure au Search Console le
+    27 octobre 2026 — « psaume 118 », « psaume 121 », « psaume 134 »... Les
+    autres livres restent au nom du livre (« Jean 3 », « Exode 14 »).
+    Le fil d'Ariane, lui, garde « Psaumes » : c'est le nom du livre.
+    """
+    if book == "Psaumes":
+        return f"Psaume {chapter}"
+    return f"{book} {chapter}"
+
+
 def build_page(entry, prev_entry, next_entry):
     book, chapter, verses = entry["book"], entry["chapter"], entry["verses"]
     book_slug = entry["book_slug"]
@@ -197,7 +211,8 @@ def build_page(entry, prev_entry, next_entry):
         citation = extrait.rstrip(" ,;:.!?") + "…"
     compte = "1 verset" if n_verses == 1 else f"{n_verses} versets"
     description = f"« {citation} » {compte}, à lire gratuitement et sans publicité."
-    title = f"{book} {chapter} — Bible Louis Segond 1910 | LaBible.app"
+    label = libelle_chapitre(book, chapter)
+    title = f"{label} — Bible Louis Segond 1910 | LaBible.app"
 
     verses_lines = []
     for i, t in enumerate(clean_verses):
@@ -210,7 +225,7 @@ def build_page(entry, prev_entry, next_entry):
 
     if prev_entry:
         prev_href = f"/lsg/{prev_entry['book_slug']}/{prev_entry['chapter']}"
-        prev_label = f"{prev_entry['book']} {prev_entry['chapter']}"
+        prev_label = libelle_chapitre(prev_entry['book'], prev_entry['chapter'])
         prev_class = ""
     else:
         prev_href = "#"
@@ -219,7 +234,7 @@ def build_page(entry, prev_entry, next_entry):
 
     if next_entry:
         next_href = f"/lsg/{next_entry['book_slug']}/{next_entry['chapter']}"
-        next_label = f"{next_entry['book']} {next_entry['chapter']}"
+        next_label = libelle_chapitre(next_entry['book'], next_entry['chapter'])
         next_class = ""
     else:
         next_href = "#"
@@ -232,7 +247,7 @@ def build_page(entry, prev_entry, next_entry):
         "itemListElement": [
             {"@type": "ListItem", "position": 1, "name": "Accueil", "item": BASE_URL + "/"},
             {"@type": "ListItem", "position": 2, "name": book, "item": f"{BASE_URL}/lsg/{book_slug}/1"},
-            {"@type": "ListItem", "position": 3, "name": f"{book} {chapter}", "item": canonical},
+            {"@type": "ListItem", "position": 3, "name": label, "item": canonical},
         ],
     }, ensure_ascii=False)
 
@@ -248,6 +263,7 @@ def build_page(entry, prev_entry, next_entry):
         book_slug=book_slug,
         book_anchor=book_anchor,
         chapter=chapter,
+        label=_esc(label),
         verses_html=verses_html,
         prev_href=prev_href, prev_label=_esc(prev_label), prev_class=prev_class,
         next_href=next_href, next_label=_esc(next_label), next_class=next_class,

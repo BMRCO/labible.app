@@ -95,10 +95,10 @@
         </div>
       </section>
 
-      <h2 class="testament">Nouveau Testament <small id="cNT"></small></h2>
-      <div id="nt"></div>
       <h2 class="testament">Ancien Testament <small id="cAT"></small></h2>
       <div id="at"></div>
+      <h2 class="testament">Nouveau Testament <small id="cNT"></small></h2>
+      <div id="nt"></div>
 
       <p class="note">Les Psaumes sont lus chaque matin, un Psaume par jour. Les autres livres paraissent au fil des jours, en commençant par les Évangiles. Les chapitres à venir sont grisés.</p>
       <noscript><p class="note">Cette page a besoin de JavaScript. Tous les chapitres sont aussi sur <a href="https://www.youtube.com/@LaBible-app">la chaîne YouTube de LaBible.app</a>.</p></noscript>
@@ -176,11 +176,7 @@
         });
         document.getElementById(idx < NB_AT ? "at" : "nt").appendChild(div);
       });
-      // Nouveau Testament d'abord : c'est par lui que la lecture commence.
-      ordre.sort(function (a, b) {
-        function rang(k) { var s = k.split("/"); var i = LIVRES.findIndex(function (x) { return x[1] === s[0]; }); return (i < NB_AT ? 100000 : 0) + i * 1000 + (+s[1]); }
-        return rang(a) - rang(b);
-      });
+      // Ordre de la Bible : de la Genèse à l'Apocalypse (ordre déjà suivi par la boucle).
       document.querySelectorAll(".chap[data-cle]").forEach(function (b) {
         b.addEventListener("click", function () { jouer(b.getAttribute("data-cle"), true); });
       });

@@ -5,7 +5,9 @@ Génère les pages SEO par chapitre : labible.app/lsg/{livre}/{chapitre}
 
 Usage : python generate_chapter_pages.py
 Lit   : data/lsg1910.json
+        data/audio.json (videos de la Bible audio, tenu par sync_audio.py)
 Écrit : lsg/{livre-slug}/{chapitre}.html  (1 189 fichiers)
+        bible-audio.html (seulement la liste entre les marqueurs AUDIO-LISTE)
         sitemap.xml (URLs nouvelles + <lastmod> des pages modifiées)
 
 Conçu pour tourner via GitHub Actions (workflow_dispatch), mais fonctionne
@@ -20,6 +22,16 @@ from html import escape as _esc
 
 ROOT = os.path.dirname(os.path.abspath(__file__))
 DATA_PATH = os.path.join(ROOT, "data", "lsg1910.json")
+AUDIO_PATH = os.path.join(ROOT, "data", "audio.json")
+AUDIO_PAGE = os.path.join(ROOT, "bible-audio.html")
+
+
+def load_audio():
+    """{"marc/1": {"id": ..., "date": ...}} ; vide si le fichier n'existe pas."""
+    if not os.path.exists(AUDIO_PATH):
+        return {}
+    with open(AUDIO_PATH, encoding="utf-8") as f:
+        return json.load(f)
 OUT_DIR = os.path.join(ROOT, "lsg")
 SITEMAP_PATH = os.path.join(ROOT, "sitemap.xml")
 BASE_URL = "https://labible.app"
@@ -133,7 +145,7 @@ PAGE_TEMPLATE = """<!doctype html>
       <a class="backLink muted" href="/#{book_anchor}-{chapter}">← Ouvrir dans l'application</a>
 
       <h1 class="chapterH1">{label}</h1>
-
+{audio_html}
       <div class="verses">
 {verses_html}
       </div>
@@ -185,7 +197,36 @@ def libelle_chapitre(book, chapter):
     return f"{book} {chapter}"
 
 
-def build_page(entry, prev_entry, next_entry):
+AUDIO_BLOC = """
+      <section class="audioBloc" id="audio">
+          <style>
+          .audioBloc {{ margin: 0 0 22px; }}
+          .audioTitre {{ font-family: ui-sans-serif, system-ui, sans-serif; font-size: 13px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--gold); margin: 0 0 8px; }}
+          .ytFacade {{ position: relative; aspect-ratio: 16 / 9; border-radius: 14px; overflow: hidden; background: #000; cursor: pointer; border: 1px solid color-mix(in srgb, var(--gold) 30%, transparent); }}
+          .ytFacade img, .ytFacade iframe {{ position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; border: 0; }}
+          .ytFacade .play {{ position: absolute; left: 50%; top: 50%; transform: translate(-50%,-50%); width: 72px; height: 72px; border-radius: 50%; border: 0; background: color-mix(in srgb, var(--gold) 92%, transparent); color: #111; font-size: 28px; cursor: pointer; display: flex; align-items: center; justify-content: center; padding-left: 6px; box-sizing: border-box; }}
+          .audioLien {{ font-family: ui-sans-serif, system-ui, sans-serif; font-size: 13px; margin: 8px 0 0; }}
+          .audioLien a {{ color: var(--gold); }}
+          </style>
+        <p class="audioTitre">🎧 Écouter {label}</p>
+        <div class="ytFacade" data-id="{vid}" role="button" tabindex="0" aria-label="Écouter {label}, lecture audio">
+          <img src="https://i.ytimg.com/vi/{vid}/hqdefault.jpg" alt="{label} lu à voix haute, Bible Louis Segond 1910" loading="lazy" width="480" height="360">
+          <span class="play" aria-hidden="true">▶</span>
+        </div>
+        <p class="audioLien"><a href="/bible-audio">Toute la Bible audio</a></p>
+        <script>
+          (function(){{
+            var f = document.querySelector('.ytFacade');
+            function ouvrir(){{ f.innerHTML = '<iframe src="https://www.youtube-nocookie.com/embed/' + f.getAttribute('data-id') + '?autoplay=1&rel=0" title="{label}" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen></iframe>'; }}
+            f.addEventListener('click', ouvrir, {{ once: true }});
+            f.addEventListener('keydown', function(e){{ if (e.key === 'Enter' || e.key === ' ') {{ e.preventDefault(); ouvrir(); }} }});
+          }})();
+        </script>
+      </section>
+"""
+
+
+def build_page(entry, prev_entry, next_entry, audio=None):
     book, chapter, verses = entry["book"], entry["chapter"], entry["verses"]
     book_slug = entry["book_slug"]
     canonical = f"{BASE_URL}/lsg/{book_slug}/{chapter}"
@@ -213,6 +254,11 @@ def build_page(entry, prev_entry, next_entry):
     description = f"« {citation} » {compte}, à lire gratuitement et sans publicité."
     label = libelle_chapitre(book, chapter)
     title = f"{label} — Bible Louis Segond 1910 | LaBible.app"
+    if audio:
+        # Chapitre disponible en lecture audio : on le dit dans le titre et la
+        # description, c'est ce que cherchent les requetes « Marc 1 audio ».
+        description = f"« {citation} » {compte}, à lire et à écouter gratuitement."
+        title = f"{label} — Texte et audio, Bible Louis Segond 1910 | LaBible.app"
 
     verses_lines = []
     for i, t in enumerate(clean_verses):
@@ -241,7 +287,7 @@ def build_page(entry, prev_entry, next_entry):
         next_label = "Fin de la Bible"
         next_class = "disabled"
 
-    jsonld = json.dumps({
+    fil = {
         "@context": "https://schema.org",
         "@type": "BreadcrumbList",
         "itemListElement": [
@@ -249,7 +295,27 @@ def build_page(entry, prev_entry, next_entry):
             {"@type": "ListItem", "position": 2, "name": book, "item": f"{BASE_URL}/lsg/{book_slug}/1"},
             {"@type": "ListItem", "position": 3, "name": label, "item": canonical},
         ],
-    }, ensure_ascii=False)
+    }
+    audio_html = ""
+    if audio:
+        vid = audio["id"]
+        audio_html = AUDIO_BLOC.format(label=_esc(label), vid=_esc(vid))
+        video = {
+            "@context": "https://schema.org",
+            "@type": "VideoObject",
+            "name": f"{label} | Lecture audio | Bible Louis Segond 1910",
+            "description": f"{label} lu à voix haute, en entier, dans le texte de la Bible "
+                           f"Louis Segond 1910, avec le texte à l'écran. « {citation} »",
+            "thumbnailUrl": [f"https://i.ytimg.com/vi/{vid}/hqdefault.jpg"],
+            "uploadDate": audio["date"],
+            "embedUrl": f"https://www.youtube.com/embed/{vid}",
+            "url": f"https://www.youtube.com/watch?v={vid}",
+            "inLanguage": "fr",
+            "publisher": {"@type": "Organization", "name": "LaBible.app", "url": BASE_URL + "/"},
+        }
+        jsonld = json.dumps([fil, video], ensure_ascii=False)
+    else:
+        jsonld = json.dumps(fil, ensure_ascii=False)
 
     # ancre utilisee par le lien profond de l'app (#Livre-Chapitre) ; le nom du
     # livre y est utilise tel quel (avec accents), comme dans app.v2.js.
@@ -268,6 +334,7 @@ def build_page(entry, prev_entry, next_entry):
         prev_href=prev_href, prev_label=_esc(prev_label), prev_class=prev_class,
         next_href=next_href, next_label=_esc(next_label), next_class=next_class,
         jsonld=jsonld,
+        audio_html=audio_html,
     )
 
 
@@ -377,9 +444,43 @@ def build_index_page(books_order, book_slugs):
     return INDEX_TEMPLATE.format(base_url=BASE_URL, ot_links=ot_links, nt_links=nt_links)
 
 
+def maj_page_audio(books_order, chapters, audio):
+    """Reecrit la liste statique de bible-audio.html. Renvoie True si change."""
+    html = open(AUDIO_PAGE, encoding="utf-8").read()
+    debut, fin = "<!-- AUDIO-LISTE-DEBUT -->", "<!-- AUDIO-LISTE-FIN -->"
+    if debut not in html or fin not in html:
+        return False
+    blocs, items, total = [], [], 0
+    for b in books_order:
+        chs = [e for e in chapters if e["book"] == b]
+        dispo = [e for e in chs if f"{e['book_slug']}/{e['chapter']}" in audio]
+        if not dispo:
+            continue
+        liens = " ".join(
+            f'<a href="/lsg/{e["book_slug"]}/{e["chapter"]}#audio">{_esc(libelle_chapitre(b, e["chapter"]))}</a>'
+            for e in dispo)
+        nom = "Psaumes" if b == "Psaumes" else b
+        blocs.append(f'        <p><strong>{_esc(nom)}</strong> ({len(dispo)} / {len(chs)}) : {liens}</p>')
+        for e in dispo:
+            total += 1
+            items.append({"@type": "ListItem", "position": total,
+                          "name": libelle_chapitre(b, e["chapter"]) + " (audio)",
+                          "url": f"{BASE_URL}/lsg/{e['book_slug']}/{e['chapter']}"})
+    liste = json.dumps({"@context": "https://schema.org", "@type": "ItemList",
+                        "name": "Bible audio Louis Segond 1910 : chapitres disponibles",
+                        "numberOfItems": total, "itemListElement": items}, ensure_ascii=False)
+    bloc = (f"{debut}\n      <div class=\"listeStatique\">\n"
+            f"        <p>{total} chapitre{'s' if total > 1 else ''} à écouter :</p>\n"
+            + "\n".join(blocs) +
+            f"\n      </div>\n      <script type=\"application/ld+json\">{liste}</script>\n      {fin}")
+    i, j = html.index(debut), html.index(fin) + len(fin)
+    nouveau = html[:i] + bloc + html[j:]
+    return ecrire_si_different(AUDIO_PAGE, nouveau)
+
+
 def urls_generees(chapters):
     """Les URLs dont CE script est proprietaire, dans l'ordre du sitemap."""
-    urls = [f"{BASE_URL}/lsg/"]
+    urls = [f"{BASE_URL}/lsg/", f"{BASE_URL}/bible-audio"]
     for e in chapters:
         urls.append(f"{BASE_URL}/lsg/{e['book_slug']}/{e['chapter']}")
     return urls
@@ -454,7 +555,9 @@ def ecrire_si_different(chemin, contenu):
 
 def main():
     books_order, chapters = load_bible()
-    print(f"{len(books_order)} livres, {len(chapters)} chapitres a generer")
+    audio = load_audio()
+    print(f"{len(books_order)} livres, {len(chapters)} chapitres a generer "
+          f"({len(audio)} avec audio)")
 
     aujourdhui = datetime.date.today().isoformat()
     modifiees = set()
@@ -464,7 +567,8 @@ def main():
     for i, entry in enumerate(chapters):
         prev_entry = chapters[i - 1] if i > 0 else None
         next_entry = chapters[i + 1] if i < len(chapters) - 1 else None
-        html = build_page(entry, prev_entry, next_entry)
+        html = build_page(entry, prev_entry, next_entry,
+                          audio.get(f"{entry['book_slug']}/{entry['chapter']}"))
         book_dir = os.path.join(OUT_DIR, entry["book_slug"])
         os.makedirs(book_dir, exist_ok=True)
         path = os.path.join(book_dir, f"{entry['chapter']}.html")
@@ -480,6 +584,14 @@ def main():
     if ecrire_si_different(os.path.join(OUT_DIR, "index.html"), index_html):
         modifiees.add(f"{BASE_URL}/lsg/")
     print("page d'index lsg/index.html ecrite (liens vers les 66 livres)")
+
+    # --- bible-audio.html : liste statique des chapitres a ecouter -----
+    # Seul le bloc entre les marqueurs AUDIO-LISTE est reecrit. La page le
+    # remplace a l'affichage par sa version interactive ; les moteurs de
+    # recherche, eux, y trouvent de vrais liens vers chaque chapitre.
+    if os.path.exists(AUDIO_PAGE) and maj_page_audio(books_order, chapters, audio):
+        modifiees.add(f"{BASE_URL}/bible-audio")
+        print("bible-audio.html : liste mise a jour")
 
     # --- sitemap.xml ---------------------------------------------------
     # Les URLs etrangeres a ce script sont recopiees telles quelles ; celles

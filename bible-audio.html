@@ -61,11 +61,15 @@
     .chap.bientot { border-color: color-mix(in srgb, var(--text) 8%, transparent); background: transparent; color: var(--muted2, #777); cursor: default; font-weight: 500; }
     .note { font-size: 13.5px; color: var(--muted); margin: 6px 0 0; }
     .note a, .pageContent a.lien { color: var(--gold); }
+    .listeStatique p { font-size: 14px; margin: 0 0 8px; }
+    .listeStatique a { color: var(--gold); margin-right: 6px; }
+    .js .listeStatique { display: none; }
     .ctaYT { display:inline-block; margin: 14px 0 2px; padding: 11px 16px; border-radius: 12px; border: 1px solid color-mix(in srgb, var(--gold) 40%, transparent); background: color-mix(in srgb, var(--gold) 12%, transparent); color: var(--text); font-weight: 700; text-decoration: none; }
     @media (max-width: 520px){ .hero h1 { font-size: 30px; } .barre { width: 44px; } }
   </style>
   <script>
     (function(){ try { var t = localStorage.getItem('labible:theme') === 'light' ? 'light' : 'dark'; document.documentElement.setAttribute('data-theme', t); } catch(e){} })();
+    document.documentElement.classList.add('js');
   </script>
   <script src="/footer.js" defer></script>
   <script src="/header.js" defer></script>
@@ -101,6 +105,20 @@
       <div id="nt"></div>
 
       <p class="note">Les Psaumes sont lus chaque matin, un Psaume par jour. Les autres livres paraissent au fil des jours, en commençant par les Évangiles. Les chapitres à venir sont grisés.</p>
+
+      <!-- AUDIO-LISTE-DEBUT -->
+      <div class="listeStatique">
+        <p>7 chapitres à écouter :</p>
+        <p><strong>Psaumes</strong> (4 / 150) : <a href="/lsg/psaumes/1#audio">Psaume 1</a> <a href="/lsg/psaumes/2#audio">Psaume 2</a> <a href="/lsg/psaumes/3#audio">Psaume 3</a> <a href="/lsg/psaumes/4#audio">Psaume 4</a></p>
+        <p><strong>Marc</strong> (3 / 16) : <a href="/lsg/marc/1#audio">Marc 1</a> <a href="/lsg/marc/2#audio">Marc 2</a> <a href="/lsg/marc/3#audio">Marc 3</a></p>
+      </div>
+      <script type="application/ld+json">{"@context": "https://schema.org", "@type": "ItemList", "name": "Bible audio Louis Segond 1910 : chapitres disponibles", "numberOfItems": 7, "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Psaume 1 (audio)", "url": "https://labible.app/lsg/psaumes/1"}, {"@type": "ListItem", "position": 2, "name": "Psaume 2 (audio)", "url": "https://labible.app/lsg/psaumes/2"}, {"@type": "ListItem", "position": 3, "name": "Psaume 3 (audio)", "url": "https://labible.app/lsg/psaumes/3"}, {"@type": "ListItem", "position": 4, "name": "Psaume 4 (audio)", "url": "https://labible.app/lsg/psaumes/4"}, {"@type": "ListItem", "position": 5, "name": "Marc 1 (audio)", "url": "https://labible.app/lsg/marc/1"}, {"@type": "ListItem", "position": 6, "name": "Marc 2 (audio)", "url": "https://labible.app/lsg/marc/2"}, {"@type": "ListItem", "position": 7, "name": "Marc 3 (audio)", "url": "https://labible.app/lsg/marc/3"}]}</script>
+      <!-- AUDIO-LISTE-FIN -->
+
+      <h2 class="testament">Une Bible audio gratuite en français</h2>
+      <p>Chaque chapitre est lu en entier, sans coupure ni commentaire, dans le texte de la <a class="lien" href="/louis-segond">Bible Louis Segond 1910</a>, la traduction protestante de référence en langue française, aujourd'hui dans le domaine public. Le texte s'affiche à l'écran, verset après verset, pendant la lecture : on peut écouter et suivre en même temps.</p>
+      <p>La lecture est faite par une voix de synthèse, posée et régulière, avec une musique douce en fond. Elle convient pour écouter la Parole de Dieu en voiture, dans les transports, en marchant ou avant de dormir, et pour ceux qui lisent difficilement.</p>
+      <p>Chaque page de chapitre du site, par exemple <a class="lien" href="/lsg/marc/1">Marc 1</a>, propose aussi la lecture audio au-dessus du texte, dès qu'elle est disponible. La Bible audio est entièrement gratuite, sans inscription et sans publicité.</p>
       <noscript><p class="note">Cette page a besoin de JavaScript. Tous les chapitres sont aussi sur <a href="https://www.youtube.com/@LaBible-app">la chaîne YouTube de LaBible.app</a>.</p></noscript>
       <a class="ctaYT" href="https://www.youtube.com/@LaBible-app" rel="noopener">▶ La chaîne YouTube de LaBible.app</a>
     </article>

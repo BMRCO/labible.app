@@ -1,0 +1,55 @@
+name: Bible audio sur le site
+
+# Toutes les 6 heures : recopie les videos de la Bible audio publiees par le
+# bot (data/audio.json, via sync_audio.py), puis regenere les pages /lsg/
+# concernees (lecteur audio + balisage VideoObject), la liste de
+# /bible-audio et le sitemap. Ne commite que si quelque chose a change :
+# chaque commit declenche un deploiement Cloudflare Pages.
+on:
+  schedule:
+    - cron: '52 */6 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: sync-audio
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Recopier les videos
+        run: python sync_audio.py
+
+      - name: Regenerer les pages
+        run: python generate_chapter_pages.py
+
+      - name: Commit et push
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add data/audio.json lsg/ bible-audio.html sitemap.xml
+          if git diff --cached --quiet; then
+            echo "Rien de nouveau."
+            exit 0
+          fi
+          git commit -m "Bible audio : nouveaux chapitres sur le site"
+          for i in 1 2 3; do
+            if git push; then exit 0; fi
+            git pull --rebase origin main || true
+            sleep 5
+          done
+          echo "::error::Push impossible apres 3 tentatives."
+          exit 1

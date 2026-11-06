@@ -21,6 +21,7 @@
     '<div class="footerLinks">' +
       '<a href="/a-propos">À propos</a><span>·</span>' +
       '<a href="/lsg/">Bible par chapitre</a><span>·</span>' +
+      '<a href="/bible-audio">Bible audio</a><span>·</span>' +
       '<a href="/quiz">Quiz biblique</a><span>·</span>' +
       '<a href="/installer">Installer</a><span>·</span>' +
       '<a href="/contact">Contact</a>' +

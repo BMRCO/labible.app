@@ -55,6 +55,7 @@
       '<a class="tab" href="/#plan">Plan</a>' +
       '<a class="tab" href="/#bibliotheque">Biblioth\u00e8que</a>' +
       '<a class="tab" id="lbTabVersets" href="/versets">Versets</a>' +
+      '<a class="tab" href="/bible-audio">Audio</a>' +
     '</nav>' +
     '</div>' +
   '</div>';

@@ -1,0 +1,226 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <title>Bible audio en français : la Bible Louis Segond 1910 lue à voix haute | LaBible.app</title>
+  <meta name="description" content="Écoutez la Bible Louis Segond 1910 lue à voix haute, chapitre après chapitre, avec le texte à l'écran. Bible audio en français, gratuite et sans publicité." />
+  <meta name="robots" content="index, follow" />
+  <link rel="canonical" href="https://labible.app/bible-audio" />
+  <meta property="og:title" content="Bible audio en français : la Bible Louis Segond 1910 lue à voix haute | LaBible.app" />
+  <meta property="og:description" content="Écoutez la Bible Louis Segond 1910 lue à voix haute, chapitre après chapitre, avec le texte à l'écran. Bible audio en français, gratuite et sans publicité." />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://labible.app/bible-audio" />
+  <meta property="og:image" content="https://labible.app/icons/icon-512x512.png?v=2" />
+  <meta property="og:image:width" content="512" />
+  <meta property="og:image:height" content="512" />
+  <meta property="og:image:type" content="image/png" />
+  <meta property="og:image:alt" content="LaBible.app — Bible Louis Segond 1910" />
+  <meta property="og:locale" content="fr_FR" />
+  <meta property="og:site_name" content="LaBible.app" />
+  <meta name="theme-color" content="#0b0b0b" />
+  <link rel="manifest" href="/manifest.webmanifest">
+  <link rel="icon" href="/icons/icon-192x192.png">
+  <link rel="apple-touch-icon" href="/icons/icon-192x192.png">
+  <link rel="icon" href="/favicon.ico" sizes="any">
+  <link rel="stylesheet" href="/styles.css?v=5" />
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"WebPage","name":"Bible audio en français (Louis Segond 1910)","url":"https://labible.app/bible-audio","inLanguage":"fr","description":"Écoutez la Bible Louis Segond 1910 lue à voix haute, chapitre après chapitre, avec le texte à l'écran. Bible audio en français, gratuite et sans publicité.","isPartOf":{"@type":"WebSite","name":"LaBible.app","url":"https://labible.app/"}}
+  </script>
+  <style>
+    .pageContent { line-height: 1.6; }
+    .backLink { display:inline-block; font-size: 13px; margin-bottom: 14px; text-decoration:none; }
+    .kicker { font-family: ui-sans-serif, system-ui, sans-serif; text-transform: uppercase; letter-spacing: .22em; font-size: 12px; font-weight: 700; color: var(--gold); margin: 0 0 6px; }
+    .hero h1 { font-family: ui-serif, Georgia, "Times New Roman", serif; font-size: 38px; line-height: 1.1; margin: 0 0 12px; }
+    .heroLead { color: var(--muted); font-size: 16.5px; line-height: 1.6; margin: 0 0 16px; max-width: 62ch; font-family: ui-serif, Georgia, serif; }
+    .compteur { display:inline-block; padding: 8px 16px; border-radius: 999px; border: 1px solid color-mix(in srgb, var(--gold) 45%, transparent); background: color-mix(in srgb, var(--gold) 9%, transparent); color: var(--gold); font-weight: 700; font-size: 14px; }
+
+    .lecteur { display:none; margin: 22px 0 8px; border-radius: 16px; overflow: hidden; border: 1px solid color-mix(in srgb, var(--gold) 30%, transparent); background: color-mix(in srgb, var(--text) 3%, transparent); }
+    .lecteur.on { display:block; }
+    .ecran { position: relative; width: 100%; aspect-ratio: 16 / 9; background: #000; }
+    .ecran iframe { position:absolute; inset:0; width:100%; height:100%; border:0; }
+    .lecteurBas { display:flex; align-items:center; gap:10px; padding: 12px 14px; flex-wrap: wrap; }
+    .lecteurTitre { font-family: ui-serif, Georgia, serif; font-weight: 700; font-size: 18px; flex: 1 1 auto; min-width: 140px; }
+    .btnL { padding: 8px 12px; border-radius: 10px; border: 1px solid color-mix(in srgb, var(--gold) 35%, transparent); background: color-mix(in srgb, var(--gold) 10%, transparent); color: var(--text); font: inherit; font-size: 13px; font-weight: 700; cursor: pointer; text-decoration: none; white-space: nowrap; }
+    .btnL[disabled] { opacity: .35; cursor: default; }
+
+    .testament { font-family: ui-serif, Georgia, serif; font-size: 21px; margin: 30px 0 10px; display:flex; align-items:baseline; gap:10px; }
+    .testament small { font-family: ui-sans-serif, system-ui, sans-serif; font-size: 12.5px; color: var(--muted); font-weight: 600; }
+    .livre { border: 1px solid color-mix(in srgb, var(--text) 9%, transparent); border-radius: 12px; margin: 0 0 8px; background: color-mix(in srgb, var(--text) 2.5%, transparent); }
+    .livre > button { all: unset; box-sizing: border-box; width: 100%; display:flex; align-items:center; gap:12px; padding: 12px 14px; cursor: pointer; }
+    .livre > button:focus-visible { outline: 2px solid var(--gold); border-radius: 12px; }
+    .nomLivre { font-family: ui-serif, Georgia, serif; font-size: 16.5px; font-weight: 700; flex: 1 1 auto; }
+    .etat { font-size: 12.5px; color: var(--muted); white-space: nowrap; }
+    .barre { width: 70px; height: 5px; border-radius: 5px; background: color-mix(in srgb, var(--text) 10%, transparent); overflow: hidden; flex: 0 0 auto; }
+    .barre i { display:block; height:100%; background: var(--gold); }
+    .livre.vide .nomLivre { color: var(--muted); font-weight: 600; }
+    .chapitres { display:none; padding: 2px 14px 14px; gap: 6px; flex-wrap: wrap; }
+    .livre.ouvert .chapitres { display:flex; }
+    .chap { min-width: 40px; padding: 7px 0; text-align:center; border-radius: 9px; font-size: 13.5px; font-weight: 700; border: 1px solid color-mix(in srgb, var(--gold) 40%, transparent); background: color-mix(in srgb, var(--gold) 12%, transparent); color: var(--text); cursor: pointer; font-family: inherit; }
+    .chap.encours { background: var(--gold); color: #111; }
+    .chap.bientot { border-color: color-mix(in srgb, var(--text) 8%, transparent); background: transparent; color: var(--muted2, #777); cursor: default; font-weight: 500; }
+    .note { font-size: 13.5px; color: var(--muted); margin: 6px 0 0; }
+    .note a, .pageContent a.lien { color: var(--gold); }
+    .ctaYT { display:inline-block; margin: 14px 0 2px; padding: 11px 16px; border-radius: 12px; border: 1px solid color-mix(in srgb, var(--gold) 40%, transparent); background: color-mix(in srgb, var(--gold) 12%, transparent); color: var(--text); font-weight: 700; text-decoration: none; }
+    @media (max-width: 520px){ .hero h1 { font-size: 30px; } .barre { width: 44px; } }
+  </style>
+  <script>
+    (function(){ try { var t = localStorage.getItem('labible:theme') === 'light' ? 'light' : 'dark'; document.documentElement.setAttribute('data-theme', t); } catch(e){} })();
+  </script>
+  <script src="/footer.js" defer></script>
+  <script src="/header.js" defer></script>
+</head>
+<body>
+
+  <div id="lb-topbar"></div>
+
+  <main class="container">
+    <article class="card pageContent">
+      <a class="backLink muted" href="/">← Retour à la lecture</a>
+
+      <div class="hero">
+        <p class="kicker">Bible audio</p>
+        <h1>La Bible lue à voix haute</h1>
+        <p class="heroLead">La Bible Louis Segond 1910, lue chapitre après chapitre, avec le texte à l'écran. Pour écouter la Parole en chemin, au travail ou avant de dormir. Gratuit, sans publicité, sans commentaire ajouté.</p>
+        <span class="compteur" id="compteur">Chargement…</span>
+      </div>
+
+      <section class="lecteur" id="lecteur" aria-label="Lecteur">
+        <div class="ecran" id="ecran"></div>
+        <div class="lecteurBas">
+          <div class="lecteurTitre" id="lecteurTitre"></div>
+          <button class="btnL" id="btnPrec" type="button">◀ Précédent</button>
+          <button class="btnL" id="btnSuiv" type="button">Suivant ▶</button>
+          <a class="btnL" id="lienTexte" href="/">📖 Lire le texte</a>
+        </div>
+      </section>
+
+      <h2 class="testament">Nouveau Testament <small id="cNT"></small></h2>
+      <div id="nt"></div>
+      <h2 class="testament">Ancien Testament <small id="cAT"></small></h2>
+      <div id="at"></div>
+
+      <p class="note">Les Psaumes sont lus chaque matin, un Psaume par jour. Les autres livres paraissent au fil des jours, en commençant par les Évangiles. Les chapitres à venir sont grisés.</p>
+      <noscript><p class="note">Cette page a besoin de JavaScript. Tous les chapitres sont aussi sur <a href="https://www.youtube.com/@LaBible-app">la chaîne YouTube de LaBible.app</a>.</p></noscript>
+      <a class="ctaYT" href="https://www.youtube.com/@LaBible-app" rel="noopener">▶ La chaîne YouTube de LaBible.app</a>
+    </article>
+
+    <div id="lb-footer"></div>
+  </main>
+
+  <script>
+  (function () {
+    // [nom, adresse sur le site, nombre de chapitres], dans l'ordre de la Bible.
+    var LIVRES = [["Genèse","genese",50],["Exode","exode",40],["Lévitique","levitique",27],["Nombres","nombres",36],["Deutéronome","deuteronome",34],["Josué","josue",24],["Juges","juges",21],["Ruth","ruth",4],["1 Samuel","1-samuel",31],["2 Samuel","2-samuel",24],["1 Rois","1-rois",22],["2 Rois","2-rois",25],["1 Chroniques","1-chroniques",29],["2 Chroniques","2-chroniques",36],["Esdras","esdras",10],["Néhémie","nehemie",13],["Esther","esther",10],["Job","job",42],["Psaumes","psaumes",150],["Proverbes","proverbes",31],["Ecclésiaste","ecclesiaste",12],["Cantique des Cantiques","cantique-des-cantiques",8],["Ésaïe","esaie",66],["Jérémie","jeremie",52],["Lamentations","lamentations",5],["Ézéchiel","ezechiel",48],["Daniel","daniel",12],["Osée","osee",14],["Joël","joel",3],["Amos","amos",9],["Abdias","abdias",1],["Jonas","jonas",4],["Michée","michee",7],["Nahum","nahum",3],["Habacuc","habacuc",3],["Sophonie","sophonie",3],["Aggée","aggee",2],["Zacharie","zacharie",14],["Malachie","malachie",4],["Matthieu","matthieu",28],["Marc","marc",16],["Luc","luc",24],["Jean","jean",21],["Actes","actes",28],["Romains","romains",16],["1 Corinthiens","1-corinthiens",16],["2 Corinthiens","2-corinthiens",13],["Galates","galates",6],["Éphésiens","ephesiens",6],["Philippiens","philippiens",4],["Colossiens","colossiens",4],["1 Thessaloniciens","1-thessaloniciens",5],["2 Thessaloniciens","2-thessaloniciens",3],["1 Timothée","1-timothee",6],["2 Timothée","2-timothee",4],["Tite","tite",3],["Philémon","philemon",1],["Hébreux","hebreux",13],["Jacques","jacques",5],["1 Pierre","1-pierre",5],["2 Pierre","2-pierre",3],["1 Jean","1-jean",5],["2 Jean","2-jean",1],["3 Jean","3-jean",1],["Jude","jude",1],["Apocalypse","apocalypse",22]];
+    var NB_AT = 39;
+    // Identifiants YouTube, tenus a jour par le bot a chaque publication.
+    var SRC = "https://raw.githubusercontent.com/BMRCO/bible-telegram-bot/main/";
+    var videos = {};          // "marc/1" -> id
+    var ordre = [];           // chapitres disponibles, dans l'ordre de la Bible
+    var courant = null;
+
+    function lire(url) {
+      return fetch(url, { cache: "no-cache" }).then(function (r) { return r.ok ? r.json() : {}; }).catch(function () { return {}; });
+    }
+
+    function nomChap(slug, ch) {
+      var l = LIVRES.find(function (x) { return x[1] === slug; });
+      var nom = l ? l[0] : slug;
+      return (slug === "psaumes" ? "Psaume" : nom) + " " + ch;
+    }
+
+    function jouer(cle, defiler) {
+      var id = videos[cle]; if (!id) return;
+      courant = cle;
+      var p = cle.split("/");
+      document.getElementById("ecran").innerHTML =
+        '<iframe src="https://www.youtube-nocookie.com/embed/' + encodeURIComponent(id) +
+        '?autoplay=1&rel=0" title="' + nomChap(p[0], p[1]) + '" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen></iframe>';
+      document.getElementById("lecteurTitre").textContent = nomChap(p[0], p[1]);
+      document.getElementById("lienTexte").href = "/lsg/" + p[0] + "/" + p[1];
+      var i = ordre.indexOf(cle);
+      document.getElementById("btnPrec").disabled = i <= 0;
+      document.getElementById("btnSuiv").disabled = i < 0 || i >= ordre.length - 1;
+      document.getElementById("lecteur").classList.add("on");
+      document.querySelectorAll(".chap.encours").forEach(function (b) { b.classList.remove("encours"); });
+      var b = document.querySelector('.chap[data-cle="' + cle + '"]');
+      if (b) { b.classList.add("encours"); b.closest(".livre").classList.add("ouvert"); }
+      try { history.replaceState(null, "", "#" + cle); } catch (e) {}
+      if (defiler) document.getElementById("lecteur").scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+
+    function construire() {
+      var dispo = 0, dispoNT = 0, dispoAT = 0, total = 0;
+      ["at", "nt"].forEach(function (z) { document.getElementById(z).innerHTML = ""; });
+      LIVRES.forEach(function (l, idx) {
+        var nom = l[0], slug = l[1], n = l[2], ok = 0;
+        total += n;
+        var div = document.createElement("div");
+        div.className = "livre";
+        var puces = "";
+        for (var c = 1; c <= n; c++) {
+          var cle = slug + "/" + c;
+          if (videos[cle]) { ok++; ordre.push(cle); puces += '<button type="button" class="chap" data-cle="' + cle + '">' + c + "</button>"; }
+          else puces += '<span class="chap bientot" title="Bientôt">' + c + "</span>";
+        }
+        dispo += ok; if (idx < NB_AT) dispoAT += ok; else dispoNT += ok;
+        if (!ok) div.classList.add("vide");
+        div.innerHTML =
+          '<button type="button" aria-expanded="false"><span class="nomLivre">' + nom + "</span>" +
+          '<span class="etat">' + (ok ? ok + " / " + n : "bientôt") + "</span>" +
+          '<span class="barre"><i style="width:' + Math.round(100 * ok / n) + '%"></i></span></button>' +
+          '<div class="chapitres">' + puces + "</div>";
+        div.querySelector("button").addEventListener("click", function () {
+          var o = div.classList.toggle("ouvert");
+          this.setAttribute("aria-expanded", o ? "true" : "false");
+        });
+        document.getElementById(idx < NB_AT ? "at" : "nt").appendChild(div);
+      });
+      // Nouveau Testament d'abord : c'est par lui que la lecture commence.
+      ordre.sort(function (a, b) {
+        function rang(k) { var s = k.split("/"); var i = LIVRES.findIndex(function (x) { return x[1] === s[0]; }); return (i < NB_AT ? 100000 : 0) + i * 1000 + (+s[1]); }
+        return rang(a) - rang(b);
+      });
+      document.querySelectorAll(".chap[data-cle]").forEach(function (b) {
+        b.addEventListener("click", function () { jouer(b.getAttribute("data-cle"), true); });
+      });
+      document.getElementById("compteur").textContent = dispo + " chapitre" + (dispo > 1 ? "s" : "") + " à écouter sur " + total.toLocaleString("fr-FR");
+      document.getElementById("cNT").textContent = dispoNT + " chapitre" + (dispoNT > 1 ? "s" : "");
+      document.getElementById("cAT").textContent = dispoAT + " chapitre" + (dispoAT > 1 ? "s" : "");
+    }
+
+    document.getElementById("btnPrec").addEventListener("click", function () { var i = ordre.indexOf(courant); if (i > 0) jouer(ordre[i - 1], false); });
+    document.getElementById("btnSuiv").addEventListener("click", function () { var i = ordre.indexOf(courant); if (i >= 0 && i < ordre.length - 1) jouer(ordre[i + 1], false); });
+
+    Promise.all([lire(SRC + "videos_bible_audio.json"), lire(SRC + "videos_psaumes_audio.json")]).then(function (r) {
+      videos = r[0] || {};
+      var ps = r[1] || {};
+      Object.keys(ps).forEach(function (k) {
+        var num = k.split(":")[0];                       // « 119:1-22 » : premiere partie
+        if (!videos["psaumes/" + num]) videos["psaumes/" + num] = ps[k];
+      });
+      construire();
+      var h = decodeURIComponent(location.hash.slice(1));
+      if (h && videos[h]) jouer(h, true);
+    });
+  })();
+  </script>
+  <script>
+    (function(){
+      var btn = document.getElementById('btnTheme');
+      function sync(){ var t = document.documentElement.getAttribute('data-theme') || 'dark'; if (btn) btn.textContent = t === 'light' ? '☀️' : '🌙'; }
+      sync();
+      if (btn) btn.addEventListener('click', function(){
+        var cur = document.documentElement.getAttribute('data-theme') || 'dark';
+        var nxt = cur === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', nxt);
+        try { localStorage.setItem('labible:theme', nxt); } catch(e){}
+        sync();
+      });
+    })();
+  </script>
+  <script>
+    if ('serviceWorker' in navigator) { window.addEventListener('load', function () { navigator.serviceWorker.register('/sw.js').catch(function(){}); }); }
+  </script>
+</body>
+</html>

@@ -257,7 +257,7 @@ async function loadVersetsThemes(){
   // session, meme apres le retour du reseau. On renvoie {} sans le stocker,
   // pour que la prochaine tentative refasse la requete.
   try{
-    const res = await fetch("/data/versets_themes.json");
+    const res = await fetch("/data/versets_themes.json?v=2");
     if(!res.ok) return {};
     state.versetsThemes = await res.json();
   } catch { return {}; }
@@ -315,7 +315,11 @@ const VERSETS_SHORT_LABEL = {
   promesses: "Promesses de Dieu", deuil: "Réconfort dans le deuil", pardon: "Pardon",
   peur: "Peur et angoisse", confiance: "Confiance en Dieu", force: "Force et courage",
   famille: "Famille", gratitude: "Gratitude et louange", combat: "Combat spirituel",
-  solitude: "Présence de Dieu"
+  solitude: "Présence de Dieu",
+  foi: "Foi", encouragement: "Encouragement", sagesse: "Sagesse", joie: "Joie",
+  benediction: "Bénédiction", mariage: "Mariage", enfants: "Enfants", amitie: "Amitié",
+  travail: "Travail", tristesse: "Tristesse", salut: "Salut", "saint-esprit": "Saint-Esprit",
+  noel: "Noël", "nouvel-an": "Nouvelle année"
 };
 
 async function renderVersetsHub(){

@@ -257,7 +257,7 @@ async function loadVersetsThemes(){
   // session, meme apres le retour du reseau. On renvoie {} sans le stocker,
   // pour que la prochaine tentative refasse la requete.
   try{
-    const res = await fetch("/data/versets_themes.json?v=2");
+    const res = await fetch("/data/versets_themes.json?v=3");
     if(!res.ok) return {};
     state.versetsThemes = await res.json();
   } catch { return {}; }
@@ -319,7 +319,7 @@ const VERSETS_SHORT_LABEL = {
   foi: "Foi", encouragement: "Encouragement", sagesse: "Sagesse", joie: "Joie",
   benediction: "Bénédiction", mariage: "Mariage", enfants: "Enfants", amitie: "Amitié",
   travail: "Travail", tristesse: "Tristesse", salut: "Salut", "saint-esprit": "Saint-Esprit",
-  noel: "Noël", "nouvel-an": "Nouvelle année"
+  "naissance-de-jesus": "Naissance de Jésus", "nouvel-an": "Nouvelle année"
 };
 
 async function renderVersetsHub(){

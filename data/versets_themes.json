@@ -3135,108 +3135,6 @@
    ]
   ]
  },
- "noel": {
-  "label": "Versets de Noël",
-  "icon": "<svg viewBox=\"0 0 24 24\" width=\"26\" height=\"26\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.7\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M12 3.5l1.6 3.3 3.6.5-2.6 2.5.6 3.6L12 11.7l-3.2 1.7.6-3.6-2.6-2.5 3.6-.5z\"/><path d=\"M12 15v5.5M8.5 20.5h7\"/></svg>",
-  "lead": "Aujourd’hui, dans la ville de David, il vous est né un Sauveur, qui est le Christ, le Seigneur.",
-  "refs": [
-   [
-    "Ésaïe",
-    7,
-    14
-   ],
-   [
-    "Ésaïe",
-    9,
-    6
-   ],
-   [
-    "Michée",
-    5,
-    2
-   ],
-   [
-    "Matthieu",
-    1,
-    21
-   ],
-   [
-    "Matthieu",
-    1,
-    23
-   ],
-   [
-    "Matthieu",
-    2,
-    1
-   ],
-   [
-    "Matthieu",
-    2,
-    2
-   ],
-   [
-    "Matthieu",
-    2,
-    10
-   ],
-   [
-    "Matthieu",
-    2,
-    11
-   ],
-   [
-    "Luc",
-    1,
-    30
-   ],
-   [
-    "Luc",
-    1,
-    31
-   ],
-   [
-    "Luc",
-    1,
-    32
-   ],
-   [
-    "Luc",
-    2,
-    7
-   ],
-   [
-    "Luc",
-    2,
-    10
-   ],
-   [
-    "Luc",
-    2,
-    11
-   ],
-   [
-    "Luc",
-    2,
-    14
-   ],
-   [
-    "Jean",
-    1,
-    14
-   ],
-   [
-    "Galates",
-    4,
-    4
-   ],
-   [
-    "Jean",
-    3,
-    16
-   ]
-  ]
- },
  "nouvel-an": {
   "label": "Versets pour la nouvelle année",
   "icon": "<svg viewBox=\"0 0 24 24\" width=\"26\" height=\"26\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.7\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><rect x=\"3.5\" y=\"5\" width=\"17\" height=\"15\" rx=\"2\"/><path d=\"M3.5 10h17M8 3v4M16 3v4\"/><path d=\"M12 13v4M10 15h4\"/></svg>",
@@ -3341,6 +3239,108 @@
     "Psaumes",
     118,
     24
+   ]
+  ]
+ },
+ "naissance-de-jesus": {
+  "label": "Versets sur la naissance de Jésus",
+  "icon": "<svg viewBox=\"0 0 24 24\" width=\"26\" height=\"26\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.7\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M12 3.5l1.6 3.3 3.6.5-2.6 2.5.6 3.6L12 11.7l-3.2 1.7.6-3.6-2.6-2.5 3.6-.5z\"/><path d=\"M12 15v5.5M8.5 20.5h7\"/></svg>",
+  "lead": "Annoncée par les prophètes, racontée par les Évangiles : la naissance de Jésus-Christ, Emmanuel, Dieu avec nous.",
+  "refs": [
+   [
+    "Ésaïe",
+    7,
+    14
+   ],
+   [
+    "Ésaïe",
+    9,
+    6
+   ],
+   [
+    "Michée",
+    5,
+    2
+   ],
+   [
+    "Matthieu",
+    1,
+    21
+   ],
+   [
+    "Matthieu",
+    1,
+    23
+   ],
+   [
+    "Matthieu",
+    2,
+    1
+   ],
+   [
+    "Matthieu",
+    2,
+    2
+   ],
+   [
+    "Matthieu",
+    2,
+    10
+   ],
+   [
+    "Matthieu",
+    2,
+    11
+   ],
+   [
+    "Luc",
+    1,
+    30
+   ],
+   [
+    "Luc",
+    1,
+    31
+   ],
+   [
+    "Luc",
+    1,
+    32
+   ],
+   [
+    "Luc",
+    2,
+    7
+   ],
+   [
+    "Luc",
+    2,
+    10
+   ],
+   [
+    "Luc",
+    2,
+    11
+   ],
+   [
+    "Luc",
+    2,
+    14
+   ],
+   [
+    "Jean",
+    1,
+    14
+   ],
+   [
+    "Galates",
+    4,
+    4
+   ],
+   [
+    "Jean",
+    3,
+    16
    ]
   ]
  }

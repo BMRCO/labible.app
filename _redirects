@@ -14,3 +14,7 @@
 # Page orpheline (ancienne version, jamais liee depuis le site) -> page canonique
 /mentions-legales.html   /legal.html   301
 /mentions-legales        /legal.html   301
+
+# Theme renomme le 8 novembre 2026 (decision de BC : pas de « Noel »)
+/versets/noel            /versets/naissance-de-jesus   301
+/versets/noel.html       /versets/naissance-de-jesus   301

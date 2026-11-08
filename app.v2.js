@@ -257,7 +257,7 @@ async function loadVersetsThemes(){
   // session, meme apres le retour du reseau. On renvoie {} sans le stocker,
   // pour que la prochaine tentative refasse la requete.
   try{
-    const res = await fetch("/data/versets_themes.json?v=4");
+    const res = await fetch("/data/versets_themes.json?v=5");
     if(!res.ok) return {};
     state.versetsThemes = await res.json();
   } catch { return {}; }
@@ -323,7 +323,8 @@ const VERSETS_SHORT_LABEL = {
   resurrection: "Résurrection", grace: "Grâce", patience: "Patience", humilite: "Humilité",
   colere: "Colère", argent: "Argent", mere: "Mère", pere: "Père", jeunes: "Jeunes",
   femmes: "Femmes", matin: "Matin", soir: "Soir", repentance: "Repentance",
-  "vie-eternelle": "Vie éternelle"
+  "vie-eternelle": "Vie éternelle",
+  "paroles-de-jesus": "Paroles de Jésus", propheties: "Prophéties", psaumes: "Psaumes"
 };
 
 async function renderVersetsHub(){

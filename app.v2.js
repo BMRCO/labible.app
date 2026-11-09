@@ -257,7 +257,7 @@ async function loadVersetsThemes(){
   // session, meme apres le retour du reseau. On renvoie {} sans le stocker,
   // pour que la prochaine tentative refasse la requete.
   try{
-    const res = await fetch("/data/versets_themes.json?v=5");
+    const res = await fetch("/data/versets_themes.json?v=6");
     if(!res.ok) return {};
     state.versetsThemes = await res.json();
   } catch { return {}; }
@@ -311,11 +311,11 @@ function versetsShowTheme(key){
 // le contexte ; le titre complet — "Versets sur…" — reste utilisé dans la vue détail).
 const VERSETS_SHORT_LABEL = {
   protection: "Protection", guerison: "Guérison", paix: "Paix",
-  amour: "Amour de Dieu", esperance: "Espérance", priere: "Prière",
-  promesses: "Promesses de Dieu", deuil: "Réconfort dans le deuil", pardon: "Pardon",
-  peur: "Peur et angoisse", confiance: "Confiance en Dieu", force: "Force et courage",
+  amour: "Amour", esperance: "Espérance", priere: "Prière",
+  promesses: "Promesses", deuil: "Réconfort dans le deuil", pardon: "Pardon",
+  peur: "Peur et angoisse", confiance: "Confiance", force: "Force et courage",
   famille: "Famille", gratitude: "Gratitude et louange", combat: "Combat spirituel",
-  solitude: "Présence de Dieu",
+  solitude: "Présence",
   foi: "Foi", encouragement: "Encouragement", sagesse: "Sagesse", joie: "Joie",
   benediction: "Bénédiction", mariage: "Mariage", enfants: "Enfants", amitie: "Amitié",
   travail: "Travail", tristesse: "Tristesse", salut: "Salut", "saint-esprit": "Saint-Esprit",

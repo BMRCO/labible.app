@@ -1,6 +1,6 @@
 {
  "protection": {
-  "label": "Versets sur la protection de Dieu",
+  "label": "Versets sur la protection",
   "icon": "<svg viewBox=\"0 0 24 24\" width=\"26\" height=\"26\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.7\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M12 3 5 6v5.5c0 4.3 3 7.7 7 9 4-1.3 7-4.7 7-9V6z\"/></svg>",
   "lead": "Des versets bibliques qui rappellent que l’Éternel garde et protège les siens.",
   "refs": [
@@ -556,7 +556,7 @@
   ]
  },
  "amour": {
-  "label": "Versets sur l’amour de Dieu",
+  "label": "Versets sur l’amour",
   "icon": "<svg viewBox=\"0 0 24 24\" width=\"26\" height=\"26\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.7\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M12 20.5 5 13.5A4.4 4.4 0 0 1 12 7.5 4.4 4.4 0 0 1 19 13.5z\"/></svg>",
   "lead": "L’amour de Dieu est plus grand que tout. Voici des versets pour le contempler.",
   "refs": [
@@ -852,7 +852,7 @@
   ]
  },
  "promesses": {
-  "label": "Les promesses de Dieu",
+  "label": "Les promesses",
   "icon": "<svg viewBox=\"0 0 24 24\" width=\"26\" height=\"26\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.7\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M4 18a8 8 0 0 1 16 0\"/><path d=\"M7.2 18a4.8 4.8 0 0 1 9.6 0\"/><path d=\"M10.3 18a1.7 1.7 0 0 1 3.4 0\"/></svg>",
   "lead": "Des promesses de Dieu pour aujourd’hui : sa présence, sa provision, sa fidélité.",
   "refs": [
@@ -1390,7 +1390,7 @@
   ]
  },
  "confiance": {
-  "label": "Versets sur la confiance en Dieu",
+  "label": "Versets sur la confiance",
   "icon": "<svg viewBox=\"0 0 24 24\" width=\"26\" height=\"26\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.7\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M3 20 9.5 9l3 4.5L15 10l6 10z\"/><path d=\"M9.5 9l1.6 2.7\"/></svg>",
   "lead": "Confiez-vous en l’Éternel de tout votre cœur.",
   "refs": [
@@ -1795,7 +1795,7 @@
   ]
  },
  "solitude": {
-  "label": "Versets sur la présence de Dieu",
+  "label": "Versets sur la présence",
   "icon": "<svg viewBox=\"0 0 24 24\" width=\"26\" height=\"26\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.7\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M8 6.5c1.3 0 2 1.4 1.8 3.2C9.6 11.7 8.7 13 8 13s-1.6-1.3-1.8-3.3C6 7.9 6.7 6.5 8 6.5z\"/><path d=\"M6.7 14.3c.2.9 2.4.9 2.6 0\"/><path d=\"M16 11.5c1.3 0 2 1.4 1.8 3.2-.2 2-1.1 3.3-1.8 3.3s-1.6-1.3-1.8-3.3c-.2-1.8.5-3.2 1.8-3.2z\"/><path d=\"M14.7 19.3c.2.9 2.4.9 2.6 0\"/></svg>",
   "lead": "Vous n’êtes jamais seul : Dieu est présent et fidèle.",
   "refs": [
@@ -3452,7 +3452,7 @@
   ]
  },
  "grace": {
-  "label": "Versets sur la grâce de Dieu",
+  "label": "Versets sur la grâce",
   "icon": "<svg viewBox=\"0 0 24 24\" width=\"26\" height=\"26\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.7\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M12 20.5 5 13.5A4.4 4.4 0 0 1 12 7.5 4.4 4.4 0 0 1 19 13.5z\"/><path d=\"M12 3.5v2.5M8.5 4.5l1 1.8M15.5 4.5l-1 1.8\"/></svg>",
   "lead": "La grâce est un don. Elle ne se mérite pas : elle est venue par Jésus-Christ, et elle suffit.",
   "refs": [

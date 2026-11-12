@@ -35,7 +35,7 @@ const CACHE_NAME = 'labible-v46';
 //
 // ⚠️ LA CLE DE CACHE EST L'URL COMPLETE. Les deux lignes de STATIC_ASSETS
 // ci-dessous doivent porter EXACTEMENT les URLs demandees par les pages :
-// '/data/explications.json?v=3' et '/app.v2.js?v=57'. Une seule des deux
+// '/data/explications.json?v=3' et '/app.v2.js?v=58'. Une seule des deux
 // oubliee, et le fichier est precache sous une cle que personne ne demande.
 //
 // ⚠️ NE PAS monter CACHE_NAME pour cela. Il reste 'labible-v46', donc :
@@ -60,7 +60,7 @@ const STATIC_ASSETS = [
   '/index.html',
   '/offline.html',
   '/styles.css?v=5',
-  '/app.v2.js?v=57',
+  '/app.v2.js?v=58',
   '/footer.js',
   '/header.js',
   '/manifest.webmanifest',
@@ -88,7 +88,7 @@ const DATA_ASSETS = [
   '/data/lsg1910.json',        // 7,7 Mo — la Bible entiere
   '/data/crossrefs.json',      // 2,4 Mo — 225 053 references croisees
   '/data/quiz.json?v=1',       // 0,8 Mo — les 2 032 questions du quiz
-  '/data/versets_themes.json?v=6', // 0,06 Mo : les themes (47 depuis le 8 nov. 2026)
+  '/data/versets_themes.json?v=7', // 0,06 Mo : les themes (47 depuis le 8 nov. 2026)
 ];
 
 // Cles devenues obsoletes par un changement de ?v=. `activate` ne supprime que
@@ -117,6 +117,8 @@ const CLES_OBSOLETES = [
   '/data/versets_themes.json?v=4', // remplace par ?v=5 (meme raison)
   '/app.v2.js?v=56',            // remplace par ?v=57 (titres sans « de Dieu », 9 nov.)
   '/data/versets_themes.json?v=5', // remplace par ?v=6 (meme raison)
+  '/app.v2.js?v=57',            // remplace par ?v=58 (« Présence de Dieu », 12 nov.)
+  '/data/versets_themes.json?v=6', // remplace par ?v=7 (meme raison)
 ];
 
 self.addEventListener('install', event => {

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url><loc>https://labible.app/</loc><lastmod>2026-09-19</lastmod></url>
-  <url><loc>https://labible.app/versets/</loc><lastmod>2026-11-12</lastmod></url>
+  <url><loc>https://labible.app/versets/</loc><lastmod>2026-11-14</lastmod></url>
   <url><loc>https://labible.app/quiz</loc><lastmod>2026-09-19</lastmod></url>
   <url><loc>https://labible.app/versets/protection</loc><lastmod>2026-11-09</lastmod></url>
   <url><loc>https://labible.app/versets/guerison</loc><lastmod>2026-11-09</lastmod></url>
@@ -50,6 +50,7 @@
   <url><loc>https://labible.app/versets/salut</loc><lastmod>2026-11-11</lastmod></url>
   <url><loc>https://labible.app/versets/saint-esprit</loc><lastmod>2026-11-08</lastmod></url>
   <url><loc>https://labible.app/versets/nouvel-an</loc><lastmod>2026-11-09</lastmod></url>
+  <url><loc>https://labible.app/versets/derniers-temps</loc><lastmod>2026-11-14</lastmod></url>
   <url><loc>https://labible.app/a-propos</loc><lastmod>2026-09-19</lastmod></url>
   <url><loc>https://labible.app/bible-audio</loc><lastmod>2026-11-14</lastmod></url>
   <url><loc>https://labible.app/louis-segond</loc><lastmod>2026-10-26</lastmod></url>

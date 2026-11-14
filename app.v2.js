@@ -257,7 +257,7 @@ async function loadVersetsThemes(){
   // session, meme apres le retour du reseau. On renvoie {} sans le stocker,
   // pour que la prochaine tentative refasse la requete.
   try{
-    const res = await fetch("/data/versets_themes.json?v=8");
+    const res = await fetch("/data/versets_themes.json?v=9");
     if(!res.ok) return {};
     state.versetsThemes = await res.json();
   } catch { return {}; }

@@ -60,7 +60,7 @@ const STATIC_ASSETS = [
   '/index.html',
   '/offline.html',
   '/styles.css?v=5',
-  '/app.v2.js?v=63',
+  '/app.v2.js?v=64',
   '/footer.js',
   '/header.js',
   '/manifest.webmanifest',
@@ -126,6 +126,7 @@ const CLES_OBSOLETES = [
   '/app.v2.js?v=60',            // remplace par ?v=61 (versets ajoutes a 47 themes, 14 nov.)
   '/app.v2.js?v=61',            // remplace par ?v=62 (verset du jour : 348 versets, 18 nov.)
   '/app.v2.js?v=62',            // remplace par ?v=63 (barre du verset en icones + Ecouter, 18 nov.)
+  '/app.v2.js?v=63',            // remplace par ?v=64 (barre du verset sur une seule ligne)
   '/data/versets_themes.json?v=9', // remplace par ?v=10 (meme raison)
 ];
 

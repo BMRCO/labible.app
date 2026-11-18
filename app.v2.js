@@ -183,8 +183,12 @@ function showVerseActions(bookName, chapter, verse, text, el, verseEnd){
   if(!document.getElementById("css-chip-icone")){
     const st = document.createElement("style");
     st.id = "css-chip-icone";
-    st.textContent = ".chip.chipIcone{display:inline-flex;align-items:center;justify-content:center;min-width:42px;height:42px;padding:0 10px;line-height:0}"
-      + ".chip.chipIcone svg{display:block}"
+    // Une seule ligne sur telephone (retour de BC, 18 nov.) : les boutons se
+    // partagent la largeur (base 0, plafonnes a 46px) : tous tiennent sur la
+    // premiere ligne, le panneau des references (largeur 100 %) passe dessous.
+    st.textContent = "#verseActionBar{gap:5px!important;padding:8px!important;justify-content:space-between}"
+      + "#verseActionBar>.chip.chipIcone{flex:1 1 0;min-width:0;max-width:46px;height:40px;padding:0;margin:0;display:inline-flex;align-items:center;justify-content:center;line-height:0}"
+      + "#verseActionBar>.chip.chipIcone svg{display:block;width:19px;height:19px}"
       + ".chip.chipIcone.enLecture{color:#e2c57a;border-color:rgba(226,197,122,.6)}";
     document.head.appendChild(st);
   }
@@ -225,7 +229,6 @@ function showVerseActions(bookName, chapter, verse, text, el, verseEnd){
   const btnClose = icone("Fermer",
     SVG('<path d="M6 6l12 12M18 6L6 18"/>'),
     () => { fermer(); });
-  btnClose.style.marginLeft = "auto";
 
   // « + Verset » : etendre vers le bas. Absent au dernier verset du chapitre
   // et une fois le plafond atteint — un bouton qui ne fait rien est pire que

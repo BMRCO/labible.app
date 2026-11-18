@@ -55,7 +55,7 @@
       '<a class="tab" href="/#plan">Plan</a>' +
       '<a class="tab" href="/#bibliotheque">Biblioth\u00e8que</a>' +
       '<a class="tab" id="lbTabVersets" href="/versets">Versets</a>' +
-      '<a class="tab" href="/bible-audio">Audio</a>' +
+      '<a class="tab" id="lbTabAudio" href="/bible-audio">Audio</a>' +
     '</nav>' +
     '</div>' +
   '</div>';
@@ -90,6 +90,10 @@
     if (location.pathname.indexOf('/versets') === 0) {
       var tv = document.getElementById('lbTabVersets');
       if (tv) tv.classList.add('active');
+    }
+    if (location.pathname.indexOf('/bible-audio') === 0) {
+      var ta = document.getElementById('lbTabAudio');
+      if (ta) ta.classList.add('active');
     }
 
     var btn = document.getElementById('btnTheme');

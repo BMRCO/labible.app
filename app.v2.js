@@ -124,6 +124,25 @@ function joinVerses(v1, v2){
 
 function verseEl(n){ return $(`#verses .verse[data-v="${n}"]`); }
 
+/* Lecture a voix haute d'un verset (bouton Ecouter) : voix du systeme,
+   en francais. Un second appui arrete la lecture. Le texte lu est le texte
+   affiche ; seul l'apostrophe typographique devient simple pour la voix. */
+function lireVerset(texte, btn){
+  const ss = window.speechSynthesis;
+  if(!ss) return;
+  if(ss.speaking){ ss.cancel(); btn?.classList.remove("enLecture"); return; }
+  const u = new SpeechSynthesisUtterance(String(texte).replace(/[\u2019\u02bc]/g, "'"));
+  u.lang = "fr-FR";
+  u.rate = 0.92;
+  const fr = (ss.getVoices() || []).filter(v => /^fr/i.test(v.lang));
+  const v = fr.find(v => /fr-FR/i.test(v.lang) && /natural|neural|premium|enhanced/i.test(v.name))
+         || fr.find(v => /fr-FR/i.test(v.lang)) || fr[0];
+  if(v) u.voice = v;
+  u.onend = u.onerror = () => btn?.classList.remove("enLecture");
+  btn?.classList.add("enLecture");
+  ss.speak(u);
+}
+
 function showVerseActions(bookName, chapter, verse, text, el, verseEnd){
   hintDismiss(true);   // le geste est acquis : l'astuce n'a plus lieu d'etre
   const vEnd = Math.max(verse, verseEnd || verse);
@@ -150,52 +169,75 @@ function showVerseActions(bookName, chapter, verse, text, el, verseEnd){
   const refaire = (v2) => showVerseActions(bookName, chapter, verse, text, el, v2);
 
   const fermer = () => {
+    try{ if("speechSynthesis" in window) speechSynthesis.cancel(); } catch{}
     bar.remove();
     $$(".verse.selected").forEach(p => p.classList.remove("selected"));
     state.selectedVerse = null;
   };
 
-  const btnFav = document.createElement("button");
-  btnFav.className = "chip";
+  // 18 nov. 2026 (demande de BC) : boutons en icones, pour tenir sur une
+  // ligne. Chaque bouton garde son nom (title + aria-label) : visible au
+  // survol, lu par les lecteurs d'ecran. Partager : le symbole habituel des
+  // reseaux sociaux. Nouveau : Ecouter, lecture du verset par la voix du
+  // telephone (hors ligne, pour n'importe quel verset).
+  if(!document.getElementById("css-chip-icone")){
+    const st = document.createElement("style");
+    st.id = "css-chip-icone";
+    st.textContent = ".chip.chipIcone{display:inline-flex;align-items:center;justify-content:center;min-width:42px;height:42px;padding:0 10px;line-height:0}"
+      + ".chip.chipIcone svg{display:block}"
+      + ".chip.chipIcone.enLecture{color:#e2c57a;border-color:rgba(226,197,122,.6)}";
+    document.head.appendChild(st);
+  }
+  const icone = (nom, svg, action) => {
+    const b = document.createElement("button");
+    b.className = "chip chipIcone";
+    b.type = "button";
+    b.title = nom;
+    b.setAttribute("aria-label", nom);
+    b.innerHTML = svg;
+    b.onclick = action;
+    return b;
+  };
+  const SVG = (corps, plein) => `<svg viewBox="0 0 24 24" width="20" height="20" fill="${plein ? "currentColor" : "none"}" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${corps}</svg>`;
+
   const isFav = getFavs().some(f => f.type==="verse" && f.ref===ref);
-  btnFav.textContent = isFav ? "✅ Favori" : "🔖 Favori";
-  btnFav.onclick = () => { toggleFavVerse(bookName, chapter, verse, texte, vEnd); fermer(); };
+  const btnFav = icone(isFav ? "Retirer des favoris" : "Ajouter aux favoris",
+    SVG('<path d="M6 3h12v18l-6-4-6 4z"/>', isFav),
+    () => { toggleFavVerse(bookName, chapter, verse, texte, vEnd); fermer(); });
+  if(isFav) btnFav.style.color = "#e2c57a";
 
-  const btnCopy = document.createElement("button");
-  btnCopy.className = "chip";
-  btnCopy.textContent = "📎 Copier";
-  btnCopy.onclick = async () => { await copyText(`${buildVerseShareText(bookName, chapter, verse, texte, vEnd)}\n📖 ${buildVerseUrl(bookName, chapter)}`); fermer(); };
+  const btnAudio = ("speechSynthesis" in window) ? icone("Écouter",
+    SVG('<path d="M4 9v6h4l5 4V5L8 9z"/><path d="M16 9a4 4 0 0 1 0 6M18.5 6.5a8 8 0 0 1 0 11"/>'),
+    () => lireVerset(texte, btnAudio)) : null;
 
-  const btnShare = document.createElement("button");
-  btnShare.className = "chip";
-  btnShare.textContent = "🔗 Partager";
-  btnShare.onclick = async () => { await shareVerse(bookName, chapter, verse, texte, vEnd); fermer(); };
+  const btnCopy = icone("Copier",
+    SVG('<rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h8"/>'),
+    async () => { await copyText(`${buildVerseShareText(bookName, chapter, verse, texte, vEnd)}\n📖 ${buildVerseUrl(bookName, chapter)}`); fermer(); });
 
-  const btnImg = document.createElement("button");
-  btnImg.className = "chip";
-  btnImg.textContent = "🖼️ Image";
-  btnImg.onclick = async () => { await shareVerseImage(bookName, chapter, verse, texte, vEnd); fermer(); };
+  const btnShare = icone("Partager",
+    SVG('<circle cx="18" cy="5" r="2.6"/><circle cx="6" cy="12" r="2.6"/><circle cx="18" cy="19" r="2.6"/><path d="M8.3 10.8l7.4-4.4M8.3 13.2l7.4 4.4"/>'),
+    async () => { await shareVerse(bookName, chapter, verse, texte, vEnd); fermer(); });
 
-  const btnClose = document.createElement("button");
-  btnClose.className = "chip";
-  btnClose.textContent = "✕";
+  const btnImg = icone("Créer une image",
+    SVG('<rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="9" cy="10" r="1.8"/><path d="M21 16l-5-5-9 9"/>'),
+    async () => { await shareVerseImage(bookName, chapter, verse, texte, vEnd); fermer(); });
+
+  const btnClose = icone("Fermer",
+    SVG('<path d="M6 6l12 12M18 6L6 18"/>'),
+    () => { fermer(); });
   btnClose.style.marginLeft = "auto";
-  btnClose.onclick = () => { fermer(); };
 
   // « + Verset » : etendre vers le bas. Absent au dernier verset du chapitre
   // et une fois le plafond atteint — un bouton qui ne fait rien est pire que
   // pas de bouton.
-  const plus = document.createElement("button");
-  plus.className = "chip";
-  plus.textContent = "\u2795 Verset";
-  plus.onclick = () => refaire(vEnd + 1);
+  const plus = icone("Ajouter le verset suivant",
+    SVG('<path d="M12 5v14M5 12h14"/>'), () => refaire(vEnd + 1));
+  const moins = icone("Retirer le dernier verset",
+    SVG('<path d="M5 12h14"/>'), () => refaire(vEnd - 1));
 
-  const moins = document.createElement("button");
-  moins.className = "chip";
-  moins.textContent = "\u2796 Verset";
-  moins.onclick = () => refaire(vEnd - 1);
-
-  bar.append(btnFav, btnCopy, btnShare, btnImg);
+  bar.append(btnFav);
+  if(btnAudio) bar.append(btnAudio);
+  bar.append(btnCopy, btnShare, btnImg);
   if(vEnd < arr.length && (vEnd - verse + 1) < MAX_VERSETS) bar.append(plus);
   if(vEnd > verse) bar.append(moins);
   bar.append(btnClose);
@@ -404,9 +446,11 @@ function attachReferences(bar, bookNr, chapter, verse){
     if(bar.querySelector(".btnRefs")) return;
 
     const btn = document.createElement("button");
-    btn.className = "chip btnRefs";
+    btn.className = "chip chipIcone btnRefs";
     btn.style.borderColor = "rgba(226,197,122,.4)";
-    btn.textContent = "🔗 Références";
+    btn.title = "Références croisées";
+    btn.setAttribute("aria-label", "Références croisées");
+    btn.innerHTML = '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1"/><path d="M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"/></svg>';
     bar.insertBefore(btn, bar.lastChild);
 
     const panel = document.createElement("div");

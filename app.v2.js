@@ -134,9 +134,16 @@ function lireVerset(texte, btn){
   const u = new SpeechSynthesisUtterance(String(texte).replace(/[\u2019\u02bc]/g, "'"));
   u.lang = "fr-FR";
   u.rate = 0.92;
+  // Voix d'homme quand l'appareil en a une (retour de BC, 18 nov. : la voix
+  // par defaut d'Android est feminine). Noms connus : Henri (Edge, Windows),
+  // Thomas (iPhone, Mac), Paul (Windows), fr-fr-x-frb / frd (Android, Google).
   const fr = (ss.getVoices() || []).filter(v => /^fr/i.test(v.lang));
-  const v = fr.find(v => /fr-FR/i.test(v.lang) && /natural|neural|premium|enhanced/i.test(v.name))
-         || fr.find(v => /fr-FR/i.test(v.lang)) || fr[0];
+  const homme = /henri|thomas|paul|claude|daniel|jacques|nicolas|remy|rémy|gérard|gerard|fabrice|antoine|jean|thierry|frb|frd|\bmale|homme|masculin/i;
+  const v = fr.find(v => /fr[-_]FR/i.test(v.lang) && homme.test(v.name + " " + v.voiceURI) && /natural|neural|online/i.test(v.name))
+         || fr.find(v => /fr[-_]FR/i.test(v.lang) && homme.test(v.name + " " + v.voiceURI))
+         || fr.find(v => homme.test(v.name + " " + v.voiceURI))
+         || fr.find(v => /fr[-_]FR/i.test(v.lang) && /natural|neural|premium|enhanced/i.test(v.name))
+         || fr.find(v => /fr[-_]FR/i.test(v.lang)) || fr[0];
   if(v) u.voice = v;
   u.onend = u.onerror = () => btn?.classList.remove("enLecture");
   btn?.classList.add("enLecture");

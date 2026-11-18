@@ -60,7 +60,7 @@ const STATIC_ASSETS = [
   '/index.html',
   '/offline.html',
   '/styles.css?v=5',
-  '/app.v2.js?v=65',
+  '/app.v2.js?v=66',
   '/footer.js',
   '/header.js',
   '/manifest.webmanifest',
@@ -128,6 +128,7 @@ const CLES_OBSOLETES = [
   '/app.v2.js?v=62',            // remplace par ?v=63 (barre du verset en icones + Ecouter, 18 nov.)
   '/app.v2.js?v=63',            // remplace par ?v=64 (barre du verset sur une seule ligne)
   '/app.v2.js?v=64',            // remplace par ?v=65 (Ecouter : voix d'homme si disponible)
+  '/app.v2.js?v=65',            // remplace par ?v=66 (icones Bibliotheque, verset du jour, recherche)
   '/data/versets_themes.json?v=9', // remplace par ?v=10 (meme raison)
 ];
 

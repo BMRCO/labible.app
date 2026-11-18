@@ -384,7 +384,7 @@
     })();
   </script>
 
-  <script src="/app.v2.js?v=65"></script>
+  <script src="/app.v2.js?v=66"></script>
 
   <script>
   (function () {
@@ -428,7 +428,7 @@
       var bodyHtml = hit.textHtml ? '« ' + hit.textHtml + ' »' : '« ' + hit.text + ' »';
       el.innerHTML =
         '<div class="gResultHead"><span class="gResultRef">' + hit.ref + '</span><span class="gResultArrow">›</span></div>' +
-        '<div class="gResultBody"><div class="gResultText" style="cursor:pointer">' + bodyHtml + '</div><div class="gResultActions"><button class="btnCopy">📎 Copier</button></div></div>';
+        '<div class="gResultBody"><div class="gResultText" style="cursor:pointer">' + bodyHtml + '</div><div class="gResultActions"><button class="btnCopy chipIcone" title="Copier" aria-label="Copier"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h8"/></svg></button></div></div>';
       el.querySelector('.gResultHead').addEventListener('click', function () { el.classList.toggle('open'); });
       el.querySelector('.gResultText').addEventListener('click', function (e) {
         e.stopPropagation();

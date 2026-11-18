@@ -124,6 +124,39 @@ function joinVerses(v1, v2){
 
 function verseEl(n){ return $(`#verses .verse[data-v="${n}"]`); }
 
+/* Icones des boutons (18 nov. 2026) : meme dessin partout (barre du verset,
+   Bibliotheque, verset du jour, recherche). Chaque bouton garde son nom en
+   title + aria-label. */
+const ICONES = {
+  ouvrir:   '<path d="M3 5.5C5.5 4.5 8.5 4.5 12 6.5c3.5-2 6.5-2 9-1v13c-2.5-1-5.5-1-9 1-3.5-2-6.5-2-9-1z"/><path d="M12 6.5v13"/>',
+  copier:   '<rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h8"/>',
+  partager: '<circle cx="18" cy="5" r="2.6"/><circle cx="6" cy="12" r="2.6"/><circle cx="18" cy="19" r="2.6"/><path d="M8.3 10.8l7.4-4.4M8.3 13.2l7.4 4.4"/>',
+  image:    '<rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="9" cy="10" r="1.8"/><path d="M21 16l-5-5-9 9"/>',
+};
+function svgIcone(corps){
+  return `<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${corps}</svg>`;
+}
+function cssIcones(){
+  if(document.getElementById("css-chip-icone")) return;
+  const st = document.createElement("style");
+  st.id = "css-chip-icone";
+  st.textContent = ".chipIcone{display:inline-flex;align-items:center;justify-content:center;min-width:42px;height:40px;padding:0 10px;line-height:0}"
+    + ".chipIcone svg{display:block;width:19px;height:19px}"
+    + ".chipIcone.enLecture{color:#e2c57a;border-color:rgba(226,197,122,.6)}"
+    // Barre du verset : une seule ligne au telephone (base 0, plafond 46px) ;
+    // le panneau des references (largeur 100 %) passe dessous.
+    + "#verseActionBar{gap:5px!important;padding:8px!important;justify-content:space-between}"
+    + "#verseActionBar>.chip.chipIcone{flex:1 1 0;min-width:0;max-width:46px;padding:0;margin:0}";
+  document.head.appendChild(st);
+}
+/* Remplace le contenu d'un bouton existant (HTML statique) par son icone. */
+function iconiser(btn, cle, nom){
+  if(!btn) return;
+  btn.innerHTML = svgIcone(ICONES[cle]);
+  btn.classList.add("chipIcone");
+  btn.title = nom; btn.setAttribute("aria-label", nom);
+}
+
 /* Lecture a voix haute d'un verset (bouton Ecouter) : voix du systeme,
    en francais. Un second appui arrete la lecture. Le texte lu est le texte
    affiche ; seul l'apostrophe typographique devient simple pour la voix. */
@@ -187,18 +220,7 @@ function showVerseActions(bookName, chapter, verse, text, el, verseEnd){
   // survol, lu par les lecteurs d'ecran. Partager : le symbole habituel des
   // reseaux sociaux. Nouveau : Ecouter, lecture du verset par la voix du
   // telephone (hors ligne, pour n'importe quel verset).
-  if(!document.getElementById("css-chip-icone")){
-    const st = document.createElement("style");
-    st.id = "css-chip-icone";
-    // Une seule ligne sur telephone (retour de BC, 18 nov.) : les boutons se
-    // partagent la largeur (base 0, plafonnes a 46px) : tous tiennent sur la
-    // premiere ligne, le panneau des references (largeur 100 %) passe dessous.
-    st.textContent = "#verseActionBar{gap:5px!important;padding:8px!important;justify-content:space-between}"
-      + "#verseActionBar>.chip.chipIcone{flex:1 1 0;min-width:0;max-width:46px;height:40px;padding:0;margin:0;display:inline-flex;align-items:center;justify-content:center;line-height:0}"
-      + "#verseActionBar>.chip.chipIcone svg{display:block;width:19px;height:19px}"
-      + ".chip.chipIcone.enLecture{color:#e2c57a;border-color:rgba(226,197,122,.6)}";
-    document.head.appendChild(st);
-  }
+  cssIcones();
   const icone = (nom, svg, action) => {
     const b = document.createElement("button");
     b.className = "chip chipIcone";
@@ -494,7 +516,11 @@ function attachReferences(bar, bookNr, chapter, verse){
     btn.addEventListener("click", () => {
       const open = panel.style.display !== "none";
       panel.style.display = open ? "none" : "block";
-      btn.textContent = open ? "🔗 Références" : "▲ Masquer";
+      // Bouton en icone (18 nov.) : on garde l'icone, l'etat ouvert se lit
+      // a la couleur doree et au nom (lecteurs d'ecran).
+      btn.classList.toggle("enLecture", !open);
+      const nom = open ? "Références croisées" : "Masquer les références";
+      btn.title = nom; btn.setAttribute("aria-label", nom);
     });
   });
 }
@@ -1487,7 +1513,7 @@ function renderLibrary(){
     items.slice(0, limit).forEach(f => {
       const div = document.createElement("div");
       div.className = "item";
-      div.innerHTML = `<div class="itemTop"><div><div class="itemRef">${escapeHtml(f.ref||"")}</div><div class="itemMeta">${escapeHtml(new Date(f.at||Date.now()).toLocaleString("fr-FR"))}</div></div></div>${f.text?`<div class="itemMeta" style="margin-top:8px">${escapeHtml(f.text).slice(0,200)}${f.text.length>200?"…":""}</div>`:""}<div class="itemBtns"><button class="chip" data-open="${escapeHtml(f.ref)}">📖 Ouvrir</button><button class="chip" data-copy="${escapeHtml(f.ref)}">📎 Copier</button><button class="chip" data-share="${escapeHtml(f.ref)}">🔗 Partager</button></div>`;
+      div.innerHTML = `<div class="itemTop"><div><div class="itemRef">${escapeHtml(f.ref||"")}</div><div class="itemMeta">${escapeHtml(new Date(f.at||Date.now()).toLocaleString("fr-FR"))}</div></div></div>${f.text?`<div class="itemMeta" style="margin-top:8px">${escapeHtml(f.text).slice(0,200)}${f.text.length>200?"…":""}</div>`:""}<div class="itemBtns"><button class="chip chipIcone" title="Ouvrir" aria-label="Ouvrir" data-open="${escapeHtml(f.ref)}">${svgIcone(ICONES.ouvrir)}</button><button class="chip chipIcone" title="Copier" aria-label="Copier" data-copy="${escapeHtml(f.ref)}">${svgIcone(ICONES.copier)}</button><button class="chip chipIcone" title="Partager" aria-label="Partager" data-share="${escapeHtml(f.ref)}">${svgIcone(ICONES.partager)}</button></div>`;
       box.appendChild(div);
     });
     box.querySelectorAll("[data-open]").forEach(btn => btn.addEventListener("click", async () => { const r = parseReference(btn.getAttribute("data-open")); if(r) await openReference(r); else toast("Référence non reconnue."); }));
@@ -1550,6 +1576,10 @@ function bindHeaderActions(){
 
 /* ---------- init ---------- */
 async function init(){
+  cssIcones();
+  iconiser(document.getElementById("btnOpenVDD"), "ouvrir", "Ouvrir le verset du jour");
+  iconiser(document.getElementById("btnCopyVDD"), "copier", "Copier le verset du jour");
+  iconiser(document.getElementById("btnImgVDD"), "image", "Créer une image du verset du jour");
   const y = $("#year"); if(y) y.textContent = String(new Date().getFullYear());
   loadTheme(); loadFont(); bindTabs(); bindHeaderActions(); bindSwipe(); bindLibraryButtons(); bindInstall(); bindWakeLock(); bindVerseHint();
   try{ await loadBible(); toast("Bible chargée ✅"); }

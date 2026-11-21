@@ -87,7 +87,7 @@ const STATIC_ASSETS = [
 const DATA_ASSETS = [
   '/data/lsg1910.json',        // 7,7 Mo — la Bible entiere
   '/data/crossrefs.json',      // 2,4 Mo — 225 053 references croisees
-  '/data/quiz.json?v=1',       // 0,8 Mo — les 2 032 questions du quiz
+  '/data/quiz.json?v=2',       // 0,8 Mo — les 2 032 questions du quiz
   '/data/versets_themes.json?v=11', // 0,06 Mo : les themes (48 depuis le 14 nov. 2026)
 ];
 
@@ -132,6 +132,7 @@ const CLES_OBSOLETES = [
   '/data/versets_themes.json?v=9', // remplace par ?v=10 (meme raison)
   '/app.v2.js?v=66',            // remplace par ?v=67 (propheties de l'Ancien Testament, 21 nov.)
   '/data/versets_themes.json?v=10', // remplace par ?v=11 (derniers temps : 290 versets, 21 nov.)
+  '/data/quiz.json?v=1',       // remplace par ?v=2 (titres de Psaumes retires des questions, 21 nov.)
 ];
 
 self.addEventListener('install', event => {

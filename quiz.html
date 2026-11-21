@@ -267,7 +267,7 @@
   el('homeBtn').addEventListener('click', function(){ renderHome(); });
   el('backToHome').addEventListener('click', function(e){ e.preventDefault(); renderHome(); });
 
-  fetch('/data/quiz.json?v=1')
+  fetch('/data/quiz.json?v=2')
     .then(function(r){ return r.json(); })
     .then(function(j){ bank = j; renderHome(); })
     .catch(function(){

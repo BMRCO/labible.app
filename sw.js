@@ -60,7 +60,7 @@ const STATIC_ASSETS = [
   '/index.html',
   '/offline.html',
   '/styles.css?v=5',
-  '/app.v2.js?v=67',
+  '/app.v2.js?v=68',
   '/footer.js',
   '/header.js',
   '/manifest.webmanifest',
@@ -88,7 +88,7 @@ const DATA_ASSETS = [
   '/data/lsg1910.json',        // 7,7 Mo — la Bible entiere
   '/data/crossrefs.json',      // 2,4 Mo — 225 053 references croisees
   '/data/quiz.json?v=2',       // 0,8 Mo — les 2 032 questions du quiz
-  '/data/versets_themes.json?v=11', // 0,06 Mo : les themes (48 depuis le 14 nov. 2026)
+  '/data/versets_themes.json?v=12', // 0,06 Mo : les themes (48 depuis le 14 nov. 2026)
 ];
 
 // Cles devenues obsoletes par un changement de ?v=. `activate` ne supprime que
@@ -133,6 +133,8 @@ const CLES_OBSOLETES = [
   '/app.v2.js?v=66',            // remplace par ?v=67 (propheties de l'Ancien Testament, 21 nov.)
   '/data/versets_themes.json?v=10', // remplace par ?v=11 (derniers temps : 290 versets, 21 nov.)
   '/data/quiz.json?v=1',       // remplace par ?v=2 (titres de Psaumes retires des questions, 21 nov.)
+  '/app.v2.js?v=67',            // remplace par ?v=68 (derniers temps revus, 22 nov.)
+  '/data/versets_themes.json?v=11', // remplace par ?v=12 (derniers temps : versets qui se lisent seuls, 22 nov.)
 ];
 
 self.addEventListener('install', event => {

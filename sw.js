@@ -60,7 +60,7 @@ const STATIC_ASSETS = [
   '/index.html',
   '/offline.html',
   '/styles.css?v=5',
-  '/app.v2.js?v=68',
+  '/app.v2.js?v=69',
   '/footer.js',
   '/header.js',
   '/manifest.webmanifest',
@@ -134,6 +134,7 @@ const CLES_OBSOLETES = [
   '/data/versets_themes.json?v=10', // remplace par ?v=11 (derniers temps : 290 versets, 21 nov.)
   '/data/quiz.json?v=1',       // remplace par ?v=2 (titres de Psaumes retires des questions, 21 nov.)
   '/app.v2.js?v=67',            // remplace par ?v=68 (derniers temps revus, 22 nov.)
+  '/app.v2.js?v=68',            // remplace par ?v=69 (titre de l'accueil, 22 nov.)
   '/data/versets_themes.json?v=11', // remplace par ?v=12 (derniers temps : versets qui se lisent seuls, 22 nov.)
 ];
 

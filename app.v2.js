@@ -751,6 +751,10 @@ async function loadBible(){
 
   $("#bookSelect").value = String(state.current.book);
   refreshChapterSelect();
+  // 22 nov. 2026 : a l'ouverture de labible.app sans #chapitre, le titre et
+  // l'adresse de l'accueil restent ceux de l'accueil (Google affichait
+  // « Genese 1 » comme titre de la page d'accueil).
+  state.accueilSansHash = !hashRef;
   renderReading(hashRef && hashRef.v ? hashRef.v : null);
 
   await computeVerseOfDay();
@@ -1082,8 +1086,11 @@ function renderReading(highlightVerse=null){
     localStorage.setItem(LS.last, refStr);
     pushHistory(refStr);
     updateFavButtonState();
-    history.replaceState(null, "", `#${book.name}-${c}`);
-    document.title = `${book.name} ${c} \u2014 LaBible.app`;
+    if(!state.accueilSansHash){
+      history.replaceState(null, "", `#${book.name}-${c}`);
+      document.title = `${book.name} ${c} \u2014 LaBible.app`;
+    }
+    state.accueilSansHash = false;
     refreshVerseSelect(verses.length, highlightVerse);
   } catch(err){
     $("#pageHeader").textContent = "Erreur";

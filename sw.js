@@ -212,6 +212,13 @@ self.addEventListener('fetch', event => {
     return;
   }
 
+  // 22 nov. 2026 : header.js et footer.js (sans ?v=) suivent le HTML, sinon une
+  // correction de la barre d'onglets n'arrivait qu'a la deuxieme visite.
+  if (url.pathname === '/header.js' || url.pathname === '/footer.js') {
+    event.respondWith(networkFirst(request));
+    return;
+  }
+
   if (request.mode === 'navigate' || request.destination === 'document' || url.pathname.endsWith('.html') || url.pathname === '/') {
     event.respondWith(networkFirst(request));
     return;

@@ -529,7 +529,7 @@ async function shareVerse(bookName, chapter, verse, text, verseEnd){
   const shareText = buildVerseShareText(bookName, chapter, verse, text, verseEnd);
   const url = buildVerseUrl(bookName, chapter);
   if(navigator.share){
-    try{ await navigator.share({ title:`${refLabel(bookName, chapter, verse, verseEnd)} — LaBible.app`, text: shareText, url }); } catch{}
+    try{ await navigator.share({ title:`${refLabel(bookName, chapter, verse, verseEnd)} | LaBible.app`, text: shareText, url }); } catch{}
   } else { await copyText(`${shareText}\n📖 ${url}`); }
 }
 
@@ -542,9 +542,9 @@ async function shareVerseImage(bookName, chapter, verse, text, verseEnd){
     const fname = `labible-${bookName}-${chapter}-${verse}${verseEnd && verseEnd > verse ? "-" + verseEnd : ""}.png`.replace(/[^\w.-]+/g, "_");
     const file = new File([blob], fname, { type:"image/png" });
     const url = buildVerseUrl(bookName, chapter);
-    const caption = `${ref} — LaBible.app\n📖 ${url}`;
+    const caption = `${ref} | LaBible.app\n📖 ${url}`;
     if(navigator.canShare && navigator.canShare({ files:[file] })){
-      try{ await navigator.share({ files:[file], title:`${ref} — LaBible.app`, text: caption }); return; }
+      try{ await navigator.share({ files:[file], title:`${ref} | LaBible.app`, text: caption }); return; }
       catch(e){ if(e && e.name === "AbortError") return; }
     }
     const a = document.createElement("a");
@@ -1088,7 +1088,7 @@ function renderReading(highlightVerse=null){
     updateFavButtonState();
     if(!state.accueilSansHash){
       history.replaceState(null, "", `#${book.name}-${c}`);
-      document.title = `${book.name} ${c} \u2014 LaBible.app`;
+      document.title = `${book.name} ${c} | LaBible.app`;
     }
     state.accueilSansHash = false;
     refreshVerseSelect(verses.length, highlightVerse);
@@ -1272,7 +1272,7 @@ async function shareCurrent(){
   const first   = verses[0] ? String(verses[0]).replace(/^¶\s*/, "").slice(0, 100) : "";
   const url     = chapterUrl(book.name, c);
   const shareText = first ? `${book.name} ${c} :\n"${first}…"` : `${book.name} ${c}`;
-  if(navigator.share){ try{ await navigator.share({ title:`${book.name} ${c} \u2014 LaBible.app`, text: shareText, url }); } catch{} }
+  if(navigator.share){ try{ await navigator.share({ title:`${book.name} ${c} | LaBible.app`, text: shareText, url }); } catch{} }
   else { await copyText(`${shareText}\n\n📖 ${url}`); }
 }
 

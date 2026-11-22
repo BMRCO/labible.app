@@ -28,7 +28,10 @@
     '.stickyHeader .tabs{overflow-x:auto;scrollbar-width:none;-ms-overflow-style:none;}' +
     '.stickyHeader .tabs::-webkit-scrollbar{display:none;}' +
     '.stickyHeader .tab{flex:1 0 auto;white-space:nowrap;text-align:center;text-decoration:none;' +
-      'display:flex;align-items:center;justify-content:center;}';
+      'display:flex;align-items:center;justify-content:center;}' +
+    /* 22 nov. 2026 : sur telephone, les 5 onglets tiennent sans defilement */
+    '@media (max-width:520px){.stickyHeader .tabs{gap:2px;padding:4px;}' +
+      '.stickyHeader .tab{padding:9px 5px;font-size:clamp(11.5px,3.4vw,14px);}}';
 
   var HTML = '' +
   '<div class="stickyHeader">' +

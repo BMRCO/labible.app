@@ -107,6 +107,12 @@
     .tabs::-webkit-scrollbar{ display:none; }
     .tab{ flex:1 0 auto; white-space:nowrap; text-align:center; }
     .tabLink{ display:flex; align-items:center; justify-content:center; }
+    /* 22 nov. 2026 : sur telephone, les 5 onglets tiennent sans defilement
+       (Audio etait cache a droite). */
+    @media (max-width:520px){
+      .tabs{ gap:2px; padding:4px; }
+      .tab{ padding:9px 5px; font-size:clamp(11.5px,3.4vw,14px); }
+    }
     /* 3e sélecteur (Verset) : plus étroit pour tenir sur mobile */
     #readControls .controls .field:nth-child(3){ min-width:70px !important; flex:1; }
 

@@ -34,7 +34,36 @@
     '</div>' +
   '</footer>';
 
+  /* Fond de page (BC, 27 nov. 2026) : le degrade du body ne couvre que la
+     hauteur de l'ecran (html,body{height:100%}) et se repetait plus bas,
+     d'ou une bande plus claire en travers des icones du rodape. On le fige
+     et la suite de la page prend la couleur de fin du degrade. Pose ici et
+     non dans styles.css : changer styles.css obligerait a regenerer les
+     1 250 pages qui l'appellent en ?v=5. */
+  function fondContinu() {
+    if (document.getElementById('lb-fond')) return;
+    var st = document.createElement('style');
+    st.id = 'lb-fond';
+    st.textContent = 'body{background-repeat:no-repeat;background-color:var(--bg2)}';
+    document.head.appendChild(st);
+  }
+
+  /* Un « · » ne reste jamais seul en bout de ligne quand les liens passent
+     a la ligne : il disparait s'il n'a pas de lien a sa droite sur la meme ligne. */
+  function separateurs() {
+    var seps = document.querySelectorAll('#lb-footer .footerLinks > span');
+    for (var i = 0; i < seps.length; i++) {
+      var s = seps[i], suivant = s.nextElementSibling, prec = s.previousElementSibling;
+      s.style.visibility = '';
+      if (!suivant || !prec) continue;
+      if (suivant.offsetTop > s.offsetTop + 2 || prec.offsetTop + 2 < s.offsetTop) {
+        s.style.visibility = 'hidden';
+      }
+    }
+  }
+
   function mount() {
+    fondContinu();
     var slot = document.getElementById('lb-footer');
     if (slot) {
       slot.innerHTML = FOOTER_HTML;
@@ -45,6 +74,13 @@
     }
     var y = document.getElementById('year');
     if (y) y.textContent = new Date().getFullYear();
+    separateurs();
+    var attente;
+    window.addEventListener('resize', function () {
+      clearTimeout(attente);
+      attente = setTimeout(separateurs, 150);
+    });
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(separateurs);
   }
 
   if (document.readyState === 'loading') {
